@@ -1,0 +1,110 @@
+﻿
+****************************************************************************
+*                                                                          *
+*           The Unbound Bible Tools - International Support File           *
+*                                                                          *
+****************************************************************************
+*                                                                          *
+*   You can easily translate interface to your native language.            *
+*   Just use this file as template for translation.                        *
+*   After that, please send the new file to software developer             *
+*   to make it available for everyone.                                     *
+*                                                                          *
+****************************************************************************
+
+[Interface]
+
+Menu.Tools        = Tools
+Menu.Tools        = Herramientas
+Menu.Edit         = Editar
+Menu.Bible        = Biblia
+Menu.Notes        = Notas
+Menu.Help         = Ayuda
+Menu.Search       = Buscar...
+Menu.Compare      = Comparar
+Menu.Translate    = Interpretación
+Menu.Print        = Imprimir...
+Menu.Font         = Fuente
+Menu.Options      = Opciones
+Menu.Charset      = Encoding
+Menu.Localization = Interface
+Menu.LangEdit     = Editor de idioma
+Menu.Exit         = Salir
+Menu.Undo         = Undo
+Menu.Cut          = Cortar
+Menu.Copy         = Copiar
+Menu.Paste        = Pegar
+Menu.Clear        = Borrar
+Menu.SelectAll    = Seleccionar todo
+Menu.CopyAs       = Copiar...
+Menu.Verses       = Copiar versículos
+Menu.New          = Nuevo
+Menu.Open         = Abrir
+Menu.Save         = Guardar
+Menu.SaveAs       = Guardar como...
+Menu.Info         = Información
+Menu.Manual       = Manual
+Menu.Reopen       = Reabrir
+Menu.UBPage       = The Unbound Bible Page
+Menu.Download     = Descargar Biblia
+Menu.HomePage     = Página Web
+Menu.BibleFolder  = Biblia Carpeta
+Menu.About        = Acerca ...
+
+Main.OT           = AT
+Main.NT           = NT
+Main.ALL          = Todo
+Main.FontName     = Fuente...
+Main.FontSize     = Tamaño de Fuente...
+Main.Bold         = Negrilla
+Main.Italic       = Italia
+Main.Underline    = Subrayado
+Main.Link         = Vinculo
+Main.Left         = A la izquierda
+Main.Center       = Al Centro
+Main.Right        = A la derecha
+Main.Bullets      = Makrosi
+
+Button.OK         = OK
+Button.Apply      = Aplicar
+Button.Cancel     = Cancelar
+
+Search.Caption    = Busqueda en la Biblia
+Search.Type       = Tipo de busqueda
+Search.Range      = Parametros
+Search.Options    = Opciones
+Search.Any        = Palabra cualquiera
+Search.Every      = Cada palabra
+Search.Phrase     = Frase
+Search.Entire     = Biblia completa
+Search.Old        = Antiguo testamento
+Search.New        = Nuevo testamento
+Search.Gospels    = Evangelios
+Search.Epistles   = Epistoles
+Search.Current    = Libro abierto
+Search.Whole      = Palabra completa
+Search.Case       = En el texto
+Search.Button     = Buscar...
+
+Options.Caption     = Opciones
+Options.TextOptions = Opciones del texto
+Options.Language    = Idioma
+Options.Abbreviate  = Abreviar los nombres de los libros
+
+Verses.Caption     = Copiar versículos
+Verses.Options     = Options
+Verses.Format      = Format
+Verses.Abbr        = Abbreviate book names
+Verses.Brackets    = Round brackets
+Verses.End         = Link in the end
+
+Compare.Caption   = Módulos
+
+Message.Save      = Save changes?
+Message.OverWrite = OK to overwrite %s?
+Message.Loading   = Ejecutando
+Message.Found     = Versiculo encontrado
+Message.Link      = Presione CTRL y haga clic en un vinculo
+Message.Confirm   = Confirmation
+
+

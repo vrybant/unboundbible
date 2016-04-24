@@ -1,0 +1,67 @@
+﻿
+1	Genesis
+2	Exodus
+3	Leviticus
+4	Numeri
+5	Deuteronomium
+6	Iosue
+7	Judicum
+8	Ruth
+9	I Samuhel
+10	II Samuhel
+11	I Regum
+12	II Regum
+13	I Paralipomenon
+14	II Paralipomenon
+15	Ezras
+16	Neemia
+17	Hester
+18	Iob
+19	Psalmi
+20	Proverbia
+21	Ecclesiastes
+22	Canticum
+23	Isaias
+24	Hieremias
+25	Lamentationes
+26	Hiezecihel
+27	Danihel
+28	Osee
+29	Johel
+30	Amos
+31	Abdias
+32	Ionas
+33	Micha
+34	Naum
+35	Abacuc
+36	Sofonias
+37	Aggeus
+38	Zaccharias
+39	Malachi
+40	Secundum Mattheum
+41	Secundum Marcum
+42	Secundum Lucam
+43	Secundum Iohannem
+44	Actus Apostolorum
+45	Romanos
+46	Corinthios I
+47	Corinthios II
+48	Galatas
+49	Ephesios
+50	Philippenses
+51	Colossenses
+52	Thessalonicenses I
+53	Thessalonicenses II
+54	Timotheum I
+55	Timotheum II
+56	Titum
+57	Philemonem
+58	Hebraeos
+59	Jacobi
+60	Petri I
+61	Petri II
+62	Iohannis I
+63	Iohannis II
+64	Iohannis III
+65	Judae
+66	Apocalypsis

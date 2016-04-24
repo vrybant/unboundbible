@@ -1,0 +1,107 @@
+﻿
+****************************************************************************
+*                                                                          *
+*           The Unbound Bible Tools - International Support File           *
+*                                                                          *
+****************************************************************************
+*                                                                          *
+*   You can easily translate interface to your native language.            *
+*   Just use this file as template for translation.                        *
+*   After that, please send the new file to software developer             *
+*   to make it available for everyone.                                     *
+*                                                                          *
+****************************************************************************
+
+[Interface]
+
+Menu.Tools        = Strumenti
+Menu.Edit         = Modifica
+Menu.Bible        = Bibbia
+Menu.Notes        = Note
+Menu.Help         = Aiuto
+Menu.Search       = Cerca...
+Menu.Compare      = Confronta...
+Menu.Translate    = Traduzione
+Menu.Print        = Stampa
+Menu.Font         = Carattere 
+Menu.Options      = Opzioni
+Menu.Charset      = Codifica
+Menu.Localization = Interfaccia
+Menu.LangEdit     = Editor della lingua
+Menu.Exit         = Esci
+Menu.Undo         = Annulla
+Menu.Cut          = Taglia
+Menu.Copy         = Copia
+Menu.Paste        = Incolla
+Menu.Clear        = Cancella 
+Menu.SelectAll    = Seleziona tutto
+Menu.CopyAs       = Copia...
+Menu.Verses       = Copia Versetti
+Menu.New          = Nuovo
+Menu.Open         = Apri...
+Menu.Save         = Salva
+Menu.SaveAs       = Salva con nome...
+Menu.Reopen       = Riaprire
+Menu.Info         = Informazioni
+Menu.Manual       = Manuale
+Menu.Download     = Scarica Bibbia
+Menu.HomePage     = Pagina Web
+Menu.BibleFolder  = Directory della Bibbia
+Menu.About        = Informazioni su...
+
+Main.OT           = AT
+Main.NT           = NT
+Main.ALL          = Tutto
+Main.FontName     = Tipo di carattere
+Main.FontSize     = Dimensione carattere
+Main.Bold         = Grassetto
+Main.Italic       = Corsivo
+Main.Underline    = Sottolineato
+Main.Link         = Link
+Main.Left         = Allinea a sinistra
+Main.Center       = Centra
+Main.Right        = Allinea a destra
+Main.Bullets      = Elenchi puntati
+
+Button.OK         = OK
+Button.Apply      = Applica
+Button.Cancel     = Cancella
+
+Search.Caption    = Cerca nella Bibbia
+Search.Type       = Modalità di ricerca
+Search.Range      = Intervallo
+Search.Options    = Opzioni
+Search.Any        = Qualsiasi parola
+Search.Every      = Ogni parola
+Search.Phrase     = Frase
+Search.Entire     = Intera Bibbia
+Search.Old        = Antico Testamento
+Search.New        = Nuovo Testamento
+Search.Gospels    = Vangeli
+Search.Epistles   = Epistole
+Search.Current    = Libro corrente
+Search.Whole      = Parole intere
+Search.Case       = Maiuscole/minuscole
+Search.Button     = Avvia ricerca
+
+Options.Caption     = Opzioni
+Options.TextOptions = Opzioni di testo
+Options.Language    = Lingua
+Options.Abbreviate  = Accorcia i nomi dei libri
+
+Verses.Caption     = Copia Versetti
+Verses.Options     = Options
+Verses.Format      = Format
+Verses.Abbr        = Abbreviate book names
+Verses.Brackets    = Round brackets
+Verses.End         = Link in the end
+
+Compare.Caption   = Modulos
+
+Message.Save      = Save changes?
+Message.OverWrite = OK to overwrite %s?
+Message.Loading   = Sto caricando
+Message.Found     = versi trovati
+Message.Link      = Premere CTRL e fare clic su un link
+Message.Confirm   = Confirmation
+

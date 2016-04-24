@@ -1,0 +1,67 @@
+﻿
+01	Yaratılış
+02	Mısır'dan Çıkış
+03	Levililer
+04	Çölde Sayım
+05	Yasa'nın Tekrarı
+06	Yeşu
+07	Hakimler
+08	Rut
+09	1 Samuel
+10	2 Samuel
+11	1 Krallar
+12	2 Krallar
+13	1 Tarihler
+14	2 Tarihler
+15	Ezra
+16	Nehemya
+17	Ester
+18	Eyüp
+19	Mezmurlar
+20	Süleyman'ın Özdeyişleri
+21	Vaiz
+22	Ezgiler Ezgisi
+23	Yeşaya
+24	Yeremya
+25	Ağıtlar
+26	Hezekiel
+27	Daniel
+28	Hoşea
+29	Yoel
+30	Amos
+31	Ovadya
+32	Yunus
+33	Mika
+34	Nahum
+35	Habakkuk
+36	Sefanya
+37	Hagay
+38	Zekeriya
+39	Malaki
+40	Matta
+41	Markos
+42	Luka
+43	Yuhanna
+44	Elçilerin İşleri
+45	Romalılar
+46	1 Korintliler
+47	2 Korintliler
+48	Galatyalılar
+49	Efesliler
+50	Filipililer
+51	Koloseliler
+52	1 Selanikiler
+53	2 Selanikiler
+54	1 Timoteos
+55	2 Timoteos
+56	Titus
+57	Filimon
+58	İbraniler
+59	Yakup
+60	1 Petrus
+61	2 Petrus
+62	1 Yuhanna
+63	2 Yuhanna
+64	3 Yuhanna
+65	Yahuda
+66	Vahiy

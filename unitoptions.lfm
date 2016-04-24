@@ -1,0 +1,86 @@
+object FormOptions: TFormOptions
+  Left = 1163
+  Height = 200
+  Top = 367
+  Width = 244
+  BorderStyle = bsDialog
+  Caption = 'Options'
+  ClientHeight = 200
+  ClientWidth = 244
+  Color = clBtnFace
+  OnActivate = FormActivate
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnPaint = FormPaint
+  ParentFont = True
+  Position = poScreenCenter
+  LCLVersion = '1.0.2.0'
+  object OKButton: TButton
+    Left = 88
+    Height = 20
+    Top = 160
+    Width = 80
+    AutoSize = True
+    Caption = 'OK'
+    Constraints.MaxWidth = 80
+    Constraints.MinWidth = 80
+    Default = True
+    ModalResult = 1
+    TabOrder = 0
+  end
+  object GroupBoxFont: TGroupBox
+    Left = 16
+    Height = 64
+    Top = 12
+    Width = 209
+    Caption = ' Font '
+    ClientHeight = 42
+    ClientWidth = 201
+    TabOrder = 1
+    object LabelFont: TLabel
+      Left = 14
+      Height = 17
+      Top = 13
+      Width = 62
+      Caption = 'LabelFont'
+      ParentColor = False
+    end
+    object ButtonFont: TButton
+      Left = 162
+      Height = 20
+      Top = 10
+      Width = 28
+      AutoSize = True
+      Caption = '...'
+      Constraints.MaxWidth = 28
+      OnClick = ButtonFontClick
+      TabOrder = 0
+    end
+  end
+  object GroupBoxTitles: TGroupBox
+    Left = 17
+    Height = 64
+    Top = 88
+    Width = 208
+    Caption = ' Text Option '
+    ClientHeight = 42
+    ClientWidth = 200
+    TabOrder = 2
+    object ComboBoxTitles: TComboBox
+      Left = 38
+      Height = 21
+      Top = 8
+      Width = 129
+      ItemHeight = 0
+      TabOrder = 0
+      Text = 'English'
+    end
+  end
+  object FontDialog: TFontDialog
+    MinFontSize = 0
+    MaxFontSize = 0
+    Options = []
+    left = 32
+    top = 144
+  end
+end

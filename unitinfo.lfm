@@ -1,0 +1,40 @@
+object InfoBox: TInfoBox
+  Left = 527
+  Height = 292
+  Top = 263
+  Width = 488
+  BorderStyle = bsDialog
+  Caption = 'Information'
+  ClientHeight = 292
+  ClientWidth = 488
+  Color = clBtnFace
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  OnActivate = FormActivate
+  OnCreate = FormCreate
+  Position = poScreenCenter
+  LCLVersion = '1.0.2.0'
+  object OKButton: TButton
+    Left = 208
+    Height = 20
+    Top = 256
+    Width = 80
+    AutoSize = True
+    Caption = 'OK'
+    Constraints.MinWidth = 80
+    Default = True
+    ModalResult = 1
+    TabOrder = 0
+  end
+  object Memo: TMemo
+    Left = 8
+    Height = 232
+    Top = 8
+    Width = 472
+    Color = clCream
+    ReadOnly = True
+    ScrollBars = ssVertical
+    TabOrder = 1
+  end
+end

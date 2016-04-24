@@ -1,0 +1,11 @@
+object FormTranslate: TFormTranslate
+  Left = 1116
+  Height = 240
+  Top = 474
+  Width = 320
+  Caption = 'Translation'
+  FormStyle = fsStayOnTop
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '1.4.0.4'
+end

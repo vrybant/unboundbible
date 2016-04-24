@@ -1,0 +1,83 @@
+﻿
+01	Génesis	Gn
+02	Éxodo	Ex
+03	Levítico	Lv
+04	Números	Nm
+05	Deuteronomio	Dt
+06	Josué	Jos
+07	Jueces	Jue
+08	Rut	Rt
+09	1 Samuel	1 S
+10	2 Samuel	2 S
+11	1 Reyes	1 R
+12	2 Reyes	2 R
+13	1 Crónicas	1 Cr
+14	2 Crónicas	2 Cr
+15	Esdras	Esd
+16	Nehemías	Neh
+17	Ester	Est
+18	Job	Job
+19	Salmos	Sal
+20	Proverbios	Pr
+21	Eclesiastés	Ec
+22	Cantar de los Cantares	Cnt
+23	Isaías	Is
+24	Jeremías	Jer
+25	Lamentaciones	Lm
+26	Ezequiel	Ez
+27	Daniel	Dan
+28	Oseas	Os
+29	Joel	Jl
+30	Amós	Am
+31	Abdías	Abd
+32	Jonás	Jon
+33	Miqueas	Mi
+34	Nahúm	Nah
+35	Habacuc	Hab
+36	Sofonías	Sof
+37	Hageo	Hag
+38	Zacarías	Zac
+39	Malaquías	Mal
+40	Mateo	Mt
+41	Marcos	Mr
+42	Lucas	Lc
+43	Juan	Jn
+44	Hechos	Hch
+45	Romanos	Ro
+46	1 Corintios	1 Co
+47	2 Corintios	2 Co
+48	Gálatas	Gá
+49	Efesios	Ef
+50	Filipenses	Fil
+51	Colosenses	Col
+52	1 Tesalonicenses	1 Ts
+53	2 Tesalonicenses	2 Ts
+54	1 Timoteo	1 Ti
+55	2 Timoteo	2 Ti
+56	Tito	Tit
+57	Filemón	Flm
+58	Hebreos	He
+59	Santiago	Stg
+60	1 Pedro	1 P
+61	2 Pedro	2 P
+62	1 Juan	1 Jn
+63	2 Juan	2 Jn
+64	3 Juan	3 Jn
+65	Judas	Jud
+66	Apocalipsis	Ap
+67	Tobías	Tob
+68	Judit	Jdt
+69	Ester-Gr	Esg
+70	Sabiduría de Salomón	Sab
+71	Eclesiástico	Ecc
+72	Baruc	Bar
+74	La Oración de Jeremías	Aza
+75	Susana	Sus
+76	Bel y el Dragón	Bel
+77	1 Macabeos	1 Mac
+78	2 Macabeos	2 Mac
+79	3 Macabeos	3 Mac
+80	4 Macabeos	4 Mac
+81	1 Esdras	1 Esd
+82	2 Esdras	2 Esd
+83	La Oración de Manasés	Man

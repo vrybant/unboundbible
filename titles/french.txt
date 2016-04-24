@@ -1,0 +1,83 @@
+﻿
+01	Genèse	Gen
+02	Exode	Ex
+03	Lévitique	Lév
+04	Nombres	Nom
+05	Deutéronome	Dt
+06	Josué	Jos
+07	Juges	Jug
+08	Ruth	Ruth
+09	1 Samuël	1Sam
+10	2 Samuël	2Sam
+11	1 Rois	1Ro
+12	2 Rois	2Ro
+13	1 Chroniques	1Chr
+14	2 Chroniques	2Chr
+15	Esdras	Esd
+16	Néhémie	Neh
+17	Esther	Est
+18	Job	Job
+19	Psaumes	Ps
+20	Proverbes	Prov
+21	Ecclésiaste	Eccl
+22	Cantique des Cantiques	Cant
+23	Esaïe	Esa
+24	Jérémie	Jér
+25	Lamentations	Lam
+26	Ezéchiel	Ezec
+27	Daniel	Dan
+28	Osée	Osée
+29	Joël	Joël
+30	Amos	Amos
+31	Abdias	Abd
+32	Jonas	Jon
+33	Michée	Mic
+34	Nahum	Nah
+35	Habaquq	Hab
+36	Sophonie	Soph
+37	Aggée	Agg
+38	Zacharie	Zach
+39	Malachie	Mal
+40	Matthieu	Mt
+41	Marc	Mc
+42	Luc	Lc
+43	Jean	Jn
+44	Actes	Act
+45	Romains	Rom
+46	1 Corinthiens	1Cor
+47	2 Corinthiens	2Cor
+48	Galates	Gal
+49	Ephésiens	Eph
+50	Philippiens	Phil
+51	Colossiens	Col
+52	1 Thessaloniciens	1Th
+53	2 Thessaloniciens	2Th
+54	1 Timothée	1Tim
+55	2 Timothée	2Tim
+56	Tite	Ti
+57	Philémon	Philé
+58	Hebreux	Heb
+59	Jacques	Jac
+60	1 Pierre	1Pie
+61	2 Pierre	2Pie
+62	1 Jean	1Jn
+63	2 Jean	2Jn
+64	3 Jean	3Jn
+65	Jude	Jude
+66	Apocalypse	Apo
+67	Tobit	Tb
+68	Judith	Jdt
+69	Esther-Gr	Esg
+70	Sagesse	Si
+71	Siracide	Ecc
+72	Baruch	Ba
+74	Prayer of Azariah	Aza
+75	Susanna	Sus
+76	Bel and the Dragon	Bel
+77	1 Maccabées	1M
+78	2 Maccabées	2M
+79	3 Maccabées	3M
+80	4 Maccabées	4M
+81	1 Esdras	1Es
+82	2 Esdras	2Es
+83	Prayer of Manasses	Man

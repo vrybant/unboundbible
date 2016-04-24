@@ -1,0 +1,83 @@
+﻿
+01	1 Mose	1Mo
+02	2 Mose	2Mo
+03	3 Mose	3Mo
+04	4 Mose	4Mo
+05	5 Mose	5Mo
+06	Josua	Jos
+07	Richter	Ri
+08	Ruth	Ruth
+09	1 Samuel	1Sam
+10	2 Samuel	2Sam
+11	1 Könige	1Kö
+12	2 Könige	2Kö
+13	1 Chronik	1Chr
+14	2 Chronik	2Chr
+15	Esra	Esra
+16	Nehemia	Neh
+17	Esther	Est
+18	Hiob	Hiob
+19	Psalter	Ps
+20	Sprüche	Spr
+21	Prediger	Pred
+22	Hohelied	Hl
+23	Jesaja	Jes
+24	Jeremia	Jer
+25	Klagelieder	Klg
+26	Hesekiel	Hes
+27	Daniel	Dan
+28	Hosea	Hos
+29	Joel	Joel
+30	Amos	Amos
+31	Obadja	Obad
+32	Jona	Jon
+33	Micha	Mi
+34	Nahum	Nah
+35	Habakuk	Hab
+36	Zephania	Zeph
+37	Haggai	Hag
+38	Sacharja	Sach
+39	Maleachi	Mal
+40	Matthäus	Mt
+41	Markus	Mk
+42	Lukas	Lk
+43	Johannes	Joh
+44	Apostelgeschichte	Apg
+45	Römer	Röm
+46	1 Korinther	1Kor
+47	2 Korinther	2Kor
+48	Galater	Gal
+49	Epheser	Eph
+50	Philipper	Phil
+51	Kolosser	Kol
+52	1 Thessalonicher	1Thess
+53	2 Thessalonicher	2Thess
+54	1 Timotheus	1Tim
+55	2 Timotheus	2Tim
+56	Titus	Tit
+57	Philemon	Phim
+58	Hebräer	Hebr
+59	Jakobus	Jak
+60	1 Petrus	1Petr
+61	2 Petrus	2Petr
+62	1 Johannes	1Joh
+63	2 Johannes	2Joh
+64	3 Johannes	3Joh
+65	Judas	Jud
+66	Offenbarung	Offb
+67	Tobias	Tob
+68	Judith	Jdt
+69	Esther-Gr	Esg
+70	Weisheit	Wis
+71	Ecclesiasticus	Ecc
+72	Baruch	Bar
+74	Prayer of Azariah	Aza
+75	Susanna	Sus
+76	Bel and the Dragon	Bel
+77	1 Makkabäer	1Ma
+78	2 Makkabäer	2Ma
+79	3 Makkabäer	3Ma
+80	4 Makkabäer	4Ma
+81	1 Esdras	1Es
+82	2 Esdras	2Es
+83	Prayer of Manasses	Man

@@ -1,0 +1,83 @@
+﻿
+01	Genesis	Gn
+02	Exodus	Ex
+03	Leviticus	Lv
+04	Numeri	Nu
+05	Deuteronomium	Dt
+06	Jozue	Joz
+07	Soudcù	Sd
+08	Rút	Rt
+09	1 Samuelova	1 S
+10	2 Samuelova	2 S
+11	1 Královská	1 Kr
+12	2 Královská	2 Kr
+13	1 Paralipomenon	1 Pa
+14	2 Paralipomenon	2 Pa
+15	Ezdráš	Ezd
+16	Nehemjáš	Neh
+17	Ester	Est
+18	Jób	Jb
+19	Žalmy	Ž
+20	Pøísloví	Pø
+21	Kazatel	Kaz
+22	Píseò písní	Pís
+23	Izajáš	Iz
+24	Jeremjáš	Jr
+25	Pláè	Pl
+26	Ezechiel	Ez
+27	Daniel	Da
+28	Ozeáš	Oz
+29	Jóel	Jl
+30	Ámos	Am
+31	Abdijáš	Abd
+32	Jonáš	Jon
+33	Micheáš	Mi
+34	Nahum	Na
+35	Abakuk	Abk
+36	Sofonjáš	Sf
+37	Ageus	Ag
+38	Zacharjáš	Za
+39	Malachiáš	Mal
+40	Matouš	Mt
+41	Marek	Mk
+42	Lukáš	L
+43	Jan	J
+44	Skutky apoštolské	Sk
+45	Øímanùm	Ø
+46	1 Korintským	1 K
+47	2 Korintským	2 K
+48	Galatským	Ga
+49	Efezským	Ef
+50	Filipským	Fp
+51	Koloským	Ko
+52	1 Tesalonickým	1 Te
+53	2 Tesalonickým	2 Te
+54	1 Timoteovi	1 Tm
+55	2 Timoteovi	2 Tm
+56	Titovi	Tt
+57	Filemonovi	Fm
+58	Židùm	Žd
+59	Jakubùv	Jk
+60	1 Petrùv	1 Pt
+61	2 Petrùv	2 Pt
+62	1 Janùv	1 J
+63	2 Janùv	2 J
+64	3 Janùv	3 J
+65	Judùv	Ju
+66	Zjevení Janovo	Zj
+67	Tóbijáš	Tob
+68	Júdit	Júd
+69	Ester-Gr	Esg
+70	Moudrost	Mdr
+71	Sírachovec	Sír
+72	Báruk	Bár
+74	Azarjášova modlitba	Az
+75	Zuzana	Zuz
+76	Bél a drak	Bél
+77	1 Makabejští	1 Mak
+78	2 Makabejští	2 Mak
+79	3 Makabejští	3 Mak
+80	4 Makabejští	4 Mak
+81	1 Ezdráš	1 Ezd
+82	2 Ezdráš	2 Ezd
+83	Menašeova modlitba	Men

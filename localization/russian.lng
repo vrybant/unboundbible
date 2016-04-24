@@ -1,0 +1,106 @@
+
+****************************************************************************
+*                                                                          *
+*             Unbound Bible Tools - International Support File             *
+*                                                                          *
+****************************************************************************
+*                                                                          *
+*   Вы можете сделать перевод интерфейса программы на Ваш родной язык.     *
+*   Просто используйте этот файл как шаблон для перевода.                  *  
+*   Пожалуйста, вышлите новый файл разработчику программы для того,        *
+*   чтобы сделать его доступным и другим людям.                            *
+*                                                                          *
+****************************************************************************
+
+[Interface]
+
+Menu.Tools        = Сервис
+Menu.Edit         = Правка
+Menu.Bible        = Библия
+Menu.Notes        = Блокнот
+Menu.Help         = Справка
+Menu.Search       = Поиск
+Menu.Compare      = Сравнение
+Menu.Translate    = Перевод
+Menu.Print        = Печать
+Menu.Font         = Шрифт
+Menu.Options      = Настройки
+Menu.Charset      = Кодировка
+Menu.Localization = Интерфейс
+Menu.LangEdit     = Редактор языков
+Menu.Exit         = Выход
+Menu.Undo         = Отменить
+Menu.Cut          = Вырезать
+Menu.Copy         = Копировать
+Menu.Paste        = Вставить
+Menu.Clear        = Очистить
+Menu.SelectAll    = Выделить все
+Menu.CopyAs       = Копировать как...
+Menu.Verses       = Копировать стихи
+Menu.New          = Создать
+Menu.Open         = Открыть...
+Menu.Save         = Сохранить
+Menu.SaveAs       = Сохранить как...
+Menu.Reopen       = История
+Menu.Info         = Информация
+Menu.Manual       = Документация
+Menu.Download     = Скачать Библию
+Menu.HomePage     = Сайт программы
+Menu.BibleFolder  = Библейская папка
+Menu.About        = О программе
+
+Main.OT           = ВЗ
+Main.NT           = НЗ
+Main.ALL          = Все
+Main.FontName     = Шрифт
+Main.FontSize     = Размер
+Main.Bold         = Полужирный
+Main.Italic       = Курсив
+Main.Underline    = Подчеркнутый
+Main.Link         = Ссылка
+Main.Left         = По левому краю
+Main.Center       = По центру
+Main.Right        = По правому краю
+Main.Bullets      = Маркеры
+
+Button.OK         = OK
+Button.Apply      = Применить
+Button.Cancel     = Отменить
+
+Search.Caption    = Поиск по Библии
+Search.Type       = Тип поиска
+Search.Range      = Область поиска
+Search.Options    = Параметры
+Search.Any        = Любое слово
+Search.Every      = Каждое слово
+Search.Phrase     = Фраза
+Search.Entire     = Вся Библия
+Search.Old        = Ветхий Завет
+Search.New        = Новый Завет
+Search.Gospels    = Евангелия
+Search.Epistles   = Послания
+Search.Current    = Открытая книга
+Search.Whole      = Слово целиком
+Search.Case       = Регистр
+Search.Button     = Искать
+
+Options.Caption     = Настройки
+Options.TextOptions = Настройки текста
+Options.Language    = Язык
+Options.Abbreviate  = Короткие ссылки
+
+Verses.Caption     = Копировать как...
+Verses.Options     = Настройки
+Verses.Format      = Формат
+Verses.Abbr        = Короткая ссылка
+Verses.Brackets    = Круглые скобки
+Verses.End         = Ссылка в конце
+
+Compare.Caption   = Модули
+
+Message.Save      = Сохранить изменения?
+Message.OverWrite = Перезаписать файл %s?
+Message.Loading   = Загружаю
+Message.Found     = найдено стихов
+Message.Link      = Нажмите CTRL и щелкните ссылку
+Message.Confirm   = Подтверждение

@@ -1,0 +1,106 @@
+﻿
+****************************************************************************
+*                                                                          *
+*           The Unbound Bible Tools - International Support File           *
+*                                                                          *
+****************************************************************************
+*                                                                          *
+*   You can easily translate interface to your native language.            *
+*   Just use this file as template for translation.                        *
+*   After that, please send the new file to software developer             *
+*   to make it available for everyone.                                     *
+*                                                                          *
+****************************************************************************
+
+[Interface]
+
+Menu.Tools        = Työkalut
+Menu.Edit         = Muokkaa
+Menu.Bible        = Raamattu
+Menu.Notes        = Muistiinpanot
+Menu.Help         = Ohje
+Menu.Search       = Etsi...
+Menu.Compare      = Vertaa...
+Menu.Translate    = Käännös
+Menu.Print        = Tulosta
+Menu.Font         = Oletus Fontti
+Menu.Options      = Asetukset
+Menu.Charset      = Encoding
+Menu.Localization = Käyttöliittymän kieli
+Menu.LangEdit     = Language Editor
+Menu.Exit         = Lopeta
+Menu.Undo         = Kumoa
+Menu.Cut          = Leikkaa
+Menu.Copy         = Kopioi
+Menu.Paste        = Liitä
+Menu.Clear        = Tyhjennä 
+Menu.SelectAll    = Valitse kaikki
+Menu.CopyAs       = Kopioi...
+Menu.Verses       = Kopioi jakeet
+Menu.New          = Uusi
+Menu.Open         = Avaa...
+Menu.Save         = Tallenna
+Menu.SaveAs       = Tallenna nimellä...
+Menu.Reopen       = Avaa uudelleen
+Menu.Info         = Informaatio
+Menu.Manual       = Manuaalinen
+Menu.Download     = Raamattujen lataussivu
+Menu.HomePage     = Verkkosivu
+Menu.BibleFolder  = Raamattu kansio
+Menu.About        = Tietoja...
+
+Main.OT           = VT
+Main.NT           = UT
+Main.ALL          = Kaikki
+Main.FontName     = Font name
+Main.FontSize     = Font size
+Main.Bold         = Bold
+Main.Italic       = Italic
+Main.Underline    = Underline
+Main.Link         = Link
+Main.Left         = Align Left
+Main.Center       = Center
+Main.Right        = Align Right
+Main.Bullets      = Bullets
+
+Button.OK         = OK
+Button.Apply      = Käytä
+Button.Cancel     = Peruuta
+
+Search.Caption    = Raamattu haku
+Search.Type       = Hakutyyppi
+Search.Range      = Hakualue
+Search.Options    = Lisävalinnat
+Search.Any        = Jokin sanoista
+Search.Every      = Kaikki sanat
+Search.Phrase     = Lause
+Search.Entire     = Koko Raamattu
+Search.Old        = Vanha Testamentti
+Search.New        = Uusi Testamentti
+Search.Gospels    = Evankeliumit
+Search.Epistles   = Kirjeet
+Search.Current    = Tämänkertainen kirja
+Search.Whole      = Kokonainen sana
+Search.Case       = Sama kirjainkoko
+Search.Button     = Etsi
+
+Options.Caption     = Asetukset
+Options.TextOptions = Teksti asetukset
+Options.Language    = Kieli
+Options.Abbreviate  = Lyhennä kirjan nimet
+
+Verses.Caption     = Kopioi jakeet
+Verses.Options     = Options
+Verses.Format      = Format
+Verses.Abbr        = Abbreviate book names
+Verses.Brackets    = Round brackets
+Verses.End         = Link in the end
+
+Compare.Caption   = Vertailuvalinnat
+
+Message.Save      = Save changes?
+Message.OverWrite = OK to overwrite %s?
+Message.Loading   = Loading
+Message.Found     = verses found
+Message.Link      = Paina CTRL ja klikkaa linkkiä
+Message.Confirm   = Confirmation
