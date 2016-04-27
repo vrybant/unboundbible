@@ -20,7 +20,7 @@ type
 
 const
   AppName = 'Unbound Bible Tools';
-  VersionInfo = '1.0';
+  VersionInfo = '1.01';
   {$ifdef unix} RussianEdition = False{True}; {$endif}
 
 const

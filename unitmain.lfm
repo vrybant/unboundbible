@@ -2798,7 +2798,7 @@ object MainForm: TMainForm
     end
   end
   object OpenDialog: TOpenDialog
-    Filter = 'Rich Text Files (*.RTF)|*.RTF'
+    Filter = 'Rich Text Files (*.rtf)|*.rtf'
     left = 240
     top = 104
   end
@@ -2809,7 +2809,7 @@ object MainForm: TMainForm
     top = 160
   end
   object SaveDialog: TSaveDialog
-    Filter = 'Rich Text Files (*.RTF)|*.RTF'
+    Filter = 'Rich Text Files (*.rtf)|*.rtf'
     Options = [ofHideReadOnly, ofEnableSizing, ofViewDetail]
     left = 320
     top = 216

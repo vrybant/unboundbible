@@ -1,9 +1,9 @@
 ﻿; -- Verse.iss --
 
 [Setup]
- AppName=Unbound Bible Tools 1.0
- AppVerName=Unbound Bible Tools 1.0
- AppVersion=1.0
+ AppName=Unbound Bible Tools 1.01
+ AppVerName=Unbound Bible Tools 1.01
+ AppVersion=1.01
  AppCopyright=GNU GPL 
  AppPublisher=Vladimir Rybant 
  AppPublisherURL=http://vladimirrybant.org

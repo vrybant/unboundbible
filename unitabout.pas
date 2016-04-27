@@ -43,12 +43,14 @@ end;
 procedure TAboutBox.Translate;
 begin
   Caption := ' ' + T('Menu.About');
-//OKButton.Caption := T('Button.OK');
 
-//  if FaceLang = 'russian' then Exit;
-
-  LabelVersion.Caption := 'Version 1.0';
+  LabelVersion.Caption := 'Version' + ' ' + VersionInfo;
   LabelTeam.Caption := ' Developer: Vladimir Rybant ';
+
+  if FaceLang <> 'russian' then Exit;
+
+  LabelVersion.Caption := 'Версия'  + ' ' + VersionInfo;
+  LabelTeam.Caption := ' Разработка: Владимир Рыбант';
 end;
 
 procedure TAboutBox.ImageFacebookClick(Sender: TObject);

@@ -9,7 +9,7 @@ object AboutBox: TAboutBox
   Color = clWhite
   OnCreate = FormCreate
   Position = poDesktopCenter
-  LCLVersion = '1.4.0.4'
+  LCLVersion = '1.4.4.0'
   object LabelName: TLabel
     Left = 176
     Height = 21
@@ -37,11 +37,11 @@ object AboutBox: TAboutBox
     ParentFont = False
   end
   object LabelVersion: TLabel
-    Left = 229
+    Left = 227
     Height = 13
     Top = 65
-    Width = 54
-    Caption = 'Версия 1.0'
+    Width = 60
+    Caption = 'Версия 1.01'
     Font.CharSet = RUSSIAN_CHARSET
     Font.Color = clBlack
     Font.Height = -11

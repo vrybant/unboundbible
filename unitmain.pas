@@ -263,7 +263,7 @@ const
 
 procedure TMainForm.AcceptBible;
 begin
-  Caption := Bible.Name + ' - ' + AppName + ' ' + VersionInfo;
+  Caption := Bible.Name + ' - ' + AppName; // + ' ' + VersionInfo;
   StatusBar.Panels[3].Text := ' ' + Bible.Copyright;
 end;
 
@@ -1109,9 +1109,9 @@ begin
                 Translate;
   FormOptions  .Translate;
   SearchForm   .Translate;
+  AboutBox     .Translate;
   CompareForm  .Translate;
   InfoBox      .Translate;
-  AboutBox     .Translate;
   FormCopy     .Translate;
   FormTranslate.Translate;
 

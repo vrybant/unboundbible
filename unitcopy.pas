@@ -1,6 +1,6 @@
 unit UnitCopy;
 
-{$mode objfpc}{$H+}
+{$H+}
 
 interface
 
