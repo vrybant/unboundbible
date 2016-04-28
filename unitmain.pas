@@ -244,7 +244,6 @@ var
 implementation
 
 uses
-  {$ifdef mswindows} UnitAttr, {$endif}
   UnitAbout, UnitInfo, UnitSearch, UnitCompare, UnitTool, UnitOptions,
   UnitLib, UnitLang, UnitShelf, UnitCopy, UnitTrans;
 
@@ -339,19 +338,26 @@ begin
 end;
 
 procedure TMainForm.CmdStyle2(Sender: TObject);
-{$ifdef mswindows} var fp: TFontParams; {$endif}
+var
+  ParaNumbering : TParaNumbering;
 begin
   {$ifdef mswindows}
-  fp := RichEditNotes.SelAttributes;
+  with RichEditNotes do
+    begin
+      if Sender = ActionLeft    then SetParaAlignment(SelStart, SelLength, paLeft   );
+      if Sender = ActionCenter  then SetParaAlignment(SelStart, SelLength, paCenter );
+      if Sender = ActionRight   then SetParaAlignment(SelStart, SelLength, paRight  );
 
-  if Sender = ActionLeft   then RichEditNotes.Paragraph.Alignment := TAlignment(0);
-  if Sender = ActionCenter then RichEditNotes.Paragraph.Alignment := TAlignment(2);
-  if Sender = ActionRight  then RichEditNotes.Paragraph.Alignment := TAlignment(1);
+      if Sender = ActionBullets then
+        begin
+          GetParaNumbering(SelStart, ParaNumbering );
+          if ToolButtonBullets.Down
+            then ParaNumbering.Style := pnBullet
+            else ParaNumbering.Style := pnNone;
+          SetParaNumbering(SelStart, SelLength, ParaNumbering );
+        end;
+    end;
 
-  if Sender = ActionBullets then
-    RichEditNotes.Paragraph.Numbering := TNumberingStyle(ToolButtonBullets.Down);
-
-  RichEditNotes.SelAttributes := fp;
   RichEditNotes.Repaint;
   {$endif}
 end;
@@ -822,6 +828,8 @@ begin
 end;
 
 procedure TMainForm.UpDownButtons;
+var
+  ParaNumbering : TParaNumbering;
 begin
   if PageControl.ActivePageIndex <> apNotes then Exit;
 
@@ -834,13 +842,14 @@ begin
 
       {$ifdef mswindows}
 
-      ToolButtonBullets.Down := boolean(Paragraph.Numbering);
-
-      case Ord(Paragraph.Alignment) of
-        0: ToolButtonLeft.Down := True;
-        1: ToolButtonRight.Down := True;
-        2: ToolButtonCenter.Down := True;
+      case GetParaAlignment(SelStart) of
+        paLeft: ToolButtonLeft.Down := True;
+        paRight: ToolButtonRight.Down := True;
+        paCenter: ToolButtonCenter.Down := True;
       end;
+
+      GetParaNumbering(SelStart, ParaNumbering );
+      ToolButtonBullets.Down := ParaNumbering.Style = pnBullet;
 
       {$endif}
 
@@ -1109,9 +1118,9 @@ begin
                 Translate;
   FormOptions  .Translate;
   SearchForm   .Translate;
-  AboutBox     .Translate;
   CompareForm  .Translate;
   InfoBox      .Translate;
+  AboutBox     .Translate;
   FormCopy     .Translate;
   FormTranslate.Translate;
 

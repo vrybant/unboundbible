@@ -5,13 +5,12 @@ unit UnitMemo;
 interface
 
 uses
-  {$ifdef mswindows} Windows, UnitAttr, Printers, OSPrinters, {$endif}
+  {$ifdef mswindows} Windows, Printers, OSPrinters, {$endif}
   Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo;
 
 type
   TRichMemoEx = class(TRichMemo)
   private
-    {$ifdef mswindows} FParagraph: TParaAttributes; {$endif}
     FOnSelChange: TNotifyEvent;
     function  GetAttributes: TFontParams;
     procedure SetAttributes(const value: TFontParams);
@@ -43,7 +42,6 @@ type
     {$ifdef mswindows} procedure Print(const Caption: string); {$endif}
     property SelAttributes: TFontParams read GetAttributes write SetAttributes;
     property OnSelectionChange: TNotifyEvent read FOnSelChange write FOnSelChange;
-    {$ifdef mswindows} property Paragraph: TParaAttributes read FParagraph; {$endif}
     {$ifdef mswindows} property Modified: boolean read GetModified write SetModified; {$endif}
   end;
 
@@ -68,20 +66,14 @@ const
    EM_GETTEXTLENGTHEX = WM_USER + 95;
 {$endif}
 
-//=================================================================================================
-//                                     TRichMemoEx
-//=================================================================================================
-
 constructor TRichMemoEx.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  {$ifdef mswindows} FParagraph := TParaAttributes.Create(Self); {$endif}
   {$ifdef unix} Modified := False; {$endif}
 end;
 
 destructor TRichMemoEx.Destroy;
 begin
-  {$ifdef mswindows} FParagraph.Free; {$endif}
   inherited Destroy;
 end;
 
@@ -285,6 +277,7 @@ begin
     end;
   end;
 end;
+
 {$endif}
 
 end.
