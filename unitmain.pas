@@ -997,13 +997,11 @@ begin
 end;
 
 procedure TMainForm.CmdFilePrint(Sender: TObject);
+var
+  prm : TPrintParams;
 begin
-  {$ifdef mswindows}
-  if PrintDialog.Execute then RichEdit.Print(NoteFileName);
-  {$else}
-  RichEdit.SaveToFile(TempFileName);
-  PrintFile(TempFileName);
-  {$endif}
+  InitPrintParams(prm);
+  if PrintDialog.Execute then RichEdit.Print(prm);
 end;
 
 procedure TMainForm.CmdExit(Sender: TObject);

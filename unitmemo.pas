@@ -32,14 +32,12 @@ type
     function LoadRichText(Source: TStream): Boolean; override;
     function CanUndo: boolean;
     function CanPaste: boolean;
-    {$ifdef mswindows} function GetTextLenEx: integer; {$endif}
     procedure HideCursor;
     procedure SetSel(x1,x2: integer);
     procedure GetSel(var x1,x2: integer);
     procedure SelectAll; // override;
     procedure LoadFromFile(const FileName : string);
     procedure SaveToFile(const FileName : string);
-    {$ifdef mswindows} procedure Print(const Caption: string); {$endif}
     property SelAttributes: TFontParams read GetAttributes write SetAttributes;
     property OnSelectionChange: TNotifyEvent read FOnSelChange write FOnSelChange;
     {$ifdef mswindows} property Modified: boolean read GetModified write SetModified; {$endif}
@@ -50,21 +48,6 @@ implementation
 
 uses
   LCLProc; // UTF8Length()
-
-{$ifdef mswindows}
-type
-  GETTEXTLENGTHEX = record
-    flags : DWORD;
-    codepage : UINT;
-  end;
-
-TGetTextLengthEx = GETTEXTLENGTHEX;
-
-const
-   GTL_DEFAULT  = 0;
-   CP_ACP = 0;
-   EM_GETTEXTLENGTHEX = WM_USER + 95;
-{$endif}
 
 constructor TRichMemoEx.Create(AOwner: TComponent);
 begin
@@ -219,66 +202,6 @@ begin
   Stream.SaveToFile(Utf8Decode(FileName));
   Stream.Free;
 end;
-
-{$ifdef mswindows}
-
-function TRichMemoEx.GetTextLenEx: integer;
-var
-  TextLengthEx : TGetTextLengthEx;
-begin
-  TextLengthEx.flags := GTL_DEFAULT;
-  TextLengthEx.codepage := CP_ACP;
-  Result := SendMessage(Self.Handle, EM_GETTEXTLENGTHEX, {%H-}WParam(@TextLengthEx), 0);
-end;
-
-// 1 точка = 1/72 дюйма = 20 твипов
-// 1 дюйм = 72 пункта = 1440 твипов
-// 1 сантиметр = 567 твипов
-
-procedure TRichMemoEx.Print(const Caption: string);
-var
-  Range: TFormatRange;
-  LastChar, MaxLen, LogX, LogY, OldMap: integer;
-  SaveRect: TRect;
-const
-  Margin = Round(2 * 567); // 2 sm
-begin
-  FillChar(Range, SizeOf(TFormatRange), 0);
-  with Printer, Range do
-  begin
-    Title := Caption;
-    BeginDoc;
-    _hdc := TWinPrinter(Printer).Handle;
-    hdcTarget := _hdc;
-    LogX := GetDeviceCaps(_hdc, LOGPIXELSX); // Printer.XDPI; // PixelsPerInch
-    LogY := GetDeviceCaps(_hdc, LOGPIXELSY); // Printer.YDPI;
-    rc.left:= Margin;
-    rc.top := Margin;
-    rc.right  := PageWidth  * 1440 div LogX - Margin; // PageWidth  - the width in pixels
-    rc.bottom := PageHeight * 1440 div LogY - Margin; // PageHeight - the height in pixels
-    rcPage := rc;
-    SaveRect := rc;
-    LastChar := 0;
-    MaxLen := GetTextLenEx;
-    OldMap := SetMapMode(_hdc, MM_TEXT); // ensure printer DC is in text map mode
-    SendMessage(Self.Handle, EM_FORMATRANGE, 0, 0); // flush buffer
-    try
-      repeat
-        rc := SaveRect;
-        chrg.cpMin := LastChar;
-        chrg.cpMax := -1;
-        LastChar := SendMessage(Self.Handle, EM_FORMATRANGE, 1, {%H-}Longint(@Range));
-        if (LastChar < MaxLen) and (LastChar <> -1) then NewPage;
-      until (LastChar >= MaxLen) or (LastChar = -1);
-      EndDoc;
-    finally
-      SendMessage(Self.Handle, EM_FORMATRANGE, 0, 0); // flush buffer
-      SetMapMode(_hdc, OldMap); // restore previous map mode
-    end;
-  end;
-end;
-
-{$endif}
 
 end.
 
