@@ -64,7 +64,7 @@ function IniFileName : WideString;
 function TempFileName: WideString;
 
 procedure CreateDirectories;
-procedure PrintFile(FileName : string);
+{$ifdef darwin} procedure PrintFile(FileName : string); {$endif}
 procedure OpenFolder(path : string);
 
 var
@@ -443,12 +443,12 @@ begin
 end;
 {$endif}
 
+{$ifdef darwin}
 procedure PrintFile(filename : string);
 begin
   with TProcess.Create(nil) do
   try
-    {$ifdef mswindows} CommandLine {%H-}:= 'print ' + marks(filename); {$endif}
-       {$ifdef darwin} CommandLine {%H-}:=    'lp ' + marks(filename); {$endif}
+    CommandLine {%H-}:=    'lp ' + marks(filename);
     Options := [poUsePipes]; // poWaitOnExit
     try
       Execute;
@@ -459,6 +459,7 @@ begin
     Free;
   end;
 end;
+{$endif}
 
 {$ifdef mswindows}
 procedure OpenFolder(path : string);
