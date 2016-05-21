@@ -41,7 +41,7 @@ object MainForm: TMainForm
       ParentShowHint = False
     end
     object ToolSeparator2: TToolButton
-      Left = 238
+      Left = 266
       Height = 28
       Top = 0
       Width = 10
@@ -76,7 +76,7 @@ object MainForm: TMainForm
       Action = ActionSearch
     end
     object ToolSeparator3: TToolButton
-      Left = 388
+      Left = 416
       Height = 28
       Top = 0
       Width = 10
@@ -84,27 +84,27 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButtonCut: TToolButton
-      Left = 248
+      Left = 276
       Top = 0
       Action = ActionEditCut
     end
     object ToolButtonCopy: TToolButton
-      Left = 276
+      Left = 304
       Top = 0
       Action = ActionEditCopy
     end
     object ToolButtonPaste: TToolButton
-      Left = 332
+      Left = 360
       Top = 0
       Action = ActionEditPaste
     end
     object ToolButtonUndo: TToolButton
-      Left = 360
+      Left = 388
       Top = 0
       Action = ActionEditUndo
     end
     object ToolSeparator4: TToolButton
-      Left = 538
+      Left = 566
       Height = 28
       Top = 0
       Width = 10
@@ -120,7 +120,7 @@ object MainForm: TMainForm
       ShowHint = True
     end
     object ToolSeparator5: TToolButton
-      Left = 632
+      Left = 660
       Height = 28
       Top = 0
       Width = 10
@@ -130,31 +130,31 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButtonBold: TToolButton
-      Left = 426
+      Left = 454
       Top = 0
       Action = ActionBold
       Style = tbsCheck
     end
     object ToolButtonItalic: TToolButton
-      Left = 454
+      Left = 482
       Top = 0
       Action = ActionItalic
       Style = tbsCheck
     end
     object ToolButtonUnderline: TToolButton
-      Left = 482
+      Left = 510
       Top = 0
       Action = ActionUnderline
       Style = tbsCheck
     end
     object ToolButtonLink: TToolButton
-      Left = 510
+      Left = 538
       Top = 0
       Action = ActionLink
       Style = tbsCheck
     end
     object ToolButtonLeft: TToolButton
-      Left = 548
+      Left = 576
       Top = 0
       Action = ActionLeft
       Grouped = True
@@ -162,7 +162,7 @@ object MainForm: TMainForm
     end
     object ToolButtonCenter: TToolButton
       Tag = 2
-      Left = 576
+      Left = 604
       Top = 0
       Action = ActionCenter
       Grouped = True
@@ -170,25 +170,25 @@ object MainForm: TMainForm
     end
     object ToolButtonRight: TToolButton
       Tag = 1
-      Left = 604
+      Left = 632
       Top = 0
       Action = ActionRight
       Grouped = True
       Style = tbsCheck
     end
     object ToolButtonBullets: TToolButton
-      Left = 642
+      Left = 670
       Top = 0
       Action = ActionBullets
       Style = tbsCheck
     end
     object ToolButtonFont: TToolButton
-      Left = 398
+      Left = 426
       Top = 0
       Action = ActionFont
     end
     object ToolButtonVerses: TToolButton
-      Left = 304
+      Left = 332
       Top = 0
       Action = ActionCopyVerses
       ParentShowHint = False
@@ -207,6 +207,12 @@ object MainForm: TMainForm
       Top = 0
       Action = ActionTrans
       ImageIndex = 35
+    end
+    object ToolButtonOnline: TToolButton
+      Left = 238
+      Top = 0
+      Action = ActionOnline
+      ImageIndex = 37
     end
   end
   object PanelLeft: TPanel
@@ -1134,7 +1140,7 @@ object MainForm: TMainForm
     left = 320
     top = 104
     Bitmap = {
-      4C69250000001000000010000000FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      4C69260000001000000010000000FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00E2C39FFFD69F63FFCE904CFFCC8F48FFCE9958FFDBBE99FFFF00FF00FF00
@@ -2318,7 +2324,39 @@ object MainForm: TMainForm
       48FFA36248FFA36248FFA36248FFFFFFFFFFFFFFFFFFA36248FFA36248FFA362
       48FFA36248FFB17E6BFFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-      FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FDFFFFFFC0A593FFA87E60FFEBE7E4FFFFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00C7B1A2FFA57959FFE4DDD9FFFFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00C0A592FFAB7F5EFFA5744FFFBD9E88FFFEFE
+      FEFFFFFFFF00FFFFFF00FFFFFF00E6DCD6FFA77957FFA57450FFB7937AFFFCFB
+      FBFFFFFFFF00FFFFFF00FFFFFF00A87F61FFA57450FFA36F49FFB18A6EFFFFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00DACBC1FFA06D47FFA4724CFFA87B5AFFF9F7
+      F7FFFFFFFF00FFFFFF00FFFFFF00E9E3E0FFBD9E88FFB0886BFFBA9D88FFF2ED
+      E9FFFFFFFF00FFFFFF00FFFFFF00FBFAFAFFB49178FFAA8062FFD6C5BAFFFEFF
+      FFFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FEFFFFFFF1ECE9FFBFA4
+      92FFF0EAE6FFFFFFFF00FFFFFF00F6F4F4FFCBBAB0FFFBFDFEFFFFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00F0EA
+      E7FFC7B1A2FFCEB9ACFFB69279FFAC8264FFC6AE9EFFFFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00D1BEB1FF9C673FFFA67551FFA77753FFA26F4AFFD5C4B8FFFFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FEFF
+      FFFFB59177FFA67551FFAB7D5BFFAB7D5BFFA6744FFFB38E74FFFFFFFF00F5F3
+      F1FFCEB6A5FFDBCBC0FFFDFFFFFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00B8957CFFA67450FFAB7D5BFFAB7D5BFFA97855FFAA8062FFCDBDB2FFB48F
+      75FF9F6B44FFA47350FFC0A693FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00BEA390FF9E6A44FFA67550FFA67551FFA3714DFFD5C5B9FFF1EDEBFFAB81
+      63FFA37049FFA4734EFFAF896EFFFFFFFF00FBFBFBFFF7F4F3FFF8F7F7FFC5AE
+      9EFFD7C8BEFFD7C7BCFFB59075FFB28B6FFFBCA08CFFFFFFFF00FFFFFF00E1D5
+      CEFFB08A6EFFC0A38EFFEEEBE9FFDED3CDFFB48E74FFAA7D5CFFB5957EFFE1D7
+      D0FFFFFFFF00FFFFFF00FFFFFF00FEFFFFFFD0C1B7FFE9E4E0FFFFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00A57858FFA67551FFA5724DFFAE8567FFFFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00DCCFC7FFA57857FFB7957DFFEFEA
+      E7FFFFFFFF00FFFFFF00FFFFFF00C9B4A6FFA87B5BFF9E6943FFC2A793FFFEFE
+      FEFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00B7947BFFA3704AFF9E6840FFC9AE
+      9BFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00EAE3DEFFDFD2C9FFFCFCFDFFFFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00C4AA97FFA4724DFFA4734FFFD6C4
+      B8FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00F4F3F3FFB18D73FFBDA08CFFFCFE
+      FFFFFFFFFF00FFFFFF00FFFFFF00
     }
   end
   object PopupMenu: TPopupMenu
@@ -2795,6 +2833,10 @@ object MainForm: TMainForm
     object ActionTrans: TAction
       Caption = 'CmdTrans'
       OnExecute = CmdTrans
+    end
+    object ActionOnline: TAction
+      Caption = 'CmdOnline'
+      OnExecute = CmdOnlineExecute
     end
   end
   object OpenDialog: TOpenDialog

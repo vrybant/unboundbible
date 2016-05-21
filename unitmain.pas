@@ -15,6 +15,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ActionOnline: TAction;
     miTranslate: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
@@ -23,6 +24,7 @@ type
     MenuItem3: TMenuItem;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
+    ToolButtonOnline: TToolButton;
     ToolButtonTrans: TToolButton;
     ToolSeparator1: TToolButton;
     ToolButtonVerses: TToolButton;
@@ -148,6 +150,7 @@ type
     ToolButtonRight: TToolButton;
     ToolButtonBullets: TToolButton;
 
+    procedure CmdOnlineExecute(Sender: TObject);
     procedure CmdCompare(Sender: TObject);
     procedure CmdOptions(Sender: TObject);
     procedure CmdStyle(Sender: TObject);
@@ -384,6 +387,11 @@ procedure TMainForm.CmdCompare(Sender: TObject);
 begin
   CompareForm.ShowModal;
   LoadCompare;
+end;
+
+procedure TMainForm.CmdOnlineExecute(Sender: TObject);
+begin
+  //
 end;
 
 procedure TMainForm.CmdEdit(Sender: TObject);
