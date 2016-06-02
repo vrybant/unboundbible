@@ -35,7 +35,6 @@ uses UnitLib, UnitLang;
 procedure TAboutBox.FormCreate(Sender: TObject);
 begin
   {$ifdef darwin}
-  OKButton.Visible := False;
   Height := 210;
   {$endif}
 end;

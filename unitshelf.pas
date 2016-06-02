@@ -23,8 +23,6 @@ type
     Title  : string;
     Abbr   : string;
     Number : integer;
-    start  : integer;
-    finish : integer;
     constructor Create;
   end;
 

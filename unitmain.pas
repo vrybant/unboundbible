@@ -836,8 +836,7 @@ begin
 end;
 
 procedure TMainForm.UpDownButtons;
-var
-  ParaNumbering : TParaNumbering;
+{$ifdef mswindows} var ParaNumbering : TParaNumbering; {$endif}
 begin
   if PageControl.ActivePageIndex <> apNotes then Exit;
 
@@ -1479,12 +1478,12 @@ end;
 {$ifdef unix}
 procedure TMainForm.VersesToClipboard;
 var
-  RichEditPreview : TRichMemoPlus;
+  RichEditPreview : TRichMemo;
   Stream: TMemoryStream;
   n1,n2 : integer;
 begin
   Stream := TMemoryStream.Create;
-  RichEditPreview := TRichMemoPlus.Create(self);
+  RichEditPreview := TRichMemo.Create(self);
 
   with RichEditPreview do
     begin
@@ -1496,7 +1495,10 @@ begin
     end;
 
   RichEditBible.GetRange(n1, n2);
-  Load_Verses(Stream,n1,n2);
+  Verse.Verse := n1;
+  Verse.Range := n2;
+  Load_Verses(Stream);
+
   RichEditPreview.LoadRichText(Stream);
   RichEditPreview.SelectAll;
   RichEditPreview.CopyToClipboard;
