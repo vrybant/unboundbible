@@ -312,7 +312,7 @@ var
   TitleList : TStringList;
           f : System.Text;
        Path : WideString;
-    Longest : string;
+    anyline : string;
         s,p : string;
         Num : integer;
         i,n : integer;
@@ -326,7 +326,7 @@ begin
   TitleList := TStringList.Create;
 
   Num := 0;
-  Longest := '';
+  anyline := '';
   while not eof(f) do
     begin
       Readln(f,s);
@@ -349,10 +349,10 @@ begin
               Book.Title  := IntToStr(n);
               Book.Abbr   := IntToStr(n);
               Add(Book);
+              anyline := s;
               Num := n;
             end;
           if Book <> nil then Book.Add(s);
-          if Length(s) > Length(Longest) then Longest := s;
         end;
     end;
 
@@ -365,8 +365,8 @@ begin
   //----------- automatic file type detection ---------------
 
   if ssText = 0 then
-    for i:=1 to Length(Longest) do
-      if Longest[i]=chr(09) then inc(ssText);
+    for i:=1 to Length(anyline) do
+      if anyline[i]=chr(09) then inc(ssText);
 
   //---------------------------------------------------------
 
