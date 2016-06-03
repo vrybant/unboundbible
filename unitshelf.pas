@@ -50,7 +50,7 @@ type
     OldTestament : boolean;     // Flags
     NewTestament : boolean;
     Apocrypha    : boolean;
-    ssText       : byte;
+    ssText       : integer;
     Loaded       : boolean;
   private
     { Private declarations }
@@ -239,6 +239,7 @@ begin
   Copyright    := '';
   Language     := '';
   Filetype     := '';
+  ssText       :=  0;
   Loaded       := False;
 
   OldTestament := False;
@@ -298,13 +299,6 @@ begin
       Replace(s,'_',' ');
       Name := s;
     end;
-
-  Filetype := LowerCase(Filetype);
-
-  if Filetype = 'text'          then ssText := 3 else
-  if Filetype = 'unmapped-bcv'  then ssText := 3 else
-  if Filetype = 'unmapped-bcvs' then ssText := 5 else
-  if Filetype =   'mapped-bcvs' then ssText := 8 else ssText := 0;
 end;
 
 procedure TBible.LoadFromFile;
@@ -364,9 +358,8 @@ begin
 
   //----------- automatic file type detection ---------------
 
-  if ssText = 0 then
-    for i:=1 to Length(anyline) do
-      if anyline[i]=chr(09) then inc(ssText);
+  for i:=1 to Length(anyline) do
+    if anyline[i]=chr(09) then inc(ssText);
 
   //---------------------------------------------------------
 
