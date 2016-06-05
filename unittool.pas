@@ -250,7 +250,7 @@ begin
 
               if ok then
                 begin
-                  wide := '\f0\cf3 ' + Utf8Decode(Bible[i].Title) + ' ' +  List[ssBook] + ':' + List[ssVerse] +
+                  wide := '\f0\cf3 ' + Utf8Decode(Bible[i].Title) + ' ' +  List[ssChapter] + ':' + List[ssVerse] +
                           '\f0\cf1 ' + ' ' + wverse + '\i0\par\par';
 
                   s := UTF8Encode(wide);
@@ -278,13 +278,11 @@ var
      i,j : integer;
 begin
   if Shelf.Count = 0 then Exit;
-  if Bible.BookByNum(Verse.Book) = nil then Exit;
 
   Shelf.LoadComparedBibles;
-
   SuperEdit.OpenStream;
 
-  s := '\cf1 ' + VerseToStr(Verse) + '\par ';
+  s := '\cf1 ' + Bible.VerseToStr(Verse) + '\par ';
   SuperEdit.WriteLn(s);
 
   old := Shelf.Current;
@@ -321,6 +319,7 @@ end;
 
 procedure Load_Verses(Stream: TMemoryStream);
 var
+    Book : TBook;
     List : TStringList;
      par : string;
        s : string;
@@ -328,8 +327,8 @@ var
 
   procedure MakeLink;
   begin
-    if Options.cvAbbr then s := Bible.Book.Abbr
-                      else s := Bible.Book.Title;
+    if Options.cvAbbr then s := Book.Abbr
+                      else s := Book.Title;
 
     if Pos('.',s) = 0 then s := s + ' ';
 
@@ -346,7 +345,8 @@ var
   end;
 
 begin
-  if Bible.BookByNum(Verse.Book) = nil then Exit;
+  Book := Bible.BookByNum(Verse.Book);
+  if Book = nil then Exit;
 
   List := TStringList.Create;
   SaveTitle(Stream);
@@ -393,13 +393,11 @@ var
      i,j : integer;
 begin
   if Shelf.Count = 0 then Exit;
-  if Bible.BookByNum(Verse.Book) = nil then Exit;
 
   Shelf.LoadComparedBibles;
-
   SuperEdit.OpenStream;
 
-  s := '\cf3 ' + VerseToStr(Verse) + '\par ';
+  s := '\cf3 ' + Bible.VerseToStr(Verse) + '\par ';
   SuperEdit.WriteLn(s);
 
   old := Shelf.Current;

@@ -27,7 +27,6 @@ type
   end;
 
   TBible = class(TList)
-    Book         : TBook;
     Text         : TStringList;
     Info         : TStringList;
     FilePath     : WideString;
@@ -63,6 +62,7 @@ type
     procedure LoadFromFile;
     function  BookByName(s: string): TBook;
     function  BookByNum(n: integer): TBook;
+    function  VerseToStr(Verse: TVerse): string;
     function  TitlesFromList(TitleList: TStringList): boolean;
     procedure TitlesFromFile;
     function  GetVerse(Verse: TVerse): string;
@@ -109,8 +109,9 @@ const
   apNotes   = 3;
 
 const
-  ssBook  = 1;
-  ssVerse = 2;
+//ssBook    = 0;
+  ssChapter = 1;
+  ssVerse   = 2;
 
 procedure VerseToBeginning;
 
@@ -119,7 +120,6 @@ function TwoChars(const s: string): string;
 function NewTestament(n: integer): boolean;
 function Comparison(Item1, Item2: Pointer): integer; // for TShelf
 function SrtToVerse(Wide : string): TVerse;
-function VerseToStr(Verse: TVerse): string;
 
 implementation
 
@@ -201,13 +201,6 @@ begin
   if Result.Range = 0 then Result.Range := Result.Verse;
 end;
 
-function VerseToStr(Verse: TVerse): string;
-begin
-  Result := Bible.Book.Title + ' ' + IntToStr(Verse.Chapter) + ':' + IntToStr(Verse.Verse);
-  if (Verse.Range <> 0) and (Verse.Range <> Verse.Verse) then
-    Result := Result + '-' + IntToStr(Verse.Range);
-end;
-
 //========================================================================================
 //                                     TBooks
 //========================================================================================
@@ -230,7 +223,6 @@ begin
 
   Text := TStringList.Create;
   Info := TStringList.Create;
-  Book := nil;
 
   FilePath     := fp;
   FileName     := fn;
@@ -303,6 +295,7 @@ end;
 
 procedure TBible.LoadFromFile;
 var
+       Book : TBook;
   TitleList : TStringList;
           f : System.Text;
        Path : WideString;
@@ -379,25 +372,38 @@ end;
 function TBible.BookByNum(n: integer): TBook;
 var i : integer;
 begin
-  Book := nil;
+  Result := nil;
   for i:=0 to Count-1 do
-    if Items[i].Number = n then Book := Items[i];
-  Result := Book;
+    if Items[i].Number = n then Result := Items[i];
 end;
 
 function TBible.BookByName(s: string): TBook;
 var i : integer;
 begin
-  Book := nil;
+  Result := nil;
   for i:=0 to Count-1 do
-    if Items[i].Title = s then Book := Items[i];
-  Result := Book;
+    if Items[i].Title = s then Result := Items[i];
+end;
+
+function TBible.VerseToStr(Verse: TVerse): string;
+var
+  Book : TBook;
+begin
+  Result := 'error';
+
+  Book := Bible.BookByNum(Verse.Book);
+  if Book = nil then Exit;
+
+  Result := Book.Title + ' ' + IntToStr(Verse.Chapter) + ':' + IntToStr(Verse.Verse);
+  if (Verse.Range <> 0) and (Verse.Range <> Verse.Verse) then
+    Result := Result + '-' + IntToStr(Verse.Range);
 end;
 
 function TBible.TitlesFromList(TitleList: TStringList): boolean;
 var
-  lst : TStringList;
-  i,n : integer;
+  Book : TBook;
+   lst : TStringList;
+   i,n : integer;
 begin
   Result := False;
   lst := TStringList.Create;
@@ -411,12 +417,15 @@ begin
           n := MyStrToInt(lst[2]); // book number
 
           if (lst[0] = '0') and (lst[1] = '0') then
-            if BookByNum(n) <> nil then
-              begin
-                BookByNum(n).Title := lst[3];
-                if lst.Count >= 5 then BookByNum(n).Abbr := lst[4];
-                Result := True;
-              end;
+            begin
+              Book := BookByNum(n);
+              if Book <> nil then
+                begin
+                  Book.Title := lst[3];
+                  if lst.Count >= 5 then Book.Abbr := lst[4];
+                  Result := True;
+                end;
+            end;
         end;
     end;
 
@@ -425,6 +434,7 @@ end;
 
 procedure TBible.TitlesFromFile;
 var
+  Book : TBook;
   lst : TStringList;
   File_Name : string;
   f : System.Text;
@@ -448,7 +458,8 @@ begin
       if lst.Count > 1 then
         begin
           n := MyStrToInt(lst[0]); // book number
-          if BookByNum(n) <> nil then
+          Book := BookByNum(n);
+          if Book <> nil then
             begin
               Book.Title := lst[1];
               if lst.Count > 2 then Book.Abbr := lst[2];
@@ -462,13 +473,16 @@ end;
 
 function TBible.GetVerse(Verse: TVerse): string;
 var
+     Book : TBook;
       lst : TStringList;
   chapter : integer;
    iverse : integer;
         i : integer;
 begin
   Result := '---';
-  if BookByNum(Verse.Book) = nil then Exit;
+
+  Book := BookByNum(Verse.Book);
+  if Book = nil then Exit;
 
   lst := TStringList.Create;
 
@@ -478,7 +492,7 @@ begin
 
       if lst.Count > ssText then
         begin
-          chapter := MyStrToInt(lst[ssBook] );
+          chapter := MyStrToInt(lst[ssChapter] );
            iverse := MyStrToInt(lst[ssVerse]);
 
           if (chapter = Verse.Chapter) and
@@ -492,10 +506,13 @@ end;
 
 procedure TBible.GetChapter(Verse: TVerse; var List: TStringList);
 var
+ Book : TBook;
   lst : TStringList;
     i : integer;
 begin
-  if BookByNum(Verse.Book) = nil then Exit;
+  Book := BookByNum(Verse.Book);
+  if Book = nil then Exit;
+
   lst := TStringList.Create;
 
   for i:=0 to Book.Count-1 do
@@ -503,7 +520,7 @@ begin
       StrToList(Book[i], lst);
 
       if lst.Count > ssText then
-        if (MyStrToInt(lst[ssBook]) = Verse.Chapter) then List.Add(lst[ssText]);
+        if (MyStrToInt(lst[ssChapter]) = Verse.Chapter) then List.Add(lst[ssText]);
     end;
 
   lst.free;
@@ -511,12 +528,15 @@ end;
 
 function TBible.ChaptersCount(Verse: TVerse): integer;
 var
-  lst : TStringList;
-   ch : integer;
-    i : integer;
+  Book : TBook;
+   lst : TStringList;
+    ch : integer;
+     i : integer;
 begin
   Result := 0;
-  if BookByNum(Verse.Book) = nil then Exit;
+
+  Book := BookByNum(Verse.Book);
+  if Book = nil then Exit;
 
   lst := TStringList.Create;
 
@@ -526,7 +546,7 @@ begin
 
       if lst.Count > ssText then
         begin
-          ch := MyStrToInt(lst[ssBook]);
+          ch := MyStrToInt(lst[ssChapter]);
           if ch > Result then Result := ch;
         end;
     end;
@@ -536,10 +556,13 @@ end;
 
 procedure TBible.GetRange(Verse: TVerse; var List: TStringList);
 var
-  lst : TStringList;
-    i : integer;
+  Book : TBook;
+   lst : TStringList;
+     i : integer;
 begin
-  if BookByNum(Verse.Book) = nil then Exit;
+  Book := BookByNum(Verse.Book);
+  if Book = nil then Exit;
+
   lst := TStringList.Create;
 
   for i:=0 to Book.Count-1 do
@@ -547,7 +570,7 @@ begin
       StrToList(Book[i], lst);
 
       if lst.Count > ssText then
-        if (MyStrToInt(lst[ssBook] )  = Verse.Chapter) and
+        if (MyStrToInt(lst[ssChapter] )  = Verse.Chapter) and
            (MyStrToInt(lst[ssVerse]) >= Verse.Verse  ) and
            (MyStrToInt(lst[ssVerse]) <= Verse.Range  ) then List.Add(lst[ssText]);
     end;

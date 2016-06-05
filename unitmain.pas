@@ -562,14 +562,15 @@ end;
 
 procedure TMainForm.GoToVerse;
 var
-  k: integer;
+  Book : TBook;
+  k : integer;
 
   procedure SeekBook;
   var i: integer;
   begin
     k := -1;
     for i := 0 to ListBoxBook.Items.Count - 1 do
-      if ListBoxBook.Items[i] = Bible.Book.Title then k := i;
+      if ListBoxBook.Items[i] = Book.Title then k := i;
   end;
 
   procedure MakeVisible;
@@ -590,7 +591,8 @@ var
 begin
   {$ifdef darwin} bag02 := True; {$endif}
 
-  if Bible.BookByNum(Verse.Book) = nil then Exit;
+  Book := Bible.BookByNum(Verse.Book);
+  if Book = nil then Exit;
 
   SeekBook;
 
@@ -1174,13 +1176,16 @@ end;
 
 procedure TMainForm.ListBoxBookClick(Sender: TObject);
 var
+  Book : TBook;
   s : string;
 begin
   {$ifdef darwin} if bag01 or bag02 then Exit; {$endif}
   s := ListBoxBook.Items[ListBoxBook.ItemIndex];
-  if Bible.BookByName(s) = nil then Exit;
 
-  Verse.Book := Bible.Book.Number;
+  Book := Bible.BookByName(s);
+  if Book = nil then Exit;
+
+  Verse.Book := Book.Number;
   Verse.Chapter := 1;
   Verse.Verse := 1;
   Verse.Range := 1;
