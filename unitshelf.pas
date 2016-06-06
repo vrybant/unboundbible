@@ -526,6 +526,30 @@ begin
   lst.free;
 end;
 
+procedure TBible.GetRange(Verse: TVerse; var List: TStringList);
+var
+  Book : TBook;
+   lst : TStringList;
+     i : integer;
+begin
+  Book := BookByNum(Verse.Book);
+  if Book = nil then Exit;
+
+  lst := TStringList.Create;
+
+  for i:=0 to Book.Count-1 do
+    begin
+      StrToList(Book[i], lst);
+
+      if lst.Count > ssText then
+        if (MyStrToInt(lst[ssChapter] )  = Verse.Chapter) and
+           (MyStrToInt(lst[ssVerse]) >= Verse.Verse  ) and
+           (MyStrToInt(lst[ssVerse]) <= Verse.Range  ) then List.Add(lst[ssText]);
+    end;
+
+  lst.free;
+end;
+
 function TBible.ChaptersCount(Verse: TVerse): integer;
 var
   Book : TBook;
@@ -549,30 +573,6 @@ begin
           ch := MyStrToInt(lst[ssChapter]);
           if ch > Result then Result := ch;
         end;
-    end;
-
-  lst.free;
-end;
-
-procedure TBible.GetRange(Verse: TVerse; var List: TStringList);
-var
-  Book : TBook;
-   lst : TStringList;
-     i : integer;
-begin
-  Book := BookByNum(Verse.Book);
-  if Book = nil then Exit;
-
-  lst := TStringList.Create;
-
-  for i:=0 to Book.Count-1 do
-    begin
-      StrToList(Book[i], lst);
-
-      if lst.Count > ssText then
-        if (MyStrToInt(lst[ssChapter] )  = Verse.Chapter) and
-           (MyStrToInt(lst[ssVerse]) >= Verse.Verse  ) and
-           (MyStrToInt(lst[ssVerse]) <= Verse.Range  ) then List.Add(lst[ssText]);
     end;
 
   lst.free;
