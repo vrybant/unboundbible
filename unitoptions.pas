@@ -71,6 +71,9 @@ begin
   for i:=0 to ComboBoxTitles.Items.Count-1 do
     if LowerCase(ComboBoxTitles.Items[i]) = Bible.Language then
       ComboBoxTitles.ItemIndex := i;
+
+  GroupBoxTitles.Enabled := not Bible.LangEnable;
+  ComboBoxTitles.Enabled := not Bible.LangEnable;
 end;
 
 procedure TFormOptions.FormPaint(Sender: TObject);

@@ -59,6 +59,7 @@ type
     Apocrypha    : boolean;
     ssText       : integer;
     Loaded       : boolean;
+    LangEnable   : boolean;
   private
     { Private declarations }
     function  GetItem(Index: Integer): TBook;
@@ -77,7 +78,6 @@ type
     procedure GetChapter(Verse: TVerse; var List: TStringList);
     procedure GetRange(Verse: TVerse; var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
-    function  DefaultLanguage: string;
     procedure SavePrivate(const IniFile : TIniFile);
     procedure ReadPrivate(const IniFile : TIniFile);
     {-}
@@ -295,6 +295,7 @@ begin
   Filetype     := '';
   ssText       :=  0;
   Loaded       := False;
+  LangEnable   := False;
 
   OldTestament := False;
   NewTestament := False;
@@ -344,8 +345,6 @@ begin
   lst.Free;
   CloseFile(f);
 
-  {---}
-
   if Name = '' then
     begin
       s := ChangeFileExt(FileName,'');
@@ -353,6 +352,9 @@ begin
       Replace(s,'_',' ');
       Name := s;
     end;
+
+  LangEnable := (Language <> '');
+  if Language = '' then Language := 'english';
 end;
 
 procedure TBible.LoadFromFile;
@@ -533,7 +535,6 @@ begin
           if (chapter = Verse.Chapter) and
              ( iverse = Verse.Verse  ) then Result := lst[ssText];
         end;
-
     end;
 
   lst.free;
@@ -613,34 +614,18 @@ begin
   lst.free;
 end;
 
-function TBible.DefaultLanguage: string;
-var
-  list : TStringList;
-  i : integer;
-begin
-  Result := 'english';
-
-  list := TStringList.Create;
-  GetFileList(AppPath + Slash + TitleDirectory + Slash + '*.txt', list, False);
-
-  for i:=0 to list.Count-1 do
-    if LowerCase(list[i])=Language then Result := Language;
-
-  list.Free;
-end;
-
 procedure TBible.SavePrivate(const IniFile : TIniFile);
 begin
-  IniFile.WriteString(FileName,'Language'   ,Language    );
-  IniFile.WriteBool  (FileName,'Compare'    ,Compare     );
-//IniFile.WriteBool  (FileName,'RightToLeft',RightToLeft );
+  if not LangEnable then IniFile.WriteString(FileName,'Language',Language);
+  IniFile.WriteBool(FileName,'Compare'    ,Compare     );
+//IniFile.WriteBool(FileName,'RightToLeft',RightToLeft );
 end;
 
 procedure TBible.ReadPrivate(const IniFile : TIniFile);
 begin
-  Language    := IniFile.ReadString(FileName,'Language'   ,DefaultLanguage );
-  Compare     := IniFile.ReadBool  (FileName,'Compare'    ,True            );
-//RightToLeft := IniFile.ReadBool  (FileName,'RightToLeft',False           );
+  if not LangEnable then Language := IniFile.ReadString(FileName,'Language',Language);
+  Compare     := IniFile.ReadBool(FileName,'Compare'    ,True  );
+//RightToLeft := IniFile.ReadBool(FileName,'RightToLeft',False );
 end;
 
 function TBible.Add(lst: TBook): Integer;
