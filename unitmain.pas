@@ -1318,7 +1318,7 @@ procedure TMainForm.CmdOptions(Sender: TObject);
 begin
   if FormOptions.ShowModal = mrOk then
   begin
-    Bible.TitlesFromFile;
+    Bible.SetTitles;
     MakeBookList;
     LoadChapter;
     Repaint;

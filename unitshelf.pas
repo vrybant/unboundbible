@@ -26,6 +26,15 @@ type
     constructor Create;
   end;
 
+  TTitle = class(TStringList)
+  public
+    constructor Create(lang : string);
+    function GetTitle(n : integer): string;
+  private
+    Language : string;
+    procedure Load_From_File;
+  end;
+
   TBible = class(TList)
     Text         : TStringList;
     Info         : TStringList;
@@ -36,7 +45,6 @@ type
     Abbreviation : string; // [э'bri:vi'eishэn]
     Copyright    : string;
     Language     : string;
-    TitleLang    : string;
     FileType     : string;
     Note         : string;
     {-}
@@ -55,6 +63,7 @@ type
     { Private declarations }
     function  GetItem(Index: Integer): TBook;
     procedure SetItem(Index: Integer; lst: TBook);
+    function  TitlesFromList(TitleList: TStringList): boolean;
   public
     { Public declarations }
     constructor Create(fp,fn: WideString);
@@ -63,13 +72,12 @@ type
     function  BookByName(s: string): TBook;
     function  BookByNum(n: integer): TBook;
     function  VerseToStr(Verse: TVerse): string;
-    function  TitlesFromList(TitleList: TStringList): boolean;
-    procedure TitlesFromFile;
+    procedure SetTitles;
     function  GetVerse(Verse: TVerse): string;
     procedure GetChapter(Verse: TVerse; var List: TStringList);
     procedure GetRange(Verse: TVerse; var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
-    function  DefTitleLang: string;
+    function  DefaultLanguage: string;
     procedure SavePrivate(const IniFile : TIniFile);
     procedure ReadPrivate(const IniFile : TIniFile);
     {-}
@@ -202,7 +210,7 @@ begin
 end;
 
 //========================================================================================
-//                                     TBooks
+//                                     TBook
 //========================================================================================
 
 constructor TBook.Create;
@@ -211,6 +219,60 @@ begin
   Title  := '';
   Abbr   := '';
   Number := 0;
+end;
+
+//========================================================================================
+//                                     TTitle
+//========================================================================================
+
+constructor TTitle.Create(lang : string);
+begin
+  inherited Create;
+  Language := lang;
+  Load_From_File;
+end;
+
+procedure TTitle.Load_From_File;
+var
+  File_Name : string;
+  f : System.Text;
+  s : string;
+begin
+  File_Name := AppPath + Slash + TitleDirectory + Slash + Language + '.txt';
+
+  if not FileExists(File_Name) then Exit;
+
+  AssignFile(f,File_Name); Reset(f);
+
+  while not eof(f) do
+    begin
+      Readln(f,s);
+      if (Length(s) > 3) and (s[1] = chr($EF)) then System.Delete(s,1,3); // unicode sign
+      self.Add(s);
+    end;
+
+  CloseFile(f);
+end;
+
+function TTitle.GetTitle(n : integer): string;
+var
+  list : TStringList;
+  i : integer;
+begin
+  Result := IntToStr(n);
+
+  if self.Count = 0 then Exit;
+  if n = 0 then Exit;
+  list := TStringList.Create;
+
+  for i:=0 to self.Count-1 do
+    begin
+      StrToList(self[i], list);
+      if list.Count > 1 then
+        if MyStrToInt(list[0]) = n then Result := list[1];
+    end;
+
+  list.Free;
 end;
 
 //========================================================================================
@@ -345,7 +407,7 @@ begin
 
   CloseFile(f);
 
-  if not TitlesFromList(TitleList) and (Filetype <> 'text') then TitlesFromFile;
+  if not TitlesFromList(TitleList) and (Filetype <> 'text') then SetTitles;
 
   TitleList.Free;
 
@@ -406,6 +468,7 @@ var
    i,n : integer;
 begin
   Result := False;
+
   lst := TStringList.Create;
 
   for i:=0 to TitleList.Count-1 do
@@ -432,43 +495,15 @@ begin
   lst.free;
 end;
 
-procedure TBible.TitlesFromFile;
+procedure TBible.SetTitles;
 var
-  Book : TBook;
-  lst : TStringList;
-  File_Name : string;
-  f : System.Text;
-  s : string;
-  n : integer;
+  Title : TTitle;
+  i : integer;
 begin
-  File_Name := AppPath + Slash + TitleDirectory + Slash + TitleLang + '.txt';
-
-  if not FileExists(File_Name) then Exit;
-
-  AssignFile(f,File_Name); Reset(f);
-  lst := TStringList.Create;
-
-  while not eof(f) do
-    begin
-      Readln(f,s);
-
-      if (Length(s) > 3) and (s[1] = chr($EF)) then System.Delete(s,1,3); // unicode sign
-
-      StrToList(s, lst);
-      if lst.Count > 1 then
-        begin
-          n := MyStrToInt(lst[0]); // book number
-          Book := BookByNum(n);
-          if Book <> nil then
-            begin
-              Book.Title := lst[1];
-              if lst.Count > 2 then Book.Abbr := lst[2];
-            end;
-        end;
-    end;
-
-  lst.free;
-  CloseFile(f);
+  Title := TTitle.Create(Language);
+  for i:=0 to Count-1 do
+    self[i].Title := Title.GetTitle(self[i].Number);
+  Title.Free;
 end;
 
 function TBible.GetVerse(Verse: TVerse): string;
@@ -542,9 +577,9 @@ begin
       StrToList(Book[i], lst);
 
       if lst.Count > ssText then
-        if (MyStrToInt(lst[ssChapter] )  = Verse.Chapter) and
-           (MyStrToInt(lst[ssVerse]) >= Verse.Verse  ) and
-           (MyStrToInt(lst[ssVerse]) <= Verse.Range  ) then List.Add(lst[ssText]);
+        if (MyStrToInt(lst[ssChapter]) = Verse.Chapter) and
+           (MyStrToInt(lst[ssVerse])  >= Verse.Verse  ) and
+           (MyStrToInt(lst[ssVerse])  <= Verse.Range  ) then List.Add(lst[ssText]);
     end;
 
   lst.free;
@@ -578,34 +613,34 @@ begin
   lst.free;
 end;
 
-function TBible.DefTitleLang: string;
+function TBible.DefaultLanguage: string;
 var
-  lst : TStringList;
-    i : integer;
+  list : TStringList;
+  i : integer;
 begin
   Result := 'english';
 
-  lst := TStringList.Create;
-  GetFileList(AppPath + Slash + TitleDirectory + Slash + '*.txt', lst, False);
+  list := TStringList.Create;
+  GetFileList(AppPath + Slash + TitleDirectory + Slash + '*.txt', list, False);
 
-  for i:=0 to lst.Count-1 do
-    if LowerCase(lst[i])=Language then Result := Language;
+  for i:=0 to list.Count-1 do
+    if LowerCase(list[i])=Language then Result := Language;
 
-  lst.Free;
+  list.Free;
 end;
 
 procedure TBible.SavePrivate(const IniFile : TIniFile);
 begin
-  IniFile.WriteString(FileName,'TitlesLang' ,TitleLang   );
+  IniFile.WriteString(FileName,'Language'   ,Language    );
   IniFile.WriteBool  (FileName,'Compare'    ,Compare     );
 //IniFile.WriteBool  (FileName,'RightToLeft',RightToLeft );
 end;
 
 procedure TBible.ReadPrivate(const IniFile : TIniFile);
 begin
-  TitleLang   := IniFile.ReadString(FileName,'TitlesLang' ,DefTitleLang );
-  Compare     := IniFile.ReadBool  (FileName,'Compare'    ,True         );
-//RightToLeft := IniFile.ReadBool  (FileName,'RightToLeft',False        );
+  Language    := IniFile.ReadString(FileName,'Language'   ,DefaultLanguage );
+  Compare     := IniFile.ReadBool  (FileName,'Compare'    ,True            );
+//RightToLeft := IniFile.ReadBool  (FileName,'RightToLeft',False           );
 end;
 
 function TBible.Add(lst: TBook): Integer;

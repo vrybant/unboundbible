@@ -69,7 +69,7 @@ begin
   ComboBoxTitles.ItemIndex := 0;
 
   for i:=0 to ComboBoxTitles.Items.Count-1 do
-    if LowerCase(ComboBoxTitles.Items[i]) = Bible.TitleLang then
+    if LowerCase(ComboBoxTitles.Items[i]) = Bible.Language then
       ComboBoxTitles.ItemIndex := i;
 end;
 
@@ -82,7 +82,7 @@ procedure TFormOptions.FormClose(Sender: TObject; var CloseAction: TCloseAction)
 begin
   {$ifdef unix} ModalResult := mrOk; {$endif}
   if ModalResult = mrOk then
-    Bible.TitleLang := LowerCase(ComboBoxTitles.Text);
+    Bible.Language := LowerCase(ComboBoxTitles.Text);
 end;
 
 end.
