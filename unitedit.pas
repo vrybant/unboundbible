@@ -287,7 +287,7 @@ begin
    len := i + 50;
 
   SetSel(i,i+1);
-  while (UTF8LowerCase(SelText) <> UTF8UpperCase(SelText)) and (i < len) do
+  while (LowerCase(SelText) <> UpperCase(SelText)) and (i < len) do
     begin
       inc(i);
       SetSel(i,i+1);
