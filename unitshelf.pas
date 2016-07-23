@@ -38,8 +38,8 @@ type
   TBible = class(TList)
     Text         : TStringList;
     Info         : TStringList;
-    FilePath     : WideString;
-    FileName     : WideString;
+    FilePath     : string;
+    FileName     : string;
     {-}
     Name         : string; // Tags
     Abbreviation : string; // [э'bri:vi'eishэn]
@@ -67,7 +67,7 @@ type
     function  TitlesFromList(TitleList: TStringList): boolean;
   public
     { Public declarations }
-    constructor Create(fp,fn: WideString);
+    constructor Create(fp,fn: string);
     procedure LoadTags;
     procedure LoadFromFile;
     function  BookByName(s: string): TBook;
@@ -94,7 +94,7 @@ type
     procedure SetItem(Index: Integer; TheBible: TBible);
   public
     constructor Create;
-    procedure AddBibles(path: WideString);
+    procedure AddBibles(path: string);
     function Add(TheBible: TBible): Integer;
     function IsLoaded: boolean;
     property Items[Index: Integer]: TBible read GetItem write SetItem; default;
@@ -127,11 +127,9 @@ function Bible: TBible;
 function TwoChars(const s: string): string;
 function NewTestament(n: integer): boolean;
 function Comparison(Item1, Item2: Pointer): integer; // for TShelf
-function SrtToVerse(Wide : string): TVerse;
+function SrtToVerse(wide : string): TVerse;
 
 implementation
-
-// uses UnitLang;
 
 function Bible: TBible;
 begin
@@ -142,8 +140,8 @@ function TwoChars(const s: string): string;
 begin
   if length(s) < 2 then Exit;
 
-  if s[2] = chr(09) then Result := Copy(s,1,1)
-                    else Result := Copy(s,1,2);
+  if Copy(s,2,1) = chr(09) then Result := Copy(s,1,1)
+                           else Result := Copy(s,1,2);
 end;
 
 function NewTestament(n: integer): boolean;
@@ -160,7 +158,7 @@ begin
   Verse.Range := 1;
 end;
 
-function SrtToVerse(Wide : string): TVerse;
+function SrtToVerse(wide : string): TVerse;
 var
   i : integer;
 
@@ -172,7 +170,7 @@ var
     if T then len := Length(Bible[i].Title)
          else len := Length(Bible[i].Abbr );
 
-    s := Copy(Wide,len+1,255);
+    s := Copy(wide,len+1,255);
     s := Trim(s);
 
     if Length(s) = 0 then Exit;
@@ -279,7 +277,7 @@ end;
 //                                     TBible
 //========================================================================================
 
-constructor TBible.Create(fp,fn: WideString);
+constructor TBible.Create(fp,fn: string);
 begin
   inherited Create;
 
@@ -362,7 +360,7 @@ var
        Book : TBook;
   TitleList : TStringList;
           f : System.Text;
-       Path : WideString;
+       Path : string;
     anyline : string;
         s,p : string;
         Num : integer;
@@ -669,7 +667,7 @@ begin
   ReadPrivates;
 end;
 
-procedure TShelf.AddBibles(path: WideString);
+procedure TShelf.AddBibles(path: string);
 var
   List : TStringList;
      i : integer;

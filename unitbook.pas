@@ -11,7 +11,6 @@ type
     chapter  : integer;
     verse    : integer;
     value    : WideString;
-    encoded  : boolean;
   end;
 
   TBook = class(TList)
@@ -51,9 +50,7 @@ begin
   wide.book    := 0;
   wide.chapter := 0;
   wide.verse   := 0;
-  wide.encoded := False;
   wide.value   := w;
-//wide.value   := UTF8ToUTF16(w); // Utf8Decode(w);
 
   Result := inherited Add(wide);
 end;

@@ -19,7 +19,6 @@ type
     {$ifdef mswindows} procedure SetModified(value: boolean); {$endif}
   protected
     {$ifdef mswindows}
-    function GetSelText: string; override;
     function LineCount: integer;
     function LineIndex(x: longint): integer;
     {$endif}
@@ -31,7 +30,6 @@ type
     destructor Destroy; override;
     function LoadRichText(Source: TStream): Boolean; override;
     function CanUndo: boolean;
-    function CanPaste: boolean;
     procedure HideCursor;
     procedure SetSel(x1,x2: integer);
     procedure GetSel(var x1,x2: integer);
@@ -46,9 +44,6 @@ type
 
 implementation
 
-uses
-  LCLProc; // UTF8Length()
-
 constructor TRichMemoEx.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -61,17 +56,6 @@ begin
 end;
 
 {$ifdef mswindows}
-
-function TRichMemoEx.GetSelText: string; // standart SelText does'nt work correctly
-var
-  w : WideString;
-  length: integer;
-begin
-  SetLength(w, GetSelLength + 1);
-  length := SendMessage(Handle, EM_GETSELTEXT, 0, {%H-}Longint(PWideChar(w)));
-  SetLength(w, length);
-  Result := UTF8Encode(w);
-end;
 
 function TRichMemoEx.LineCount: integer;
 begin
@@ -116,15 +100,6 @@ function TRichMemoEx.CanUndo: boolean;
 begin
   {$ifdef mswindows}
   Result := SendMessage(Handle, EM_CANUNDO,  0, 0) <> 0;
-  {$else}
-  Result := True;
-  {$endif}
-end;
-
-function TRichMemoEx.CanPaste: boolean;
-begin
-  {$ifdef mswindows}
-  Result := SendMessage(Handle, EM_CANPASTE, 0, 0) <> 0;
   {$else}
   Result := True;
   {$endif}
@@ -187,7 +162,7 @@ var
   Stream : TMemoryStream;
 begin
   Stream := TMemoryStream.Create;
-  Stream.LoadFromFile(Utf8Decode(FileName));
+  Stream.LoadFromFile(FileName);
   LoadRichText(Stream);
   Stream.Free;
 end;
@@ -199,7 +174,7 @@ begin
   Stream := TMemoryStream.Create;
   SaveRichText(Stream);
   Stream.Seek(0,soFromBeginning);
-  Stream.SaveToFile(Utf8Decode(FileName));
+  Stream.SaveToFile(FileName);
   Stream.Free;
 end;
 

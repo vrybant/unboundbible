@@ -47,7 +47,7 @@ end;
 procedure TInfoBox.FormActivate(Sender: TObject);
 var
   List : TStringList;
-  s : AnsiString;
+  s : string;
   i : integer;
 begin
   List := TStringList.Create;

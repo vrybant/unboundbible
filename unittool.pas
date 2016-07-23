@@ -4,7 +4,7 @@ unit UnitTool;
 
 interface
 
-uses SysUtils, Classes, Controls, Graphics, ClipBrd, UnitClass, UnitEdit;
+uses SysUtils, Classes, Controls, Graphics, ClipBrd, UnitClass, UnitEdit, LazUtf8;
 
 procedure Load_Chapter(SuperEdit: TSuperEdit);
 procedure Search_Text (SuperEdit: TSuperEdit; st: string; var count: integer);
@@ -98,8 +98,7 @@ var
      i,j  : integer;
        ws : WideString;
    wverse : WideString;
-     wide : WideString;
-        s : AnsiString;
+        s : String;
        ok : boolean;
 const
   {$ifdef darwin} max = 50; {$else} max = 1000; {$endif}
@@ -218,10 +217,8 @@ const
   //-------
 
 begin
-  // we need to seek in wide unicode text because of the case function !
-
   st := Trim(st);
-  ws := Utf8Decode(st);
+  ws := WideString(st);
   ws := ThisLowerCase(ws);
   count := 0;
 
@@ -240,7 +237,7 @@ begin
 
           if ( List.Count >= 4) and (count < max) then
             begin
-              wverse := Utf8Decode(List[Bible.ssText]);
+              wverse := WideString(List[Bible.ssText]);
 
               ok := False;
 
@@ -250,10 +247,8 @@ begin
 
               if ok then
                 begin
-                  wide := '\f0\cf3 ' + Utf8Decode(Bible[i].Title) + ' ' +  List[ssChapter] + ':' + List[ssVerse] +
-                          '\f0\cf1 ' + ' ' + wverse + '\i0\par\par';
-
-                  s := UTF8Encode(wide);
+                  s := '\f0\cf3 ' + Bible[i].Title + ' ' +  List[ssChapter] + ':' + List[ssVerse] +
+                       '\f0\cf1 ' + ' ' + String(wverse) + '\i0\par\par';
                   Replacement(s);
                   SuperEdit.WriteLn(s);
                   inc(count);

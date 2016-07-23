@@ -1,13 +1,13 @@
 unit UnitLib;
 
-{$mode delphi}{$H+}
+{$H+}
 
 interface
 
 uses
   {$ifdef mswindows} Windows, ShFolder, {$endif}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Buttons, ExtCtrls, ClipBrd, FileUtil, LCLProc, Process; // UTF8Process
+  Buttons, ExtCtrls, ClipBrd, FileUtil, LCLProc, LazUtf8;
 
 type
   TOptions = record
@@ -40,28 +40,27 @@ function CountPos(sub, st: string): integer;
 
 function WideTrim(const S: WideString): WideString;
 
-procedure MyDelete(var s : AnsiString; index, count : Integer);
+procedure MyDelete(var s : string; index, count : Integer);
 procedure StreamWrite  (var Stream: TMemoryStream; s: string);
 procedure StreamWriteLn(var Stream: TMemoryStream; s: string);
 {$ifdef mswindows} procedure StreamToClipboard(Stream : TMemoryStream); {$endif}
-procedure Replace(var S: AnsiString; const OldPattern, NewPattern: AnsiString);
-procedure StrToList(const st: AnsiString; const List: TStringList);
-procedure StrToListEx(ch: AnsiChar; const st: AnsiString; const List: TStringList);
-procedure ListToStr(const List: TStringList; var st: AnsiString);
-procedure ListToStrEx(ch: AnsiChar; List: TStringList; var st: AnsiString);
+procedure Replace(var S: string; const OldPattern, NewPattern: String);
+procedure StrToList(const st: string; const List: TStringList);
+procedure StrToListEx(ch: AnsiChar; const st: string; const List: TStringList);
+procedure ListToStr(const List: TStringList; var st: string);
+procedure ListToStrEx(ch: AnsiChar; List: TStringList; var st: string);
 
 function  ExtractOnlyName(s: string): string;
-procedure GetFileList(const Path: AnsiString; const List: TStrings; Ext: boolean);
-//function  UnicodeToRTF(const w: WideString): AnsiString;
+procedure GetFileList(const Path: string; const List: TStrings; Ext: boolean);
 function  Utf8ToRTF(const s: string): string;
 function WideLowerCaseFixed(s : WideString): WideString;
 
 function GetDefaultLanguage: string;
-function AppPath: WideString;
+function AppPath: string;
 function UserDocumentsPath : string;
-function AppDataPath : WideString;
-function IniFileName : WideString;
-function TempFileName: WideString;
+function AppDataPath : string;
+function IniFileName : string;
+function TempFileName: string;
 
 procedure CreateDirectories;
 {$ifdef darwin} procedure PrintFile(FileName : string); {$endif}
@@ -156,7 +155,7 @@ begin
     Result := rslt + str;
 end;
 
-procedure MyDelete(var s : AnsiString; index, count : Integer);
+procedure MyDelete(var s : string; index, count : Integer);
 begin
   Delete(s,index,count);
 end;
@@ -185,12 +184,12 @@ begin
 end;
 {$endif}
 
-procedure Replace(var S: AnsiString; const OldPattern, NewPattern: AnsiString);
+procedure Replace(var S: string; const OldPattern, NewPattern: string);
 begin
   S := StringReplace(S, OldPattern, NewPattern, [rfReplaceAll]);
 end;
 
-procedure StrToListEx(ch: AnsiChar; const st: AnsiString; const List: TStringList);
+procedure StrToListEx(ch: AnsiChar; const st: string; const List: TStringList);
 var
   p : array[1..10000] of integer;
   i : integer;
@@ -225,7 +224,7 @@ begin
   StrToListEx(chr(09), st, List);
 end;
 
-procedure ListToStrEx(ch: AnsiChar; List: TStringList; var st: AnsiString);
+procedure ListToStrEx(ch: AnsiChar; List: TStringList; var st: string);
 var i : integer;
 begin
   st := '';
@@ -237,7 +236,7 @@ begin
     end;
 end;
 
-procedure ListToStr(const List: TStringList; var st: AnsiString);
+procedure ListToStr(const List: TStringList; var st: string);
 begin
   ListToStrEx(chr(09), List, st);
 end;
@@ -261,7 +260,7 @@ begin
   Result := ExtractFileName(ChangeFileExt(s,''));
 end;
 
-procedure GetFileList(const Path: AnsiString; const List: TStrings; Ext: boolean);
+procedure GetFileList(const Path: string; const List: TStrings; Ext: boolean);
 var
   SRec : TSearchRec;
    Res : integer;
@@ -281,26 +280,26 @@ begin
   SysUtils.FindClose(SRec);
 end;
 
-function UnicodeToRTF(const w: WideString): AnsiString;
+function UnicodeToRTF(const w: WideString): String;
 var
-  wc : Cardinal;
-   i : integer;
+  c : cardinal;
+  i : integer;
 begin
   Result := '';
   for i:=1 to Length(w) do
     begin
-      wc := Ord(w[i]);
-      if wc < $80 then Result := Result + w[i]
-                  else Result := Result + '\u' + IntToStr(wc) + '?';
+      c := Ord(w[i]);
+      if c < $80 then Result := Result + String(w[i])
+                 else Result := Result + '\u' + IntToStr(c) + '?';
     end;
 end;
 
 function Utf8ToRTF(const s: string): string;
 begin
-  Result := UnicodeToRTF(Utf8Decode(s));
+  Result := UnicodeToRTF(WideString(s));
 end;
 
-function AppPath: WideString;
+function AppPath: string;
 {$ifdef darwin} var n : integer; {$endif}
 begin
   Result := Application.Location;
@@ -324,7 +323,7 @@ end;
  *)
 
 {$ifdef mswindows}
-function GetSpecialFolderPath(FolderID: Cardinal): WideString; // UTF16
+function GetSpecialFolderPath(FolderID: Cardinal): string;
 var
   s : PChar;
 begin
@@ -361,17 +360,16 @@ begin
   {$endif}
 end;
 
-function UserDocumentsPath : string; // UTF8
+function UserDocumentsPath : string;
 begin
 {$ifdef mswindows}
   Result := GetSpecialFolderPath(CSIDL_PERSONAL);
-  Result := UTF16ToUTF8(Result);
 {$else}
   Result := GetEnvironmentVariableUTF8('HOME');
 {$endif}
 end;
 
-function AppDataFolder : WideString;
+function AppDataFolder : string;
 begin
 {$ifdef mswindows}
   Result := GetSpecialFolderPath(CSIDL_APPDATA);
@@ -380,12 +378,12 @@ begin
 {$endif}
 end;
 
-function AppDataPath : WideString;
+function AppDataPath : string;
 begin
   Result := AppDataFolder + Slash + AppName;
 end;
 
-function IniFileName: WideString; // UTF16
+function IniFileName: string;
 begin
 {$ifdef mswindows}
   Result := AppDataPath + Slash + 'config.ini';
@@ -394,14 +392,14 @@ begin
 {$endif}
 end;
 
-function TempFileName: WideString; // for printing
+function TempFileName: string; // for printing
 begin
   Result := AppDataPath + Slash + 'temp.rtf';
 end;
 
 procedure CreateDirectories;
 var
-  dir : WideString;
+  dir : string;
 begin
   dir := AppDataPath + Slash + BibleDirectory;
   if not DirectoryExists(dir) then ForceDirectories(dir);
@@ -415,6 +413,9 @@ begin
   {$endif}
 end;
 
+// A-Z = 1040-1071 / Russian Alphabet
+// a-z = 1072-1103
+
 {$ifdef mswindows}
 function WideLowerCaseFixed(s : WideString): WideString;
 begin
@@ -422,13 +423,10 @@ begin
 end;
 {$endif}
 
-// A-Z = 1040-1071 / Russian Alphabet
-// a-z = 1072-1103
-
 {$ifdef unix}
-function WideLowerCaseFixed(s : WideString): WideString;
+function LowerCaseFixed(s : UnicodeString): UnicodeString;
 var
-  w : WideString;
+  w : UnicodeString;
   i,n : integer;
 begin
   Result := s;

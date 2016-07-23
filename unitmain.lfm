@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 495
+  Left = 341
   Height = 363
-  Top = 330
+  Top = 293
   Width = 795
   Caption = 'Unbound Bible Tools'
   ClientHeight = 343
@@ -13,7 +13,7 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnPaint = FormPaint
   OnResize = FormResize
-  LCLVersion = '1.4.4.0'
+  LCLVersion = '1.6.0.4'
   object StandardToolBar: TToolBar
     Left = 0
     Height = 30

@@ -192,7 +192,7 @@ type
     RichEditSearch: TSuperEdit;
     RichEditCompare: TSuperEdit;
     RichEditNotes: TSuperEdit;
-    NoteFileName: ansistring;
+    NoteFileName: string;
 //  Apocrypha  : boolean;
 //  FDragging: boolean;
     ReopenMax: integer;
@@ -761,7 +761,7 @@ procedure TMainForm.LangMenuInit;
 var
   List: TStringList;
   Checked: boolean;
-  s: ansistring;
+  s: string;
   i: integer;
 begin
   List := TStringList.Create;
@@ -933,7 +933,7 @@ end;
 
 procedure TMainForm.PerformFileOpen(const FileName: string);
 begin
-  if not FileExistsUTF8(FileName) then Exit;
+  if not FileExists(FileName) then Exit;
   RichEditNotes.LoadFromFile(FileName);
   NoteFileName := FileName;
   RebuildReopenList;
@@ -1250,7 +1250,7 @@ begin
   IniFile.Free;
 end;
 
-function GetDefaultBible: ansistring;
+function GetDefaultBible: string;
 begin
   if GetDefaultLanguage = 'russian' then Result := 'russian.txt'
                                     else Result := 'english-kjv.txt';
@@ -1435,17 +1435,17 @@ end;
 
 procedure TMainForm.SearchText(s: string);
 var
-  Today : longint;
   Count: integer;
+//Today : longint;
 begin
   StatusBar.Panels[2].Text := '';
   RichEdit.Cursor := crHourGlass;
 
-  Today := GetTickCount;
+//Today := GetTickCount;
   Search_Text(RichEditSearch, s, Count);
 
-//StatusBar.Panels[2].Text := ' ' + IntToStr(Count) + ' ' + ms_found;
-  StatusBar.Panels[2].Text := ' ' + IntToStr(GetTickCount - Today);
+  StatusBar.Panels[2].Text := ' ' + IntToStr(Count) + ' ' + ms_found;
+//StatusBar.Panels[2].Text := ' ' + IntToStr(GetTickCount - Today);
 
   RichEdit.Cursor := crArrow;
   SelectPage(apSearch);
