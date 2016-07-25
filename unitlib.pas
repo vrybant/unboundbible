@@ -7,7 +7,8 @@ interface
 uses
   {$ifdef mswindows} Windows, ShFolder, {$endif}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Buttons, ExtCtrls, ClipBrd, FileUtil, LCLProc, LazUtf8;
+  Buttons, ExtCtrls, ClipBrd, FileUtil, LCLProc,
+  {$ifdef unix} Process, {$endif} LazUtf8;
 
 type
   TOptions = record
@@ -424,9 +425,9 @@ end;
 {$endif}
 
 {$ifdef unix}
-function LowerCaseFixed(s : UnicodeString): UnicodeString;
+function WideLowerCaseFixed(s : WideString): WideString;
 var
-  w : UnicodeString;
+  w : WideString;
   i,n : integer;
 begin
   Result := s;

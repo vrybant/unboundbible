@@ -177,6 +177,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure ListBoxBookClick(Sender: TObject);
     procedure ListBoxChClick(Sender: TObject);
     procedure miBibleFolderClick(Sender: TObject);
@@ -203,6 +204,7 @@ type
     function CheckFileSave: boolean;
     procedure AcceptBible;
     procedure BibleMenuInit;
+    {$ifdef darwin} procedure ComboBoxSetIndex; {$endif}
     procedure CreateRichEditComponents;
     procedure EnableButtons;
     procedure UpDownButtons;
@@ -271,17 +273,26 @@ end;
 
 procedure TMainForm.BibleMenuInit;
 var
-  i: integer;
+  i : integer;
 begin
   ComboBox.Items.Clear;
 
   for i := 0 to Shelf.Count - 1 do
   begin
     ComboBox.Items.Add(Shelf[i].Name);
-    if i = Shelf.Current then
-      ComboBox.ItemIndex := i;
+    {$ifdef mswindows} if i = Shelf.Current then ComboBox.ItemIndex := i; {$endif}
   end;
 end;
+
+{$ifdef darwin}
+procedure TMainForm.ComboBoxSetIndex;
+var
+  i : integer;
+begin
+  for i := 0 to Shelf.Count - 1 do
+    if i = Shelf.Current then ComboBox.ItemIndex := i;
+end;
+{$endif}
 
 procedure TMainForm.CmdAbout(Sender: TObject);
 begin
@@ -1331,6 +1342,11 @@ begin
   if Height < 300 then Height := 300;
   if Width  < 500 then Width  := 500;
   {$endif}
+end;
+
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+  {$ifdef darwin} if ComboBox.ItemIndex = -1 then ComboBoxSetIndex; {$endif}
 end;
 
 procedure TMainForm.PageControlChange(Sender: TObject);

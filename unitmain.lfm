@@ -13,6 +13,7 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnPaint = FormPaint
   OnResize = FormResize
+  OnShow = FormShow
   LCLVersion = '1.6.0.4'
   object StandardToolBar: TToolBar
     Left = 0
