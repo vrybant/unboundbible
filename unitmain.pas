@@ -202,7 +202,6 @@ type
     {$ifdef darwin} bag02 : boolean; {$endif}
     function RichEdit: TSuperEdit;
     function CheckFileSave: boolean;
-    procedure AcceptBible;
     procedure BibleMenuInit;
     {$ifdef darwin} procedure ComboBoxSetIndex; {$endif}
     procedure CreateRichEditComponents;
@@ -229,8 +228,8 @@ type
     procedure SaveIntro;
     procedure SearchText(s: string);
     procedure SelectPage(page: integer);
-    procedure SetModified;
     procedure Translate;
+    procedure UpdateCaption;
     procedure UpdateStatusBar;
     procedure UpdateActionImage;
     procedure VersesToClipboard;
@@ -264,12 +263,6 @@ const
   ms_Confirm : string = '';
 
 {$R *.lfm}
-
-procedure TMainForm.AcceptBible;
-begin
-  Caption := Bible.Name + ' - ' + AppName; // + ' ' + VersionInfo;
-  StatusBar.Panels[3].Text := ' ' + Bible.Copyright;
-end;
 
 procedure TMainForm.BibleMenuInit;
 var
@@ -380,7 +373,8 @@ procedure TMainForm.ComboBoxChange(Sender: TObject);
 begin
   Shelf.Current := ComboBox.ItemIndex;
   Bible.LoadFromFile;
-  AcceptBible;
+  UpdateCaption;
+  UpdateStatusBar;
   MakeBookList;
   if Bible.BookByNum(Verse.Book) = nil then VerseToBeginning; // check verse
   LoadChapter;
@@ -503,15 +497,16 @@ begin
   end;
 end;
 
-procedure TMainForm.SetModified;
+procedure TMainForm.UpdateCaption;
 begin
-  if RichEditNotes.Modified then StatusBar.Panels[1].Text := sModified
-                            else StatusBar.Panels[1].Text := '';
+  Caption := Bible.Name + ' - ' + AppName; // + ' ' + VersionInfo;
 end;
 
 procedure TMainForm.UpdateStatusBar;
 begin
-  SetModified;
+  StatusBar.Panels[3].Text := ' ' + Bible.Copyright;
+  if RichEditNotes.Modified then StatusBar.Panels[1].Text := sModified
+                            else StatusBar.Panels[1].Text := '';
 end;
 
 procedure TMainForm.ShowPopup;
@@ -629,7 +624,7 @@ end;
 
 procedure TMainForm.RichEditNotesChange(Sender: TObject);
 begin
-  SetModified;
+  UpdateStatusBar;
 end;
 
 procedure TMainForm.RichEditNotesSelectionChange(Sender: TObject);
@@ -951,7 +946,7 @@ begin
   SelectPage(apNotes);
   RichEditNotes.SetFocus;
   RichEditNotes.Modified := False;
-  SetModified;
+  UpdateStatusBar;
   StatusBar.Panels[4].Text := ' ' + ExtractOnlyName(NoteFileName);
 end;
 
@@ -962,7 +957,7 @@ begin
   NoteFileName := sUntitled;
   RichEditNotes.Lines.Clear;
   RichEditNotes.Modified := False;
-  SetModified;
+  UpdateStatusBar;
 end;
 
 procedure TMainForm.CmdFileOpen(Sender: TObject);
@@ -985,7 +980,7 @@ begin
   begin
     RichEditNotes.SaveToFile(NoteFileName);
     RichEditNotes.Modified := False;
-    SetModified;
+    UpdateStatusBar;
   end;
 end;
 
@@ -1011,7 +1006,7 @@ begin
     RebuildReopenList;
 
     RichEditNotes.Modified := False;
-    SetModified;
+    UpdateStatusBar;
     StatusBar.Panels[4].Text := ' ' + ExtractOnlyName(SaveDialog.FileName);
   end;
 end;
@@ -1063,7 +1058,8 @@ begin
   if Shelf.Count > 0 then
   begin
     Bible.LoadFromFile;
-    AcceptBible;
+    UpdateCaption;
+    UpdateStatusBar;
     MakeBookList;
     VerseToBeginning;
     // LoadChapter; // В Delphi работало нормально, но в Лазарус RichMemo не загружается из Stream,
