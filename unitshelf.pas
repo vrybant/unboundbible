@@ -65,11 +65,12 @@ type
     function  GetItem(Index: Integer): TBook;
     procedure SetItem(Index: Integer; lst: TBook);
     function  TitlesFromList(TitleList: TStringList): boolean;
+    function Add(lst: TBook): Integer;
   public
     { Public declarations }
     constructor Create(fp,fn: string);
-    procedure LoadTags;
     procedure LoadFromFile;
+    procedure LoadTags;
     function  BookByName(s: string): TBook;
     function  BookByNum(n: integer): TBook;
     function  VerseToStr(Verse: TVerse): string;
@@ -77,11 +78,11 @@ type
     function  GetVerse(Verse: TVerse): string;
     procedure GetChapter(Verse: TVerse; var List: TStringList);
     procedure GetRange(Verse: TVerse; var List: TStringList);
+    procedure GetTitles(var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
     procedure SavePrivate(const IniFile : TIniFile);
     procedure ReadPrivate(const IniFile : TIniFile);
     {-}
-    function Add(lst: TBook): Integer;
     property Items[Index: Integer]: TBook read GetItem write SetItem; default;
     {-}
     destructor Destroy; override;
@@ -101,7 +102,8 @@ type
     destructor Destroy; override;
     { - }
     procedure LoadComparedBibles;
-    procedure SetCurrent(FileName: string);
+    procedure SetCurrent(FileName: string); overload;
+    procedure SetCurrent(index: integer); overload;
     procedure SavePrivates;
     procedure ReadPrivates;
   end;
@@ -125,7 +127,6 @@ procedure VerseToBeginning;
 
 function Bible: TBible;
 function TwoChars(const s: string): string;
-function NewTestament(n: integer): boolean;
 function Comparison(Item1, Item2: Pointer): integer; // for TShelf
 function SrtToVerse(wide : string): TVerse;
 
@@ -144,7 +145,7 @@ begin
                            else Result := Copy(s,1,2);
 end;
 
-function NewTestament(n: integer): boolean;
+function IsNewTestament(n: integer): boolean;
 begin
   Result := (n >= 40) and (n <= 66);
 end;
@@ -584,6 +585,26 @@ begin
   lst.free;
 end;
 
+procedure TBible.GetTitles(var List: TStringList);
+var
+  i : integer;
+begin
+  if self.Filetype <> 'text' then
+    begin
+      // помещаем апокрифы впереди НЗ
+      for i := 0 to Count-1 do
+        if not IsNewTestament(self[i].Number) then List.Add(self[i].Title);
+
+      for i := 0 to self.Count - 1 do
+        if IsNewTestament(self[i].Number) then List.Add(self[i].Title);
+    end;
+
+  if self.Filetype = 'text' then
+    for i := 0 to self.Count - 1 do
+      List.Add(self[i].Title);
+
+end;
+
 function TBible.ChaptersCount(Verse: TVerse): integer;
 var
   Book : TBook;
@@ -715,6 +736,13 @@ begin
   Current := 0;
   for i:= Count-1 downto 0 do
     if Items[i].FileName = FileName then Current := i;
+  Self[Current].LoadFromFile;
+end;
+
+procedure TShelf.SetCurrent(index: integer);
+begin
+  Current := index;
+  Self[Current].LoadFromFile;
 end;
 
 function TShelf.IsLoaded: boolean;

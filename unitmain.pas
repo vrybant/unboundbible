@@ -371,8 +371,7 @@ end;
 
 procedure TMainForm.ComboBoxChange(Sender: TObject);
 begin
-  Shelf.Current := ComboBox.ItemIndex;
-  Bible.LoadFromFile;
+  Shelf.SetCurrent(ComboBox.ItemIndex);
   UpdateCaption;
   UpdateStatusBar;
   MakeBookList;
@@ -1057,7 +1056,6 @@ begin
 
   if Shelf.Count > 0 then
   begin
-    Bible.LoadFromFile;
     UpdateCaption;
     UpdateStatusBar;
     MakeBookList;
@@ -1187,6 +1185,7 @@ var
   s : string;
 begin
   {$ifdef darwin} if bag01 or bag02 then Exit; {$endif}
+  if ListBoxBook.Count = 0 then Exit;
   s := ListBoxBook.Items[ListBoxBook.ItemIndex];
 
   Book := Bible.BookByName(s);
@@ -1374,30 +1373,20 @@ begin
 end;
 
 procedure TMainForm.MakeBookList;
-var i: integer;
+var
+  List: TStringList;
 begin
-  ListBoxBook.Items.Clear;
   ListBoxBook.Items.BeginUpdate;
+  ListBoxBook.Items.Clear;
   ListBoxBook.Font := CurrFont;
 
-  if Bible.Filetype <> 'text' then
-  begin
-    // помещаем апокрифы впереди НЗ
-    for i := 0 to Bible.Count - 1 do
-      if not NewTestament(Bible[i].Number) then
-        ListBoxBook.Items.Add(Bible[i].Title);
+  List := TStringList.Create;
+  Bible.GetTitles(List);
+  ListBoxBook.Items.Assign(List);
+  List.Free;
 
-    for i := 0 to Bible.Count - 1 do
-      if NewTestament(Bible[i].Number) then
-        ListBoxBook.Items.Add(Bible[i].Title);
-  end;
-
-  if Bible.Filetype = 'text' then
-    for i := 0 to Bible.Count - 1 do
-      ListBoxBook.Items.Add(Bible[i].Title);
-
+  if ListBoxBook.Count > 0 then ListBoxBook.ItemIndex := 0;
   ListBoxBook.Items.EndUpdate;
-  ListBoxBook.ItemIndex := 0;
 
   // Repaint;  // important
 end;

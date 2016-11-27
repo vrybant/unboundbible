@@ -284,7 +284,7 @@ begin
 
   for i:=0 to Shelf.Count-1 do
     begin
-      Shelf.Current := i;
+      Shelf.SetCurrent(i);
       if not Bible.Compare then Continue;
 
       List := TStringList.Create;
@@ -307,7 +307,7 @@ begin
       List.free;
     end;
 
-  Shelf.Current := old;
+  Shelf.SetCurrent(old);
 
   SuperEdit.CloseStream;
 end;
@@ -399,7 +399,7 @@ begin
 
   for i:=0 to Shelf.Count-1 do
     begin
-      Shelf.Current := i;
+      Shelf.SetCurrent(i);
       if not Bible.Compare then Continue;
 
       List := TStringList.Create;
@@ -422,7 +422,7 @@ begin
       List.free;
     end;
 
-  Shelf.Current := old;
+  Shelf.SetCurrent(old);
 
   SuperEdit.CloseStream;
 end;
