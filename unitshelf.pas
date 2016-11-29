@@ -106,6 +106,7 @@ type
     procedure SetCurrent(index: integer); overload;
     procedure SavePrivates;
     procedure ReadPrivates;
+    procedure VerseToBeginning(var verse: TVerse);
   end;
 
 var
@@ -122,8 +123,6 @@ const
 //ssBook    = 0;
   ssChapter = 1;
   ssVerse   = 2;
-
-procedure VerseToBeginning;
 
 function Bible: TBible;
 function TwoChars(const s: string): string;
@@ -148,15 +147,6 @@ end;
 function IsNewTestament(n: integer): boolean;
 begin
   Result := (n >= 40) and (n <= 66);
-end;
-
-procedure VerseToBeginning;
-begin
-  Verse.Book := 1;
-  if not Bible.OldTestament then Verse.Book := 40;
-  Verse.Chapter := 1;
-  Verse.Verse := 1;
-  Verse.Range := 1;
 end;
 
 function SrtToVerse(wide : string): TVerse;
@@ -786,6 +776,15 @@ begin
   SavePrivates;
   for i:=0 to Count-1 do Items[i].Free;
   inherited Destroy;
+end;
+
+procedure TShelf.VerseToBeginning(var verse: TVerse);
+begin
+  verse.Book := 1;
+  verse.Chapter := 1;
+  verse.Verse := 1;
+  verse.Range := 1;
+  if not Items[current].OldTestament then verse.Book := 40;
 end;
 
 end.

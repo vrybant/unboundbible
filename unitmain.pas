@@ -375,7 +375,7 @@ begin
   UpdateCaption;
   UpdateStatusBar;
   MakeBookList;
-  if Bible.BookByNum(Verse.Book) = nil then VerseToBeginning; // check verse
+  if Bible.BookByNum(Verse.Book) = nil then Shelf.VerseToBeginning(Verse); // check verse
   LoadChapter;
   GoToVerse;
 end;
@@ -1059,7 +1059,7 @@ begin
     UpdateCaption;
     UpdateStatusBar;
     MakeBookList;
-    VerseToBeginning;
+    Shelf.VerseToBeginning(Verse);
     // LoadChapter; // В Delphi работало нормально, но в Лазарус RichMemo не загружается из Stream,
                     // поэтому LoadChapter вызываем из FormActivate
   end;
