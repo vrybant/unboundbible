@@ -372,7 +372,7 @@ end;
 procedure TMainForm.ComboBoxChange(Sender: TObject);
 begin
   Shelf.SetCurrent(ComboBox.ItemIndex);
-  UpdateCaption;
+//UpdateCaption;
   UpdateStatusBar;
   MakeBookList;
   if Bible.BookByNum(Verse.Book) = nil then Shelf.VerseToBeginning(Verse); // check verse
@@ -498,7 +498,7 @@ end;
 
 procedure TMainForm.UpdateCaption;
 begin
-  Caption := Bible.Name + ' - ' + AppName; // + ' ' + VersionInfo;
+  Caption := AppName; // + ' ' + VersionInfo;
 end;
 
 procedure TMainForm.UpdateStatusBar;
