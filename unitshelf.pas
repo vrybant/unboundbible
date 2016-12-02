@@ -42,6 +42,7 @@ type
     FileName     : string;
     {-}
     Name         : string; // Tags
+    Native       : string;
     Abbreviation : string; // [э'bri:vi'eishэn]
     Copyright    : string;
     Language     : string;
@@ -278,6 +279,7 @@ begin
   FilePath     := fp;
   FileName     := fn;
   Name         := fn;
+  Native       := '';
   Abbreviation := '';
   Copyright    := '';
   Language     := '';
@@ -305,6 +307,7 @@ const
   procedure Tag;
   begin
     if lst[0] = '#name'         then Name         := lst[1];
+    if lst[0] = '#native'       then Native       := lst[1];
     if lst[0] = '#abbreviation' then Abbreviation := lst[1];
     if lst[0] = '#copyright'    then Copyright    := lst[1];
     if lst[0] = '#language'     then Language     := LowerCase (lst[1]);
