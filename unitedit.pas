@@ -28,6 +28,7 @@ type
   private
     SelStartTemp  : integer;
     SelLengthTemp : integer;
+    function  Colored: boolean;
     function  GetLink: string;
     function  GetParagraphNumber: integer;
   public
@@ -100,13 +101,18 @@ begin
   if ReadOnly then HideCursor;
 end;
 
+function TSuperEdit.Colored: boolean;
+begin
+  Result := SelAttributes.Color = clNavy
+end;
+
 function TSuperEdit.GetLink: string;
 var
   x1,x2,x0 : integer;
   n1,n2 : integer;
 begin
   Result := '';
-  if (SelLength > 0) or (SelAttributes.Color <> clNavy) then Exit;
+  if (SelLength > 0) or not Colored then Exit;
   GetSel(n1,n2);
 
   x0 := SelStart;
@@ -114,13 +120,13 @@ begin
   repeat
     dec(x1);
     SetSel(x1, x1);
-  until (SelAttributes.Color <> clNavy) or (x1 < 0);
+  until not Colored or (x1 < 0);
 
   x2 := x0;
   repeat
     inc(x2);
     SetSel(x2, x2);
-  until (SelAttributes.Color <> clNavy);
+  until not Colored;
 
   inc(x1);
   {$ifdef mswindows} dec(x2); {$endif}
@@ -164,7 +170,7 @@ begin
 
   GetSel(x1,x0); // must be equal
 
-  while (SelAttributes.Color <> clNavy) and (x1 > 0) do
+  while not Colored and (x1 > 0) do
     begin
       dec(x1);
       SetSel(x1, x1);
@@ -173,13 +179,13 @@ begin
   repeat
     dec(x1);
     SetSel(x1, x1);
-  until (SelAttributes.Color <> clNavy) or (x1 < 0);
+  until not Colored or (x1 < 0);
 
   x2 := x1;
   repeat
     inc(x2);
     SetSel(x2, x2);
-  until (SelAttributes.Color <> clNavy); // or (x2 > x0+5);
+  until not Colored; // or (x2 > x0+5)
 
                      inc(x1);
   {$ifdef mswindows} dec(x2); {$endif}
@@ -238,7 +244,7 @@ begin
       SetSel(i,i);
       if SelStart <> i then break;
 
-      if SelAttributes.Color = clNavy then
+      if Colored then
         begin
           if not L then
             begin
@@ -252,7 +258,7 @@ begin
           L := True;
         end;
 
-      if SelAttributes.Color <> clNavy then L := False;
+      if not Colored then L := False;
       inc(i);
     end;
 
