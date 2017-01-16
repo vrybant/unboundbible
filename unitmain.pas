@@ -523,8 +523,8 @@ begin
   if Button = mbLeft then
     begin
       RichEditBible.GetRange(n1, n2);
-      Verse.Verse := n1;
-      Verse.Range := n2;
+      Verse.Number := n1;
+      Verse.Range  := n2;
       if FormTranslate.Visible then LoadTranslate;
     end;
 
@@ -616,7 +616,7 @@ begin
 
   {$ifdef darwin} MakeVisible; {$endif}
 
-  RichEditBible.SelectParagraph(Verse.Verse);
+  RichEditBible.SelectParagraph(Verse.Number);
   {$ifdef darwin} bag02 := False; {$endif}
   Repaint;
 end;
@@ -1193,7 +1193,7 @@ begin
 
   Verse.Book := Book.Number;
   Verse.Chapter := 1;
-  Verse.Verse := 1;
+  Verse.Number := 1;
   Verse.Range := 1;
 
   ListBoxCh.ItemIndex := 0;
@@ -1204,7 +1204,7 @@ procedure TMainForm.ListBoxChClick(Sender: TObject);
 begin
   {$ifdef darwin} if bag01 or bag02 then Exit; {$endif}
   Verse.Chapter := ListBoxCh.ItemIndex + 1;
-  Verse.Verse := 1;
+  Verse.Number := 1;
   Verse.Range := 1;
   LoadChapter;
 end;
@@ -1473,8 +1473,8 @@ var
 begin
   Stream := TMemoryStream.Create;
   RichEditBible.GetRange(n1, n2);
-  Verse.Verse := n1;
-  Verse.Range := n2;
+  Verse.Number := n1;
+  Verse.Range  := n2;
   Load_Verses(Stream);
   StreamToClipboard(Stream);
   Stream.free;

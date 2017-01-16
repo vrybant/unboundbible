@@ -14,7 +14,7 @@ type
   TVerse = record
     Book     : integer;
     Chapter  : integer;
-    Verse    : integer;
+    Number   : integer;
     Range    : integer;
   end;
 
@@ -177,7 +177,7 @@ var
 
     n := Pos(':',s);      Result.Book    := Bible[i].Number;
     p := Copy(s,1,n-1);   Result.Chapter := MyStrToInt(p);
-    p := Copy(s,n+1,255); Result.Verse   := MyStrToInt(p);
+    p := Copy(s,n+1,255); Result.Number  := MyStrToInt(p);
   end;
 
 begin
@@ -185,7 +185,7 @@ begin
 
   Result.Book    := 0;
   Result.Chapter := 0;
-  Result.Verse   := 0;
+  Result.Number  := 0;
   Result.Range   := 0;
 
   if Pos(':',Wide) = 0 then Exit;
@@ -196,7 +196,7 @@ begin
       if Bible[i].Abbr  = Copy(Wide,1,Length(Bible[i].Abbr )) then GetLink(i,False);
     end;
 
-  if Result.Range = 0 then Result.Range := Result.Verse;
+  if Result.Range = 0 then Result.Range := Result.Number;
 end;
 
 //========================================================================================
@@ -450,8 +450,8 @@ begin
   Book := Bible.BookByNum(Verse.Book);
   if Book = nil then Exit;
 
-  Result := Book.Title + ' ' + IntToStr(Verse.Chapter) + ':' + IntToStr(Verse.Verse);
-  if (Verse.Range <> 0) and (Verse.Range <> Verse.Verse) then
+  Result := Book.Title + ' ' + IntToStr(Verse.Chapter) + ':' + IntToStr(Verse.Number);
+  if (Verse.Range <> 0) and (Verse.Range <> Verse.Number) then
     Result := Result + '-' + IntToStr(Verse.Range);
 end;
 
@@ -525,7 +525,7 @@ begin
            iverse := MyStrToInt(lst[ssVerse]);
 
           if (chapter = Verse.Chapter) and
-             ( iverse = Verse.Verse  ) then Result := lst[ssText];
+             ( iverse = Verse.Number ) then Result := lst[ssText];
         end;
     end;
 
@@ -571,7 +571,7 @@ begin
 
       if lst.Count > ssText then
         if (MyStrToInt(lst[ssChapter]) = Verse.Chapter) and
-           (MyStrToInt(lst[ssVerse])  >= Verse.Verse  ) and
+           (MyStrToInt(lst[ssVerse])  >= Verse.Number ) and
            (MyStrToInt(lst[ssVerse])  <= Verse.Range  ) then List.Add(lst[ssText]);
     end;
 
@@ -785,7 +785,7 @@ procedure TShelf.VerseToBeginning(var verse: TVerse);
 begin
   verse.Book := 1;
   verse.Chapter := 1;
-  verse.Verse := 1;
+  verse.Number := 1;
   verse.Range := 1;
   if not Items[current].OldTestament then verse.Book := 40;
 end;
