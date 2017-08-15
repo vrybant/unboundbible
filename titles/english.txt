@@ -60,24 +60,24 @@
 59	James	James
 60	1 Peter	1Pet.
 61	2 Peter	2Pet.
-62	1 John	1 John
-63	2 John	2 John
-64	3 John	3 John
+62	1 John	1John
+63	2 John	2John
+64	3 John	3John
 65	Jude	Jude
 66	Revelation	Rev.
 67	Tobit	Tob.
 68	Judith	Jdt.
-69	Esther-Greek	Esg.
-70	Wisdom	Wis.
-71	Sirach	Sir.
-72	Baruch	Bar.
-74	Prayer of Azariah	Aza.
-75	Susanna	Sus.
-76	Bel and the Dragon	Bel.
-77	1 Maccabees	1Maсс.
-78	2 Maccabees	2Maсс.
-79	3 Maccabees	3Maсс.
-80	4 Maccabees	4Maсс.
-81	1 Esdras	1Esd.
-82	2 Esdras	2Esd.
-83	Prayer of Manasses	Man.
+69	Wisdom	Wis.
+70	Sirach	Sir.
+71	Baruch	Bar.
+72	1 Maccabees	1Maсс.
+73	2 Maccabees	2Maсс.
+74	1 Esdras	1Esd.
+75	2 Esdras	2Esd.
+76	3 Maccabees	3Maсс.
+77	4 Maccabees	4Maсс.
+78	Prayer of Manasses	Man.
+79	3 Esdras	3Esd.
+80	Epistle of Jeremiah	Ep. 
+
+
