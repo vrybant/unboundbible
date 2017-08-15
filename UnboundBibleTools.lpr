@@ -6,9 +6,9 @@ uses
   {$ifdef unux}{$ifdef UseCThreads} cthreads, {$endif}{$endif}
   {$ifdef unix} printer4lazarus, {$endif}
   Interfaces, // this includes the LCL widgetset
-  Graphics, Forms, UnitMain, richmemopackage, UnitEdit, UnitShelf, UnitLang,
-  UnitAbout, UnitInfo, UnitLib, UnitSearch, UnitTool, UnitCompare, UnitClass,
-  UnitOptions, UnitCopy, UnitMemo, unittrans;
+  Graphics, Forms, UnitMain, richmemopackage, zcomponent, UnitEdit, UnitShelf,
+  UnitLang, UnitAbout, UnitInfo, UnitLib, UnitSearch, UnitTool, UnitCompare,
+  UnitClass, UnitOptions, UnitCopy, UnitMemo, unittrans;
 
 {$R *.res}
 

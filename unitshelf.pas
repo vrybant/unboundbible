@@ -5,7 +5,8 @@ unit UnitShelf;
 interface
 
 uses
-  SysUtils, Classes, Graphics, IniFiles,  ClipBrd, UnitLib;
+  Classes, SysUtils, Dialogs, Graphics, IniFiles,  ClipBrd, UnitLib,
+  db, ZConnection, ZDataset;
 
 const
   BookMax = 86;
@@ -36,6 +37,10 @@ type
   end;
 
   TBible = class(TList)
+    Connection : TZConnection;
+    Query      : TZReadOnlyQuery;
+    DataSource : TDataSource;
+    {-}
     Text         : TStringList;
     Info         : TStringList;
     FilePath     : string;
@@ -70,6 +75,7 @@ type
   public
     { Public declarations }
     constructor Create(fp,fn: string);
+    procedure OpenDatabase;
     procedure LoadFromFile;
     procedure LoadTags;
     function  BookByName(s: string): TBook;
@@ -273,6 +279,17 @@ constructor TBible.Create(fp,fn: string);
 begin
   inherited Create;
 
+  Connection := TZConnection.Create(nil);
+  Connection.Protocol:='sqlite-3';
+  Connection.Database:='c:\RSTM.SQLite3';
+  Connection.ClientCodepage:='UTF8';
+
+  Query := TZReadOnlyQuery.Create(nil);
+  DataSource := TDataSource.Create(nil);
+
+  Query.Connection := Connection;
+  DataSource.DataSet := Query;
+
   Text := TStringList.Create;
   Info := TStringList.Create;
 
@@ -293,6 +310,20 @@ begin
   Apocrypha    := False;
 
   LoadTags;
+
+  OpenDatabase;
+end;
+
+procedure TBible.OpenDatabase;
+begin
+  try
+    Connection.Connect;
+//  if  Connection.Connected then ShowMessage('Подключение успешно');
+    Query.SQL.Text :='SELECT * FROM verses ';
+    Query.Open; // выполняем запрос
+  except
+    ShowMessage('Ошибка подключения');
+  end;
 end;
 
 procedure TBible.LoadTags;
@@ -663,6 +694,10 @@ destructor TBible.Destroy;
 begin
   Text.Free;
   Info.Free;
+
+  DataSource.free;
+  Query.free;
+  Connection.free;
 
   inherited Destroy;
 end;
