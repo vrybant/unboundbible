@@ -187,8 +187,8 @@ begin
     SetSel(x2, x2);
   until not Colored; // or (x2 > x0+5)
 
-                     inc(x1);
-  {$ifdef mswindows} dec(x2); {$endif}
+                      inc(x1);
+// {$ifdef mswindows} dec(x2); {$endif}
 
   SetSel(x1,x2); Result := MyStrToInt(SelText);
   SetSel(x1,x1+1);
