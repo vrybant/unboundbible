@@ -76,8 +76,8 @@ type
     { Public declarations }
     constructor Create(fp,fn: string);
     procedure OpenDatabase;
+    procedure LoadDatabase;
     procedure LoadFromFile;
-    procedure LoadTags;
     function  BookByName(s: string): TBook;
     function  BookByNum(n: integer): TBook;
     function  VerseToStr(Verse: TVerse): string;
@@ -309,7 +309,8 @@ begin
   NewTestament := False;
   Apocrypha    := False;
 
-  LoadTags;
+  Name := FileName;
+  Language := 'english';
 
   OpenDatabase;
 end;
@@ -326,58 +327,10 @@ begin
   end;
 end;
 
-procedure TBible.LoadTags;
-var
-  lst : TStringList;
-  f : System.Text;
-  s : string;
-  i : integer;
-const
-  MaxLines = 100;
-
-  procedure Tag;
-  begin
-    if lst[0] = '#name'         then Name         := lst[1];
-    if lst[0] = '#native'       then Native       := lst[1];
-    if lst[0] = '#abbreviation' then Abbreviation := lst[1];
-    if lst[0] = '#copyright'    then Copyright    := lst[1];
-    if lst[0] = '#language'     then Language     := LowerCase (lst[1]);
-    if lst[0] = '#filetype'     then Filetype     := LowerCase (lst[1]);
-    if lst[0] = '#note'         then Note         := lst[1];
-  end;
-
+procedure TBible.LoadDatabase;
 begin
-  AssignFile(f,FilePath + Slash + FileName);
-  Reset(f);
+  if loaded then exit;
 
-  lst := TStringList.Create;
-
-  for i:=1 to MaxLines do
-    begin
-      if eof(f) then Break;
-      Readln(f,s);
-      s := Trim(s);
-
-      if Pos('#',s) = 1 then
-        begin
-          StrToList(s,lst);
-          if lst.Count >= 2 then Tag;
-        end;
-    end;
-
-  lst.Free;
-  CloseFile(f);
-
-  if Name = '' then
-    begin
-      s := ChangeFileExt(FileName,'');
-      Replace(s,'_utf8','');
-      Replace(s,'_',' ');
-      Name := s;
-    end;
-
-  LangEnable := (Language <> '');
-  if Language = '' then Language := 'english';
 end;
 
 procedure TBible.LoadFromFile;
