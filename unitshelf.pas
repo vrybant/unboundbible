@@ -76,6 +76,8 @@ type
     procedure SetItem(Index: Integer; lst: TBook);
     function  TitlesFromList(TitleList: TStringList): boolean;
     function Add(lst: TBook): Integer;
+    function FileIndex(index: integer): integer;
+    function UnboundIndex(index: integer): integer;
   public
     { Public declarations }
     constructor Create(filePath, fileName: string);
@@ -393,25 +395,22 @@ begin
     Query.SQL.Text := 'SELECT DISTINCT ' + z.book + ' FROM ' + z.bible;
     Query.Open;
 
-    while not Query.Eof do
-      begin
-//      try value := Query.FieldByName(z.book).AsString; except end;
-        try n := Query.FieldByName(z.book).AsInteger; except end;
+    //let title = Title(language: language)
 
-//      n := MyStrToInt(value);
-        value := IntToStr(n);
-        OutputString(value);
+    while not Query.Eof do
+      try
+        n := Query.FieldByName(z.book).AsInteger;
 
         if n > 0 then
           begin
             Book := TBook.Create;
-            Book.number := n; // unboundIndex(n)
-//          Book.id  := IntToStr(n);
+            Book.number := UnboundIndex(n);
+            Book.id  := n;
 //          Book.title := title.getTitle(book.number)
 //          Book.abbr  := title.getAbbr(book.number)
             Add(Book);
           end;
-
+      finally
         Query.Next;
       end;
 
@@ -420,26 +419,6 @@ begin
   except
     //
   end;
-      (*
-      let title = Title(language: language)
-      while results.next() == true {
-          guard let stbook = results.string(forColumn: s.book) else { break }
-
-          let n = stbook.toInt()
-
-          if n > 0 {
-              var book = Book()
-              book.number = unboundIndex(n)
-              book.id = n
-              book.title = title.getTitle(book.number)
-              book.abbr  = title.getAbbr(book.number)
-              books.append(book)
-          }
-
-      titles = getTitles()
-      loaded = true
-  *)
-
 
 end;
 
@@ -535,6 +514,29 @@ begin
   Result := nil;
   for i:=0 to Count-1 do
     if Items[i].Title = s then Result := Items[i];
+end;
+
+function TBible.FileIndex(index: integer): integer;
+var i : integer;
+begin
+  Result := index;
+  if fileFormat = mybible then
+    if index > 0 then
+      for i:=1 to Length(myBibleArray) do
+        if index = myBibleArray[i] then
+          begin
+            Result := i;
+            Exit;
+          end;
+end;
+
+function TBible.UnboundIndex(index: integer): integer;
+begin
+  Result := index;
+  if fileFormat = mybible then
+    if index > 0 then
+      if index <= Length(myBibleArray) then
+        Result := myBibleArray[index];
 end;
 
 function TBible.VerseToStr(Verse: TVerse): string;
