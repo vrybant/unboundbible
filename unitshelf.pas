@@ -5,25 +5,26 @@ unit UnitShelf;
 interface
 
 uses
-  Classes, SysUtils, Dialogs, Graphics, IniFiles,  ClipBrd, UnitLib,
-  db, ZConnection, ZDataset;
+  Classes, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd,
+  db, ZConnection, ZDataset, UnitLib, UnitType;
 
 const
   BookMax = 86;
 
 type
   TVerse = record
-    Book     : integer;
-    Chapter  : integer;
-    Number   : integer;
-    Range    : integer;
+    book     : integer;
+    chapter  : integer;
+    number   : integer;
+    count    : integer;
   end;
 
   TBook = class(TStringList)
   public
-    Title  : string;
-    Abbr   : string;
-    Number : integer;
+    title  : string;
+    abbr   : string;
+    number : integer;
+    id     : integer;
     constructor Create;
   end;
 
@@ -42,30 +43,33 @@ type
     DataSource : TDataSource;
     {-}
     Text         : TStringList;
-    Info         : TStringList;
-    FilePath     : string;
-    FileName     : string;
+    InfoList     : TStringList;
+    info         : string;
+    filePath     : string;
+    fileName     : string;
+    fileFormat   : TFileFormat;
+    z            : TStringAlias;
     {-}
-    Name         : string; // Tags
-    Native       : string;
-    Abbreviation : string; // [э'bri:vi'eishэn]
-    Copyright    : string;
-    Language     : string;
-    FileType     : string;
-    Note         : string;
+    name         : string; // Tags
+    native       : string;
+    abbreviation : string; // [э'bri:vi'eishэn]
+    copyright    : string;
+    language     : string;
+    fileType     : string;
+    note         : string;
     {-}
-    RightToLeft  : boolean;
-    Compare      : boolean;
-    FontName     : TFontName;
-    FontSize     : integer;
+    rightToLeft  : boolean;
+    compare      : boolean;
+    fontName     : TFontName;
+    fontSize     : integer;
 //  Charset      : TFontCharset;
     {-}
-    OldTestament : boolean;     // Flags
-    NewTestament : boolean;
-    Apocrypha    : boolean;
+    oldTestament : boolean;     // Flags
+    newTestament : boolean;
+    apocrypha    : boolean;
     ssText       : integer;
-    Loaded       : boolean;
-    LangEnable   : boolean;
+    loaded       : boolean;
+    langEnable   : boolean;
   private
     { Private declarations }
     function  GetItem(Index: Integer): TBook;
@@ -74,7 +78,7 @@ type
     function Add(lst: TBook): Integer;
   public
     { Public declarations }
-    constructor Create(fp,fn: string);
+    constructor Create(filePath, fileName: string);
     procedure OpenDatabase;
     procedure LoadDatabase;
     procedure LoadFromFile;
@@ -177,7 +181,7 @@ var
     n := Pos('-',s);
     if n > 0 then
       begin
-        p := Copy(s,n+1,255); Result.Range := MyStrToInt(p);
+        p := Copy(s,n+1,255); Result.Count := MyStrToInt(p);
         s := Copy(s,1,n-1);
       end;
 
@@ -192,7 +196,7 @@ begin
   Result.Book    := 0;
   Result.Chapter := 0;
   Result.Number  := 0;
-  Result.Range   := 0;
+  Result.Count   := 0;
 
   if Pos(':',Wide) = 0 then Exit;
 
@@ -202,7 +206,7 @@ begin
       if Bible[i].Abbr  = Copy(Wide,1,Length(Bible[i].Abbr )) then GetLink(i,False);
     end;
 
-  if Result.Range = 0 then Result.Range := Result.Number;
+  if Result.Count = 0 then Result.Count := Result.Number;
 end;
 
 //========================================================================================
@@ -275,14 +279,14 @@ end;
 //                                     TBible
 //========================================================================================
 
-constructor TBible.Create(fp,fn: string);
+constructor TBible.Create(filePath, fileName: string);
 begin
   inherited Create;
 
   Connection := TZConnection.Create(nil);
-  Connection.Protocol:='sqlite-3';
-  Connection.Database:='c:\RSTM.SQLite3';
-  Connection.ClientCodepage:='UTF8';
+  Connection.Protocol := 'sqlite-3';
+  Connection.Database := filePath + slash +  fileName;
+  Connection.ClientCodepage := 'UTF8';
 
   Query := TZReadOnlyQuery.Create(nil);
   DataSource := TDataSource.Create(nil);
@@ -291,45 +295,151 @@ begin
   DataSource.DataSet := Query;
 
   Text := TStringList.Create;
-  Info := TStringList.Create;
+  InfoList := TStringList.Create;
 
-  FilePath     := fp;
-  FileName     := fn;
-  Name         := fn;
-  Native       := '';
-  Abbreviation := '';
-  Copyright    := '';
-  Language     := '';
-  Filetype     := '';
+  self.filePath := filePath;
+  self.fileName := fileName;
+
+  fileFormat   := unbound;
+  z            := unboundStringAlias;
+
+  name         := fileName;
+  native       := '';
+  abbreviation := '';
+  copyright    := '';
+  language     := 'english';
+  filetype     := '';
   ssText       :=  0;
-  Loaded       := False;
-  LangEnable   := False;
-
-  OldTestament := False;
-  NewTestament := False;
-  Apocrypha    := False;
-
-  Name := FileName;
-  Language := 'english';
+  loaded       := False;
+  langEnable   := False;
+  oldTestament := False;
+  newTestament := False;
+  apocrypha    := False;
 
   OpenDatabase;
 end;
 
 procedure TBible.OpenDatabase;
+var
+  key, value : string;
 begin
   try
     Connection.Connect;
-//  if  Connection.Connected then ShowMessage('Подключение успешно');
-    Query.SQL.Text :='SELECT * FROM verses ';
-    Query.Open; // выполняем запрос
+    if  not Connection.Connected then Exit;
   except
-    ShowMessage('Ошибка подключения');
+    Exit;
   end;
+
+  try
+    Query.SQL.Text := 'SELECT * FROM Details';
+    Query.Open;
+
+    try name      := Query.FieldByName('Title'      ).AsString; except end;
+    try info      := Query.FieldByName('Information').AsString; except end;
+    try info      := Query.FieldByName('Description').AsString; except end;
+    try copyright := Query.FieldByName('Copyright'  ).AsString; except end;
+    try language  := Query.FieldByName('Language'   ).AsString; except end;
+  except
+    //
+  end;
+
+  try
+    Query.SQL.Text := 'SELECT * FROM info';
+    Query.Open;
+
+    while not Query.Eof do
+      begin
+        try key   := Query.FieldByName('name' ).AsString; except end;
+        try value := Query.FieldByName('value').AsString; except end;
+
+        if key = 'description'   then name     := value;
+        if key = 'language'      then language := value;
+        if key = 'detailed_info' then info     := value;
+
+        Query.Next;
+      end;
+
+    fileFormat := mybible;
+    z := mybibleStringAlias;
+  except
+    //
+  end;
+
+  language := LowerCase(language);
+
+  OutputString('fileName = ' + fileName);
+
+  if fileFormat = unbound then OutputString('fileFormat = unbound');
+  if fileFormat = mybible then OutputString('fileFormat = mybible');
+
+  OutputString('name = ' + name);
+  OutputString('info = ' + info);
+//OutputString('copyright = ' + copyright);
+  OutputString('language = ' + language);
+  OutputString('-');
+
+  LoadDatabase; /// TEMPORARY
 end;
 
 procedure TBible.LoadDatabase;
+var
+  Book : TBook;
+  value : string;
+  n : integer;
 begin
   if loaded then exit;
+
+  try
+    Query.SQL.Text := 'SELECT DISTINCT ' + z.book + ' FROM ' + z.bible;
+    Query.Open;
+
+    while not Query.Eof do
+      begin
+//      try value := Query.FieldByName(z.book).AsString; except end;
+        try n := Query.FieldByName(z.book).AsInteger; except end;
+
+//      n := MyStrToInt(value);
+        value := IntToStr(n);
+        OutputString(value);
+
+        if n > 0 then
+          begin
+            Book := TBook.Create;
+            Book.number := n; // unboundIndex(n)
+//          Book.id  := IntToStr(n);
+//          Book.title := title.getTitle(book.number)
+//          Book.abbr  := title.getAbbr(book.number)
+            Add(Book);
+          end;
+
+        Query.Next;
+      end;
+
+//  titles = getTitles()
+    loaded := true
+  except
+    //
+  end;
+      (*
+      let title = Title(language: language)
+      while results.next() == true {
+          guard let stbook = results.string(forColumn: s.book) else { break }
+
+          let n = stbook.toInt()
+
+          if n > 0 {
+              var book = Book()
+              book.number = unboundIndex(n)
+              book.id = n
+              book.title = title.getTitle(book.number)
+              book.abbr  = title.getAbbr(book.number)
+              books.append(book)
+          }
+
+      titles = getTitles()
+      loaded = true
+  *)
+
 
 end;
 
@@ -344,6 +454,8 @@ var
         Num : integer;
         i,n : integer;
 begin
+  EXIT;
+
   Path := FilePath + Slash +  FileName;
 
   if Loaded then Exit;
@@ -364,7 +476,7 @@ begin
       if (n = 0) then
         begin
           if (Pos('0',p) > 0) then TitleList.Add(s);
-          if (Pos(';',p) > 0) then      Info.Add(s);
+          if (Pos(';',p) > 0) then  InfoList.Add(s);
         end;
 
       if  n > 0 then
@@ -435,8 +547,8 @@ begin
   if Book = nil then Exit;
 
   Result := Book.Title + ' ' + IntToStr(Verse.Chapter) + ':' + IntToStr(Verse.Number);
-  if (Verse.Range <> 0) and (Verse.Range <> Verse.Number) then
-    Result := Result + '-' + IntToStr(Verse.Range);
+  if (Verse.Count <> 0) and (Verse.Count <> Verse.Number) then
+    Result := Result + '-' + IntToStr(Verse.Count);
 end;
 
 function TBible.TitlesFromList(TitleList: TStringList): boolean;
@@ -556,7 +668,7 @@ begin
       if lst.Count > ssText then
         if (MyStrToInt(lst[ssChapter]) = Verse.Chapter) and
            (MyStrToInt(lst[ssVerse])  >= Verse.Number ) and
-           (MyStrToInt(lst[ssVerse])  <= Verse.Range  ) then List.Add(lst[ssText]);
+           (MyStrToInt(lst[ssVerse])  <= Verse.Count  ) then List.Add(lst[ssText]);
     end;
 
   lst.free;
@@ -646,7 +758,7 @@ end;
 destructor TBible.Destroy;
 begin
   Text.Free;
-  Info.Free;
+  InfoList.Free;
 
   DataSource.free;
   Query.free;
@@ -663,7 +775,7 @@ constructor TShelf.Create;
 begin
   inherited;
 
-  AddBibles(AppPath + Slash + BibleDirectory);
+//AddBibles(AppPath + Slash + BibleDirectory);
   AddBibles(AppDataPath + Slash + BibleDirectory);
 
   ReadPrivates;
@@ -676,7 +788,7 @@ var
 begin
   List := TStringList.Create;
 
-  GetFileList(path + Slash + '*.txt', List, True);
+  GetFileList(path + Slash + '*.*', List, True);
 
   for i:= 0 to List.Count-1 do
     Add(TBible.Create(path, List[i]));
@@ -774,7 +886,7 @@ begin
   verse.Book := 1;
   verse.Chapter := 1;
   verse.Number := 1;
-  verse.Range := 1;
+  verse.Count := 1;
   if not Items[current].OldTestament then verse.Book := 40;
 end;
 

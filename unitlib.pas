@@ -66,6 +66,7 @@ function TempFileName: string;
 procedure CreateDirectories;
 {$ifdef darwin} procedure PrintFile(FileName : string); {$endif}
 procedure OpenFolder(path : string);
+procedure OutputString(s: string);
 
 var
   CurrFont: TFont;
@@ -414,15 +415,15 @@ begin
   {$endif}
 end;
 
-// A-Z = 1040-1071 / Russian Alphabet
-// a-z = 1072-1103
-
 {$ifdef mswindows}
 function WideLowerCaseFixed(s : WideString): WideString;
 begin
   Result := WideLowerCase(s);
 end;
 {$endif}
+
+// A-Z = 1040-1071 / Russian Alphabet
+// a-z = 1072-1103
 
 {$ifdef unix}
 function WideLowerCaseFixed(s : WideString): WideString;
@@ -484,6 +485,11 @@ begin
   end;
 end;
 {$endif}
+
+procedure OutputString(s: string);
+begin
+  {$ifdef mswindows} OutputDebugString(PChar(s)) {$endif}
+end;
 
 initialization
   CurrFont := TFont.Create;

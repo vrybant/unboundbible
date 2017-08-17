@@ -52,7 +52,7 @@ var
 begin
   List := TStringList.Create;
 
-  for i:=0 to Bible.Info.Count-1 do
+  for i:=0 to Bible.InfoList.Count-1 do
     begin
       s := Bible.Info[i];
       System.Delete(s,1,1);
@@ -68,4 +68,4 @@ end;
 //-----------------------------------------------------------------------------------------
 
 end.
-
+

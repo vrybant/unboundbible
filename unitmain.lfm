@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 371
+  Left = 366
   Height = 363
-  Top = 270
+  Top = 208
   Width = 795
   Caption = 'Unbound Bible Tools'
   ClientHeight = 343

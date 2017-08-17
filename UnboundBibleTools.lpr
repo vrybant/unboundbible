@@ -8,7 +8,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Graphics, Forms, UnitMain, richmemopackage, zcomponent, UnitEdit, UnitShelf,
   UnitLang, UnitAbout, UnitInfo, UnitLib, UnitSearch, UnitTool, UnitCompare,
-  UnitClass, UnitOptions, UnitCopy, UnitMemo, unittrans;
+  UnitClass, UnitOptions, UnitCopy, UnitMemo, unittrans, unittype;
 
 {$R *.res}
 

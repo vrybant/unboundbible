@@ -329,9 +329,9 @@ var
 
     s := s + IntToStr(Verse.Chapter) + ':' + IntToStr(Verse.Number);
 
-    if (Verse.Number = Verse.Range) or (Verse.Range = 0)
+    if (Verse.Number = Verse.Count) or (Verse.Count = 0)
       then s := s + '\cf1 '
-      else s := s + '-' + IntToStr(Verse.Range) + '\cf1 ';
+      else s := s + '-' + IntToStr(Verse.Count) + '\cf1 ';
 
     if Options.cvDelim then s := '(' + s + ')';
 
@@ -356,7 +356,7 @@ begin
       s := '\cf1 ';
 
       if Options.cvNum then
-        if Options.cvWrap or (Verse.Number <> Verse.Range) or Options.cvEnd
+        if Options.cvWrap or (Verse.Number <> Verse.Count) or Options.cvEnd
           then s := s + '(' + IntToStr(Verse.Number + i) + ') ';
 
       s := s + List[i];

@@ -9,7 +9,8 @@ uses
   {$ifdef unix} UnitMemo, {$endif}
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
-  ClipBrd, StdActns, RichMemo, UnitEdit, PrintersDlgs, Types;
+  ClipBrd, StdActns, RichMemo, UnitEdit, PrintersDlgs, Types, ZDataset,
+  ZConnection;
 
 type
   { TMainForm }
@@ -524,7 +525,7 @@ begin
     begin
       RichEditBible.GetRange(n1, n2);
       Verse.Number := n1;
-      Verse.Range  := n2;
+      Verse.Count  := n2;
       if FormTranslate.Visible then LoadTranslate;
     end;
 
@@ -1194,7 +1195,7 @@ begin
   Verse.Book := Book.Number;
   Verse.Chapter := 1;
   Verse.Number := 1;
-  Verse.Range := 1;
+  Verse.Count := 1;
 
   ListBoxCh.ItemIndex := 0;
   LoadChapter;
@@ -1205,7 +1206,7 @@ begin
   {$ifdef darwin} if bag01 or bag02 then Exit; {$endif}
   Verse.Chapter := ListBoxCh.ItemIndex + 1;
   Verse.Number := 1;
-  Verse.Range := 1;
+  Verse.Count := 1;
   LoadChapter;
 end;
 
@@ -1474,7 +1475,7 @@ begin
   Stream := TMemoryStream.Create;
   RichEditBible.GetRange(n1, n2);
   Verse.Number := n1;
-  Verse.Range  := n2;
+  Verse.Count  := n2;
   Load_Verses(Stream);
   StreamToClipboard(Stream);
   Stream.free;
