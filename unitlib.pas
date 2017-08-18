@@ -33,6 +33,7 @@ const
 function IsNumeral(c: char): boolean;
 function IsLetter(c: char): boolean;
 function Marks(st: string): string;
+function Prefix(ps, st: string): boolean;
 function OneUpCase(st: string): string;
 //function ReplaceSub(str, sub1, sub2: String; del: byte): String;
 function MyStrToInt(st: string): integer;
@@ -92,6 +93,11 @@ end;
 function Marks(st: string): string;
 begin
   Result := '"' + st + '"';
+end;
+
+function Prefix(ps, st: string): boolean;
+begin
+  Result := Pos(ps, st) = 1;
 end;
 
 function OneUpCase(st: string): string;

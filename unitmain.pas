@@ -9,8 +9,7 @@ uses
   {$ifdef unix} UnitMemo, {$endif}
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
-  ClipBrd, StdActns, RichMemo, UnitEdit, PrintersDlgs, Types, ZDataset,
-  ZConnection;
+  ClipBrd, StdActns, RichMemo, UnitEdit, PrintersDlgs, Types;
 
 type
   { TMainForm }

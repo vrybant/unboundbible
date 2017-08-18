@@ -30,11 +30,14 @@ type
 
   TTitle = class(TStringList)
   public
-    constructor Create(lang : string);
-    function GetTitle(n : integer): string;
+    constructor Create(language: string);
+    function GetTitle(n: integer): string;
+    function GetAbbr(n: integer): string;
   private
-    Language : string;
-    procedure Load_From_File;
+    fileName : string;
+    function GetFileName(language: string): string;
+    function GetTitleEx(n : integer; abbr: boolean): string;
+    procedure LoadDataFromFile;
   end;
 
   TBible = class(TList)
@@ -62,7 +65,6 @@ type
     compare      : boolean;
     fontName     : TFontName;
     fontSize     : integer;
-//  Charset      : TFontCharset;
     {-}
     oldTestament : boolean;     // Flags
     newTestament : boolean;
@@ -93,8 +95,8 @@ type
     procedure GetRange(Verse: TVerse; var List: TStringList);
     procedure GetTitles(var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
-    procedure SavePrivate(const IniFile : TIniFile);
-    procedure ReadPrivate(const IniFile : TIniFile);
+    procedure SavePrivate(const IniFile: TIniFile);
+    procedure ReadPrivate(const IniFile: TIniFile);
     {-}
     property Items[Index: Integer]: TBook read GetItem write SetItem; default;
     {-}
@@ -227,24 +229,44 @@ end;
 //                                     TTitle
 //========================================================================================
 
-constructor TTitle.Create(lang : string);
+constructor TTitle.Create(language: string);
 begin
   inherited Create;
-  Language := lang;
-  Load_From_File;
+  fileName := GetFileName(language);
+  LoadDataFromFile;
 end;
 
-procedure TTitle.Load_From_File;
+function TTitle.GetFileName(language: string): string;
 var
-  File_Name : string;
+  List : TStringList;
+  path : string;
+  i : integer;
+begin
+  Result := 'english.txt';
+
+  List := TStringList.Create;
+  path := appPath + slash + titleDirectory + '*.txt';
+
+  GetFileList(path, List, True);
+
+  for i:= 0 to List.Count-1 do
+    if Prefix(language, List[i]) then
+      Result := List[i];
+
+  List.Free;
+end;
+
+procedure TTitle.LoadDataFromFile;
+var
+  path : string;
   f : System.Text;
   s : string;
 begin
-  File_Name := AppPath + Slash + TitleDirectory + Slash + Language + '.txt';
+  path := appPath + slash + titleDirectory + slash + fileName;
 
-  if not FileExists(File_Name) then Exit;
+  if not FileExists(path) then Exit;
 
-  AssignFile(f,File_Name); Reset(f);
+  AssignFile(f,path); Reset(f);
 
   while not eof(f) do
     begin
@@ -256,25 +278,36 @@ begin
   CloseFile(f);
 end;
 
-function TTitle.GetTitle(n : integer): string;
+function TTitle.GetTitleEx(n : integer; abbr: boolean): string;
 var
-  list : TStringList;
-  i : integer;
+  List : TStringList;
+   i,k : integer;
 begin
   Result := IntToStr(n);
 
   if self.Count = 0 then Exit;
   if n = 0 then Exit;
-  list := TStringList.Create;
+  if abbr then k := 2 else k := 1;
+  List := TStringList.Create;
 
   for i:=0 to self.Count-1 do
     begin
-      StrToList(self[i], list);
-      if list.Count > 1 then
-        if MyStrToInt(list[0]) = n then Result := list[1];
+      StrToList(self[i], List);
+      if List.Count > k then
+        if MyStrToInt(List[0]) = n then Result := List[k];
     end;
 
-  list.Free;
+  List.Free;
+end;
+
+function TTitle.GetTitle(n : integer): string;
+begin
+  Result := GetTitleEx(n, false);
+end;
+
+function TTitle.GetAbbr(n : integer): string;
+begin
+  Result := GetTitleEx(n, true);
 end;
 
 //========================================================================================
@@ -386,7 +419,6 @@ end;
 procedure TBible.LoadDatabase;
 var
   Book : TBook;
-  value : string;
   n : integer;
 begin
   if loaded then exit;
