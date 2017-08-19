@@ -537,37 +537,38 @@ begin
 end;
 
 function TBible.GetVerse(Verse: TVerse): string;
-var
-     Book : TBook;
-      lst : TStringList;
-  chapter : integer;
-   iverse : integer;
-        i : integer;
 begin
-  Result := '---';
-
-  Book := BookByNum(Verse.Book);
-  if Book = nil then Exit;
+  Result := '';
 end;
 
 procedure TBible.GetChapter(Verse: TVerse; var List: TStringList);
 var
- Book : TBook;
-  lst : TStringList;
-    i : integer;
+  index : integer;
+  id, chapter : string;
+  line : string;
 begin
-  Book := BookByNum(Verse.Book);
-  if Book = nil then Exit;
+  index := fileIndex(Verse.book);
+  id := IntToStr(index);
+  chapter := IntToStr(verse.chapter);
+
+  try
+    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id + ' AND ' + z.chapter + '=' + chapter;
+    Query.Open;
+
+    while not Query.Eof do
+      begin
+        try line := Query.FieldByName(z.text).AsString; except end;
+    //  line = line.replace("\n", "")                   ////////////////  ESWORD  /////////////////////////
+        List.Add(line);
+        Query.Next;
+      end;
+  except
+    //
+  end;
 end;
 
 procedure TBible.GetRange(Verse: TVerse; var List: TStringList);
-var
-  Book : TBook;
-   lst : TStringList;
-     i : integer;
 begin
-  Book := BookByNum(Verse.Book);
-  if Book = nil then Exit;
 end;
 
 procedure TBible.GetTitles(var List: TStringList);
