@@ -230,9 +230,11 @@ begin
   Result := 'english.txt';
 
   List := TStringList.Create;
-  path := appPath + slash + titleDirectory + '*.txt';
+  path := appPath + titleDirectory + slash + '*.txt';
 
   GetFileList(path, List, True);
+
+  OutputString(path);
 
   for i:= 0 to List.Count-1 do
     if Prefix(language, List[i]) then
@@ -453,6 +455,15 @@ begin
 end;
 
 function TBible.FileIndex(index: integer): integer;
+begin
+  Result := index;
+  if fileFormat = mybible then
+    if index > 0 then
+      if index <= Length(myBibleArray) then
+        Result := myBibleArray[index];
+end;
+
+function TBible.UnboundIndex(index: integer): integer;
 var i : integer;
 begin
   Result := index;
@@ -464,15 +475,6 @@ begin
             Result := i;
             Exit;
           end;
-end;
-
-function TBible.UnboundIndex(index: integer): integer;
-begin
-  Result := index;
-  if fileFormat = mybible then
-    if index > 0 then
-      if index <= Length(myBibleArray) then
-        Result := myBibleArray[index];
 end;
 
 function TBible.VerseToStr(Verse: TVerse): string;
