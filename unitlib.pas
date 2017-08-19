@@ -270,22 +270,22 @@ end;
 
 procedure GetFileList(const Path: string; const List: TStrings; Ext: boolean);
 var
-  SRec : TSearchRec;
-   Res : integer;
-     s : string;
+  SearchRec : TSearchRec;
+  Res : integer;
+  s : string;
 begin
-  Res  := SysUtils.FindFirst(Path, faAnyFile, SRec);
+  Res  := SysUtils.FindFirst(Path, faAnyFile, SearchRec);
 
   while Res=0 do
     begin
-      if Ext then s := SRec.Name
-             else s := ExtractOnlyName(SRec.Name);
+      if Ext then s := SearchRec.Name
+             else s := ExtractOnlyName(SearchRec.Name);
 
-      List.Add(s);
-      Res := FindNext(SRec);
+      if (SearchRec.Attr and faDirectory) = 0 then List.Add(s);
+      Res := FindNext(SearchRec);
     end;
 
-  SysUtils.FindClose(SRec);
+  SysUtils.FindClose(SearchRec);
 end;
 
 function UnicodeToRTF(const w: WideString): String;
