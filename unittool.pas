@@ -92,131 +92,8 @@ begin
 end;
 
 procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
-var
-     List : TStringList;
-     Text : TWideStringList;
-     i,j  : integer;
-       ws : WideString;
-   wverse : WideString;
-        s : String;
-       ok : boolean;
-const
-  {$ifdef darwin} max = 50; {$else} max = 1000; {$endif}
-const
-  rbAny    = 0;
-  rbEvery  = 1;
-  rbPhrase = 2;
-
-  //-------
-
-  function Letter(c: WideChar): boolean;
-  begin
-    Result := ord(c) >= 65;  // A=65
-  end;
-
-  //-------
-
-  function ThisLowerCase(s: WideString): WideString;
-  begin
-    if SearchForm.CheckBoxCase.Checked then Result := s
-                                       else Result := WideLowerCaseFixed(s);
-  end;
-
-  //-------
-
-  function SuperSeekPart(sub: WideString): boolean;
-  var
-      s_in : WideString;
-     s_out : WideString;
-         n : integer;
-  begin
-    Result := False;
-    s_in := wverse;
-
-    n := Pos(sub, ThisLowerCase(s_in));
-
-    s_out := '';
-    while n > 0 do
-      begin
-        Result := True;
-
-        s_out := s_out + Copy(s_in, 1, n - 1) + '\cf2 ' + Copy(s_in, n, Length(sub)) + '\cf1 ';
-        Delete(s_in, 1, n + Length(sub) - 1);
-        n := Pos(sub, ThisLowerCase(s_in));
-      end;
-
-    wverse := s_out + s_in;
-  end;
-
-  //-------
-
-  function SuperSeekWhole(sub: WideString): boolean;
-  var
-      s_in : WideString;
-     s_out : WideString;
-         n : integer;
-     whole : boolean;
-
-    function WholeWord: boolean;
-    begin
-      Result := False;
-      if (n > 1) and Letter(s_in[n-1]) then Exit;
-      if ((n + Length(sub) - 1) < Length(s_in)) and Letter(s_in[n+Length(sub)]) then Exit;
-      Result := True;
-    end;
-
-  begin
-    Result := False;
-    s_in := wverse;
-
-    n:= Pos(sub, ThisLowerCase(s_in));
-
-    s_out := '';
-    while n > 0 do
-      begin
-        whole := WholeWord;
-
-        if whole then Result := True;
-
-        if whole then s_out := s_out + Copy(s_in, 1, n-1) + '\cf2 ' + Copy(s_in, n, Length(sub)) + '\cf1 '
-                 else s_out := s_out + Copy(s_in, 1, n-1) +           Copy(s_in, n, Length(sub))         ;
-
-        Delete(s_in, 1, n + Length(sub) - 1);
-        n := Pos(sub, ThisLowerCase(s_in));
-      end;
-
-    wverse := s_out + s_in;
-  end;
-
-  //-------
-
-  function SuperSeek(sub: WideString): boolean;
-  begin
-    if SearchForm.CheckBoxWhole.Checked then Result := SuperSeekWhole(sub)
-                                        else Result := SuperSeekPart (sub);
-  end;
-
-  //-------
-
-  function SeekAny: boolean;
-  var i: integer;
-  begin
-    Result := False;
-    for i:=1 to Text.Count do if SuperSeek(Text[i-1]) then Result := True;
-  end;
-
-  //-------
-
-  function SeekEvery: boolean;
-  var i: integer;
-  begin
-    Result := True;
-    for i:=1 to Text.Count do if not SuperSeek(Text[i-1]) then Result := False;
-  end;
-
-  //-------
-
 begin
+  (*
   st := Trim(st);
   ws := WideString(st);
   ws := ThisLowerCase(ws);
@@ -262,6 +139,7 @@ begin
   Text.free;
   List.free;
   SuperEdit.CloseStream;
+  *)
 end;
 
 procedure Load_Compare(SuperEdit: TSuperEdit);

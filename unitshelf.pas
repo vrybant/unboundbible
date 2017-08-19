@@ -19,13 +19,12 @@ type
     count    : integer;
   end;
 
-  TBook = class(TStringList)
+  TBook = class(TObject)
   public
     title  : string;
     abbr   : string;
     number : integer;
     id     : integer;
-    constructor Create;
   end;
 
   TTitle = class(TStringList)
@@ -209,18 +208,6 @@ begin
     end;
 
   if Result.Count = 0 then Result.Count := Result.Number;
-end;
-
-//========================================================================================
-//                                     TBook
-//========================================================================================
-
-constructor TBook.Create;
-begin
-  inherited;
-  Title  := '';
-  Abbr   := '';
-  Number := 0;
 end;
 
 //========================================================================================
@@ -434,7 +421,7 @@ begin
           begin
             Book := TBook.Create;
             Book.number := UnboundIndex(n);
-            Book.id  := n;
+            Book.id := n;
             Book.title := Title.getTitle(book.number);
             Book.abbr  := Title.getAbbr(book.number);
             Add(Book);
@@ -559,24 +546,6 @@ begin
 
   Book := BookByNum(Verse.Book);
   if Book = nil then Exit;
-
-  lst := TStringList.Create;
-
-  for i:=0 to Book.Count-1 do
-    begin
-      StrToList(Book[i], lst);
-
-      if lst.Count > ssText then
-        begin
-          chapter := MyStrToInt(lst[ssChapter] );
-           iverse := MyStrToInt(lst[ssVerse]);
-
-          if (chapter = Verse.Chapter) and
-             ( iverse = Verse.Number ) then Result := lst[ssText];
-        end;
-    end;
-
-  lst.free;
 end;
 
 procedure TBible.GetChapter(Verse: TVerse; var List: TStringList);
@@ -587,18 +556,6 @@ var
 begin
   Book := BookByNum(Verse.Book);
   if Book = nil then Exit;
-
-  lst := TStringList.Create;
-
-  for i:=0 to Book.Count-1 do
-    begin
-      StrToList(Book[i], lst);
-
-      if lst.Count > ssText then
-        if (MyStrToInt(lst[ssChapter]) = Verse.Chapter) then List.Add(lst[ssText]);
-    end;
-
-  lst.free;
 end;
 
 procedure TBible.GetRange(Verse: TVerse; var List: TStringList);
@@ -609,20 +566,6 @@ var
 begin
   Book := BookByNum(Verse.Book);
   if Book = nil then Exit;
-
-  lst := TStringList.Create;
-
-  for i:=0 to Book.Count-1 do
-    begin
-      StrToList(Book[i], lst);
-
-      if lst.Count > ssText then
-        if (MyStrToInt(lst[ssChapter]) = Verse.Chapter) and
-           (MyStrToInt(lst[ssVerse])  >= Verse.Number ) and
-           (MyStrToInt(lst[ssVerse])  <= Verse.Count  ) then List.Add(lst[ssText]);
-    end;
-
-  lst.free;
 end;
 
 procedure TBible.GetTitles(var List: TStringList);
@@ -647,30 +590,22 @@ end;
 
 function TBible.ChaptersCount(Verse: TVerse): integer;
 var
-  Book : TBook;
-   lst : TStringList;
-    ch : integer;
-     i : integer;
+  index : integer;
+  id : string;
 begin
-  Result := 0;
+  Result := 1;
 
-  Book := BookByNum(Verse.Book);
-  if Book = nil then Exit;
+  index := fileIndex(Verse.book);
+  id := IntToStr(index);
 
-  lst := TStringList.Create;
+  try
+    Query.SQL.Text := 'SELECT MAX(' + z.chapter + ') AS Count FROM ' + z.bible + ' WHERE ' + z.book + '=' + id;
+    Query.Open;
 
-  for i:=0 to Book.Count-1 do
-    begin
-      StrToList(Book[i], lst);
-
-      if lst.Count > ssText then
-        begin
-          ch := MyStrToInt(lst[ssChapter]);
-          if ch > Result then Result := ch;
-        end;
-    end;
-
-  lst.free;
+    try Result := Query.FieldByName('Count').AsInteger; except end;
+  except
+    //
+  end;
 end;
 
 procedure TBible.SavePrivate(const IniFile : TIniFile);
