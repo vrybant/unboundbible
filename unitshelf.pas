@@ -45,7 +45,6 @@ type
     Query      : TZReadOnlyQuery;
     DataSource : TDataSource;
     {-}
-    Text         : TStringList;
     InfoList     : TStringList;
     info         : string;
     filePath     : string;
@@ -329,7 +328,6 @@ begin
   Query.Connection := Connection;
   DataSource.DataSet := Query;
 
-  Text := TStringList.Create;
   InfoList := TStringList.Create;
 
   self.filePath := filePath;
@@ -418,16 +416,16 @@ end;
 
 procedure TBible.LoadDatabase;
 var
+  Title : TTitle;
   Book : TBook;
   n : integer;
 begin
   if loaded then exit;
 
   try
+    Title := TTitle.Create(language);
     Query.SQL.Text := 'SELECT DISTINCT ' + z.book + ' FROM ' + z.bible;
     Query.Open;
-
-    //let title = Title(language: language)
 
     while not Query.Eof do
       try
@@ -438,20 +436,18 @@ begin
             Book := TBook.Create;
             Book.number := UnboundIndex(n);
             Book.id  := n;
-//          Book.title := title.getTitle(book.number)
-//          Book.abbr  := title.getAbbr(book.number)
+            Book.title := Title.getTitle(book.number);
+            Book.abbr  := Title.getAbbr(book.number);
             Add(Book);
           end;
       finally
         Query.Next;
       end;
 
-//  titles = getTitles()
-    loaded := true
-  except
-    //
+    loaded := true;
+  finally
+    Title.Free;
   end;
-
 end;
 
 procedure TBible.LoadFromFile;
@@ -714,7 +710,7 @@ var
 begin
   if self.Filetype <> 'text' then
     begin
-      // помещаем апокрифы впереди НЗ
+      // put apocrypha before NT
       for i := 0 to Count-1 do
         if not IsNewTestament(self[i].Number) then List.Add(self[i].Title);
 
@@ -791,7 +787,6 @@ end;
 
 destructor TBible.Destroy;
 begin
-  Text.Free;
   InfoList.Free;
 
   DataSource.free;
