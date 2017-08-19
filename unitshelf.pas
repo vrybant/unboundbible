@@ -84,7 +84,6 @@ type
     constructor Create(filePath, fileName: string);
     procedure OpenDatabase;
     procedure LoadDatabase;
-    procedure LoadFromFile;
     function  BookByName(s: string): TBook;
     function  BookByNum(n: integer): TBook;
     function  VerseToStr(Verse: TVerse): string;
@@ -450,84 +449,6 @@ begin
   end;
 end;
 
-procedure TBible.LoadFromFile;
-var
-       Book : TBook;
-  TitleList : TStringList;
-          f : System.Text;
-       Path : string;
-    anyline : string;
-        s,p : string;
-        Num : integer;
-        i,n : integer;
-begin
-  EXIT;
-
-  Path := FilePath + Slash +  FileName;
-
-  if Loaded then Exit;
-  if not FileExists(Path) then Exit;
-
-  AssignFile(f,Path); Reset(f);
-  TitleList := TStringList.Create;
-
-  Num := 0;
-  anyline := '';
-  while not eof(f) do
-    begin
-      Readln(f,s);
-
-      p := TwoChars(s);
-      n := MyStrToInt(p); // book number
-
-      if (n = 0) then
-        begin
-          if (Pos('0',p) > 0) then TitleList.Add(s);
-          if (Pos(';',p) > 0) then  InfoList.Add(s);
-        end;
-
-      if  n > 0 then
-        begin
-          if n <> Num then
-            begin
-              Book := TBook.Create;
-              Book.Number := n;
-              Book.Title  := IntToStr(n);
-              Book.Abbr   := IntToStr(n);
-              Add(Book);
-              anyline := s;
-              Num := n;
-            end;
-          if Book <> nil then Book.Add(s);
-        end;
-    end;
-
-  CloseFile(f);
-
-  if not TitlesFromList(TitleList) and (Filetype <> 'text') then SetTitles;
-
-  TitleList.Free;
-
-  //----------- automatic file type detection ---------------
-
-  for i:=1 to Length(anyline) do
-    if anyline[i]=chr(09) then inc(ssText);
-
-  //---------------------------------------------------------
-
-  if Filetype <> 'text' then
-    for i:=0 to Count-1 do
-      begin
-        if Items[i].Number <  40 then OldTestament := True;
-        if Items[i].Number >= 40 then NewTestament := True;
-        if Items[i].Number >  66 then Apocrypha    := True;
-      end;
-
-  //---------------------------------------------------------
-
-  Loaded := True;
-end;
-
 function TBible.BookByNum(n: integer): TBook;
 var i : integer;
 begin
@@ -858,13 +779,13 @@ begin
   Current := 0;
   for i:= Count-1 downto 0 do
     if Items[i].FileName = FileName then Current := i;
-  Self[Current].LoadFromFile;
+  Self[Current].LoadDatabase; ;
 end;
 
 procedure TShelf.SetCurrent(index: integer);
 begin
   Current := index;
-  Self[Current].LoadFromFile;
+  Self[Current].LoadDatabase; ;
 end;
 
 function TShelf.IsLoaded: boolean;
@@ -879,7 +800,7 @@ procedure TShelf.LoadComparedBibles;
 var i : integer;
 begin
   for i:= 0 to Count-1 do
-    if Items[i].Compare then Items[i].LoadFromFile;
+    if Items[i].Compare then Items[i].LoadDatabase;
 end;
 
 procedure TShelf.SavePrivates;
