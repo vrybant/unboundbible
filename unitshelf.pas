@@ -568,7 +568,33 @@ begin
 end;
 
 procedure TBible.GetRange(Verse: TVerse; var List: TStringList);
+var
+  index : integer;
+  id, chapter : string;
+  verseNumber, toVerse : string;
+  line : string;
 begin
+  index := fileIndex(Verse.book);
+  id := IntToStr(index);
+  chapter := IntToStr(verse.chapter);
+  verseNumber := IntToStr(verse.number);
+  toVerse := IntToStr(verse.number + verse.count);
+
+  try
+    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id +
+                      ' AND ' + z.chapter + '=' + chapter +
+                      ' AND ' + z.verse + ' >= ' + verseNumber +
+                      ' AND ' + z.verse + ' < ' + toVerse;
+    Query.Open;
+    while not Query.Eof do
+      begin
+        try line := Query.FieldByName(z.text).AsString; except end;
+        List.Add(line);
+        Query.Next;
+      end;
+  except
+    //
+  end;
 end;
 
 procedure TBible.GetTitles(var List: TStringList);
