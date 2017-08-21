@@ -85,7 +85,7 @@ type
     procedure LoadDatabase;
     function  BookByName(s: string): TBook;
     function  BookByNum(n: integer): TBook;
-    function  VerseToStr(Verse: TVerse): string;
+    function  VerseToStr(Verse: TVerse; full: boolean): string;
     procedure SetTitles;
     function  GetVerse(Verse: TVerse): string;
     procedure GetChapter(Verse: TVerse; var List: TStringList);
@@ -477,18 +477,22 @@ begin
           end;
 end;
 
-function TBible.VerseToStr(Verse: TVerse): string;
+function TBible.VerseToStr(Verse: TVerse; full: boolean): string;
 var
   Book : TBook;
+  name : string;
 begin
   Result := 'error';
 
-  Book := Bible.BookByNum(Verse.Book);
+  Book := Bible.BookByNum(Verse.book);
   if Book = nil then Exit;
 
-  Result := Book.Title + ' ' + IntToStr(Verse.Chapter) + ':' + IntToStr(Verse.Number);
-  if (Verse.Count <> 0) and (Verse.Count <> Verse.Number) then
-    Result := Result + '-' + IntToStr(Verse.Count);
+  if full then name := Book.title else name := Book.abbr;
+  if Pos('.',name) = 0 then name := name + ' ';
+
+  Result := name + IntToStr(Verse.chapter) + ':' + IntToStr(Verse.number);
+  if (Verse.number <> 0) and (Verse.count > 1) then
+    Result := Result + '-' + IntToStr(Verse.number + Verse.count - 1);
 end;
 
 function TBible.TitlesFromList(TitleList: TStringList): boolean;

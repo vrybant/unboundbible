@@ -155,7 +155,7 @@ begin
   Shelf.LoadComparedBibles;
   SuperEdit.OpenStream;
 
-  s := '\cf1 ' + Bible.VerseToStr(Verse) + '\par ';
+  s := '\cf1 ' + Bible.VerseToStr(Verse, true) + '\par ';
   SuperEdit.WriteLn(s);
 
   old := Shelf.Current;
@@ -270,7 +270,7 @@ begin
   Shelf.LoadComparedBibles;
   SuperEdit.OpenStream;
 
-  s := '\cf3 ' + Bible.VerseToStr(Verse) + '\par ';
+  s := '\cf3 ' + Bible.VerseToStr(Verse, true) + '\par ';
   SuperEdit.WriteLn(s);
 
   old := Shelf.Current;
