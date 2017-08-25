@@ -375,7 +375,7 @@ begin
 //UpdateCaption;
   UpdateStatusBar;
   MakeBookList;
-  if Bible.BookByNum(Verse.Book) = nil then Shelf.VerseToBeginning(Verse); // check verse
+  if Bible.BookByNum(ActiveVerse.Book) = nil then Shelf.VerseToBeginning(ActiveVerse); // check verse
   LoadChapter;
   GoToVerse;
 end;
@@ -523,8 +523,8 @@ begin
   if Button = mbLeft then
     begin
       RichEditBible.GetRange(n1, n2);
-      Verse.Number := n1;
-      Verse.Count  := n2 - n1 + 1;
+      ActiveVerse.Number := n1;
+      ActiveVerse.Count  := n2 - n1 + 1;
       if FormTranslate.Visible then LoadTranslate;
     end;
 
@@ -553,14 +553,14 @@ begin
 
   if FormTranslate.Visible then
     begin
-      o := Verse;
-      Verse := v; LoadTranslate;
-      Verse := o;
+      o := ActiveVerse;
+      ActiveVerse := v; LoadTranslate;
+      ActiveVerse := o;
     end;
 
   if (Sender = RichEditSearch) or (not FormTranslate.Visible) or (ssCtrl in Shift) then
     begin
-      Verse := v;
+      ActiveVerse := v;
       GoToVerse;
     end;
 end;
@@ -596,7 +596,7 @@ var
 begin
   {$ifdef darwin} bag02 := True; {$endif}
 
-  Book := Bible.BookByNum(Verse.Book);
+  Book := Bible.BookByNum(ActiveVerse.Book);
   if Book = nil then Exit;
 
   SeekBook;
@@ -612,11 +612,11 @@ begin
   LoadChapter;
 
   ListBoxBook.ItemIndex := k;
-  ListBoxCh.ItemIndex := Verse.Chapter - 1;
+  ListBoxCh.ItemIndex := ActiveVerse.Chapter - 1;
 
   {$ifdef darwin} MakeVisible; {$endif}
 
-  RichEditBible.SelectParagraph(Verse.Number);
+  RichEditBible.SelectParagraph(ActiveVerse.Number);
   {$ifdef darwin} bag02 := False; {$endif}
   Repaint;
 end;
@@ -1059,7 +1059,7 @@ begin
     UpdateCaption;
     UpdateStatusBar;
     MakeBookList;
-    Shelf.VerseToBeginning(Verse);
+    Shelf.VerseToBeginning(ActiveVerse);
     // LoadChapter; // В Delphi работало нормально, но в Лазарус RichMemo не загружается из Stream,
                     // поэтому LoadChapter вызываем из FormActivate
   end;
@@ -1191,10 +1191,10 @@ begin
   Book := Bible.BookByName(s);
   if Book = nil then Exit;
 
-  Verse.Book := Book.Number;
-  Verse.Chapter := 1;
-  Verse.Number := 1;
-  Verse.Count := 1;
+  ActiveVerse.Book := Book.Number;
+  ActiveVerse.Chapter := 1;
+  ActiveVerse.Number := 1;
+  ActiveVerse.Count := 1;
 
   ListBoxCh.ItemIndex := 0;
   LoadChapter;
@@ -1203,9 +1203,9 @@ end;
 procedure TMainForm.ListBoxChClick(Sender: TObject);
 begin
   {$ifdef darwin} if bag01 or bag02 then Exit; {$endif}
-  Verse.Chapter := ListBoxCh.ItemIndex + 1;
-  Verse.Number := 1;
-  Verse.Count := 1;
+  ActiveVerse.Chapter := ListBoxCh.ItemIndex + 1;
+  ActiveVerse.Number := 1;
+  ActiveVerse.Count := 1;
   LoadChapter;
 end;
 
@@ -1429,7 +1429,7 @@ end;
 procedure TMainForm.LoadChapter;
 begin
   Load_Chapter(RichEditBible);
-  MakeChapterList(Bible.ChaptersCount(Verse));
+  MakeChapterList(Bible.ChaptersCount(ActiveVerse));
   if FormTranslate.Visible then LoadTranslate;
   SelectPage(apBible);
 end;
@@ -1473,8 +1473,8 @@ var
 begin
   Stream := TMemoryStream.Create;
   RichEditBible.GetRange(n1, n2);
-  Verse.Number := n1;
-  Verse.Count  := n2 - n1 + 1;
+  ActiveVerse.Number := n1;
+  ActiveVerse.Count  := n2 - n1 + 1;
   Load_Verses(Stream);
   StreamToClipboard(Stream);
   Stream.free;
@@ -1501,8 +1501,8 @@ begin
     end;
 
   RichEditBible.GetRange(n1, n2);
-  Verse.Verse := n1;
-  Verse.Range := n2;
+  ActiveVerse.Verse := n1;
+  ActiveVerse.Range := n2;
   Load_Verses(Stream);
 
   RichEditPreview.LoadRichText(Stream);

@@ -52,19 +52,17 @@ type
     loaded       : boolean;
     langEnable   : boolean;
   private
-    { Private declarations }
     function  GetItem(index: integer): TBook;
     procedure SetItem(index: integer; lst: TBook);
     function Add(lst: TBook): integer;
     function EncodeIndex(index: integer): integer;
     function DecodeIndex(index: integer): integer;
   public
-    { Public declarations }
     constructor Create(filePath, fileName: string);
     procedure OpenDatabase;
     procedure LoadDatabase;
+    function BookByNum(n: integer): TBook;  // перенестив private ?
     function BookByName(s: string): TBook;
-    function BookByNum(n: integer): TBook;
     function VerseToStr(Verse: TVerse; full: boolean): string;
     function SrtToVerse(link : string): TVerse;
     procedure SetTitles;
@@ -105,7 +103,7 @@ type
 
 var
   Shelf : TShelf;
-  Verse : TVerse;
+  ActiveVerse : TVerse;
 
 const
   apBible   = 0; // PageControl.ActivePageIndex

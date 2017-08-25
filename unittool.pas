@@ -77,7 +77,7 @@ begin
 
   SuperEdit.OpenStream;
   List := TStringList.Create;
-  Bible.GetChapter(Verse,List);
+  Bible.GetChapter(ActiveVerse,List);
 
   for i:=0 to List.Count-1 do
     begin
@@ -129,7 +129,7 @@ begin
   Shelf.LoadComparedBibles;
   SuperEdit.OpenStream;
 
-  s := '\cf1 ' + Bible.VerseToStr(Verse, true) + '\par ';
+  s := '\cf1 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
   SuperEdit.WriteLn(s);
 
   old := Shelf.Current;
@@ -140,7 +140,7 @@ begin
       if not Bible.Compare then Continue;
 
       List := TStringList.Create;
-      Bible.GetRange(Verse, List);
+      Bible.GetRange(ActiveVerse, List);
 
       if List.Count > 0 then
         begin
@@ -180,11 +180,11 @@ var
 
     if Pos('.',s) = 0 then s := s + ' ';
 
-    s := s + IntToStr(Verse.Chapter) + ':' + IntToStr(Verse.Number);
+    s := s + IntToStr(ActiveVerse.Chapter) + ':' + IntToStr(ActiveVerse.Number);
 
-    if (Verse.Number = Verse.Count) or (Verse.Count = 0)
+    if (ActiveVerse.Number = ActiveVerse.Count) or (ActiveVerse.Count = 0)
       then s := s + '\cf1 '
-      else s := s + '-' + IntToStr(Verse.Count) + '\cf1 ';
+      else s := s + '-' + IntToStr(ActiveVerse.Count) + '\cf1 ';
 
     if Options.cvDelim then s := '(' + s + ')';
 
@@ -193,7 +193,7 @@ var
   end;
 
 begin
-  Book := Bible.BookByNum(Verse.Book);
+  Book := Bible.BookByNum(ActiveVerse.Book);
   if Book = nil then Exit;
 
   List := TStringList.Create;
@@ -202,15 +202,15 @@ begin
   if Options.cvWrap then par := '\par ' else par := '';
 
   if not Options.cvEnd then MakeLink;
-  Bible.GetRange(Verse,List);
+  Bible.GetRange(ActiveVerse,List);
 
   for i:=0 to List.Count-1 do
     begin
       s := '\cf1 ';
 
       if Options.cvNum then
-        if Options.cvWrap or (Verse.Number <> Verse.Count) or Options.cvEnd
-          then s := s + '(' + IntToStr(Verse.Number + i) + ') ';
+        if Options.cvWrap or (ActiveVerse.Number <> ActiveVerse.Count) or Options.cvEnd
+          then s := s + '(' + IntToStr(ActiveVerse.Number + i) + ') ';
 
       s := s + List[i];
       s := s + '\i0 '+ ' ' + par;
@@ -245,7 +245,7 @@ begin
   Shelf.LoadComparedBibles;
   SuperEdit.OpenStream;
 
-  s := '\cf3 ' + Bible.VerseToStr(Verse, true) + '\par ';
+  s := '\cf3 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
   SuperEdit.WriteLn(s);
 
   old := Shelf.Current;
@@ -256,7 +256,7 @@ begin
       if not Bible.Compare then Continue;
 
       List := TStringList.Create;
-      Bible.GetRange(Verse, List);
+      Bible.GetRange(ActiveVerse, List);
 
       if List.Count > 0 then
         begin

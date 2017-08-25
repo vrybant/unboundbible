@@ -126,8 +126,8 @@ end;
 procedure TFormCopy.FormPaint(Sender: TObject);
 begin
   Stream.Clear;
-  Verse.Number := n1;
-  Verse.Count  := n2;
+  ActiveVerse.Number := n1;
+  ActiveVerse.Count  := n2;
   Load_Verses(Stream);
   RichEditPreview.LoadRichText(Stream);
   RichEditPreview.SetSel(0,0);
