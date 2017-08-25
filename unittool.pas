@@ -15,7 +15,7 @@ procedure Show_Message(SuperEdit: TSuperEdit; s: string);
 
 implementation
 
-uses { UnitSearch, } UnitShelf, UnitLib;
+uses { UnitSearch, } UnitShelf, UnitType, UnitLib;
 
 procedure Replacement(var s: string);
 begin
@@ -92,8 +92,33 @@ begin
 end;
 
 procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
-begin
+  var
+    ContentArray : TContentArray;
+    v : TVerse;
+    text : string;
+    i : integer;
+  begin
+    if Shelf.Count = 0 then Exit;
+
+    SuperEdit.OpenStream;
+    ContentArray := Bible.Search(st);
+
+    for i:=0 to Length(ContentArray)-1 do
+      begin
+        v := ContentArray[i].verse;
+                                 // !!!
+        text := '\f0\cf3 ' + Bible[v.book].Title + ' ' +  IntToStr(v.chapter) + ':' + IntToStr(v.number) +
+                '\f0\cf1 ' + ' ' + ContentArray[i].text + '\i0\par\par';
+        Replacement(text);
+        SuperEdit.WriteLn(text);
+      end;
+
+    SuperEdit.CloseStream;
+  end;
+
   (*
+procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
+begin
   st := Trim(st);
   ws := WideString(st);
   ws := ThisLowerCase(ws);
@@ -139,8 +164,8 @@ begin
   Text.free;
   List.free;
   SuperEdit.CloseStream;
-  *)
 end;
+  *)
 
 procedure Load_Compare(SuperEdit: TSuperEdit);
 var

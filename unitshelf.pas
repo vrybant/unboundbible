@@ -72,7 +72,7 @@ type
     function  GetVerse(Verse: TVerse): string;
     procedure GetChapter(Verse: TVerse; List: TStringList);
     procedure GetRange(Verse: TVerse; List: TStringList);
-    procedure Search(searchStrig: string; SearchOption: TSearchOption; searchRange: TSearchRange);
+    function Search(searchString: string): TContentArray; //; SearchOption: TSearchOption; range: TSearchRange): TContentArray;
     procedure GetTitles(var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
     procedure SavePrivate(const IniFile: TIniFile);
@@ -235,7 +235,7 @@ begin
   end;
 
   language := LowerCase(language);
-
+  {
   OutputString('fileName = ' + fileName);
 
   if fileFormat = unbound then OutputString('fileFormat = unbound');
@@ -243,10 +243,9 @@ begin
 
   OutputString('name = ' + name);
   OutputString('info = ' + info);
-//OutputString('copyright = ' + copyright);
   OutputString('language = ' + language);
   OutputString('-');
-
+  }
   LoadDatabase; /// TEMPORARY
 end;
 
@@ -536,16 +535,18 @@ end;
         return nil
     }   *)
 
-procedure TBible.Search(searchStrig: string; SearchOption: TSearchOption; searchRange: TSearchRange);
+function TBible.Search(searchString: string): TContentArray; // ; SearchOption: TSearchOption; range: TSearchRange): TContentArray;
 var
-  Verse: TVerse; //
-  List: TStringList; //
-
+  v : TVerse;
   index : integer;
+  queryRange : string;
   id, chapter : string;
   verseNumber, toVerse : string;
-  line : string;
+  text : string;
+  i : integer;
 begin
+  SetLength(Result,0);
+
   index := fileIndex(Verse.book);
   id := IntToStr(index);
   chapter := IntToStr(verse.chapter);
@@ -553,15 +554,17 @@ begin
   toVerse := IntToStr(verse.number + verse.count);
 
   try
-    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id +
-                      ' AND ' + z.chapter + '=' + chapter +
-                      ' AND ' + z.verse + ' >= ' + verseNumber +
-                      ' AND ' + z.verse + ' < ' + toVerse;
+    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.text + ' LIKE ''%Jehov%'' '; //  + searchString + '%';
     Query.Open;
-    while not Query.Eof do
+    OutputString(IntToStr(Query.RecordCount));
+    SetLength(Result,Query.RecordCount);
+    for i:=0 to Query.RecordCount-1 do
       begin
-        try line := Query.FieldByName(z.text).AsString; except end;
-        List.Add(line);
+        Result[i].verse := noneVerse;
+        try Result[i].verse.book    := Query.FieldByName(z.text   ).AsInteger; except end;
+        try Result[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
+        try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
+        try Result[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
         Query.Next;
       end;
   except

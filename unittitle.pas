@@ -46,8 +46,6 @@ begin
 
   GetFileList(path, List, True);
 
-  OutputString(path);
-
   for i:= 0 to List.Count-1 do
     if Prefix(language, List[i]) then
       Result := List[i];

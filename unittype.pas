@@ -34,20 +34,12 @@ type
     count    : integer;
   end;
 
- TContent = class(TObject)
+ TContent = record
     verse : TVerse;
     text : string;
   end;
 
-  TContentList = class(TList)
-  private
-    function  GetItem(index: integer): TContent;
-    procedure SetItem(index: integer; Content: TContent);
-  public
-    function Add(Content: TContent): Integer;
-    property Items[index: integer]: TContent read GetItem write SetItem; default;
-    destructor Destroy; override;
-  end;
+ TContentArray = array of TContent;
 
 const
   unboundStringAlias : TStringAlias = (
@@ -68,6 +60,13 @@ const
 //  details : 'info';
     );
 
+  noneVerse : TVerse = (
+    book    : 0;
+    chapter : 0;
+    number  : 0;
+    count   : 0;
+    );
+
 var
   myBibleArray : array [1..80] of integer = (
     010,020,030,040,050,060,070,080,090,100,110,120,130,140,150,160,190,220,230,240,
@@ -77,33 +76,6 @@ var
     );
 
 implementation
-
-function TContentList.Add(content: TContent): integer;
-begin
-  Result := inherited Add(Pointer(Content));
-end;
-
-function TContentList.GetItem(Index: Integer): TContent;
-var
-  p : Pointer;
-begin
-  p := inherited Items[Index];
-  Result := TContent(p);
-end;
-
-
-procedure TContentList.SetItem(Index: Integer; content: TContent);
-begin
-  inherited Items[Index] := Content;
-end;
-
-destructor TContentList.Destroy;
-var i : integer;
-begin
-  for i:=0 to Count-1 do Items[i].Free;
-  inherited Destroy;
-end;
-
 
 end.
 
