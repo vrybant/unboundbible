@@ -65,7 +65,6 @@ type
     procedure LoadDatabase;
     function BookByName(s: string): TBook;
     function BookByNum(n: integer): TBook;
-    function GetTitle(n: integer; full: boolean): string;
     function VerseToStr(Verse: TVerse; full: boolean): string;
     function SrtToVerse(link : string): TVerse;
     procedure SetTitles;
@@ -324,25 +323,22 @@ begin
     if Items[i].Title = s then Result := Items[i];
 end;
 
-function TBible.GetTitle(n: integer; full: boolean): string;
+function TBible.VerseToStr(verse: TVerse; full: boolean): string;
 var
   Book : TBook;
+  title : string;
 begin
   Result := 'error';
 
-  Book := Bible.BookByNum(n);
+  Book := Bible.BookByNum(verse.book);
   if Book = nil then Exit;
 
-  if full then Result := Book.title else Result := Book.abbr;
-  if Pos('.', Result) = 0 then Result := Result + ' ';
-end;
+  if full then title := Book.title else title := Book.abbr;
+  if Pos('.', Result) = 0 then title := title + ' ';
 
-function TBible.VerseToStr(Verse: TVerse; full: boolean): string;
-begin
-  Result := GetTitle(Verse.book, full);
-  Result := Result + IntToStr(Verse.chapter) + ':' + IntToStr(Verse.number);
-  if (Verse.number <> 0) and (Verse.count > 1) then
-    Result := Result + '-' + IntToStr(Verse.number + Verse.count - 1);
+  Result := title + IntToStr(verse.chapter) + ':' + IntToStr(verse.number);
+  if (verse.number <> 0) and (verse.count > 1) then
+    Result := Result + '-' + IntToStr(verse.number + verse.count - 1);
 end;
 
 function TBible.SrtToVerse(link : string): TVerse;
@@ -423,7 +419,7 @@ var
 begin
   index := EncodeIndex(Verse.book);
   id := IntToStr(index);
-  chapter := IntToStr(verse.chapter);
+  chapter := IntToStr(Verse.chapter);
 
   try
     Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id + ' AND ' + z.chapter + '=' + chapter;
@@ -450,8 +446,8 @@ var
 begin
   index := EncodeIndex(Verse.book);
   id := IntToStr(index);
-  chapter := IntToStr(verse.chapter);
-  verseNumber := IntToStr(verse.number);
+  chapter := IntToStr(Verse.chapter);
+  verseNumber := IntToStr(Verse.number);
   toVerse := IntToStr(verse.number + verse.count);
 
   try

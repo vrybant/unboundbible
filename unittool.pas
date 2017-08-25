@@ -95,7 +95,7 @@ procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
   var
     ContentArray : TContentArray;
     v : TVerse;
-    title, text : string;
+    link, text : string;
     i : integer;
   begin
     if Shelf.Count = 0 then Exit;
@@ -106,67 +106,15 @@ procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
     for i:=0 to Length(ContentArray)-1 do
       begin
         v := ContentArray[i].verse;
-        title := Bible.GetTitle(v.book, true);
+        link := Bible.VerseToStr(v,true);
         text := DeleteTags(ContentArray[i].text);
-        text := '\f0\cf3 ' + title + ' ' + IntToStr(v.book) + ' ' + IntToStr(v.chapter) + ':' + IntToStr(v.number) +
-                '\f0\cf1 ' + ' ' + text + '\i0\par\par';
+        text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + text + '\i0\par\par';
         Replacement(text);
         SuperEdit.WriteLn(text);
       end;
 
     SuperEdit.CloseStream;
   end;
-
-  (*
-procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
-begin
-  st := Trim(st);
-  ws := WideString(st);
-  ws := ThisLowerCase(ws);
-  count := 0;
-
-  SuperEdit.OpenStream;
-  List := TStringList.Create;
-  Text := TWideStringList.Create;
-
-  if SearchForm.RadioGroupType.ItemIndex = rbPhrase then Text.Add(ws) else SeachToList(ws, Text);
-
-  for i:=0 to Bible.Count-1 do
-  if SearchForm.Range(Bible[i].Number, Verse.Book) then
-    begin
-      for j:=0 to Bible[i].Count-1 do
-        begin
-          StrToList(Bible[i][j], List);
-
-          if ( List.Count >= 4) and (count < max) then
-            begin
-              wverse := WideString(List[Bible.ssText]);
-
-              ok := False;
-
-              if SearchForm.RadioGroupType.ItemIndex = rbAny    then ok := SeekAny   ;
-              if SearchForm.RadioGroupType.ItemIndex = rbEvery  then ok := SeekEvery ;
-              if SearchForm.RadioGroupType.ItemIndex = rbPhrase then ok := SeekAny   ;
-
-              if ok then
-                begin
-                  s := '\f0\cf3 ' + Bible[i].Title + ' ' +  List[ssChapter] + ':' + List[ssVerse] +
-                       '\f0\cf1 ' + ' ' + String(wverse) + '\i0\par\par';
-                  Replacement(s);
-                  SuperEdit.WriteLn(s);
-                  inc(count);
-                end;
-            end;
-        end;
-    end;
-
-  if count = 0 then SuperEdit.Write(' '); // important
-
-  Text.free;
-  List.free;
-  SuperEdit.CloseStream;
-end;
-  *)
 
 procedure Load_Compare(SuperEdit: TSuperEdit);
 var
