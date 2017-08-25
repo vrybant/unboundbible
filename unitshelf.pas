@@ -63,15 +63,16 @@ type
     constructor Create(filePath, fileName: string);
     procedure OpenDatabase;
     procedure LoadDatabase;
-    function  BookByName(s: string): TBook;
-    function  BookByNum(n: integer): TBook;
-    function  VerseToStr(Verse: TVerse; full: boolean): string;
+    function BookByName(s: string): TBook;
+    function BookByNum(n: integer): TBook;
+    function GetTitle(n: integer; full: boolean): string;
+    function VerseToStr(Verse: TVerse; full: boolean): string;
     function SrtToVerse(link : string): TVerse;
     procedure SetTitles;
     function  GetVerse(Verse: TVerse): string;
     procedure GetChapter(Verse: TVerse; List: TStringList);
     procedure GetRange(Verse: TVerse; List: TStringList);
-    function Search(searchString: string): TContentArray; //; SearchOption: TSearchOption; range: TSearchRange): TContentArray;
+    function  Search(searchString: string): TContentArray; //; SearchOption: TSearchOption; range: TSearchRange): TContentArray;
     procedure GetTitles(var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
     procedure SavePrivate(const IniFile: TIniFile);
@@ -284,22 +285,6 @@ begin
   end;
 end;
 
-function TBible.BookByNum(n: integer): TBook;
-var i : integer;
-begin
-  Result := nil;
-  for i:=0 to Count-1 do
-    if Items[i].Number = n then Result := Items[i];
-end;
-
-function TBible.BookByName(s: string): TBook;
-var i : integer;
-begin
-  Result := nil;
-  for i:=0 to Count-1 do
-    if Items[i].Title = s then Result := Items[i];
-end;
-
 function TBible.EncodeIndex(index: integer): integer;
 begin
   Result := index;
@@ -323,20 +308,39 @@ begin
           end;
 end;
 
-function TBible.VerseToStr(Verse: TVerse; full: boolean): string;
+function TBible.BookByNum(n: integer): TBook;
+var i : integer;
+begin
+  Result := nil;
+  for i:=0 to Count-1 do
+    if Items[i].Number = n then Result := Items[i];
+end;
+
+function TBible.BookByName(s: string): TBook;
+var i : integer;
+begin
+  Result := nil;
+  for i:=0 to Count-1 do
+    if Items[i].Title = s then Result := Items[i];
+end;
+
+function TBible.GetTitle(n: integer; full: boolean): string;
 var
   Book : TBook;
-  name : string;
 begin
   Result := 'error';
 
-  Book := Bible.BookByNum(Verse.book);
+  Book := Bible.BookByNum(n);
   if Book = nil then Exit;
 
-  if full then name := Book.title else name := Book.abbr;
-  if Pos('.',name) = 0 then name := name + ' ';
+  if full then Result := Book.title else Result := Book.abbr;
+  if Pos('.', Result) = 0 then Result := Result + ' ';
+end;
 
-  Result := name + IntToStr(Verse.chapter) + ':' + IntToStr(Verse.number);
+function TBible.VerseToStr(Verse: TVerse; full: boolean): string;
+begin
+  Result := GetTitle(Verse.book, full);
+  Result := Result + IntToStr(Verse.chapter) + ':' + IntToStr(Verse.number);
   if (Verse.number <> 0) and (Verse.count > 1) then
     Result := Result + '-' + IntToStr(Verse.number + Verse.count - 1);
 end;
@@ -514,7 +518,7 @@ begin
     for i:=0 to Query.RecordCount-1 do
       begin
         Result[i].verse := noneVerse;
-        try Result[i].verse.book    := Query.FieldByName(z.text   ).AsInteger; except end;
+        try Result[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
         try Result[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
         try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
         try Result[i].text          := Query.FieldByName(z.text   ).AsString;  except end;

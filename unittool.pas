@@ -93,10 +93,9 @@ end;
 
 procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
   var
-    Book : TBook;
     ContentArray : TContentArray;
     v : TVerse;
-    text : string;
+    title, text : string;
     i : integer;
   begin
     if Shelf.Count = 0 then Exit;
@@ -107,12 +106,9 @@ procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
     for i:=0 to Length(ContentArray)-1 do
       begin
         v := ContentArray[i].verse;
-//        Book := Bible.BookByNum(v.book);
-//        if Book = nil then Break;
-
+        title := Bible.GetTitle(v.book, true);
         text := DeleteTags(ContentArray[i].text);
-                                 // !!!
-        text := '\f0\cf3 ' + {Book.Title +} ' ' +  IntToStr(v.chapter) + ':' + IntToStr(v.number) +
+        text := '\f0\cf3 ' + title + ' ' + IntToStr(v.book) + ' ' + IntToStr(v.chapter) + ':' + IntToStr(v.number) +
                 '\f0\cf1 ' + ' ' + text + '\i0\par\par';
         Replacement(text);
         SuperEdit.WriteLn(text);
