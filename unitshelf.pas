@@ -57,8 +57,8 @@ type
     procedure SetItem(Index: Integer; lst: TBook);
     function  TitlesFromList(TitleList: TStringList): boolean;
     function Add(lst: TBook): Integer;
-    function FileIndex(index: integer): integer;
-    function UnboundIndex(index: integer): integer;
+    function EncodeIndex(index: integer): integer;
+    function DecodeIndex(index: integer): integer;
   public
     { Public declarations }
     constructor Create(filePath, fileName: string);
@@ -269,7 +269,7 @@ begin
         if n > 0 then
           begin
             Book := TBook.Create;
-            Book.number := UnboundIndex(n);
+            Book.number := DecodeIndex(n);
             Book.id := n;
             Book.title := Title.getTitle(book.number);
             Book.abbr  := Title.getAbbr(book.number);
@@ -301,7 +301,7 @@ begin
     if Items[i].Title = s then Result := Items[i];
 end;
 
-function TBible.FileIndex(index: integer): integer;
+function TBible.EncodeIndex(index: integer): integer;
 begin
   Result := index;
   if fileFormat = mybible then
@@ -310,7 +310,7 @@ begin
         Result := myBibleArray[index];
 end;
 
-function TBible.UnboundIndex(index: integer): integer;
+function TBible.DecodeIndex(index: integer): integer;
 var i : integer;
 begin
   Result := index;
@@ -452,7 +452,7 @@ var
   id, chapter : string;
   line : string;
 begin
-  index := fileIndex(Verse.book);
+  index := EncodeIndex(Verse.book);
   id := IntToStr(index);
   chapter := IntToStr(verse.chapter);
 
@@ -479,7 +479,7 @@ var
   verseNumber, toVerse : string;
   line : string;
 begin
-  index := fileIndex(Verse.book);
+  index := EncodeIndex(Verse.book);
   id := IntToStr(index);
   chapter := IntToStr(verse.chapter);
   verseNumber := IntToStr(verse.number);
@@ -537,21 +537,9 @@ end;
 
 function TBible.Search(searchString: string): TContentArray; // ; SearchOption: TSearchOption; range: TSearchRange): TContentArray;
 var
-  v : TVerse;
-  index : integer;
-  queryRange : string;
-  id, chapter : string;
-  verseNumber, toVerse : string;
-  text : string;
   i : integer;
 begin
   SetLength(Result,0);
-
-  index := fileIndex(Verse.book);
-  id := IntToStr(index);
-  chapter := IntToStr(verse.chapter);
-  verseNumber := IntToStr(verse.number);
-  toVerse := IntToStr(verse.number + verse.count);
 
   try
     Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.text + ' LIKE ''%Jehov%'' '; //  + searchString + '%';
@@ -565,6 +553,7 @@ begin
         try Result[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
         try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
         try Result[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
+        Result[i].verse.book := DecodeIndex(Result[i].verse.book);
         Query.Next;
       end;
   except
@@ -599,7 +588,7 @@ var
 begin
   Result := 1;
 
-  index := fileIndex(Verse.book);
+  index := EncodeIndex(Verse.book);
   id := IntToStr(index);
 
   try
