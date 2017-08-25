@@ -1,6 +1,6 @@
 unit UnitLib;
 
-{$H+}
+{$mode objfpc}{$H+}
 
 interface
 

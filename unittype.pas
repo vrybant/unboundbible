@@ -23,7 +23,7 @@ type
     chapter : string;
     verse   : string;
     text    : string;
-    details : string;
+//  details : string;
   end;
 
  type
@@ -34,15 +34,19 @@ type
     count    : integer;
   end;
 
- TContent = record
+ TContent = class(TObject)
     verse : TVerse;
     text : string;
   end;
 
   TContentList = class(TList)
-  public
-    // constructor Create(language: string);
   private
+    function  GetItem(index: integer): TContent;
+    procedure SetItem(index: integer; Content: TContent);
+  public
+    function Add(Content: TContent): Integer;
+    property Items[index: integer]: TContent read GetItem write SetItem; default;
+    destructor Destroy; override;
   end;
 
 const
@@ -73,6 +77,33 @@ var
     );
 
 implementation
+
+function TContentList.Add(content: TContent): integer;
+begin
+  Result := inherited Add(Pointer(Content));
+end;
+
+function TContentList.GetItem(Index: Integer): TContent;
+var
+  p : Pointer;
+begin
+  p := inherited Items[Index];
+  Result := TContent(p);
+end;
+
+
+procedure TContentList.SetItem(Index: Integer; content: TContent);
+begin
+  inherited Items[Index] := Content;
+end;
+
+destructor TContentList.Destroy;
+var i : integer;
+begin
+  for i:=0 to Count-1 do Items[i].Free;
+  inherited Destroy;
+end;
+
 
 end.
 
