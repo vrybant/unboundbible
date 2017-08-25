@@ -10,6 +10,13 @@ uses
 type
   TFileFormat = (unbound, mybible);
 
+  TSearchRange = record
+    from : integer;
+    to_ : integer;
+  end;
+
+  TSearchOption = set of (caseSensitive, wholeWords);
+
   TStringAlias = record
     bible   : string;
     book    : string;
@@ -17,6 +24,25 @@ type
     verse   : string;
     text    : string;
     details : string;
+  end;
+
+ type
+  TVerse = record
+    book     : integer;
+    chapter  : integer;
+    number   : integer;
+    count    : integer;
+  end;
+
+ TContent = record
+    verse : TVerse;
+    text : string;
+  end;
+
+  TContentList = class(TList)
+  public
+    // constructor Create(language: string);
+  private
   end;
 
 const

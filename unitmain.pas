@@ -249,7 +249,7 @@ implementation
 
 uses
   UnitAbout, UnitInfo, UnitSearch, UnitCompare, UnitTool, UnitOptions,
-  UnitLib, UnitLang, UnitShelf, UnitCopy, UnitTrans;
+  UnitLib, UnitLang, UnitType, UnitShelf, UnitCopy, UnitTrans;
 
 resourcestring
   sUntitled = 'Untitled';
@@ -524,7 +524,7 @@ begin
     begin
       RichEditBible.GetRange(n1, n2);
       Verse.Number := n1;
-      Verse.Count  := n2;
+      Verse.Count  := n2 - n1 + 1;
       if FormTranslate.Visible then LoadTranslate;
     end;
 
@@ -547,7 +547,7 @@ begin
   if Button <> mbLeft then Exit;
 
   s := (Sender as TSuperEdit).Hypertext;
-  v := SrtToVerse(s);
+  v := Bible.SrtToVerse(s);
 
   if v.Book = 0 then Exit;
 
@@ -1474,7 +1474,7 @@ begin
   Stream := TMemoryStream.Create;
   RichEditBible.GetRange(n1, n2);
   Verse.Number := n1;
-  Verse.Count  := n2;
+  Verse.Count  := n2 - n1 + 1;
   Load_Verses(Stream);
   StreamToClipboard(Stream);
   Stream.free;

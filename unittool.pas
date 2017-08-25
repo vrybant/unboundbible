@@ -15,7 +15,7 @@ procedure Show_Message(SuperEdit: TSuperEdit; s: string);
 
 implementation
 
-uses UnitSearch, UnitShelf, UnitLib;
+uses { UnitSearch, } UnitShelf, UnitLib;
 
 procedure Replacement(var s: string);
 begin
@@ -191,6 +191,7 @@ begin
 end;
 
 procedure Load_Verses(Stream: TMemoryStream);
+//       Verse.Count не исправлен!!
 var
     Book : TBook;
     List : TStringList;

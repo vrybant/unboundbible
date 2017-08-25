@@ -12,13 +12,6 @@ const
   BookMax = 86;
 
 type
-  TVerse = record
-    book     : integer;
-    chapter  : integer;
-    number   : integer;
-    count    : integer;
-  end;
-
   TBook = class(TObject)
   public
     title  : string;
@@ -86,10 +79,12 @@ type
     function  BookByName(s: string): TBook;
     function  BookByNum(n: integer): TBook;
     function  VerseToStr(Verse: TVerse; full: boolean): string;
+    function SrtToVerse(link : string): TVerse;
     procedure SetTitles;
     function  GetVerse(Verse: TVerse): string;
-    procedure GetChapter(Verse: TVerse; var List: TStringList);
-    procedure GetRange(Verse: TVerse; var List: TStringList);
+    procedure GetChapter(Verse: TVerse; List: TStringList);
+    procedure GetRange(Verse: TVerse; List: TStringList);
+    procedure Search(searchStrig: string; SearchOption: TSearchOption; searchRange: TSearchRange);
     procedure GetTitles(var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
     procedure SavePrivate(const IniFile: TIniFile);
@@ -139,7 +134,6 @@ const
 function Bible: TBible;
 function TwoChars(const s: string): string;
 function Comparison(Item1, Item2: Pointer): integer; // for TShelf
-function SrtToVerse(wide : string): TVerse;
 
 implementation
 
@@ -159,55 +153,6 @@ end;
 function IsNewTestament(n: integer): boolean;
 begin
   Result := (n >= 40) and (n <= 66);
-end;
-
-function SrtToVerse(wide : string): TVerse;
-var
-  i : integer;
-
-  procedure GetLink(i: integer; T: boolean);
-  var
-    s, p : string;
-    len, n : integer;
-  begin
-    if T then len := Length(Bible[i].Title)
-         else len := Length(Bible[i].Abbr );
-
-    s := Copy(wide,len+1,255);
-    s := Trim(s);
-
-    if Length(s) = 0 then Exit;
-    if not IsNumeral(s[1]) then Exit;
-
-    n := Pos('-',s);
-    if n > 0 then
-      begin
-        p := Copy(s,n+1,255); Result.Count := MyStrToInt(p);
-        s := Copy(s,1,n-1);
-      end;
-
-    n := Pos(':',s);      Result.Book    := Bible[i].Number;
-    p := Copy(s,1,n-1);   Result.Chapter := MyStrToInt(p);
-    p := Copy(s,n+1,255); Result.Number  := MyStrToInt(p);
-  end;
-
-begin
-  Wide := Trim(Wide);
-
-  Result.Book    := 0;
-  Result.Chapter := 0;
-  Result.Number  := 0;
-  Result.Count   := 0;
-
-  if Pos(':',Wide) = 0 then Exit;
-
-  for i:=0 to Bible.Count-1 do
-    begin
-      if Bible[i].Title = Copy(Wide,1,Length(Bible[i].Title)) then GetLink(i,True );
-      if Bible[i].Abbr  = Copy(Wide,1,Length(Bible[i].Abbr )) then GetLink(i,False);
-    end;
-
-  if Result.Count = 0 then Result.Count := Result.Number;
 end;
 
 //========================================================================================
@@ -495,6 +440,60 @@ begin
     Result := Result + '-' + IntToStr(Verse.number + Verse.count - 1);
 end;
 
+function TBible.SrtToVerse(link : string): TVerse;
+var
+  i : integer;
+
+  procedure GetLink(i: integer; T: boolean);
+  var
+    s, p : string;
+    len, n : integer;
+    endVerse : integer;
+  begin
+    if T then len := Length(Items[i].title)
+         else len := Length(Items[i].abbr );
+
+    s := Copy(link,len+1,255);
+    s := Trim(s);
+
+    if Length(s) = 0 then Exit;
+    if not IsNumeral(s[1]) then Exit;
+
+    Result.count := 1;
+    endVerse := 0;
+
+    n := Pos('-',s);
+    if n > 0 then
+      begin
+        p := Copy(s,n+1,255);
+        s := Copy(s,1,n-1);
+        endVerse := MyStrToInt(p);
+      end;
+
+    n := Pos(':',s);      Result.book    := Items[i].number;
+    p := Copy(s,1,n-1);   Result.chapter := MyStrToInt(p);
+    p := Copy(s,n+1,255); Result.number  := MyStrToInt(p);
+
+    if endVerse > 0 then
+      Result.count := endVerse - Result.number + 1;
+  end;
+
+begin
+  Result.Book    := 0;
+  Result.Chapter := 0;
+  Result.Number  := 0;
+  Result.Count   := 0;
+
+  if Pos(':',link) = 0 then Exit;
+  link := Trim(link);
+
+  for i:=0 to Count-1 do
+    begin
+      if Prefix(Items[i].title,link) then GetLink(i,true );
+      if Prefix(Items[i].abbr ,link) then GetLink(i,false);
+    end;
+end;
+
 function TBible.TitlesFromList(TitleList: TStringList): boolean;
 var
   Book : TBook;
@@ -545,7 +544,7 @@ begin
   Result := '';
 end;
 
-procedure TBible.GetChapter(Verse: TVerse; var List: TStringList);
+procedure TBible.GetChapter(Verse: TVerse; List: TStringList);
 var
   index : integer;
   id, chapter : string;
@@ -571,8 +570,74 @@ begin
   end;
 end;
 
-procedure TBible.GetRange(Verse: TVerse; var List: TStringList);
+procedure TBible.GetRange(Verse: TVerse; List: TStringList);
 var
+  index : integer;
+  id, chapter : string;
+  verseNumber, toVerse : string;
+  line : string;
+begin
+  index := fileIndex(Verse.book);
+  id := IntToStr(index);
+  chapter := IntToStr(verse.chapter);
+  verseNumber := IntToStr(verse.number);
+  toVerse := IntToStr(verse.number + verse.count);
+
+  try
+    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id +
+                      ' AND ' + z.chapter + '=' + chapter +
+                      ' AND ' + z.verse + ' >= ' + verseNumber +
+                      ' AND ' + z.verse + ' < ' + toVerse;
+    Query.Open;
+    while not Query.Eof do
+      begin
+        try line := Query.FieldByName(z.text).AsString; except end;
+        List.Add(line);
+        Query.Next;
+      end;
+  except
+    //
+  end;
+end;
+
+(*    func search(string: String, options: SearchOption, range: SearchRange?) -> [Content]? {
+        let list = string.components(separatedBy: " ")
+        var string = options.contains(.caseSensitive) ? string : string.lowercased().removeLeadingChars()
+        string = string.replace(" ", "%")
+
+        let queryRange = range == nil ? "" : " and \(s.book) >= \(fileIndex(range!.from)) and \(s.book) <= \(fileIndex(range!.to))"
+        let query = "select * from \(s.bible) where \(s.text) like \"%\(string)%\"" + queryRange
+
+        setCaseSensitiveLike(options.contains(.caseSensitive))
+
+        if let results = try? database!.executeQuery(query, values: nil) {
+            var lines : [Content] = []
+            while results.next() == true {
+                guard let book = results.string(forColumn: s.book) else { break }
+                guard let chapter = results.string(forColumn: s.chapter) else { break }
+                guard let number = results.string(forColumn: s.verse) else { break }
+                guard let text = results.string(forColumn: s.text) else { break }
+
+                let verse = Verse(book: unboundIndex(book.toInt()), chapter: chapter.toInt(), number: number.toInt(), count: 1)
+                let content = Content(verse: verse, text: text)
+
+                if text.removeTags().contains(list: list, options: options) { lines.append(content) }
+            }
+            var result : [Content] = []
+
+            for line in lines { if !isNewTestament(line.verse.book) { result.append(line) } }
+            for line in lines { if  isNewTestament(line.verse.book) { result.append(line) } }
+
+            if !result.isEmpty { return result }
+        }
+        return nil
+    }   *)
+
+procedure TBible.Search(searchStrig: string; SearchOption: TSearchOption; searchRange: TSearchRange);
+var
+  Verse: TVerse; //
+  List: TStringList; //
+
   index : integer;
   id, chapter : string;
   verseNumber, toVerse : string;
