@@ -53,10 +53,9 @@ type
     langEnable   : boolean;
   private
     { Private declarations }
-    function  GetItem(Index: Integer): TBook;
-    procedure SetItem(Index: Integer; lst: TBook);
-    function  TitlesFromList(TitleList: TStringList): boolean;
-    function Add(lst: TBook): Integer;
+    function  GetItem(index: integer): TBook;
+    procedure SetItem(index: integer; lst: TBook);
+    function Add(lst: TBook): integer;
     function EncodeIndex(index: integer): integer;
     function DecodeIndex(index: integer): integer;
   public
@@ -396,40 +395,6 @@ begin
     end;
 end;
 
-function TBible.TitlesFromList(TitleList: TStringList): boolean;
-var
-  Book : TBook;
-   lst : TStringList;
-   i,n : integer;
-begin
-  Result := False;
-
-  lst := TStringList.Create;
-
-  for i:=0 to TitleList.Count-1 do
-    begin
-      StrToList(TitleList[i], lst);
-
-      if lst.Count >= 4 then
-        begin
-          n := MyStrToInt(lst[2]); // book number
-
-          if (lst[0] = '0') and (lst[1] = '0') then
-            begin
-              Book := BookByNum(n);
-              if Book <> nil then
-                begin
-                  Book.Title := lst[3];
-                  if lst.Count >= 5 then Book.Abbr := lst[4];
-                  Result := True;
-                end;
-            end;
-        end;
-    end;
-
-  lst.free;
-end;
-
 procedure TBible.SetTitles;
 var
   Title : TTitle;
@@ -542,7 +507,7 @@ begin
   SetLength(Result,0);
 
   try
-    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.text + ' LIKE ''%Jehov%'' '; //  + searchString + '%';
+    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.text + ' LIKE ''%' + searchString + '%'' ';
     Query.Open;
     OutputString(IntToStr(Query.RecordCount));
     SetLength(Result,Query.RecordCount);
@@ -615,23 +580,23 @@ begin
 //RightToLeft := IniFile.ReadBool(FileName,'RightToLeft',False );
 end;
 
-function TBible.Add(lst: TBook): Integer;
+function TBible.Add(lst: TBook): integer;
 begin
   Result := inherited Add(lst);
 end;
 
 {---}
 
-function TBible.GetItem(Index: Integer): TBook;
+function TBible.GetItem(index: integer): TBook;
 begin
-  Result := TBook(inherited Items[Index]);
+  Result := TBook(inherited Items[index]);
 end;
 
 {---}
 
-procedure TBible.SetItem(Index: Integer; lst: TBook);
+procedure TBible.SetItem(index: integer; lst: TBook);
 begin
-  inherited Items[Index] := List;
+  inherited Items[index] := List;
 end;
 
 destructor TBible.Destroy;
