@@ -69,7 +69,7 @@ type
     function  GetVerse(Verse: TVerse): string;
     procedure GetChapter(Verse: TVerse; List: TStringList);
     procedure GetRange(Verse: TVerse; List: TStringList);
-    function  Search(searchString: string): TContentArray; //; SearchOption: TSearchOption; range: TSearchRange): TContentArray;
+    function  Search(searchString: string; SearchOptions: TSearchOptions; range: TSearchRange): TContentArray;
     procedure GetTitles(var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
     procedure SavePrivate(const IniFile: TIniFile);
@@ -498,7 +498,7 @@ end;
         return nil
     }   *)
 
-function TBible.Search(searchString: string): TContentArray; // ; SearchOption: TSearchOption; range: TSearchRange): TContentArray;
+function TBible.Search(searchString: string; SearchOptions: TSearchOptions; range: TSearchRange): TContentArray;
 var
   i : integer;
 begin

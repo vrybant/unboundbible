@@ -6,7 +6,8 @@ interface
 
 uses
   SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ExtCtrls, LCLType;
+  Buttons, ExtCtrls, LCLType,
+  UnitType;
 
 type
   TSearchForm = class(TForm)
@@ -23,11 +24,13 @@ type
     procedure FormActivate(Sender: TObject);
   public
     procedure Translate;
-    function Range(n, CurrBook: integer): boolean;
+    function Range(n, OpenedBook: integer): boolean;
   end;
 
 var
   SearchForm: TSearchForm;
+
+function CurrentSearchRange(): TSearchRange;
 
 implementation
 
@@ -41,7 +44,31 @@ const
   rbNewTestament = 2;
   rbGospels      = 3;
   rbEpistles     = 4;
-  rbCurrentBook  = 5;
+  rbOpenedBook   = 5;
+
+const
+  rgEntireBible  : TSearchRange = (from: -1; to_: -1);
+  rgOldTestament : TSearchRange = (from:  1; to_: 39);
+  rgNewTestament : TSearchRange = (from: 40; to_: 66);
+  rgGospels      : TSearchRange = (from: 40; to_: 43);
+  rgEpistles     : TSearchRange = (from: 45; to_: 66);
+
+function CurrentSearchRange(): TSearchRange;
+begin
+  Result := rgEntireBible;
+  case SearchForm.RadioGroupRange.ItemIndex of
+//  rbEntireBible  : Result := rgEntireBible;
+    rbOldTestament : Result := rgOldTestament;
+    rbNewTestament : Result := rgNewTestament;
+    rbGospels      : Result := rgGospels;
+    rbEpistles     : Result := rgEpistles;
+    rbOpenedBook   :
+      begin
+        Result.from := ActiveVerse.book;
+        Result.to_  := ActiveVerse.book;
+      end;
+  end;
+end;
 
 procedure TSearchForm.Translate;
 begin
@@ -73,7 +100,7 @@ begin
   OKButton.Enabled := False;
 end;
 
-function TSearchForm.Range(n, CurrBook: integer): boolean;
+function TSearchForm.Range(n, OpenedBook: integer): boolean;
 begin
   Result := False;
   case RadioGroupRange.ItemIndex of
@@ -82,7 +109,7 @@ begin
     rbNewTestament : if (n >= 40) and (n <= 66) then Result := True;
     rbGospels      : if (n >= 40) and (n <= 43) then Result := True;
     rbEpistles     : if (n >= 45) and (n <= 65) then Result := True;
-    rbCurrentBook  : if  n = CurrBook           then Result := True;
+    rbOpenedBook   : if  n = OpenedBook         then Result := True;
   end;
 end;
 

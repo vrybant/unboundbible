@@ -14,10 +14,10 @@ object SearchForm: TSearchForm
   OnKeyDown = FormKeyDown
   ParentFont = True
   Position = poScreenCenter
-  LCLVersion = '0.9.30'
+  LCLVersion = '1.6.4.0'
   object OKButton: TButton
     Left = 112
-    Height = 20
+    Height = 25
     Top = 216
     Width = 100
     AutoSize = True
@@ -30,7 +30,7 @@ object SearchForm: TSearchForm
   end
   object Edit: TEdit
     Left = 9
-    Height = 21
+    Height = 25
     Top = 8
     Width = 298
     Font.Color = clWindowText
@@ -54,8 +54,8 @@ object SearchForm: TSearchForm
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 139
-    ClientWidth = 137
+    ClientHeight = 141
+    ClientWidth = 141
     ItemIndex = 0
     Items.Strings = (
       'Entire &Bible'
@@ -82,8 +82,8 @@ object SearchForm: TSearchForm
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 67
-    ClientWidth = 137
+    ClientHeight = 69
+    ClientWidth = 141
     ItemIndex = 1
     Items.Strings = (
       '&Any word'
@@ -98,24 +98,24 @@ object SearchForm: TSearchForm
     Top = 137
     Width = 145
     Caption = 'Options '
-    ClientHeight = 43
-    ClientWidth = 137
+    ClientHeight = 45
+    ClientWidth = 141
     TabOrder = 2
     object CheckBoxCase: TCheckBox
       Left = 8
-      Height = 18
+      Height = 19
       Top = 21
-      Width = 110
+      Width = 93
       Caption = '&Case sensitive'
       TabOrder = 1
     end
     object CheckBoxWhole: TCheckBox
       Left = 8
-      Height = 18
+      Height = 19
       Top = 0
-      Width = 101
+      Width = 89
       Caption = '&Whole words'
       TabOrder = 0
     end
   end
-end
+end

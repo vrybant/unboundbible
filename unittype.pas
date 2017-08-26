@@ -10,13 +10,21 @@ uses
 type
   TFileFormat = (unbound, mybible);
 
+  RangeOption = (entireBible, oldTestament, newTestament, gospels, epistles, openedBook);
+
   TSearchRange = record
     from : integer;
     to_ : integer;
   end;
 
-  TSearchOption = set of (caseSensitive, wholeWords);
+  TSearchOption = (caseSensitive, wholeWords);
+  TSearchOptions = set of TSearchOption;
 
+var
+  SearchOptions: TSearchOptions;
+  SearchRange: TSearchRange;
+
+type
   TStringAlias = record
     bible   : string;
     book    : string;

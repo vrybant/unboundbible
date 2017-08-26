@@ -15,7 +15,7 @@ procedure Show_Message(SuperEdit: TSuperEdit; s: string);
 
 implementation
 
-uses { UnitSearch, } UnitShelf, UnitType, UnitLib;
+uses UnitShelf, UnitType, UnitSearch, UnitLib;
 
 procedure Replacement(var s: string);
 begin
@@ -101,7 +101,7 @@ procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
     if Shelf.Count = 0 then Exit;
 
     SuperEdit.OpenStream;
-    ContentArray := Bible.Search(st);
+    ContentArray := Bible.Search(st, SearchOptions, CurrentSearchRange());
 
     for i:=0 to Length(ContentArray)-1 do
       begin
