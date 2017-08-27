@@ -7,14 +7,9 @@ uses
   StdCtrls, Buttons, ExtCtrls, Dialogs;
 
 type
-
-  { TFormOptions }
-
   TFormOptions = class(TForm)
     ButtonFont: TButton;
-    ComboBoxTitles: TComboBox;
     FontDialog: TFontDialog;
-    GroupBoxTitles: TGroupBox;
     GroupBoxFont: TGroupBox;
     LabelFont: TLabel;
     OKButton: TButton;
@@ -32,23 +27,19 @@ var
 
 implementation
 
-uses UnitShelf, UnitLang, UnitLib;
+uses UnitLang, UnitLib;
 
 {$R *.lfm}
 
 procedure TFormOptions.Translate;
 begin
   Caption := ' ' + T('Options.Caption');
-
-  GroupBoxFont  .Caption := ' ' + T('Menu.Font') + ' ';
-  GroupBoxTitles.Caption := ' ' + T('Options.TextOptions') + ' ';
-
+  GroupBoxFont.Caption := ' ' + T('Menu.Font') + ' ';
   OKButton.Caption := T('Button.OK'    );
  end;
 
 procedure TFormOptions.FormCreate(Sender: TObject);
 begin
-  GetFileList(AppPath + Slash + TitleDirectory + Slash + '*.txt', ComboBoxTitles.Items, False);
   {$ifdef darwin}
   OKButton.Visible := False;
   Height := 175;
@@ -62,18 +53,8 @@ begin
 end;
 
 procedure TFormOptions.FormActivate(Sender: TObject);
-var i : integer;
 begin
   FontDialog.Font.Assign(CurrFont);
-
-  ComboBoxTitles.ItemIndex := 0;
-
-  for i:=0 to ComboBoxTitles.Items.Count-1 do
-    if LowerCase(ComboBoxTitles.Items[i]) = Bible.Language then
-      ComboBoxTitles.ItemIndex := i;
-
-  GroupBoxTitles.Enabled := not Bible.LangEnable;
-  ComboBoxTitles.Enabled := not Bible.LangEnable;
 end;
 
 procedure TFormOptions.FormPaint(Sender: TObject);
@@ -84,8 +65,6 @@ end;
 procedure TFormOptions.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   {$ifdef unix} ModalResult := mrOk; {$endif}
-  if ModalResult = mrOk then
-    Bible.Language := LowerCase(ComboBoxTitles.Text);
 end;
 
 end.

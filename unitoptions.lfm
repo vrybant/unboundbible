@@ -14,10 +14,10 @@ object FormOptions: TFormOptions
   OnPaint = FormPaint
   ParentFont = True
   Position = poScreenCenter
-  LCLVersion = '1.0.2.0'
+  LCLVersion = '1.6.4.0'
   object OKButton: TButton
     Left = 88
-    Height = 20
+    Height = 25
     Top = 160
     Width = 80
     AutoSize = True
@@ -30,24 +30,24 @@ object FormOptions: TFormOptions
   end
   object GroupBoxFont: TGroupBox
     Left = 16
-    Height = 64
+    Height = 136
     Top = 12
     Width = 209
     Caption = ' Font '
-    ClientHeight = 42
-    ClientWidth = 201
+    ClientHeight = 116
+    ClientWidth = 205
     TabOrder = 1
     object LabelFont: TLabel
       Left = 14
-      Height = 17
+      Height = 15
       Top = 13
-      Width = 62
+      Width = 52
       Caption = 'LabelFont'
       ParentColor = False
     end
     object ButtonFont: TButton
       Left = 162
-      Height = 20
+      Height = 25
       Top = 10
       Width = 28
       AutoSize = True
@@ -57,25 +57,6 @@ object FormOptions: TFormOptions
       TabOrder = 0
     end
   end
-  object GroupBoxTitles: TGroupBox
-    Left = 17
-    Height = 64
-    Top = 88
-    Width = 208
-    Caption = ' Text Option '
-    ClientHeight = 42
-    ClientWidth = 200
-    TabOrder = 2
-    object ComboBoxTitles: TComboBox
-      Left = 38
-      Height = 21
-      Top = 8
-      Width = 129
-      ItemHeight = 0
-      TabOrder = 0
-      Text = 'English'
-    end
-  end
   object FontDialog: TFontDialog
     MinFontSize = 0
     MaxFontSize = 0
@@ -83,4 +64,4 @@ object FormOptions: TFormOptions
     left = 32
     top = 144
   end
-end
+end

@@ -1,11 +1,11 @@
 object SearchForm: TSearchForm
   Left = 981
-  Height = 238
+  Height = 250
   Top = 300
   Width = 320
   BorderStyle = bsDialog
   Caption = ' Bible Search'
-  ClientHeight = 238
+  ClientHeight = 250
   ClientWidth = 320
   Color = clBtnFace
   KeyPreview = True
@@ -18,7 +18,7 @@ object SearchForm: TSearchForm
   object OKButton: TButton
     Left = 112
     Height = 25
-    Top = 200
+    Top = 209
     Width = 100
     AutoSize = True
     Caption = 'Search'
@@ -41,7 +41,7 @@ object SearchForm: TSearchForm
   end
   object RadioGroupRange: TRadioGroup
     Left = 165
-    Height = 145
+    Height = 153
     Top = 41
     Width = 145
     AutoFill = True
@@ -54,7 +54,7 @@ object SearchForm: TSearchForm
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 125
+    ClientHeight = 133
     ClientWidth = 141
     ItemIndex = 0
     Items.Strings = (
@@ -69,11 +69,11 @@ object SearchForm: TSearchForm
   end
   object GroupBoxOption: TGroupBox
     Left = 9
-    Height = 145
+    Height = 153
     Top = 41
     Width = 145
     Caption = 'Options '
-    ClientHeight = 125
+    ClientHeight = 133
     ClientWidth = 141
     TabOrder = 1
     object CheckBoxCase: TCheckBox
