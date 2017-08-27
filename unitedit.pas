@@ -198,8 +198,8 @@ var
   x1,x2 : integer;
 begin
   GetSel(x1,x2);
-  SetSel(x2,x2); Result.bottom := GetParagraphNumber;
-  SetSel(x1,x1); Result.top    := GetParagraphNumber;
+  SetSel(x2,x2); Result.till := GetParagraphNumber;
+  SetSel(x1,x1); Result.from := GetParagraphNumber;
   if x1 <> x2 then SetSel(x1,x2);
 end;
 

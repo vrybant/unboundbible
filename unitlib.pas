@@ -12,8 +12,8 @@ uses
 
 type
   TRange = record
-    top : integer;
-    bottom : integer;
+    from : integer;
+    till : integer;
   end;
 
   TOptions = record

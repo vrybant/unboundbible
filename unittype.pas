@@ -10,11 +10,6 @@ uses
 type
   TFileFormat = (unbound, mybible);
 
-  TSearchRange = record
-    from : integer;
-    to_ : integer;
-  end;
-
   TSearchOption = (caseSensitive, wholeWords);
   TSearchOptions = set of TSearchOption;
 
@@ -25,7 +20,6 @@ type
     chapter : string;
     verse   : string;
     text    : string;
-//  details : string;
   end;
 
  type
@@ -50,7 +44,6 @@ const
     chapter : 'Chapter';
     verse   : 'Verse';
     text    : 'Scripture';
-//  details : 'Details';
     );
 
   mybibleStringAlias : TStringAlias = (
@@ -59,7 +52,6 @@ const
     chapter : 'chapter';
     verse   : 'verse';
     text    : 'text';
-//  details : 'info';
     );
 
   noneVerse : TVerse = (

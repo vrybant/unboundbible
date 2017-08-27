@@ -12,8 +12,6 @@ uses
   ClipBrd, StdActns, RichMemo, UnitEdit, PrintersDlgs, Types;
 
 type
-  { TMainForm }
-
   TMainForm = class(TForm)
     ActionOnline: TAction;
     miTranslate: TMenuItem;
@@ -523,8 +521,8 @@ begin
   if Button = mbLeft then
     begin
       Range := RichEditBible.GetRange;
-      ActiveVerse.Number := Range.top;
-      ActiveVerse.Count  := Range.bottom - Range.top + 1;
+      ActiveVerse.Number := Range.from;
+      ActiveVerse.Count  := Range.till - Range.from + 1;
       if FormTranslate.Visible then LoadTranslate;
     end;
 
@@ -1473,8 +1471,8 @@ var
 begin
   Stream := TMemoryStream.Create;
   Range := RichEditBible.GetRange;
-  ActiveVerse.Number := Range.top;
-  ActiveVerse.Count  := Range.bottom - Range.top + 1;
+  ActiveVerse.Number := Range.from;
+  ActiveVerse.Count  := Range.till - Range.from + 1;
   Load_Verses(Stream);
   StreamToClipboard(Stream);
   Stream.free;
@@ -1501,8 +1499,8 @@ begin
     end;
 
   Range := RichEditBible.GetRange;
-  ActiveVerse.Verse := Range.top;
-  ActiveVerse.Range := Range.bottom;
+  ActiveVerse.Verse := Range.from;
+  ActiveVerse.Range := Range.till;
   Load_Verses(Stream);
 
   RichEditPreview.LoadRichText(Stream);

@@ -6,7 +6,7 @@ interface
 
 uses
   SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ExtCtrls, LCLType, UnitType;
+  Buttons, ExtCtrls, LCLType, UnitLib, UnitType;
 
 type
   TSearchForm = class(TForm)
@@ -28,7 +28,7 @@ var
   SearchForm: TSearchForm;
 
 function CurrentSearchOptions: TSearchOptions;
-function CurrentSearchRange: TSearchRange;
+function CurrentSearchRange: TRange;
 
 implementation
 
@@ -45,11 +45,11 @@ const
   rbOpenedBook   = 5;
 
 const
-  rgEntireBible  : TSearchRange = (from: -1; to_: -1);
-  rgOldTestament : TSearchRange = (from:  1; to_: 39);
-  rgNewTestament : TSearchRange = (from: 40; to_: 66);
-  rgGospels      : TSearchRange = (from: 40; to_: 43);
-  rgEpistles     : TSearchRange = (from: 45; to_: 66);
+  rgEntireBible  : TRange = (from: -1; till: -1);
+  rgOldTestament : TRange = (from:  1; till: 39);
+  rgNewTestament : TRange = (from: 40; till: 66);
+  rgGospels      : TRange = (from: 40; till: 43);
+  rgEpistles     : TRange = (from: 45; till: 66);
 
 function CurrentSearchOptions: TSearchOptions;
 begin
@@ -58,11 +58,10 @@ begin
   if SearchForm.CheckBoxWhole.Checked then Result := Result + [caseSensitive];
 end;
 
-function CurrentSearchRange: TSearchRange;
+function CurrentSearchRange: TRange;
 begin
   Result := rgEntireBible;
   case SearchForm.RadioGroupRange.ItemIndex of
-//  rbEntireBible  : Result := rgEntireBible;
     rbOldTestament : Result := rgOldTestament;
     rbNewTestament : Result := rgNewTestament;
     rbGospels      : Result := rgGospels;
@@ -70,7 +69,7 @@ begin
     rbOpenedBook   :
       begin
         Result.from := ActiveVerse.book;
-        Result.to_  := ActiveVerse.book;
+        Result.till := ActiveVerse.book;
       end;
   end;
 end;

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd,
-  DB, ZConnection, ZDataset, UnitTitle, UnitType;
+  DB, ZConnection, ZDataset, UnitLib, UnitTitle, UnitType;
 
 const
   BookMax = 86;
@@ -32,9 +32,9 @@ type
     fileFormat   : TFileFormat;
     z            : TStringAlias;
     {-}
-    name         : string; // Tags
+    name         : string;
     native       : string;
-    abbreviation : string; // [э'bri:vi'eishэn]
+    abbreviation : string;
     copyright    : string;
     language     : string;
     fileType     : string;
@@ -45,7 +45,7 @@ type
     fontName     : TFontName;
     fontSize     : integer;
     {-}
-    oldTestament : boolean;     // Flags
+    oldTestament : boolean;
     newTestament : boolean;
     apocrypha    : boolean;
     ssText       : integer;
@@ -69,14 +69,12 @@ type
     function  GetVerse(Verse: TVerse): string;
     procedure GetChapter(Verse: TVerse; List: TStringList);
     procedure GetRange(Verse: TVerse; List: TStringList);
-    function  Search(searchString: string; SearchOptions: TSearchOptions; range: TSearchRange): TContentArray;
+    function  Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     procedure GetTitles(var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
     procedure SavePrivate(const IniFile: TIniFile);
     procedure ReadPrivate(const IniFile: TIniFile);
-    {-}
     property Items[Index: Integer]: TBook read GetItem write SetItem; default;
-    {-}
     destructor Destroy; override;
   end;
 
@@ -121,8 +119,6 @@ function TwoChars(const s: string): string;
 function Comparison(Item1, Item2: Pointer): integer; // for TShelf
 
 implementation
-
-uses UnitLib;
 
 function Bible: TBible;
 begin
@@ -498,7 +494,7 @@ end;
         return nil
     }   *)
 
-function TBible.Search(searchString: string; SearchOptions: TSearchOptions; range: TSearchRange): TContentArray;
+function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
 var
   i : integer;
 begin

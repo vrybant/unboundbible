@@ -5,8 +5,8 @@ unit UnitCopy;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, RichMemo, UnitEdit, UnitLib;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
+  StdCtrls, ExtCtrls, RichMemo, UnitLib, UnitEdit;
 
 type
   TFormCopy = class(TForm)
@@ -125,8 +125,8 @@ end;
 procedure TFormCopy.FormPaint(Sender: TObject);
 begin
   Stream.Clear;
-  ActiveVerse.Number := Range.top;
-  ActiveVerse.Count  := Range.bottom;
+  ActiveVerse.Number := Range.from;
+  ActiveVerse.Count  := Range.till;
   Load_Verses(Stream);
   RichEditPreview.LoadRichText(Stream);
   RichEditPreview.SetSel(0,0);

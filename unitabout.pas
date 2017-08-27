@@ -6,9 +6,6 @@ uses Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, SysUtils,
      LCLIntf;
 
 type
-
-  { TAboutBox }
-
   TAboutBox = class(TForm)
     LabelFB: TLabel;
     LabelGPL: TLabel;
