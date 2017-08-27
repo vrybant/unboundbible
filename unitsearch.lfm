@@ -1,11 +1,11 @@
 object SearchForm: TSearchForm
   Left = 981
-  Height = 250
+  Height = 249
   Top = 300
   Width = 320
   BorderStyle = bsDialog
   Caption = ' Bible Search'
-  ClientHeight = 250
+  ClientHeight = 249
   ClientWidth = 320
   Color = clBtnFace
   KeyPreview = True

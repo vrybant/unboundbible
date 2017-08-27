@@ -54,8 +54,8 @@ const
 function CurrentSearchOptions: TSearchOptions;
 begin
   Result := [];
-  if SearchForm.CheckBoxCase .Checked then Result := Result + [wholeWords];
-  if SearchForm.CheckBoxWhole.Checked then Result := Result + [caseSensitive];
+  if SearchForm.CheckBoxCase .Checked then Result := Result + [caseSensitive];
+  if SearchForm.CheckBoxWhole.Checked then Result := Result + [wholeWords];
 end;
 
 function CurrentSearchRange: TRange;

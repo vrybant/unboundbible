@@ -496,9 +496,19 @@ end;
 
 function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
 var
+  List: TStringList;
   i : integer;
 begin
   SetLength(Result,0);
+
+  List := TStringList.Create;
+  StrToListEx(' ',searchString,List);
+
+  if not (caseSensitive in SearchOptions) then
+    begin
+      searchString := LowerCase(searchString);
+      searchString := RemoveLeadingChars(searchString);
+    end;
 
   try
     Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.text + ' LIKE ''%' + searchString + '%'' ';
@@ -518,6 +528,8 @@ begin
   except
     //
   end;
+
+  List.Free;
 end;
 
 procedure TBible.GetTitles(var List: TStringList);

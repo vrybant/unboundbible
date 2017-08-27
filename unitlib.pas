@@ -27,13 +27,12 @@ type
 const
   AppName = 'Unbound Bible Tools';
   VersionInfo = '1.01';
-  {$ifdef unix} RussianEdition = False{True}; {$endif}
+  {$ifdef unix} RussianEdition = False; {$endif}
 
 const
   BibleDirectory = 'bibles';
   TitleDirectory = 'titles';
   VerseDirectory = 'verse';
-//CommentaryDirectory = 'commentaries';
 
 function IsNumeral(c: char): boolean;
 function IsLetter(c: char): boolean;
@@ -73,6 +72,7 @@ procedure CreateDirectories;
 {$ifdef darwin} procedure PrintFile(FileName : string); {$endif}
 procedure OpenFolder(path : string);
 procedure OutputString(s: string);
+function RemoveLeadingChars(s: string): string;
 
 var
   CurrFont: TFont;
@@ -500,6 +500,26 @@ end;
 procedure OutputString(s: string);
 begin
   {$ifdef mswindows} OutputDebugString(PChar(s)) {$endif}
+end;
+
+function RemoveLeadingChar(s: string): string;
+begin
+   Result := UTF8Copy(s,2,UTF8Length(s));
+end;
+
+function RemoveLeadingChars(s: string): string;
+var
+  List : TStringList;
+  i : integer;
+begin
+  List := TStringList.Create;
+  StrToListEx(' ',s,List);
+
+  for i:=0 to List.Count-1 do
+    List[i] := RemoveLeadingChar(List[i]);
+
+  ListToStrEx(' ',List,Result);
+  List.Free;
 end;
 
 initialization
