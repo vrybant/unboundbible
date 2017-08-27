@@ -415,10 +415,10 @@ end;
 
 procedure TMainForm.CmdCopyAs(Sender: TObject);
 var
-  n1, n2 : integer;
+  Range : TRange;
 begin
-  RichEditBible.GetRange(n1, n2);
-  FormCopy.SetRange(n1, n2);
+  Range := RichEditBible.GetRange;
+  FormCopy.SetRange(Range);
   FormCopy.ShowModal;
   {$ifdef darwin} RichEditBible.RestoreSelection; {$endif}
 end;
@@ -518,13 +518,13 @@ end;
 
 procedure TMainForm.RichEditBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
-  n1,n2 : integer;
+  Range : TRange;
 begin
   if Button = mbLeft then
     begin
-      RichEditBible.GetRange(n1, n2);
-      ActiveVerse.Number := n1;
-      ActiveVerse.Count  := n2 - n1 + 1;
+      Range := RichEditBible.GetRange;
+      ActiveVerse.Number := Range.top;
+      ActiveVerse.Count  := Range.bottom - Range.top + 1;
       if FormTranslate.Visible then LoadTranslate;
     end;
 
@@ -1469,12 +1469,12 @@ end;
 procedure TMainForm.VersesToClipboard;
 var
   Stream : TMemoryStream;
-  n1,n2 : integer;
+  Range : TRange;
 begin
   Stream := TMemoryStream.Create;
-  RichEditBible.GetRange(n1, n2);
-  ActiveVerse.Number := n1;
-  ActiveVerse.Count  := n2 - n1 + 1;
+  Range := RichEditBible.GetRange;
+  ActiveVerse.Number := Range.top;
+  ActiveVerse.Count  := Range.bottom - Range.top + 1;
   Load_Verses(Stream);
   StreamToClipboard(Stream);
   Stream.free;
@@ -1486,7 +1486,7 @@ procedure TMainForm.VersesToClipboard;
 var
   RichEditPreview : TRichMemo;
   Stream: TMemoryStream;
-  n1,n2 : integer;
+  Range : TRange;
 begin
   Stream := TMemoryStream.Create;
   RichEditPreview := TRichMemo.Create(self);
@@ -1500,9 +1500,9 @@ begin
       Width  := 100;
     end;
 
-  RichEditBible.GetRange(n1, n2);
-  ActiveVerse.Verse := n1;
-  ActiveVerse.Range := n2;
+  Range := RichEditBible.GetRange;
+  ActiveVerse.Verse := Range.top;
+  ActiveVerse.Range := Range.bottom;
   Load_Verses(Stream);
 
   RichEditPreview.LoadRichText(Stream);

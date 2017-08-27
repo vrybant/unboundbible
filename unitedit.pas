@@ -12,10 +12,9 @@ unit UnitEdit;
 interface
 
 uses
-  {$ifdef mswindows} Windows, {$endif}
-
-  UnitMemo, UnitLib, Forms, SysUtils,
-  Classes, Graphics, Controls, ExtCtrls, LCLProc, LCLType;
+  {$ifdef mswindows} Windows, {$endif} Forms, SysUtils,
+  Classes, Graphics, Controls, ExtCtrls, LCLProc, LCLType,
+  UnitMemo, UnitLib;
 
 type
   TSuperEdit = class(TRichMemoEx)
@@ -36,7 +35,7 @@ type
     Hyperlink : boolean;
     Hypertext : string;
     constructor Create(AOwner: TComponent); override;
-    procedure GetRange(var n1,n2 : integer);
+    function  GetRange: TRange;
     procedure SelectParagraph(n : integer);
     function  GetStartSelection: integer;
     function  GetEndSelection: integer;
@@ -194,13 +193,13 @@ begin
   SetSel(x1,x1+1);
 end;
 
-procedure TSuperEdit.GetRange(var n1,n2 : integer);
+function TSuperEdit.GetRange: TRange;
 var
   x1,x2 : integer;
 begin
   GetSel(x1,x2);
-  SetSel(x2,x2); n2 := GetParagraphNumber;
-  SetSel(x1,x1); n1 := GetParagraphNumber;
+  SetSel(x2,x2); Result.bottom := GetParagraphNumber;
+  SetSel(x1,x1); Result.top    := GetParagraphNumber;
   if x1 <> x2 then SetSel(x1,x2);
 end;
 

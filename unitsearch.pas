@@ -6,15 +6,13 @@ interface
 
 uses
   SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ExtCtrls, LCLType,
-  UnitType;
+  Buttons, ExtCtrls, LCLType, UnitType;
 
 type
   TSearchForm = class(TForm)
     OKButton: TButton;
     Edit: TEdit;
     RadioGroupRange: TRadioGroup;
-    RadioGroupType: TRadioGroup;
     GroupBoxOption: TGroupBox;
     CheckBoxCase: TCheckBox;
     CheckBoxWhole: TCheckBox;
@@ -24,13 +22,13 @@ type
     procedure FormActivate(Sender: TObject);
   public
     procedure Translate;
-    function Range(n, OpenedBook: integer): boolean;
   end;
 
 var
   SearchForm: TSearchForm;
 
-function CurrentSearchRange(): TSearchRange;
+function CurrentSearchOptions: TSearchOptions;
+function CurrentSearchRange: TSearchRange;
 
 implementation
 
@@ -53,7 +51,14 @@ const
   rgGospels      : TSearchRange = (from: 40; to_: 43);
   rgEpistles     : TSearchRange = (from: 45; to_: 66);
 
-function CurrentSearchRange(): TSearchRange;
+function CurrentSearchOptions: TSearchOptions;
+begin
+  Result := [];
+  if SearchForm.CheckBoxCase .Checked then Result := Result + [wholeWords];
+  if SearchForm.CheckBoxWhole.Checked then Result := Result + [caseSensitive];
+end;
+
+function CurrentSearchRange: TSearchRange;
 begin
   Result := rgEntireBible;
   case SearchForm.RadioGroupRange.ItemIndex of
@@ -74,13 +79,8 @@ procedure TSearchForm.Translate;
 begin
   Caption := ' ' + T('Search.Caption');
 
-  RadioGroupType .Caption := T('Search.Type'   ) + ' ';
   RadioGroupRange.Caption := T('Search.Range'  ) + ' ';
   GroupBoxOption .Caption := T('Search.Options') + ' ';
-
-  RadioGroupType.Items[0] := T('Search.Any'   );
-  RadioGroupType.Items[1] := T('Search.Every' );
-  RadioGroupType.Items[2] := T('Search.Phrase');
 
   RadioGroupRange.Items[0] := T('Search.Entire'  );
   RadioGroupRange.Items[1] := T('Search.Old'     );
@@ -98,19 +98,6 @@ end;
 procedure TSearchForm.FormCreate(Sender: TObject);
 begin
   OKButton.Enabled := False;
-end;
-
-function TSearchForm.Range(n, OpenedBook: integer): boolean;
-begin
-  Result := False;
-  case RadioGroupRange.ItemIndex of
-    rbEntireBible  :                                 Result := True;
-    rbOldTestament : if (n >=  1) and (n <= 39) then Result := True;
-    rbNewTestament : if (n >= 40) and (n <= 66) then Result := True;
-    rbGospels      : if (n >= 40) and (n <= 43) then Result := True;
-    rbEpistles     : if (n >= 45) and (n <= 65) then Result := True;
-    rbOpenedBook   : if  n = OpenedBook         then Result := True;
-  end;
 end;
 
 procedure TSearchForm.EditChange(Sender: TObject);

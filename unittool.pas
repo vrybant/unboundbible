@@ -101,7 +101,7 @@ procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
     if Shelf.Count = 0 then Exit;
 
     SuperEdit.OpenStream;
-    ContentArray := Bible.Search(st, SearchOptions, CurrentSearchRange());
+    ContentArray := Bible.Search(st, CurrentSearchOptions, CurrentSearchRange);
 
     for i:=0 to Length(ContentArray)-1 do
       begin

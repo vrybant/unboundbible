@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, RichMemo, UnitEdit;
+  ExtCtrls, RichMemo, UnitEdit, UnitLib;
 
 type
   TFormCopy = class(TForm)
@@ -23,13 +23,13 @@ type
     procedure FormPaint(Sender: TObject);
     procedure RadioGroupClick(Sender: TObject);
   private
-    n1,n2 : integer;
+    Range: TRange;
     RichEditPreview : TSuperEdit;
     Stream: TMemoryStream;
     procedure CopyToClipboard;
   public
     procedure Translate;
-    procedure SetRange(x1,x2: integer);
+    procedure SetRange(r: TRange);
   end;
 
 var
@@ -37,7 +37,7 @@ var
 
 implementation
 
-uses UnitShelf, UnitLib, UnitTool, UnitLang;
+uses UnitShelf, UnitTool, UnitLang;
 
 {$R *.lfm}
 
@@ -55,10 +55,9 @@ begin
   CheckGroup .Items[2] := T('Verses.End'      );
 end;
 
-procedure TFormCopy.SetRange(x1,x2: integer);
+procedure TFormCopy.SetRange(r: TRange);
 begin
-  n1 := x1;
-  n2 := x2;
+  Range := r;
 end;
 
 procedure TFormCopy.FormCreate(Sender: TObject);
@@ -126,8 +125,8 @@ end;
 procedure TFormCopy.FormPaint(Sender: TObject);
 begin
   Stream.Clear;
-  ActiveVerse.Number := n1;
-  ActiveVerse.Count  := n2;
+  ActiveVerse.Number := Range.top;
+  ActiveVerse.Count  := Range.bottom;
   Load_Verses(Stream);
   RichEditPreview.LoadRichText(Stream);
   RichEditPreview.SetSel(0,0);

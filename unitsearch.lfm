@@ -1,11 +1,11 @@
 object SearchForm: TSearchForm
-  Left = 1086
-  Height = 255
-  Top = 484
+  Left = 981
+  Height = 238
+  Top = 300
   Width = 320
   BorderStyle = bsDialog
   Caption = ' Bible Search'
-  ClientHeight = 255
+  ClientHeight = 238
   ClientWidth = 320
   Color = clBtnFace
   KeyPreview = True
@@ -18,7 +18,7 @@ object SearchForm: TSearchForm
   object OKButton: TButton
     Left = 112
     Height = 25
-    Top = 216
+    Top = 200
     Width = 100
     AutoSize = True
     Caption = 'Search'
@@ -26,7 +26,7 @@ object SearchForm: TSearchForm
     Constraints.MinWidth = 100
     Default = True
     ModalResult = 1
-    TabOrder = 4
+    TabOrder = 3
   end
   object Edit: TEdit
     Left = 9
@@ -41,7 +41,7 @@ object SearchForm: TSearchForm
   end
   object RadioGroupRange: TRadioGroup
     Left = 165
-    Height = 161
+    Height = 145
     Top = 41
     Width = 145
     AutoFill = True
@@ -54,7 +54,7 @@ object SearchForm: TSearchForm
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 141
+    ClientHeight = 125
     ClientWidth = 141
     ItemIndex = 0
     Items.Strings = (
@@ -65,46 +65,21 @@ object SearchForm: TSearchForm
       'Epist&les'
       'Cu&rrent book'
     )
-    TabOrder = 3
-  end
-  object RadioGroupType: TRadioGroup
-    Left = 9
-    Height = 89
-    Top = 41
-    Width = 145
-    AutoFill = True
-    Caption = 'Search Type '
-    ChildSizing.LeftRightSpacing = 6
-    ChildSizing.TopBottomSpacing = 6
-    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
-    ChildSizing.EnlargeVertical = crsHomogenousChildResize
-    ChildSizing.ShrinkHorizontal = crsScaleChilds
-    ChildSizing.ShrinkVertical = crsScaleChilds
-    ChildSizing.Layout = cclLeftToRightThenTopToBottom
-    ChildSizing.ControlsPerLine = 1
-    ClientHeight = 69
-    ClientWidth = 141
-    ItemIndex = 1
-    Items.Strings = (
-      '&Any word'
-      '&Every word'
-      '&Phrase'
-    )
-    TabOrder = 1
+    TabOrder = 2
   end
   object GroupBoxOption: TGroupBox
     Left = 9
-    Height = 65
-    Top = 137
+    Height = 145
+    Top = 41
     Width = 145
     Caption = 'Options '
-    ClientHeight = 45
+    ClientHeight = 125
     ClientWidth = 141
-    TabOrder = 2
+    TabOrder = 1
     object CheckBoxCase: TCheckBox
       Left = 8
       Height = 19
-      Top = 21
+      Top = 24
       Width = 93
       Caption = '&Case sensitive'
       TabOrder = 1
@@ -112,7 +87,7 @@ object SearchForm: TSearchForm
     object CheckBoxWhole: TCheckBox
       Left = 8
       Height = 19
-      Top = 0
+      Top = 5
       Width = 89
       Caption = '&Whole words'
       TabOrder = 0

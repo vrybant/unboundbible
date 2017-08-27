@@ -11,6 +11,11 @@ uses
   {$ifdef unix} Process, {$endif} LazUtf8;
 
 type
+  TRange = record
+    top : integer;
+    bottom : integer;
+  end;
+
   TOptions = record
     cvAbbr  : boolean;
     cvEnd   : boolean;
