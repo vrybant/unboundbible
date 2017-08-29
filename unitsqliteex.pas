@@ -30,7 +30,7 @@ begin
   if Assigned(_Handle) then
     sqlite3_create_function(_Handle,'lower',1,SQLITE_UTF8 or SQLITE_DETERMINISTIC,nil,@UTF8xLower,nil,nil)
   else
-    raise Exception.Create('Unassigned handle in UnitUtf8');
+    raise Exception.Create('Unassigned handle in UnitSQLiteEx');
 end;
 
 initialization

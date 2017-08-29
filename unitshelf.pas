@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8,
-  DB, ZConnection, ZDataset, UnitLib, UnitTitle, UnitType;
+  DB, SQLdb, SQLite3conn, IBConnection,
+  UnitLib, UnitTitle, UnitType;
 
 const
   BookMax = 86;
@@ -21,9 +22,9 @@ type
   end;
 
   TBible = class(TList)
-    Connection : TZConnection;
-    Query      : TZReadOnlyQuery;
-    DataSource : TDataSource;
+    Connection : TSQLite3Connection;
+    Transaction: TSQLTransaction;
+    Query      : TSQLQuery;
     {-}
     InfoList     : TStringList;
     info         : string;
@@ -149,17 +150,14 @@ constructor TBible.Create(filePath, fileName: string);
 begin
   inherited Create;
 
-  Connection := TZConnection.Create(nil);
-  Connection.Protocol := 'sqlite-3';
-  Connection.Database := filePath + slash +  fileName;
-  Connection.ClientCodepage := 'UTF8';
-//SQLite3LanguageSupport(Connection.Handle);
+  Connection  := TSQLite3Connection.Create(nil);
+  Transaction := TSQLTransaction.Create(nil);
+  Query       := TSQLQuery.Create(nil);
 
-  Query := TZReadOnlyQuery.Create(nil);
-  DataSource := TDataSource.Create(nil);
-
-  Query.Connection := Connection;
-  DataSource.DataSet := Query;
+  Connection.DatabaseName := filePath + slash +  fileName;
+  Connection.CharSet := 'UTF8';
+  Connection.Transaction := Transaction;
+  Query.DataBase := Connection;
 
   InfoList := TStringList.Create;
 
@@ -190,14 +188,18 @@ var
   key, value : string;
 begin
   try
-    Connection.Connect;
+    Connection.Open;
+    Transaction.Active := True;
+ // SQLite3LanguageSupport(Connection.Handle);
     if  not Connection.Connected then Exit;
   except
+    Output('Failed connection to database');
     Exit;
   end;
 
   try
     Query.SQL.Text := 'SELECT * FROM Details';
+    Query.Clear;
     Query.Open;
 
     try name      := Query.FieldByName('Title'      ).AsString; except end;
@@ -211,6 +213,7 @@ begin
 
   try
     Query.SQL.Text := 'SELECT * FROM info';
+    Query.Clear;
     Query.Open;
 
     while not Query.Eof do
@@ -233,15 +236,15 @@ begin
 
   language := LowerCase(language);
   {
-  OutputString('fileName = ' + fileName);
+  Output('fileName = ' + fileName);
 
-  if fileFormat = unbound then OutputString('fileFormat = unbound');
-  if fileFormat = mybible then OutputString('fileFormat = mybible');
+  if fileFormat = unbound then Output('fileFormat = unbound');
+  if fileFormat = mybible then Output('fileFormat = mybible');
 
-  OutputString('name = ' + name);
-  OutputString('info = ' + info);
-  OutputString('language = ' + language);
-  OutputString('-');
+  Output('name = ' + name);
+  Output('info = ' + info);
+  Output('language = ' + language);
+  Output('-');
   }
   LoadDatabase; /// TEMPORARY
 end;
@@ -257,6 +260,7 @@ begin
   try
     Title := TTitle.Create(language);
     Query.SQL.Text := 'SELECT DISTINCT ' + z.book + ' FROM ' + z.bible;
+    Query.Clear;
     Query.Open;
 
     while not Query.Eof do
@@ -421,6 +425,7 @@ begin
 
   try
     Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id + ' AND ' + z.chapter + '=' + chapter;
+    Query.Clear;
     Query.Open;
 
     while not Query.Eof do
@@ -453,6 +458,7 @@ begin
                       ' AND ' + z.chapter + '=' + chapter +
                       ' AND ' + z.verse + ' >= ' + verseNumber +
                       ' AND ' + z.verse + ' < ' + toVerse;
+    Query.Clear;
     Query.Open;
     while not Query.Eof do
       begin
@@ -471,7 +477,7 @@ begin
   try
     if value then s := '1' else s := '0';
 // database?.executeUpdate("PRAGMA case_sensitive_like = \(value ? 1 : 0)", values: nil)
-    Connection.Properties.Add('PRAGMA case_sensitive_like = ' + s);
+//    Connection.Properties.Add('PRAGMA case_sensitive_like = ' + s);
   finally
   end;
 end;
@@ -482,6 +488,8 @@ func setCaseSensitiveLike(_ value: Bool) {
         try database?.executeUpdate("PRAGMA case_sensitive_like = \(value ? 1 : 0)", values: nil)
     } catch {
     }
+end;
+
 }
 
 func search(string: String, options: SearchOption, range: SearchRange?) -> [Content]? {
@@ -537,6 +545,7 @@ begin
 
   try
     Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.text + ' LIKE ''%' + searchString + '%'' ';
+    Query.Clear;
     Query.Open;
     Output(IntToStr(Query.RecordCount));
     SetLength(Result,Query.RecordCount);
@@ -589,6 +598,7 @@ begin
 
   try
     Query.SQL.Text := 'SELECT MAX(' + z.chapter + ') AS Count FROM ' + z.bible + ' WHERE ' + z.book + '=' + id;
+    Query.Clear;
     Query.Open;
 
     try Result := Query.FieldByName('Count').AsInteger; except end;
@@ -634,9 +644,9 @@ destructor TBible.Destroy;
 begin
   InfoList.Free;
 
-  DataSource.free;
-  Query.free;
-  Connection.free;
+  Query.Free;
+  Transaction.Free;
+  Connection.Free;
 
   inherited Destroy;
 end;
