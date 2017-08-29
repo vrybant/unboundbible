@@ -62,7 +62,7 @@ function  Utf8ToRTF(const s: string): string;
 function WideLowerCaseFixed(s : WideString): WideString;
 
 function GetDefaultLanguage: string;
-function AppPath: string;
+function AppLocation: string;
 function UserDocumentsPath : string;
 function AppDataPath : string;
 function IniFileName : string;
@@ -71,7 +71,7 @@ function TempFileName: string;
 procedure CreateDirectories;
 {$ifdef darwin} procedure PrintFile(FileName : string); {$endif}
 procedure OpenFolder(path : string);
-procedure OutputString(s: string);
+procedure Output(s: string);
 function RemoveLeadingChars(s: string): string;
 
 var
@@ -312,7 +312,7 @@ begin
   Result := UnicodeToRTF(WideString(s));
 end;
 
-function AppPath: string;
+function AppLocation: string;
 {$ifdef darwin} var n : integer; {$endif}
 begin
   Result := Application.Location;
@@ -497,7 +497,7 @@ begin
 end;
 {$endif}
 
-procedure OutputString(s: string);
+procedure Output(s: string);
 begin
   {$ifdef mswindows} OutputDebugString(PChar(s)) {$endif}
 end;

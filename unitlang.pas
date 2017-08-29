@@ -31,7 +31,7 @@ implementation
 
 constructor TLang.Create;
 begin
-  inherited Create(AppPath + Slash + LangDirectory + Slash + LowerCase(facelang) + '.lng');
+  inherited Create(AppLocation + Slash + LangDirectory + Slash + LowerCase(facelang) + '.lng');
 end;
 
 function T(const id : string): string;
@@ -48,4 +48,4 @@ end;
 
 end.
 
-
+

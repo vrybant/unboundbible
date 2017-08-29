@@ -769,7 +769,7 @@ var
 begin
   List := TStringList.Create;
 
-  GetFileList(AppPath + Slash + LangDirectory + Slash + '*.lng', List, False);
+  GetFileList(AppLocation + Slash + LangDirectory + Slash + '*.lng', List, False);
   List.Sort;
 
   for i := 0 to List.Count - 1 do
@@ -1420,7 +1420,7 @@ begin
     Add('');
     Add('  Please, perform the following steps :');
     Add('     1) Download bibles which you want from  http://unboundbible.org');
-    Add('     2) Unzip it to  ' + AppPath + BibleDirectory + '  folder');
+    Add('     2) Unzip it to  ' + AppLocation + BibleDirectory + '  folder');
   end;
 end;
 

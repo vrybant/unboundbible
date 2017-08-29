@@ -42,7 +42,7 @@ begin
   Result := 'english.txt';
 
   List := TStringList.Create;
-  path := appPath + titleDirectory + slash + '*.txt';
+  path := AppLocation + titleDirectory + slash + '*.txt';
 
   GetFileList(path, List, True);
 
@@ -59,7 +59,7 @@ var
   f : System.Text;
   s : string;
 begin
-  path := appPath + slash + titleDirectory + slash + fileName;
+  path := AppLocation + slash + titleDirectory + slash + fileName;
 
   if not FileExists(path) then Exit;
 

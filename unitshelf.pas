@@ -530,12 +530,12 @@ begin
       searchString := RemoveLeadingChars(searchString);
     end;
 
-  OutputString(searchString);
+  Output(searchString);
 
   try
     Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.text + ' LIKE ''%' + searchString + '%'' ';
     Query.Open;
-    OutputString(IntToStr(Query.RecordCount));
+    Output(IntToStr(Query.RecordCount));
     SetLength(Result,Query.RecordCount);
     for i:=0 to Query.RecordCount-1 do
       begin
