@@ -5,7 +5,7 @@ unit UnitShelf;
 interface
 
 uses
-  Classes, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd,
+  Classes, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8,
   DB, ZConnection, ZDataset, UnitLib, UnitTitle, UnitType;
 
 const
@@ -57,6 +57,7 @@ type
     function Add(lst: TBook): integer;
     function EncodeIndex(index: integer): integer;
     function DecodeIndex(index: integer): integer;
+    procedure SetCaseSensitiveLike(value: boolean);
   public
     constructor Create(filePath, fileName: string);
     procedure OpenDatabase;
@@ -461,7 +462,26 @@ begin
   end;
 end;
 
-(*    func search(string: String, options: SearchOption, range: SearchRange?) -> [Content]? {
+procedure TBible.SetCaseSensitiveLike(value: boolean);
+var s : string;
+begin
+  try
+    if value then s := '1' else s := '0';
+// database?.executeUpdate("PRAGMA case_sensitive_like = \(value ? 1 : 0)", values: nil)
+    Connection.Properties.Add('PRAGMA case_sensitive_like = ' + s);
+  finally
+  end;
+end;
+
+(*
+func setCaseSensitiveLike(_ value: Bool) {
+    do {
+        try database?.executeUpdate("PRAGMA case_sensitive_like = \(value ? 1 : 0)", values: nil)
+    } catch {
+    }
+}
+
+func search(string: String, options: SearchOption, range: SearchRange?) -> [Content]? {
         let list = string.components(separatedBy: " ")
         var string = options.contains(.caseSensitive) ? string : string.lowercased().removeLeadingChars()
         string = string.replace(" ", "%")
@@ -506,9 +526,11 @@ begin
 
   if not (caseSensitive in SearchOptions) then
     begin
-      searchString := LowerCase(searchString);
+      searchString := Utf8LowerCase(searchString);
       searchString := RemoveLeadingChars(searchString);
     end;
+
+  OutputString(searchString);
 
   try
     Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.text + ' LIKE ''%' + searchString + '%'' ';
