@@ -44,7 +44,7 @@
         <PackageName Value="LCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="18">
+    <Units Count="19">
       <Unit0>
         <Filename Value="UnboundBibleTools.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -157,6 +157,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitTitle"/>
       </Unit17>
+      <Unit18>
+        <Filename Value="unitsqliteex.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitSQLiteEx"/>
+      </Unit18>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

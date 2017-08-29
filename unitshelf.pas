@@ -121,6 +121,8 @@ function Comparison(Item1, Item2: Pointer): integer; // for TShelf
 
 implementation
 
+uses UnitSQLiteEx;
+
 function Bible: TBible;
 begin
   Result := Shelf[Shelf.Current];
@@ -151,6 +153,7 @@ begin
   Connection.Protocol := 'sqlite-3';
   Connection.Database := filePath + slash +  fileName;
   Connection.ClientCodepage := 'UTF8';
+//SQLite3LanguageSupport(Connection.Handle);
 
   Query := TZReadOnlyQuery.Create(nil);
   DataSource := TDataSource.Create(nil);
