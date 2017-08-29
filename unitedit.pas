@@ -77,6 +77,7 @@ end;
 procedure SaveTail(var m: TMemoryStream);
 begin
   StreamWriteLn(m,'}');
+  StreamWriteLn(m,'');
 end;
 
 //=================================================================================================

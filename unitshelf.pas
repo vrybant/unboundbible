@@ -190,7 +190,7 @@ begin
   try
     Connection.Open;
     Transaction.Active := True;
- // SQLite3LanguageSupport(Connection.Handle);
+    SQLite3LanguageSupport(Connection.Handle);
     if  not Connection.Connected then Exit;
   except
     Output('Failed connection to database');
@@ -472,10 +472,10 @@ begin
 end;
 
 procedure TBible.SetCaseSensitiveLike(value: boolean);
-var s : string;
+//var s : string;
 begin
   try
-    if value then s := '1' else s := '0';
+//    if value then s := '1' else s := '0';
 // database?.executeUpdate("PRAGMA case_sensitive_like = \(value ? 1 : 0)", values: nil)
 //    Connection.Properties.Add('PRAGMA case_sensitive_like = ' + s);
   finally
@@ -527,28 +527,27 @@ func search(string: String, options: SearchOption, range: SearchRange?) -> [Cont
 
 function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
 var
-  List: TStringList;
+  field : string;
   i : integer;
 begin
   SetLength(Result,0);
-
-  List := TStringList.Create;
-  StrToListEx(' ',searchString,List);
+  field := z.text;
 
   if not (caseSensitive in SearchOptions) then
     begin
       searchString := Utf8LowerCase(searchString);
-      searchString := RemoveLeadingChars(searchString);
+      field := 'lower(' + field + ')';
     end;
 
-  Output(searchString);
-
   try
-    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.text + ' LIKE ''%' + searchString + '%'' ';
+    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + field + ' LIKE ''%' + searchString + '%'' ';
     Query.Clear;
     Query.Open;
-    Output(IntToStr(Query.RecordCount));
+
+    Query.Last; // must be called before RecordCount
     SetLength(Result,Query.RecordCount);
+    Query.First;
+
     for i:=0 to Query.RecordCount-1 do
       begin
         Result[i].verse := noneVerse;
@@ -562,8 +561,6 @@ begin
   except
     //
   end;
-
-  List.Free;
 end;
 
 procedure TBible.GetTitles(var List: TStringList);

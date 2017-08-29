@@ -72,7 +72,6 @@ procedure CreateDirectories;
 {$ifdef darwin} procedure PrintFile(FileName : string); {$endif}
 procedure OpenFolder(path : string);
 procedure Output(s: string);
-function RemoveLeadingChars(s: string): string;
 
 var
   CurrFont: TFont;
@@ -500,26 +499,6 @@ end;
 procedure Output(s: string);
 begin
   {$ifdef mswindows} OutputDebugString(PChar(s)) {$endif}
-end;
-
-function RemoveLeadingChar(s: string): string;
-begin
-   Result := UTF8Copy(s,2,UTF8Length(s));
-end;
-
-function RemoveLeadingChars(s: string): string;
-var
-  List : TStringList;
-  i : integer;
-begin
-  List := TStringList.Create;
-  StrToListEx(' ',s,List);
-
-  for i:=0 to List.Count-1 do
-    List[i] := RemoveLeadingChar(List[i]);
-
-  ListToStrEx(' ',List,Result);
-  List.Free;
 end;
 
 initialization
