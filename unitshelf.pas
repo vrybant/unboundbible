@@ -92,7 +92,7 @@ type
     function IsLoaded: boolean;
     property Items[Index: Integer]: TBible read GetItem write SetItem; default;
     destructor Destroy; override;
-    { - }
+    {-}
     procedure LoadComparedBibles;
     procedure SetCurrent(FileName: string); overload;
     procedure SetCurrent(index: integer); overload;
@@ -111,13 +111,7 @@ const
   apCompare = 2;
   apNotes   = 3;
 
-const
-//ssBook    = 0;
-  ssChapter = 1;
-  ssVerse   = 2;
-
 function Bible: TBible;
-function TwoChars(const s: string): string;
 function Comparison(Item1, Item2: Pointer): integer; // for TShelf
 
 implementation
@@ -127,14 +121,6 @@ uses UnitSQLiteEx;
 function Bible: TBible;
 begin
   Result := Shelf[Shelf.Current];
-end;
-
-function TwoChars(const s: string): string;
-begin
-  if length(s) < 2 then Exit;
-
-  if Copy(s,2,1) = chr(09) then Result := Copy(s,1,1)
-                           else Result := Copy(s,1,2);
 end;
 
 function IsNewTestament(n: integer): boolean;
@@ -471,26 +457,7 @@ begin
   end;
 end;
 
-procedure TBible.SetCaseSensitiveLike(value: boolean);
-//var s : string;
-begin
-  try
-//    if value then s := '1' else s := '0';
-// database?.executeUpdate("PRAGMA case_sensitive_like = \(value ? 1 : 0)", values: nil)
-//    Connection.Properties.Add('PRAGMA case_sensitive_like = ' + s);
-  finally
-  end;
-end;
-
 (*
-func setCaseSensitiveLike(_ value: Bool) {
-    do {
-        try database?.executeUpdate("PRAGMA case_sensitive_like = \(value ? 1 : 0)", values: nil)
-    } catch {
-    }
-end;
-
-}
 
 func search(string: String, options: SearchOption, range: SearchRange?) -> [Content]? {
         let list = string.components(separatedBy: " ")
@@ -525,16 +492,31 @@ func search(string: String, options: SearchOption, range: SearchRange?) -> [Cont
         return nil
     }   *)
 
+procedure TBible.SetCaseSensitiveLike(value: boolean);
+//var s : string;
+begin
+  try
+//    if value then s := '1' else s := '0';
+// database?.executeUpdate("PRAGMA case_sensitive_like = \(value ? 1 : 0)", values: nil)
+//    Connection.Properties.Add('PRAGMA case_sensitive_like = ' + s);
+  finally
+  end;
+end;
+
 function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
 var
   field : string;
   i : integer;
 begin
   SetLength(Result,0);
+
+  searchString := Trim(searchString);
+  Replace(searchString,' ','%');
   field := z.text;
 
   if wholeWords in SearchOptions then
     begin
+      Replace(searchString,'%',' % ');
       searchString := ' ' + searchString + ' ';
       field := 'clean(' + field + ')';
     end;

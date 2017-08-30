@@ -50,7 +50,7 @@ procedure MyDelete(var s : string; index, count : Integer);
 procedure StreamWrite  (var Stream: TMemoryStream; s: string);
 procedure StreamWriteLn(var Stream: TMemoryStream; s: string);
 {$ifdef mswindows} procedure StreamToClipboard(Stream : TMemoryStream); {$endif}
-procedure Replace(var S: string; const OldPattern, NewPattern: String);
+procedure Replace(var s: string; const oldPattern, newPattern: String);
 procedure StrToList(const st: string; const List: TStringList);
 procedure StrToListEx(ch: AnsiChar; const st: string; const List: TStringList);
 procedure ListToStr(const List: TStringList; var st: string);
@@ -196,9 +196,9 @@ begin
 end;
 {$endif}
 
-procedure Replace(var S: string; const OldPattern, NewPattern: string);
+procedure Replace(var s: string; const oldPattern, newPattern: string);
 begin
-  S := StringReplace(S, OldPattern, NewPattern, [rfReplaceAll]);
+  s := StringReplace(s, oldPattern, newPattern, [rfReplaceAll]);
 end;
 
 procedure StrToListEx(ch: AnsiChar; const st: string; const List: TStringList);
