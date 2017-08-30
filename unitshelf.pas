@@ -190,7 +190,7 @@ begin
   try
     Connection.Open;
     Transaction.Active := True;
-    SQLite3LanguageSupport(Connection.Handle);
+    SQLite3CreateFunctions(Connection.Handle);
     if  not Connection.Connected then Exit;
   except
     Output('Failed connection to database');
@@ -533,6 +533,12 @@ begin
   SetLength(Result,0);
   field := z.text;
 
+  if wholeWords in SearchOptions then
+    begin
+      searchString := ' ' + searchString + ' ';
+      field := 'clean(' + field + ')';
+    end;
+
   if not (caseSensitive in SearchOptions) then
     begin
       searchString := Utf8LowerCase(searchString);
@@ -543,6 +549,8 @@ begin
     Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + field + ' LIKE ''%' + searchString + '%'' ';
     Query.Clear;
     Query.Open;
+
+    Output(Query.SQL.Text);
 
     Query.Last; // must be called before RecordCount
     SetLength(Result,Query.RecordCount);
