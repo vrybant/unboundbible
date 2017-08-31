@@ -127,6 +127,11 @@ begin
   Result := (n >= 40) and (n <= 66);
 end;
 
+function IsOldTestament(n: integer): boolean;
+begin
+  Result := not IsNewTestament(n);
+end;
+
 //========================================================================================
 //                                     TBible
 //========================================================================================
@@ -494,8 +499,9 @@ func search(string: String, options: SearchOption, range: SearchRange?) -> [Cont
 
 function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
 var
+  Contents : TContentArray;
   field : string;
-  i : integer;
+  i,j : integer;
 begin
   SetLength(Result,0);
 
@@ -524,22 +530,39 @@ begin
     Output(Query.SQL.Text);
 
     Query.Last; // must be called before RecordCount
-    SetLength(Result,Query.RecordCount);
+    SetLength(Contents,Query.RecordCount);
     Query.First;
 
     for i:=0 to Query.RecordCount-1 do
       begin
-        Result[i].verse := noneVerse;
-        try Result[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
-        try Result[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
-        try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
-        try Result[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
-        Result[i].verse.book := DecodeIndex(Result[i].verse.book);
+        Contents[i].verse := noneVerse;
+        try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
+        try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
+        try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
+        try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
+        Contents[i].verse.book := DecodeIndex(Contents[i].verse.book);
         Query.Next;
       end;
   except
-    //
+    Exit;
   end;
+
+  SetLength(Result,Length(Contents));
+
+  j:=0;
+  for i:=0 to Length(Contents)-1 do
+    if IsOldTestament(Contents[i].verse.book) then
+      begin
+        Result[j] := Contents[i];
+        Inc(j);
+      end;
+
+  for i:=0 to Length(Contents)-1 do
+    if IsNewTestament(Contents[i].verse.book) then
+      begin
+        Result[j] := Contents[i];
+        Inc(j);
+      end;
 end;
 
 procedure TBible.GetTitles(var List: TStringList);
