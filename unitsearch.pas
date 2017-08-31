@@ -49,7 +49,7 @@ const
   rgOldTestament : TRange = (from:  1; till: 39);
   rgNewTestament : TRange = (from: 40; till: 66);
   rgGospels      : TRange = (from: 40; till: 43);
-  rgEpistles     : TRange = (from: 45; till: 66);
+  rgEpistles     : TRange = (from: 45; till: 65);
 
 function CurrentSearchOptions: TSearchOptions;
 begin

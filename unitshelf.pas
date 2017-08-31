@@ -58,6 +58,7 @@ type
     function Add(lst: TBook): integer;
     function EncodeIndex(index: integer): integer;
     function DecodeIndex(index: integer): integer;
+    function RankContents(const Contents: TContentArray): TContentArray;
   public
     constructor Create(filePath, fileName: string);
     procedure OpenDatabase;
@@ -462,44 +463,32 @@ begin
   end;
 end;
 
-(*
+function TBible.RankContents(const Contents: TContentArray): TContentArray;
+var
+  i,j : integer;
+begin
+  SetLength(Result,Length(Contents));
 
-func search(string: String, options: SearchOption, range: SearchRange?) -> [Content]? {
-        let list = string.components(separatedBy: " ")
-        var string = options.contains(.caseSensitive) ? string : string.lowercased().removeLeadingChars()
-        string = string.replace(" ", "%")
+  j:=0;
+  for i:=0 to Length(Contents)-1 do
+    if IsOldTestament(Contents[i].verse.book) then
+      begin
+        Result[j] := Contents[i];
+        Inc(j);
+      end;
 
-        let queryRange = range == nil ? "" : " and \(s.book) >= \(fileIndex(range!.from)) and \(s.book) <= \(fileIndex(range!.to))"
-        let query = "select * from \(s.bible) where \(s.text) like \"%\(string)%\"" + queryRange
-
-        setCaseSensitiveLike(options.contains(.caseSensitive))
-
-        if let results = try? database!.executeQuery(query, values: nil) {
-            var lines : [Content] = []
-            while results.next() == true {
-                guard let book = results.string(forColumn: s.book) else { break }
-                guard let chapter = results.string(forColumn: s.chapter) else { break }
-                guard let number = results.string(forColumn: s.verse) else { break }
-                guard let text = results.string(forColumn: s.text) else { break }
-
-                let verse = Verse(book: unboundIndex(book.toInt()), chapter: chapter.toInt(), number: number.toInt(), count: 1)
-                let content = Content(verse: verse, text: text)
-
-                if text.removeTags().contains(list: list, options: options) { lines.append(content) }
-            }
-            var result : [Content] = []
-
-            for line in lines { if !isNewTestament(line.verse.book) { result.append(line) } }
-            for line in lines { if  isNewTestament(line.verse.book) { result.append(line) } }
-
-            if !result.isEmpty { return result }
-        }
-        return nil
-    }   *)
+  for i:=0 to Length(Contents)-1 do
+    if IsNewTestament(Contents[i].verse.book) then
+      begin
+        Result[j] := Contents[i];
+        Inc(j);
+      end;
+end;
 
 function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
 var
   Contents : TContentArray;
+  queryRange, from, till : string;
   field : string;
   i,j : integer;
 begin
@@ -507,7 +496,15 @@ begin
 
   searchString := Trim(searchString);
   Replace(searchString,' ','%');
+  queryRange := '';
   field := z.text;
+
+  if Range.from > 0 then
+    begin
+      from := IntToStr(EncodeIndex(Range.from));
+      till := IntToStr(EncodeIndex(Range.till));
+      queryRange := ' AND ' + z.book + ' >= ' + from + ' AND ' + z.book + ' <= ' + till;
+    end;
 
   if wholeWords in SearchOptions then
     begin
@@ -523,7 +520,7 @@ begin
     end;
 
   try
-    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + field + ' LIKE ''%' + searchString + '%'' ';
+    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + field + ' LIKE ''%' + searchString + '%'' ' + queryRange;
     Query.Clear;
     Query.Open;
 
@@ -547,22 +544,7 @@ begin
     Exit;
   end;
 
-  SetLength(Result,Length(Contents));
-
-  j:=0;
-  for i:=0 to Length(Contents)-1 do
-    if IsOldTestament(Contents[i].verse.book) then
-      begin
-        Result[j] := Contents[i];
-        Inc(j);
-      end;
-
-  for i:=0 to Length(Contents)-1 do
-    if IsNewTestament(Contents[i].verse.book) then
-      begin
-        Result[j] := Contents[i];
-        Inc(j);
-      end;
+  Result := RankContents(Contents);
 end;
 
 procedure TBible.GetTitles(var List: TStringList);
