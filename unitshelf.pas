@@ -58,7 +58,6 @@ type
     function Add(lst: TBook): integer;
     function EncodeIndex(index: integer): integer;
     function DecodeIndex(index: integer): integer;
-    procedure SetCaseSensitiveLike(value: boolean);
   public
     constructor Create(filePath, fileName: string);
     procedure OpenDatabase;
@@ -176,8 +175,9 @@ begin
   try
     Connection.Open;
     Transaction.Active := True;
-    SQLite3CreateFunctions(Connection.Handle);
     if  not Connection.Connected then Exit;
+    SQLite3CreateFunctions(Connection.Handle);
+    Connection.ExecuteDirect('PRAGMA case_sensitive_like = 1');
   except
     Output('Failed connection to database');
     Exit;
@@ -491,17 +491,6 @@ func search(string: String, options: SearchOption, range: SearchRange?) -> [Cont
         }
         return nil
     }   *)
-
-procedure TBible.SetCaseSensitiveLike(value: boolean);
-//var s : string;
-begin
-  try
-//    if value then s := '1' else s := '0';
-// database?.executeUpdate("PRAGMA case_sensitive_like = \(value ? 1 : 0)", values: nil)
-//    Connection.Properties.Add('PRAGMA case_sensitive_like = ' + s);
-  finally
-  end;
-end;
 
 function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
 var
