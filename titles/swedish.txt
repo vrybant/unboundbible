@@ -1,83 +1,82 @@
-﻿
-01	1 Moseboken	1Mos
-02	2 Moseboken	2Mos
-03	3 Moseboken	3Mos
-04	4 Moseboken	4Mos
-05	5 Moseboken	5Mos
-06	Josua	Jos
-07	Domarboken	Dom
+﻿01	1 Moseboken	1Mos.
+02	2 Moseboken	2Mos.
+03	3 Moseboken	3Mos.
+04	4 Moseboken	4Mos.
+05	5 Moseboken	5Mos.
+06	Josua	Jos.
+07	Domarboken	Dom.
 08	Rut	Rut
-09	1 Samuelsboken	1Sam
-10	2 Samuelsboken	2Sam
-11	1 Kungaboken	1Kung
-12	2 Kungaboken	2Kung
-13	1 Krönikeboken	1Krön
-14	2 Krönikeboken	2Krön
+09	1 Samuelsboken	1Sam.
+10	2 Samuelsboken	2Sam.
+11	1 Kungaboken	1Kung.
+12	2 Kungaboken	2Kung.
+13	1 Krönikeboken	1Krön.
+14	2 Krönikeboken	2Krön.
 15	Esra	Esra
-16	Nehemja	Neh
-17	Ester	Est
+16	Nehemja	Neh.
+17	Ester	Est.
 18	Job	Job
-19	Psaltaren	Ps
-20	Ordspråksboken	Ords
-21	Predikaren	Pred
-22	Höga Visan	HögaV
-23	Jesaja	Jes
-24	Jeremia	Jer
-25	Klagovisorna	Klag
-26	Hesekiel	Hes
-27	Daniel	Dan
-28	Hosea	Hos
+19	Psaltaren	Ps.
+20	Ordspråksboken	Ords.
+21	Predikaren	Pred.
+22	Höga Visan	HögaV.
+23	Jesaja	Jes.
+24	Jeremia	Jer.
+25	Klagovisorna	Klag.
+26	Hesekiel	Hes.
+27	Daniel	Dan.
+28	Hosea	Hos.
 29	Joel	Joel
 30	Amos	Amos
-31	Obadja	Ob
+31	Obadja	Ob.
 32	Jona	Jona
 33	Mika	Mika
-34	Nahum	Nah
-35	Habackuk	Hab
-36	Sefanja	Sef
-37	Haggai	Hagg
-38	Sakarja	Sek
-39	Malaki	Mal
-40	Matteus	Matt
-41	Markus	Mark
-42	Lukas	Luk
-43	Johannes	Joh
-44	Apostlagärningarna	Apg
-45	Romarbrevet	Rom
-46	1 Korintierbrevet	1Kor
-47	2 Korintierbrevet	2Kor
-48	Galaterbrevet	Gal
-49	Efesierbrevet	Ef
-50	Filipperbrevet	Fil
-51	Kolosserbrevet	Kol
-52	1 Tessalonikebrevet	1Tess
-53	2 Tessalonikebrevet	2Tess
-54	1 Timoteusbrevetet	1Tim
-55	2 Timoteusbrevetet	2Tim
-56	Titus	Tit
-57	Filemon	Fil
-58	Hebreerbrevet	Hebr
-59	Jakobs brev	Jak
-60	1 Petrusbrevet	1Petr
-61	2 Petrusbrevet	2Petr
-62	1 Johannesbrevet	1Joh
-63	2 Johannesbrevet	2Joh
-64	3 Johannesbrevet	3Joh
-65	Judas brev	Juda
-66	Uppenbarelseboken	Upp
-67	Tobit	Tob
-68	Judit	Judit
-69	Ester-Gr	EstGr
-70	Salomos vishet	Vish
-71	Jesus Syraks vishet	Syr
-72	Baruk	Bar
-74	Asarjas bön	Asa
-75	Susanna	Sus
-76	Bel och ormguden	Bel
-77	1 Mackabeerboken	1Ma
-78	2 Mackabeerboken	2Ma
-79	3 Mackabeerboken	3Ma
-80	4 Mackabeerboken	4Ma
-81	1 Esdra	1Es
-82	2 Esdra	2Es
-83	Manasses bön	Man
+34	Nahum	Nah.
+35	Habackuk	Hab.
+36	Sefanja	Sef.
+37	Haggai	Hagg.
+38	Sakarja	Sek.
+39	Malaki	Mal.
+40	Matteus	Matt.
+41	Markus	Mark.
+42	Lukas	Luk.
+43	Johannes	Joh.
+44	Apostlagärningarna	Apg.
+45	Romarbrevet	Rom.
+46	1 Korintierbrevet	1Kor.
+47	2 Korintierbrevet	2Kor.
+48	Galaterbrevet	Gal.
+49	Efesierbrevet	Ef.
+50	Filipperbrevet	Fil.
+51	Kolosserbrevet	Kol.
+52	1 Tessalonikebrevet	1Tess.
+53	2 Tessalonikebrevet	2Tess.
+54	1 Timoteusbrevetet	1Tim.
+55	2 Timoteusbrevetet	2Tim.
+56	Titus	Tit.
+57	Filemon	Fil.
+58	Hebreerbrevet	Hebr.
+59	Jakobs brev	Jak.
+60	1 Petrusbrevet	1Petr.
+61	2 Petrusbrevet	2Petr.
+62	1 Johannesbrevet	1Joh.
+63	2 Johannesbrevet	2Joh.
+64	3 Johannesbrevet	3Joh.
+65	Judas brev	Juda.
+66	Uppenbarelseboken	Upp.
+67	Tobit	Tob.
+68	Judit	Judit.
+69	Ester-Gr	EstGr.
+70	Salomos vishet	Vish.
+71	Jesus Syraks vishet	Syr.
+72	Baruk	Bar.
+74	Asarjas bön	Asa.
+75	Susanna	Sus.
+76	Bel och ormguden	Bel.
+77	1 Mackabeerboken	1Ma.
+78	2 Mackabeerboken	2Ma.
+79	3 Mackabeerboken	3Ma.
+80	4 Mackabeerboken	4Ma.
+81	1 Esdra	1Es.
+82	2 Esdra	2Es.
+83	Manasses bön	Man.

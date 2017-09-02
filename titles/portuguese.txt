@@ -1,83 +1,82 @@
-﻿
-01	Genesis	Gn
-02	Exodo	Ex
-03	Levítico	Lv
-04	Números	Nm
-05	Deuteronômio	Dt
-06	Josué	Js
-07	Juízes	Jz
-08	Rute	Rt
-09	1 Samuel	1Sm
-10	2 Samuel	2Sm
-11	1 Reis	1Rs
-12	2 Reis	2Rs
-13	1 Crônicas	1Cr
-14	2 Crônicas	2Cr
-15	Esdras	Ed
-16	Neemias	Ne
-17	Ester	Et
+﻿01	Genesis	Gn.
+02	Exodo	Ex.
+03	Levítico	Lv.
+04	Números	Nm.
+05	Deuteronômio	Dt.
+06	Josué	Js.
+07	Juízes	Jz.
+08	Rute	Rt.
+09	1 Samuel	1Sm.
+10	2 Samuel	2Sm.
+11	1 Reis	1Rs.
+12	2 Reis	2Rs.
+13	1 Crônicas	1Cr.
+14	2 Crônicas	2Cr.
+15	Esdras	Ed.
+16	Neemias	Ne.
+17	Ester	Et.
 18	Jó	Jó
-19	Salmos	Sl
-20	Provérbios	Pv
-21	Eclesiastes	Ec
-22	Cântico dos Cânticos	Ct
-23	Isaías	Is
-24	Jeremias	Jr
-25	Lamentações de Jeremias	Lm
-26	Ezequiel	Ez
-27	Daniel	Dn
-28	Oséias	Os
-29	Joel	Jl
-30	Amós	Am
-31	Obadias	Ob
-32	Jonas	Jn
-33	Miquéias	Mq
-34	Naum	Na
-35	Habacuque	Hc
-36	Sofonias	Sf
-37	Ageu	Ag
-38	Zacarias	Zc
-39	Malaquias	Ml
-40	Mateus	Mt
-41	Marcos	Mc
-42	Lucas	Lc
-43	João	Jo
-44	Atos	At
-45	Romanos	Rm
-46	1 Coríntios	1Co
-47	2 Coríntios	2Co
-48	Gálatas	Gl
-49	Efésios	Ef
-50	Filipenses	Fp
-51	Colossenses	Cl
-52	1 Tessalonicenses	1Ts
-53	2 Tessalonicenses	2Ts
-54	1 Timóteo	1Tm
-55	2 Timóteo	2Tm
-56	Tito	Tt
-57	Filemom	Fm
-58	Hebreus	Hb
-59	Tiago	Tg
-60	1 Pedro	1Pe
-61	2 Pedro	2Pe
-62	1 João	1Jo
-63	2 João	2Jo
-64	3 João	3Jo
-65	Judas	Jd
-66	Apocalípse	Ap
-67	Tobias	Tob
-68	Judite	Jud
-69	Ester-Gr	Est
-70	Sabedoria	Sab
-71	Eclesiástico	Ecl
-72	Baruque	Bar
-74	Oração de Azarias	Aza
-75	Suzana	Sus
-76	Bel e o Dragão	Bel
-77	1 Macabeus	1Mac
-78	2 Macabeus	2Mac
-79	3 Macabeus	3Mac
-80	4 Macabeus	4Mac
-81	1 Esdras	1Es
-82	2 Esdras	2Es
-83	Oração de Manassés	Man
+19	Salmos	Sl.
+20	Provérbios	Pv.
+21	Eclesiastes	Ec.
+22	Cântico dos Cânticos	Ct.
+23	Isaías	Is.
+24	Jeremias	Jr.
+25	Lamentações de Jeremias	Lm.
+26	Ezequiel	Ez.
+27	Daniel	Dn.
+28	Oséias	Os.
+29	Joel	Jl.
+30	Amós	Am.
+31	Obadias	Ob.
+32	Jonas	Jn.
+33	Miquéias	Mq.
+34	Naum	Na.
+35	Habacuque	Hc.
+36	Sofonias	Sf.
+37	Ageu	Ag.
+38	Zacarias	Zc.
+39	Malaquias	Ml.
+40	Mateus	Mt.
+41	Marcos	Mc.
+42	Lucas	Lc.
+43	João	Jo.
+44	Atos	At.
+45	Romanos	Rm.
+46	1 Coríntios	1Co.
+47	2 Coríntios	2Co.
+48	Gálatas	Gl.
+49	Efésios	Ef.
+50	Filipenses	Fp.
+51	Colossenses	Cl.
+52	1 Tessalonicenses	1Ts.
+53	2 Tessalonicenses	2Ts.
+54	1 Timóteo	1Tm.
+55	2 Timóteo	2Tm.
+56	Tito	Tt.
+57	Filemom	Fm.
+58	Hebreus	Hb.
+59	Tiago	Tg.
+60	1 Pedro	1Pe.
+61	2 Pedro	2Pe.
+62	1 João	1Jo.
+63	2 João	2Jo.
+64	3 João	3Jo.
+65	Judas	Jd.
+66	Apocalípse	Ap.
+67	Tobias	Tob.
+68	Judite	Jud.
+69	Ester-Gr	Est.
+70	Sabedoria	Sab.
+71	Eclesiástico	Ecl.
+72	Baruque	Bar.
+74	Oração de Azarias	Aza.
+75	Suzana	Sus.
+76	Bel e o Dragão	Bel.
+77	1 Macabeus	1Mac.
+78	2 Macabeus	2Mac.
+79	3 Macabeus	3Mac.
+80	4 Macabeus	4Mac.
+81	1 Esdras	1Es.
+82	2 Esdras	2Es.
+83	Oração de Manassés	Man.

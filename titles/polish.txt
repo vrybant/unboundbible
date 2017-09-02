@@ -1,82 +1,82 @@
-﻿1	Rodzaju	Rdz
-2	Wyjścia	Wyj
-3	Kapłańska	Kpł
-4	Liczb	Lb
-5	Powtórzonego Prawa	Pwt
-6	Jozuego	Joz
-7	Sędziów	Sdz
+﻿1	Rodzaju	Rdz.
+2	Wyjścia	Wyj.
+3	Kapłańska	Kpł.
+4	Liczb	Lb.
+5	Powtórzonego Prawa	Pwt.
+6	Jozuego	Joz.
+7	Sędziów	Sdz.
 8	Rut	Rut
-9	1 Samuela	1Sm
-10	2 Samuela	2Sm
-11	1 Królewska	1Krl
-12	2 Królewska	2Krl
-13	1 Kronik	1Krn
-14	2 Kronik	2Krn
-15	Ezdrasza	Ezd
-16	Nehemiasza	Ne
-17	Estery	Est
-18	Hioba	Hi
-19	Psalmów	Ps
-20	Przypowieści Salomona	Prz
-21	Kaznodziei Salomona	Koh
-22	Pieśń nad Pieśniami	PNP
-23	Izajasza	Iz
-24	Jeremiasza	Jer
-25	Treny	Lam
-26	Ezechiela	Ez
-27	Daniela	Dan
-28	Ozeasza	Oz
-29	Joela	Jl
-30	Amosa	Am
-31	Abdiasza	Ab
-32	Jonasza	Jon
-33	Micheasza	Mi
-34	Nahuma	Na
-35	Habakuka	Ha
-36	Sofoniasza	So
-37	Aggeusza	Ag
-38	Zachariasza	Za
-39	Malachiasza	Ml
-40	Mateusza	Mt
-41	Marka	Mk
-42	Łukasza	Łk
-43	Jana	Jan
-44	Dzieje Apostolskie	Dz
-45	Rzymian	Rz
-46	1 Koryntian	1Kor
-47	2 Koryntian	2Kor
-48	Galacjan	Gal
-49	Efezjan	Ef
-50	Filipian	Flp
-51	Kolosan	Kol
-52	1 Tesaloniczan	1Tes
-53	2 Tesaloniczan	2Tes
-54	1 Tymoteusza	1Tm
-55	2 Tymoteusza	2Tm
-56	Tytusa	Tyt
-57	Filemona	Flm
-58	Hebrajczyków	Heb
-59	Jakuba	Jk
-60	1 Piotra	1P
-61	2 Piotra	2P
-62	1 Jana	1J
-63	2 Jana	2J
-64	3 Jana	3J
-65	Judy	Jud
-66	Objawienie	Ap
-67	Tobiasza	Tob
-68	Judyty	Jdt
-69	Estery-Gr	Est
-70	Mšdrości	Mdr
-71	Eklezjastesa	Ekl
-72	Barucha	Bar
-74	Modlitwa Azariasza	Aza
-75	Susanna	Sus
-76	Bel and the Dragon	Bel
-77	1 Machabejska	1Mach
-78	2 Machabejska	2Mach
-79	3 Machabejska	3Mach
-80	4 Machabejska	4Mach
-81	1 Ezdrasza	1Ezd
-82	2 Ezdrasza	2Ezd
-83	Modlitwa Manassesa	Man
+9	1 Samuela	1Sm.
+10	2 Samuela	2Sm.
+11	1 Królewska	1Krl.
+12	2 Królewska	2Krl.
+13	1 Kronik	1Krn.
+14	2 Kronik	2Krn.
+15	Ezdrasza	Ezd.
+16	Nehemiasza	Ne.
+17	Estery	Est.
+18	Hioba	Hi.
+19	Psalmów	Ps.
+20	Przypowieści Salomona	Prz.
+21	Kaznodziei Salomona	Koh.
+22	Pieśń nad Pieśniami	PNP.
+23	Izajasza	Iz.
+24	Jeremiasza	Jer.
+25	Treny	Lam.
+26	Ezechiela	Ez.
+27	Daniela	Dan.
+28	Ozeasza	Oz.
+29	Joela	Jl.
+30	Amosa	Am.
+31	Abdiasza	Ab.
+32	Jonasza	Jon.
+33	Micheasza	Mi.
+34	Nahuma	Na.
+35	Habakuka	Ha.
+36	Sofoniasza	So.
+37	Aggeusza	Ag.
+38	Zachariasza	Za.
+39	Malachiasza	Ml.
+40	Mateusza	Mt.
+41	Marka	Mk.
+42	Łukasza	Łk.
+43	Jana	Jan.
+44	Dzieje Apostolskie	Dz.
+45	Rzymian	Rz.
+46	1 Koryntian	1Kor.
+47	2 Koryntian	2Kor.
+48	Galacjan	Gal.
+49	Efezjan	Ef.
+50	Filipian	Flp.
+51	Kolosan	Kol.
+52	1 Tesaloniczan	1Tes.
+53	2 Tesaloniczan	2Tes.
+54	1 Tymoteusza	1Tm.
+55	2 Tymoteusza	2Tm.
+56	Tytusa	Tyt.
+57	Filemona	Flm.
+58	Hebrajczyków	Heb.
+59	Jakuba	Jk.
+60	1 Piotra	1P.
+61	2 Piotra	2P.
+62	1 Jana	1J.
+63	2 Jana	2J.
+64	3 Jana	3J.
+65	Judy	Jud.
+66	Objawienie	Ap.
+67	Tobiasza	Tob.
+68	Judyty	Jdt.
+69	Estery-Gr	Est.
+70	Mšdrości	Mdr.
+71	Eklezjastesa	Ekl.
+72	Barucha	Bar.
+74	Modlitwa Azariasza	Aza.
+75	Susanna	Sus.
+76	Bel and the Dragon	Bel.
+77	1 Machabejska	1Mach.
+78	2 Machabejska	2Mach.
+79	3 Machabejska	3Mach.
+80	4 Machabejska	4Mach.
+81	1 Ezdrasza	1Ezd.
+82	2 Ezdrasza	2Ezd.
+83	Modlitwa Manassesa	Man.

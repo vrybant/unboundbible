@@ -1,84 +1,83 @@
-﻿
-01	Kejadian	Kej
-02	Keluaran	Kel
-03	Imamat	Im
-04	Bilangan	Bil
-05	Ulangan	Ul
-06	Yosua	Yos
-07	Hakim Hakim	Hak
+﻿01	Kejadian	Kej.
+02	Keluaran	Kel.
+03	Imamat	Im.
+04	Bilangan	Bil.
+05	Ulangan	Ul.
+06	Yosua	Yos.
+07	Hakim Hakim	Hak.
 08	Rut	Rut
-09	1 Samuel	1Sam
-10	2 Samuel	2Sam
-11	1 Raja Raja	1Raj
-12	2 Raja Raja	2Raj
-13	1 Tawarikh	1Taw
-14	2 Tawarikh	2Taw
-15	Ezra	Ezr
-16	Nehemia	Neh
-17	Ester	Est
-18	Ayub	Ayb
-19	Mazmur	Maz
-20	Amsal	Ams
-21	Pengkhotbah	Pkh
-22	Kidung Agung	Kid
-23	Yesaya	Yes
-24	Yeremia	Yer
-25	Ratapan	Yeh
-26	Yehezkiel	Ezek
-27	Daniel	Dan
-28	Hosea	Hos
-29	Yoel	Yl
-30	Amos	Am
-31	Obaja	Ob
-32	Yunus	Yun
-33	Mikha	Mi
-34	Nahum	Nah
-35	Habakuk	Hab
-36	Zefanya	Zef
-37	Hagai	Hag
-38	Zakharia	Za
-39	Maleakhi	Mal
-40	Matius	Mat
-41	Markus	Mrk
-42	Lukas	Luk
-43	Yohanes	Yoh
-44	Kisah Para Rasul	Kis
-45	Roma	Rm
-46	1 Korintus	1Kor
-47	2 Korintus	2Kor
-48	Galatia	Gal
-49	Efesus	Ef
-50	Filipi	Flp
-51	Kolose	Kol
-52	1 Tesalonika	1Tes
-53	2 Tesalonika	2Tes
-54	1 Timotius	1Tim
-55	2 Timotius	2Tim
-56	Titus	Tit
-57	Filemon	Ibr
-58	Ibrani	Yak
-59	Yakobus	1Ptr
-60	1 Petrus	2Ptr
-61	2 Petrus	1Yoh
-62	1 Yohanes	2Yoh
-63	2 Yohanes	3Yoh
-64	3 Yohanes	Yud
-65	Yudas	Wah
-66	Wahyu	1Es
-67	Tobit	Ydt
-68	Yudit	Esg
-69	Tambahan Ester	Wis
-70	Kebijakan Salomo	Ecc
-71	Ecclesiasticus	Bar
-72	Baruk	Aza
-74	Doa Azariah	Sus
-75	Susana	Bel
-76	Lonceng dan Naga	Man
-77	1 Makabe	2Ma
-78	2 Makabe	3Ma
-79	3 Makabe	3Ma
-80	4 Makabe	3Ma
-81	1 Esdras	2Es
-81	3 Makabe	4Ma
-82	2 Esdras	Tob
-83	Doa Manasses	1Ma
+09	1 Samuel	1Sam.
+10	2 Samuel	2Sam.
+11	1 Raja Raja	1Raj.
+12	2 Raja Raja	2Raj.
+13	1 Tawarikh	1Taw.
+14	2 Tawarikh	2Taw.
+15	Ezra	Ezr.
+16	Nehemia	Neh.
+17	Ester	Est.
+18	Ayub	Ayb.
+19	Mazmur	Maz.
+20	Amsal	Ams.
+21	Pengkhotbah	Pkh.
+22	Kidung Agung	Kid.
+23	Yesaya	Yes.
+24	Yeremia	Yer.
+25	Ratapan	Yeh.
+26	Yehezkiel	Ezek.
+27	Daniel	Dan.
+28	Hosea	Hos.
+29	Yoel	Yl.
+30	Amos	Am.
+31	Obaja	Ob.
+32	Yunus	Yun.
+33	Mikha	Mi.
+34	Nahum	Nah.
+35	Habakuk	Hab.
+36	Zefanya	Zef.
+37	Hagai	Hag.
+38	Zakharia	Za.
+39	Maleakhi	Mal.
+40	Matius	Mat.
+41	Markus	Mrk.
+42	Lukas	Luk.
+43	Yohanes	Yoh.
+44	Kisah Para Rasul	Kis.
+45	Roma	Rm.
+46	1 Korintus	1Kor.
+47	2 Korintus	2Kor.
+48	Galatia	Gal.
+49	Efesus	Ef.
+50	Filipi	Flp.
+51	Kolose	Kol.
+52	1 Tesalonika	1Tes.
+53	2 Tesalonika	2Tes.
+54	1 Timotius	1Tim.
+55	2 Timotius	2Tim.
+56	Titus	Tit.
+57	Filemon	Ibr.
+58	Ibrani	Yak.
+59	Yakobus	1Ptr.
+60	1 Petrus	2Ptr.
+61	2 Petrus	1Yoh.
+62	1 Yohanes	2Yoh.
+63	2 Yohanes	3Yoh.
+64	3 Yohanes	Yud.
+65	Yudas	Wah.
+66	Wahyu	1Es.
+67	Tobit	Ydt.
+68	Yudit	Esg.
+69	Tambahan Ester	Wis.
+70	Kebijakan Salomo	Ecc.
+71	Ecclesiasticus	Bar.
+72	Baruk	Aza.
+74	Doa Azariah	Sus.
+75	Susana	Bel.
+76	Lonceng dan Naga	Man.
+77	1 Makabe	2Ma.
+78	2 Makabe	3Ma.
+79	3 Makabe	3Ma.
+80	4 Makabe	3Ma.
+81	1 Esdras	2Es.
+81	3 Makabe	4Ma.
+82	2 Esdras	Tob.
+83	Doa Manasses	1Ma.
