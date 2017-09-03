@@ -26,7 +26,7 @@ type
 
 const
   AppName = 'Unbound Bible Tools';
-  VersionInfo = '1.01';
+  VersionInfo = '2.0';
   {$ifdef unix} RussianEdition = False; {$endif}
 
 const
@@ -50,10 +50,8 @@ procedure StreamWrite  (var Stream: TMemoryStream; s: string);
 procedure StreamWriteLn(var Stream: TMemoryStream; s: string);
 {$ifdef mswindows} procedure StreamToClipboard(Stream : TMemoryStream); {$endif}
 procedure Replace(var s: string; const oldPattern, newPattern: String);
-procedure StrToList(const st: string; const List: TStringList);
-procedure StrToListEx(ch: AnsiChar; const st: string; const List: TStringList);
-procedure ListToStr(const List: TStringList; var st: string);
-procedure ListToStrEx(ch: AnsiChar; List: TStringList; var st: string);
+procedure StrToList(ch: Char; const st: string; List: TStringList);
+procedure ListToStr(ch: Char; List: TStringList; var st: string);
 
 function  ExtractOnlyName(s: string): string;
 procedure GetFileList(const Path: string; const List: TStrings; Ext: boolean);
@@ -200,19 +198,20 @@ begin
   s := StringReplace(s, oldPattern, newPattern, [rfReplaceAll]);
 end;
 
-procedure StrToListEx(ch: AnsiChar; const st: string; const List: TStringList);
+procedure StrToList(ch: Char; const st: string; List: TStringList);
 var
-  p : array[1..10000] of integer;
+  p : array of integer;
   i : integer;
   n : integer;
   s : string;
 begin
   List.Clear;
 
+  SetLength(p,Length(st));
   p[1] := 0;
   n := 1;
 
-  for i:=1 to length(st) do
+  for i:=1 to Length(st) do
     if st[i] = ch then
       begin
         inc(n);
@@ -220,7 +219,7 @@ begin
       end;
 
   inc(n);
-  p[n] := length(st) + 1;
+  p[n] := Length(st) + 1;
 
   for i:=1 to n-1 do
     begin
@@ -230,12 +229,7 @@ begin
     end;
 end;
 
-procedure StrToList(const st: string; const List: TStringList);
-begin
-  StrToListEx(chr(09), st, List);
-end;
-
-procedure ListToStrEx(ch: AnsiChar; List: TStringList; var st: string);
+procedure ListToStr(ch: Char; List: TStringList; var st: string);
 var i : integer;
 begin
   st := '';
@@ -245,11 +239,6 @@ begin
       if st <> '' then st := st + ch;
       st := st + List[i];
     end;
-end;
-
-procedure ListToStr(const List: TStringList; var st: string);
-begin
-  ListToStrEx(chr(09), List, st);
 end;
 
 function WideTrim(const S: WideString): WideString;
