@@ -9,3 +9,4 @@ __history
 *.dll
 bin/*
 *.sh
+titles/text/*
