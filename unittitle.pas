@@ -5,7 +5,7 @@ unit UnitTitle;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, DB, SQLdb, SQLite3conn, IBConnection;
 
 type
   TTitle = class(TStringList)
@@ -13,11 +13,13 @@ type
     constructor Create(language: string);
     function GetTitle(n: integer): string;
     function GetAbbr(n: integer): string;
+    destructor Destroy; override;
   private
-    fileName : string;
+    Connection : TSQLite3Connection;
+    Transaction: TSQLTransaction;
+    Query      : TSQLQuery;
     function GetFileName(language: string): string;
-    function GetTitleEx(n : integer; abbr: boolean): string;
-    procedure LoadDataFromFile;
+    function GetTitleEx(n: integer; abbreviation: boolean): string;
   end;
 
 
@@ -29,8 +31,22 @@ uses
 constructor TTitle.Create(language: string);
 begin
   inherited Create;
-  fileName := GetFileName(language);
-  LoadDataFromFile;
+
+  Connection  := TSQLite3Connection.Create(nil);
+  Transaction := TSQLTransaction.Create(nil);
+  Query       := TSQLQuery.Create(nil);
+
+  Connection.DatabaseName := GetFileName(language);
+  Connection.CharSet := 'UTF8';
+  Connection.Transaction := Transaction;
+  Query.DataBase := Connection;
+
+  try
+    Connection.Open;
+    Transaction.Active := True;
+  except
+    Output('Failed connection to title database');
+  end;
 end;
 
 function TTitle.GetFileName(language: string): string;
@@ -39,10 +55,10 @@ var
   path : string;
   i : integer;
 begin
-  Result := 'english.txt';
+  Result := 'english.sqlite';
 
   List := TStringList.Create;
-  path := AppLocation + titleDirectory + slash + '*.txt';
+  path := AppLocation + titleDirectory + slash + '*.sqlite';
 
   GetFileList(path, List, True);
 
@@ -51,50 +67,30 @@ begin
       Result := List[i];
 
   List.Free;
+
+  Result := AppLocation + titleDirectory + slash + Result;
 end;
 
-procedure TTitle.LoadDataFromFile;
+function TTitle.GetTitleEx(n: integer; abbreviation: boolean): string;
 var
-  path : string;
-  f : System.Text;
-  s : string;
+  name, abbr : string;
 begin
-  path := AppLocation + slash + titleDirectory + slash + fileName;
+  name := '';
+  abbr := '';
 
-  if not FileExists(path) then Exit;
+  try
+    Query.SQL.Text := 'SELECT * FROM Books WHERE Number=' + IntToStr(n);
+    Query.Clear;
+    Query.Open;
 
-  AssignFile(f,path); Reset(f);
+    try name := Query.FieldByName('Name').AsString; except end;
+    try abbr := Query.FieldByName('Abbreviation').AsString; except end;
+  finally
+    if name = '' then name := IntToStr(n);
+    if abbr = '' then abbr := name;
+  end;
 
-  while not eof(f) do
-    begin
-      Readln(f,s);
-      if (Length(s) > 3) and (s[1] = chr($EF)) then System.Delete(s,1,3); // unicode sign
-      self.Add(s);
-    end;
-
-  CloseFile(f);
-end;
-
-function TTitle.GetTitleEx(n : integer; abbr: boolean): string;
-var
-  List : TStringList;
-   i,k : integer;
-begin
-  Result := IntToStr(n);
-
-  if self.Count = 0 then Exit;
-  if n = 0 then Exit;
-  if abbr then k := 2 else k := 1;
-  List := TStringList.Create;
-
-  for i:=0 to self.Count-1 do
-    begin
-      StrToList(self[i], List);
-      if List.Count > k then
-        if MyStrToInt(List[0]) = n then Result := List[k];
-    end;
-
-  List.Free;
+  if abbreviation then Result := abbr else Result := name;
 end;
 
 function TTitle.GetTitle(n : integer): string;
@@ -106,6 +102,16 @@ function TTitle.GetAbbr(n : integer): string;
 begin
   Result := GetTitleEx(n, true);
 end;
+
+destructor TTitle.Destroy;
+begin
+  Query.Free;
+  Transaction.Free;
+  Connection.Free;
+
+  inherited Destroy;
+end;
+
 
 end.
 
