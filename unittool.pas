@@ -38,6 +38,45 @@ begin
     end;
 end;
 
+(*    func highlight(with: String, target: String, options: SearchOption) -> String {
+        var tag = with
+        tag.insert("/", at: with.index(after: with.startIndex))
+        let result = self.replace(target, "\(with)\(target)\(tag)")
+        if searchOption.contains(.caseSensitive) { return result }
+        return result.replace(target.capitalized, "\(with)\(target.capitalized)\(tag)")
+    }   *)
+
+procedure Highlight(var s: string; target: string; SearchOptions: TSearchOptions);
+var
+  tag, newS : string;
+  i : integer;
+begin
+  // before after
+
+  tag := '\cf2 ';
+  newS := tag + target + '\cf1 ';
+
+  // Replace(s,target,newS);
+
+//  s := StringReplace(s, target, newS, [rfIgnoreCase, rfReplaceAll]);
+  s := StringReplace(s, target, newS, [rfReplaceAll]);
+end;
+
+procedure Highlight(List: TStringList; target: string; SearchOptions: TSearchOptions);
+var
+  s, newS : string;
+  i : integer;
+begin
+
+  for i:=0 to List.Count-1 do
+    begin
+      s := List[i];
+      Highlight(s,target,CurrentSearchOptions);
+      List[i] := s;
+    end;
+
+end;
+
 procedure SeachToList(const ws: WideString; var List: TWideStringList);
 var
   p : array[1..100] of integer;
@@ -108,6 +147,7 @@ procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
         v := ContentArray[i].verse;
         link := Bible.VerseToStr(v,true);
         text := DeleteTags(ContentArray[i].text);
+        Highlight(text,st,CurrentSearchOptions);
         text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + text + '\i0\par\par';
         Replacement(text);
         SuperEdit.WriteLn(text);

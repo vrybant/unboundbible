@@ -11,6 +11,8 @@ uses
   {$ifdef unix} Process, {$endif} LazUtf8;
 
 type
+  TIntegerArray = array of integer;
+
   TRange = record
     from : integer;
     till : integer;
@@ -43,9 +45,6 @@ function MyStrToInt(st: string): integer;
 function MyStrToSingle(st: string): Single;
 function CountPos(sub, st: string): integer;
 
-function WideTrim(const S: WideString): WideString;
-
-procedure MyDelete(var s : string; index, count : Integer);
 procedure StreamWrite  (var Stream: TMemoryStream; s: string);
 procedure StreamWriteLn(var Stream: TMemoryStream; s: string);
 {$ifdef mswindows} procedure StreamToClipboard(Stream : TMemoryStream); {$endif}
@@ -147,28 +146,6 @@ begin
       end;
 end;
 
-function ReplaceSub(str, sub1, sub2: String; del: byte): String;
-var
-  aPos: Integer;
-  rslt: String;
-begin
-    aPos := Pos(sub1, str);
-
-    rslt := '';
-    while (aPos <> 0) do begin
-      rslt := rslt + Copy(str, 1, aPos - 1) + sub2;
-      Delete(str, 1, aPos + Length(sub1) - 1 + del);
-      aPos := Pos(sub1, str);
-    end;
-
-    Result := rslt + str;
-end;
-
-procedure MyDelete(var s : string; index, count : Integer);
-begin
-  Delete(s,index,count);
-end;
-
 procedure StreamWrite(var Stream: TMemoryStream; s: string);
 begin
   Stream.WriteBuffer(Pointer(s)^, Length(s));
@@ -192,6 +169,26 @@ begin
   Clipboard.Free ;
 end;
 {$endif}
+
+function StringSearch(subst: string; s: string): TIntegerArray;
+var
+  i,k,n : integer;
+begin
+  SetLength(Result,Length(s));
+
+  k := 0;
+  n := Pos(subst,s);
+
+  while n > 0 do
+    begin
+      Inc(k);
+      Result[k] := n;
+      s := Copy(s, n + Length(subst), Length(s));
+      n := Pos(subst,s);
+    end;
+
+  SetLength(Result,k);
+end;
 
 procedure Replace(var s: string; const oldPattern, newPattern: string);
 begin
@@ -239,20 +236,6 @@ begin
       if st <> '' then st := st + ch;
       st := st + List[i];
     end;
-end;
-
-function WideTrim(const S: WideString): WideString;
-var
-  I, L: Integer;
-begin
-  L := Length(S);
-  I := 1;
-  while (I <= L) and (S[I] <= ' ') do Inc(I);
-  if I > L then Result := '' else
-  begin
-    while S[L] <= ' ' do Dec(L);
-    Result := Copy(S, I, L - I + 1);
-  end;
 end;
 
 function ExtractOnlyName(s: string): string;
