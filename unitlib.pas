@@ -36,37 +36,43 @@ const
   TitleDirectory = 'titles';
   VerseDirectory = 'verse';
 
+// string's functions
+
 function IsNumeral(c: char): boolean;
 function IsLetter(c: char): boolean;
 function Marks(st: string): string;
 function Prefix(ps, st: string): boolean;
 function OneUpCase(st: string): string;
 function MyStrToInt(st: string): integer;
-function MyStrToSingle(st: string): Single;
-function CountPos(sub, st: string): integer;
+function CleanString(s: string): string;
+function StringSearch(subst: string; s: string): TIntegerArray;
+procedure Replace(var s: string; const oldPattern, newPattern: String);
+procedure StrToList(ch: Char; const st: string; List: TStringList);
+procedure ListToStr(ch: Char; List: TStringList; var st: string);
+function Utf8ToRTF(const s: string): string;
+
+// stream's functions
 
 procedure StreamWrite  (var Stream: TMemoryStream; s: string);
 procedure StreamWriteLn(var Stream: TMemoryStream; s: string);
 {$ifdef mswindows} procedure StreamToClipboard(Stream : TMemoryStream); {$endif}
-procedure Replace(var s: string; const oldPattern, newPattern: String);
-procedure StrToList(ch: Char; const st: string; List: TStringList);
-procedure ListToStr(ch: Char; List: TStringList; var st: string);
 
-function  ExtractOnlyName(s: string): string;
+// file's functions
+
+function ExtractOnlyName(s: string): string;
 procedure GetFileList(const Path: string; const List: TStrings; Ext: boolean);
-function  Utf8ToRTF(const s: string): string;
-function WideLowerCaseFixed(s : WideString): WideString;
-
-function GetDefaultLanguage: string;
 function AppLocation: string;
 function UserDocumentsPath : string;
 function AppDataPath : string;
 function IniFileName : string;
 function TempFileName: string;
-
 procedure CreateDirectories;
-{$ifdef darwin} procedure PrintFile(FileName : string); {$endif}
 procedure OpenFolder(path : string);
+{$ifdef darwin} procedure PrintFile(FileName : string); {$endif}
+
+// system's functions
+
+function GetDefaultLanguage: string;
 procedure Output(s: string);
 
 var
@@ -79,6 +85,8 @@ const
   CRLF = #13 + #10;
 
 implementation
+
+// string's functions
 
 function IsNumeral(c: char): boolean;
 begin
@@ -121,54 +129,13 @@ begin
          else Result := 0;
 end;
 
-function MyStrToSingle(st: string): Single;
-var
-  v : Single;
+function CleanString(s: string): string;
+var i: integer;
 begin
-  st := Trim(st);
-  if TryStrToFloat(st, v) then Result := v
-                          else Result := 0;
+  for i:=1 to Length(s) do
+    if not IsLetter(s[i]) then s[i] := ' ';
+  Result := s;
 end;
-
-function CountPos(sub, st: string): integer;
-var
-  n : integer;
-begin
-    Result := 0;
-
-    n := Pos(sub, st);
-
-    while n > 0 do
-      begin
-        Delete(st, 1, n + Length(sub) - 1);
-        n := Pos(sub, st);
-        inc(Result);
-      end;
-end;
-
-procedure StreamWrite(var Stream: TMemoryStream; s: string);
-begin
-  Stream.WriteBuffer(Pointer(s)^, Length(s));
-end;
-
-procedure StreamWriteLn(var Stream: TMemoryStream; s: string);
-begin
-  s := s + CRLF;
-  Stream.WriteBuffer(Pointer(s)^, Length(s));
-end;
-
-{$ifdef mswindows}
-procedure StreamToClipboard(Stream : TMemoryStream);
-var
-  Clipboard : TClipBoard;
-     CF_RTF : Word;
-begin
-  Clipboard := TClipboard.Create ;
-  CF_RTF  := RegisterClipboardFormat('Rich Text Format');
-  Clipboard.AddFormat(CF_RTF,Stream);
-  Clipboard.Free ;
-end;
-{$endif}
 
 function StringSearch(subst: string; s: string): TIntegerArray;
 var
@@ -243,6 +210,52 @@ begin
   Result := ExtractFileName(ChangeFileExt(s,''));
 end;
 
+function Utf8ToRTF(const s: string): string;
+var
+  p: PChar;
+  unicode: Cardinal;
+  CharLen: integer;
+begin
+  Result := '';
+  p := PChar(s);
+  repeat
+    unicode := UTF8CharacterToUnicode(p,CharLen);
+
+    if unicode < $80 then Result := Result + char(unicode)
+                     else Result := Result + '\u' + IntToStr(unicode) + '?';
+
+    inc(p,CharLen);
+  until (CharLen=0) or (unicode=0);
+end;
+
+// stream's functions
+
+procedure StreamWrite(var Stream: TMemoryStream; s: string);
+begin
+  Stream.WriteBuffer(Pointer(s)^, Length(s));
+end;
+
+procedure StreamWriteLn(var Stream: TMemoryStream; s: string);
+begin
+  s := s + CRLF;
+  Stream.WriteBuffer(Pointer(s)^, Length(s));
+end;
+
+{$ifdef mswindows}
+procedure StreamToClipboard(Stream : TMemoryStream);
+var
+  Clipboard : TClipBoard;
+     CF_RTF : Word;
+begin
+  Clipboard := TClipboard.Create ;
+  CF_RTF  := RegisterClipboardFormat('Rich Text Format');
+  Clipboard.AddFormat(CF_RTF,Stream);
+  Clipboard.Free ;
+end;
+{$endif}
+
+// file's functions
+
 procedure GetFileList(const Path: string; const List: TStrings; Ext: boolean);
 var
   SearchRec : TSearchRec;
@@ -261,25 +274,6 @@ begin
     end;
 
   SysUtils.FindClose(SearchRec);
-end;
-
-function UnicodeToRTF(const w: WideString): String;
-var
-  c : cardinal;
-  i : integer;
-begin
-  Result := '';
-  for i:=1 to Length(w) do
-    begin
-      c := Ord(w[i]);
-      if c < $80 then Result := Result + String(w[i])
-                 else Result := Result + '\u' + IntToStr(c) + '?';
-    end;
-end;
-
-function Utf8ToRTF(const s: string): string;
-begin
-  Result := UnicodeToRTF(WideString(s));
 end;
 
 function AppLocation: string;
@@ -320,28 +314,6 @@ begin
  end;
 end;
 {$endif}
-
-function GetDefaultLanguage: string;
-begin
-  Result := 'english';
-
-  {$ifdef mswindows}
-  case Lo(GetSystemDefaultLangID) of
-    LANG_RUSSIAN   : Result := 'russian';
-    LANG_SPANISH   : Result := 'spanish';
-    LANG_ITALIAN   : Result := 'italian';
-    LANG_FINNISH   : Result := 'finnish';
-//  LANG_POLISH    : Result := 'polish';
-//  LANG_FRENCH    : Result := 'french';
-//  LANG_GERMAN    : Result := 'german';
-//  LANG_UKRAINIAN : Result := 'ukrainian';
-  end;
-  {$endif}
-
-  {$ifdef unix}
-  if RussianEdition then {%H-}Result := 'russian';
-  {$endif}
-end;
 
 function UserDocumentsPath : string;
 begin
@@ -397,52 +369,6 @@ begin
 end;
 
 {$ifdef mswindows}
-function WideLowerCaseFixed(s : WideString): WideString;
-begin
-  Result := WideLowerCase(s);
-end;
-{$endif}
-
-// A-Z = 1040-1071 / Russian Alphabet
-// a-z = 1072-1103
-
-{$ifdef unix}
-function WideLowerCaseFixed(s : WideString): WideString;
-var
-  w : WideString;
-  i,n : integer;
-begin
-  Result := s;
-  w := WideLowerCase(s);
-
-  for i:=1 to length(s) do
-    begin
-      n := ord(s[i]);
-      if (n >= 1040) and (n <= 1071) then Result[i] := WideChar(n+32);
-      if (n  < 1040) or  (n >  1103) then Result[i] := w[i];
-    end;
-end;
-{$endif}
-
-{$ifdef darwin}
-procedure PrintFile(filename : string);
-begin
-  with TProcess.Create(nil) do
-  try
-    CommandLine {%H-}:=    'lp ' + marks(filename);
-    Options := [poUsePipes]; // poWaitOnExit
-    try
-      Execute;
-    except
-      on EProcess do ShowMessage('Oops! Looks like it can''t be printed.');
-    end;
-  finally
-    Free;
-  end;
-end;
-{$endif}
-
-{$ifdef mswindows}
 procedure OpenFolder(path : string);
 begin
    ShellExecute(0,'open',PChar(marks(path)),'','',SW_SHOW);
@@ -466,6 +392,48 @@ begin
   end;
 end;
 {$endif}
+
+{$ifdef darwin}
+procedure PrintFile(filename : string);
+begin
+  with TProcess.Create(nil) do
+  try
+    CommandLine {%H-}:=    'lp ' + marks(filename);
+    Options := [poUsePipes]; // poWaitOnExit
+    try
+      Execute;
+    except
+      on EProcess do ShowMessage('Oops! Looks like it can''t be printed.');
+    end;
+  finally
+    Free;
+  end;
+end;
+{$endif}
+
+ // system's functions
+
+function GetDefaultLanguage: string;
+begin
+  Result := 'english';
+
+  {$ifdef mswindows}
+  case Lo(GetSystemDefaultLangID) of
+    LANG_RUSSIAN   : Result := 'russian';
+    LANG_SPANISH   : Result := 'spanish';
+    LANG_ITALIAN   : Result := 'italian';
+    LANG_FINNISH   : Result := 'finnish';
+//  LANG_POLISH    : Result := 'polish';
+//  LANG_FRENCH    : Result := 'french';
+//  LANG_GERMAN    : Result := 'german';
+//  LANG_UKRAINIAN : Result := 'ukrainian';
+  end;
+  {$endif}
+
+  {$ifdef unix}
+  if RussianEdition then {%H-}Result := 'russian';
+  {$endif}
+end;
 
 procedure Output(s: string);
 begin

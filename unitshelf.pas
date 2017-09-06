@@ -505,7 +505,7 @@ begin
       till := IntToStr(EncodeIndex(Range.till));
       queryRange := ' AND ' + z.book + ' >= ' + from + ' AND ' + z.book + ' <= ' + till;
     end;
-
+  {
   if wholeWords in SearchOptions then
     begin
       Replace(searchString,'%',' % ');
@@ -518,9 +518,12 @@ begin
       searchString := Utf8LowerCase(searchString);
       field := 'lower(' + field + ')';
     end;
+  }
+  field := 'test(' + field + ')';
 
   try
-    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + field + ' LIKE ''%' + searchString + '%'' ' + queryRange;
+//  Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + field + ' LIKE ''%' + searchString + '%'' ' + queryRange;
+    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + field + '=''1'' ';
     Query.Clear;
     Query.Open;
 
