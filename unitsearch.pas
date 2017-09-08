@@ -1,7 +1,5 @@
 unit UnitSearch;
 
-{$mode objfpc}{$H+}
-
 interface
 
 uses

@@ -1,7 +1,5 @@
 unit UnitMemo;
 
-{$mode delphi}{$H+}
-
 interface
 
 uses

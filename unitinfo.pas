@@ -5,18 +5,12 @@ interface
 uses Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, SysUtils;
 
 type
-
-  { TInfoBox }
-
   TInfoBox = class(TForm)
     OKButton: TButton;
     Memo: TMemo;
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-  private
-    { Private declarations }
   public
-    { Public declarations }
     procedure Translate;
   end;
 

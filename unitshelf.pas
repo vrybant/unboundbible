@@ -1,7 +1,5 @@
 unit UnitShelf;
 
-{$mode delphi}{$H+}
-
 interface
 
 uses

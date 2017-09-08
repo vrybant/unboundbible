@@ -7,8 +7,6 @@ unit UnitEdit;
 {                  vladimirrybant.org                   }
 {*******************************************************}
 
-{$mode delphi}{$H+}
-
 interface
 
 uses

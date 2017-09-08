@@ -1,7 +1,5 @@
 unit UnitMain;
 
-{$mode delphi}{$H+}
-
 interface
 
 uses

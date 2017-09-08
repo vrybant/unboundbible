@@ -1,7 +1,5 @@
 unit UnitTrans;
 
-{$mode objfpc}{$H+}
-
 interface
 
 uses
@@ -9,17 +7,13 @@ uses
   StdCtrls, IniFiles, UnitEdit; // ComCtrls, RichMemo
 
 type
-  { TFormTranslate }
-
   TFormTranslate = class(TForm)
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    { private declarations }
     procedure SaveIniFile;
     procedure ReadIniFile;
   public
-    { public declarations }
     RichEditTranslate : TSuperEdit;
     procedure Translate;
   end;

@@ -1,16 +1,11 @@
 unit UnitCompare;
 
-{$mode objfpc}{$H+}
-
 interface
 
 uses
   Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, CheckLst, SysUtils;
 
 type
-
-  { TCompareForm }
-
   TCompareForm = class(TForm)
     OKButton: TButton;
     CancelButton: TButton;
@@ -19,12 +14,10 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    { private declarations }
     procedure MakeListBox;
     procedure ShelfToListBox;
     procedure ListBoxToShelf;
   public
-    { public declarations }
     procedure Translate;
   end;
 

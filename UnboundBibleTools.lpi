@@ -173,6 +173,7 @@
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
+        <SyntaxMode Value="Delphi"/>
         <CStyleOperator Value="False"/>
         <AllowLabel Value="False"/>
       </SyntaxOptions>

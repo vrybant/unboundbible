@@ -1,7 +1,5 @@
 unit UnitTool;
 
-{$mode objfpc}{$H+}
-
 interface
 
 uses SysUtils, Classes, Controls, Graphics, ClipBrd, UnitClass, UnitEdit, LazUtf8;
