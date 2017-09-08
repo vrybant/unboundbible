@@ -487,7 +487,7 @@ function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Rang
 var
   Contents : TContentArray;
   queryRange, from, till : string;
-  i,j : integer;
+  i : integer;
 begin
   SetLength(Result,0);
   queryRange := '';

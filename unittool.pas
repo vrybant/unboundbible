@@ -186,7 +186,6 @@ begin
 end;
 
 procedure Load_Verses(Stream: TMemoryStream);
-//       Verse.Count не исправлен!!
 var
     Book : TBook;
     List : TStringList;
@@ -196,20 +195,9 @@ var
 
   procedure MakeLink;
   begin
-    if Options.cvAbbr then s := Book.Abbr
-                      else s := Book.Title;
-
-    if Pos('.',s) = 0 then s := s + ' ';
-
-    s := s + IntToStr(ActiveVerse.Chapter) + ':' + IntToStr(ActiveVerse.Number);
-
-    if (ActiveVerse.Number = ActiveVerse.Count) or (ActiveVerse.Count = 0)
-      then s := s + '\cf1 '
-      else s := s + '-' + IntToStr(ActiveVerse.Count) + '\cf1 ';
-
+    s := Bible.VerseToStr(ActiveVerse,Options.cvAbbr);
     if Options.cvDelim then s := '(' + s + ')';
-
-    s := '\f0\cf3 ' + s + ' ' + par;
+    s := '\f0\cf3 ' + s + '\cf1 ' + ' ' + par;
     StreamWriteLn(Stream,Utf8ToRTF(s));
   end;
 
@@ -230,7 +218,7 @@ begin
       s := '\cf1 ';
 
       if Options.cvNum then
-        if Options.cvWrap or (ActiveVerse.Number <> ActiveVerse.Count) or Options.cvEnd
+        if Options.cvWrap or (ActiveVerse.Count > 1) or Options.cvEnd
           then s := s + '(' + IntToStr(ActiveVerse.Number + i) + ') ';
 
       s := s + List[i];
