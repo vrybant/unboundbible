@@ -235,7 +235,7 @@ begin
   p := PChar(s);
   repeat
     unicode := UTF8CharacterToUnicode(p,CharLen);
-
+    if unicode = 0 then Continue;
     if unicode < $80 then Result := Result + char(unicode)
                      else Result := Result + '\u' + IntToStr(unicode) + '?';
 
