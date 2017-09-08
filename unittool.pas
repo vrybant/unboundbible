@@ -196,7 +196,7 @@ var
   procedure MakeLink;
   var s : string;
   begin
-    s := Bible.VerseToStr(ActiveVerse,Options.cvAbbr);
+    s := Bible.VerseToStr(ActiveVerse,not Options.cvAbbr);
     if Options.cvDelim then s := '(' + s + ')';
     s := '\f0\cf3 ' + s + '\cf1 ' + ' ' + par;
     StreamWriteLn(Stream,Utf8ToRTF(s));

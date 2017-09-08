@@ -35,6 +35,14 @@ type
 
  TContentArray = array of TContent;
 
+ TOptions = record
+    cvAbbr  : boolean;
+    cvEnd   : boolean;
+    cvDelim : boolean;
+    cvNum   : boolean;
+    cvWrap  : boolean;
+  end;
+
 const
   unboundStringAlias : TStringAlias = (
     bible   : 'Bible';
@@ -58,6 +66,9 @@ const
     number  : 0;
     count   : 0;
     );
+
+var
+  Options : TOptions;
 
 var
   myBibleArray : array [1..80] of integer = (

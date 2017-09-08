@@ -326,7 +326,7 @@ begin
   if Book = nil then Exit;
 
   if full then title := Book.title else title := Book.abbr;
-  if Pos('.', Result) = 0 then title := title + ' ';
+  if Pos('.', title) = 0 then title := title + ' ';
 
   Result := title + IntToStr(verse.chapter) + ':' + IntToStr(verse.number);
   if (verse.number <> 0) and (verse.count > 1) then

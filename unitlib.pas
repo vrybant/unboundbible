@@ -17,14 +17,6 @@ type
     till : integer;
   end;
 
-  TOptions = record
-    cvAbbr  : boolean;
-    cvEnd   : boolean;
-    cvDelim : boolean;
-    cvNum   : boolean;
-    cvWrap  : boolean;
-  end;
-
 const
   AppName = 'Unbound Bible Tools';
   VersionInfo = '2.0';
@@ -77,7 +69,6 @@ procedure Output(s: string);
 
 var
   CurrFont: TFont;
-  Options : TOptions;
   facelang : string;
 
 const
