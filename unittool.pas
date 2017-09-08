@@ -194,6 +194,7 @@ var
        i : integer;
 
   procedure MakeLink;
+  var s : string;
   begin
     s := Bible.VerseToStr(ActiveVerse,Options.cvAbbr);
     if Options.cvDelim then s := '(' + s + ')';
@@ -221,7 +222,7 @@ begin
         if Options.cvWrap or (ActiveVerse.Count > 1) or Options.cvEnd
           then s := s + '(' + IntToStr(ActiveVerse.Number + i) + ') ';
 
-      s := s + List[i];
+      s := s + DeleteTags(List[i]);
       s := s + '\i0 '+ ' ' + par;
 
       Replacement(s);
