@@ -489,15 +489,12 @@ function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Rang
 var
   Contents : TContentArray;
   queryRange, from, till : string;
-  field : string;
   i,j : integer;
 begin
   SetLength(Result,0);
-
-  searchString := Trim(searchString);
-  Replace(searchString,' ','%');
   queryRange := '';
-  field := z.text;
+
+  SetSearchOptions(searchString, SearchOptions);
 
   if Range.from > 0 then
     begin
@@ -505,29 +502,11 @@ begin
       till := IntToStr(EncodeIndex(Range.till));
       queryRange := ' AND ' + z.book + ' >= ' + from + ' AND ' + z.book + ' <= ' + till;
     end;
-  {
-  if wholeWords in SearchOptions then
-    begin
-      Replace(searchString,'%',' % ');
-      searchString := ' ' + searchString + ' ';
-      field := 'clean(' + field + ')';
-    end;
-
-  if not (caseSensitive in SearchOptions) then
-    begin
-      searchString := Utf8LowerCase(searchString);
-      field := 'lower(' + field + ')';
-    end;
-  }
-  field := 'test(' + field + ')';
 
   try
-//  Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + field + ' LIKE ''%' + searchString + '%'' ' + queryRange;
-    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + field + '=''1'' ';
+    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE super(' + z.text + ')=''1''' + queryRange;  ;
     Query.Clear;
     Query.Open;
-
-    Output(Query.SQL.Text);
 
     Query.Last; // must be called before RecordCount
     SetLength(Contents,Query.RecordCount);

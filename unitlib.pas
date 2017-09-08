@@ -1,7 +1,5 @@
 unit UnitLib;
 
-{$mode objfpc}{$H+}
-
 interface
 
 uses
@@ -11,6 +9,7 @@ uses
   {$ifdef unix} Process, {$endif} LazUtf8;
 
 type
+  TStringArray  = array of string;
   TIntegerArray = array of integer;
 
   TRange = record
@@ -45,10 +44,11 @@ function Prefix(ps, st: string): boolean;
 function OneUpCase(st: string): string;
 function MyStrToInt(st: string): integer;
 function CleanString(s: string): string;
-function StringSearch(subst: string; s: string): TIntegerArray;
+function StringPos(subst: string; s: string): TIntegerArray;
 procedure Replace(var s: string; const oldPattern, newPattern: String);
-procedure StrToList(ch: Char; const st: string; List: TStringList);
-procedure ListToStr(ch: Char; List: TStringList; var st: string);
+function StringToList(ch: Char; st: string): TStringArray;
+function CleanTags(s: string): string;
+function DeleteTags(s: string): string;
 function Utf8ToRTF(const s: string): string;
 
 // stream's functions
@@ -137,7 +137,7 @@ begin
   Result := s;
 end;
 
-function StringSearch(subst: string; s: string): TIntegerArray;
+function StringPos(subst: string; s: string): TIntegerArray;
 var
   i,k,n : integer;
 begin
@@ -148,9 +148,9 @@ begin
 
   while n > 0 do
     begin
-      Inc(k);
       Result[k] := n;
-      s := Copy(s, n + Length(subst), Length(s));
+      Inc(k);
+      for i:=n to n+Length(subst)-1 do s[i] := ' ';
       n := Pos(subst,s);
     end;
 
@@ -162,52 +162,67 @@ begin
   s := StringReplace(s, oldPattern, newPattern, [rfReplaceAll]);
 end;
 
-procedure StrToList(ch: Char; const st: string; List: TStringList);
+function StringToList(ch: Char; st: string): TStringArray;
 var
-  p : array of integer;
-  i : integer;
-  n : integer;
-  s : string;
+  Point : array of integer;
+  i, n, index, len : integer;
 begin
-  List.Clear;
-
-  SetLength(p,Length(st));
-  p[1] := 0;
-  n := 1;
+  SetLength(Result,Length(st)+2);
+  SetLength(Point ,Length(st)+2);
+  Point[0] := 0;
+  n := 0;
 
   for i:=1 to Length(st) do
     if st[i] = ch then
       begin
-        inc(n);
-        p[n] := i;
+        Inc(n);
+        Point[n] := i;
       end;
 
-  inc(n);
-  p[n] := Length(st) + 1;
+  Point[n+1] := Length(st)+1;
+  index := 0;
 
-  for i:=1 to n-1 do
+  for i:=0 to n do
     begin
-      s := copy(st,p[i]+1,p[i+1]-p[i]-1);
-      s := Trim(s);
-      List.Add(s);
+      len := Point[i+1]-Point[i]-1;
+      if len > 0 then
+        begin
+          Result[index] := Copy(st, Point[i]+1, len);
+          Inc(index);
+        end;
     end;
+
+  SetLength(Result,index);
 end;
 
-procedure ListToStr(ch: Char; List: TStringList; var st: string);
-var i : integer;
+function CleanTags(s: string): string;
+var
+  i : integer;
+  l : boolean;
 begin
-  st := '';
-
-  for i:=0 to List.Count-1 do
+  l := True;
+  for i:=1 to Length(s) do
     begin
-      if st <> '' then st := st + ch;
-      st := st + List[i];
+      if s[i]='<' then l := False;
+      if not l then s[i] := ' ';
+      if s[i]='>' then l := True;
     end;
+  Result := s;
 end;
 
-function ExtractOnlyName(s: string): string;
+function DeleteTags(s: string): string;
+var
+  i : integer;
+  l : boolean;
 begin
-  Result := ExtractFileName(ChangeFileExt(s,''));
+  Result := '';
+  l := True;
+  for i:=1 to Length(s) do
+    begin
+      if s[i]='<' then l := False;
+      if l then Result := Result + s[i];
+      if s[i]='>' then l := True;
+    end;
 end;
 
 function Utf8ToRTF(const s: string): string;
@@ -255,6 +270,11 @@ end;
 {$endif}
 
 // file's functions
+
+function ExtractOnlyName(s: string): string;
+begin
+  Result := ExtractFileName(ChangeFileExt(s,''));
+end;
 
 procedure GetFileList(const Path: string; const List: TStrings; Ext: boolean);
 var

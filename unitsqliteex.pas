@@ -1,58 +1,62 @@
 unit UnitSQLiteEx;
 
-// Language support for SQLite3
-
-{$mode objfpc}{$H+}
-
 interface
 
 uses
-  Classes, SysUtils, SQLite3, LazUtf8, CTypes;
+  Classes, SysUtils, SQLite3, LazUtf8, CTypes, UnitLib, UnitType;
 
-procedure SQLite3CreateFunctions(const _Handle: pointer);
+procedure SetSearchOptions(s: string; SearchOptions: TSearchOptions);
+procedure SQLite3CreateFunctions(const Handle: pointer);
 
 implementation
-
-uses UnitLib;
 
 const
   SQLITE_UTF8= $01;
   SQLITE_DETERMINISTIC =$800;
 
-procedure UTF8xClean(ctx: psqlite3_context; {%H-}N: cint; V: ppsqlite3_value); cdecl;
-var S: String;
+var
+  SearchList : TStringArray;
+  Options : TSearchOptions;
+
+procedure SetSearchOptions(s: string; SearchOptions: TSearchOptions);
+var i : integer;
 begin
-  SetString(S, sqlite3_value_text(V[0]), sqlite3_value_bytes(V[0]));
-  S := CleanString(S);
-  sqlite3_result_text(ctx, PAnsiChar(S), Length(S), sqlite3_destructor_type(SQLITE_TRANSIENT));
+  Options := SearchOptions;
+  if not (caseSensitive in Options) then s := Utf8LowerCase(s);
+
+  SearchList := StringToList(' ',s);
+
+  if wholeWords in Options then
+    for i:=Low(SearchList) to High(SearchList) do
+      SearchList[i] := ' ' + SearchList[i] + ' ';
 end;
 
-procedure UTF8xLower(ctx: psqlite3_context; {%H-}N: cint; V: ppsqlite3_value); cdecl;
-var S: String;
+function Super(s: string): boolean;
+var i : integer;
 begin
-  SetString(S, sqlite3_value_text(V[0]), sqlite3_value_bytes(V[0]));
-  S := UTF8LowerCase(S);
-  sqlite3_result_text(ctx, PAnsiChar(S), Length(S), sqlite3_destructor_type(SQLITE_TRANSIENT));
+//s := CleanTags(s);
+  if not (caseSensitive in Options) then s := Utf8LowerCase(s);
+  if wholeWords in Options then s := ' ' + CleanString(s) + ' ';
+
+  Result := true;
+  for i:=Low(SearchList) to High(SearchList) do
+    if Pos(SearchList[i],s) = 0 then Result := false;
 end;
 
-procedure UTF8xTest(ctx: psqlite3_context; {%H-}N: cint; V: ppsqlite3_value); cdecl;
-var S: String;
+procedure xSuper(ctx: psqlite3_context; {%H-}N: cint; V: ppsqlite3_value); cdecl;
+var s : string;
 begin
-  SetString(S, sqlite3_value_text(V[0]), sqlite3_value_bytes(V[0]));
-  if Pos('Jesus',s) > 0 then S := '1' else S := '0';
-  sqlite3_result_text(ctx, PAnsiChar(S), Length(S), sqlite3_destructor_type(SQLITE_TRANSIENT));
+  SetString(s, sqlite3_value_text(V[0]), sqlite3_value_bytes(V[0]));
+  if Super(s) then s := '1' else s := '0';
+  sqlite3_result_text(ctx, PAnsiChar(s), Length(s), sqlite3_destructor_type(SQLITE_TRANSIENT));
 end;
 
-procedure SQLite3CreateFunctions(const _Handle: pointer);
+procedure SQLite3CreateFunctions(const Handle: pointer);
 begin
-  if Assigned(_Handle) then
-    begin
-      sqlite3_create_function(_Handle,'lower',1,SQLITE_UTF8 or SQLITE_DETERMINISTIC,nil,@UTF8xLower,nil,nil);
-      sqlite3_create_function(_Handle,'clean',1,SQLITE_UTF8 or SQLITE_DETERMINISTIC,nil,@UTF8xClean,nil,nil);
-      sqlite3_create_function(_Handle,'test' ,1,SQLITE_UTF8 or SQLITE_DETERMINISTIC,nil,@UTF8xTest ,nil,nil);
-    end
+  if Assigned(Handle) then
+    sqlite3_create_function(Handle,'super',1,SQLITE_UTF8 or SQLITE_DETERMINISTIC,nil,@xSuper,nil,nil)
   else
-    raise Exception.Create('Unassigned handle in UnitSQLiteEx');
+    Output('Unassigned handle in UnitSQLiteEx');
 end;
 
 end.

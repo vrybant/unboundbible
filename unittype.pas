@@ -1,7 +1,5 @@
 unit UnitType;
 
-{$mode objfpc}{$H+}
-
 interface
 
 uses

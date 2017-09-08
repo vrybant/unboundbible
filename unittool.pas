@@ -19,62 +19,8 @@ uses UnitShelf, UnitType, UnitSearch, UnitLib;
 
 procedure Replacement(var s: string);
 begin
-  Replace(s,'[','\cf4\i ' );
-  Replace(s,']','\cf1\i0 ');
-end;
-
-function DeleteTags(s: string): string;
-var
-  i : integer;
-  l : boolean;
-begin
-  Result := '';
-  l := True;
-  for i:=1 to length(s) do
-    begin
-      if s[i]='<' then l := False;
-      if l then Result := Result + s[i];
-      if s[i]='>' then l := True;
-    end;
-end;
-
-(*    func highlight(with: String, target: String, options: SearchOption) -> String {
-        var tag = with
-        tag.insert("/", at: with.index(after: with.startIndex))
-        let result = self.replace(target, "\(with)\(target)\(tag)")
-        if searchOption.contains(.caseSensitive) { return result }
-        return result.replace(target.capitalized, "\(with)\(target.capitalized)\(tag)")
-    }   *)
-
-procedure Highlight(var s: string; target: string; SearchOptions: TSearchOptions);
-var
-  tag, newS : string;
-  i : integer;
-begin
-  // before after
-
-  tag := '\cf2 ';
-  newS := tag + target + '\cf1 ';
-
-  // Replace(s,target,newS);
-
-//  s := StringReplace(s, target, newS, [rfIgnoreCase, rfReplaceAll]);
-  s := StringReplace(s, target, newS, [rfReplaceAll]);
-end;
-
-procedure Highlight(List: TStringList; target: string; SearchOptions: TSearchOptions);
-var
-  s, newS : string;
-  i : integer;
-begin
-
-  for i:=0 to List.Count-1 do
-    begin
-      s := List[i];
-      Highlight(s,target,CurrentSearchOptions);
-      List[i] := s;
-    end;
-
+  // Replace(s,'[','\cf4\i ' );
+  // Replace(s,']','\cf1\i0 ');
 end;
 
 procedure SeachToList(const ws: WideString; var List: TWideStringList);
@@ -130,6 +76,43 @@ begin
   SuperEdit.CloseStream;
 end;
 
+procedure Highlight(var s: string; target: string; Options: TSearchOptions);
+var
+  Arr : TIntegerArray;
+  t : string;
+  i,len : integer;
+const
+  before = '\cf2 ';
+  after  = '\cf1 ';
+begin
+  t := s;
+  len := Length(target);
+
+  if not (caseSensitive in Options) then t := Utf8LowerCase(t);
+  if wholeWords in Options then t := ' ' + CleanString(t) + ' ';
+  if wholeWords in Options then target := ' ' + target + ' ';
+
+  Arr := StringPos(target,t);
+
+  for i:= High(Arr) downto Low(Arr) do
+    begin
+      Insert(after,  s, Arr[i] + len);
+      Insert(before, s, Arr[i]);
+    end;
+end;
+
+procedure Highlights(var s: string; searchString: string; Options: TSearchOptions);
+var
+  List : TStringArray;
+  line : string;
+begin
+  if not (caseSensitive in Options) then searchString := Utf8LowerCase(searchString);
+  List := StringToList(' ', searchString);
+
+  for line in List do
+    Highlight(s, line, Options);
+end;
+
 procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
   var
     ContentArray : TContentArray;
@@ -147,7 +130,7 @@ procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
         v := ContentArray[i].verse;
         link := Bible.VerseToStr(v,true);
         text := DeleteTags(ContentArray[i].text);
-        Highlight(text,st,CurrentSearchOptions);
+        Highlights(text,st,CurrentSearchOptions);
         text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + text + '\i0\par\par';
         Replacement(text);
         SuperEdit.WriteLn(text);
