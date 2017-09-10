@@ -1,10 +1,10 @@
 object MainForm: TMainForm
-  Left = 329
-  Height = 363
-  Top = 436
+  Left = 332
+  Height = 384
+  Top = 459
   Width = 795
   Caption = 'Unbound Bible Tools'
-  ClientHeight = 343
+  ClientHeight = 364
   ClientWidth = 795
   Menu = MainMenu
   OnActivate = FormActivate
@@ -218,11 +218,11 @@ object MainForm: TMainForm
   end
   object PanelLeft: TPanel
     Left = 0
-    Height = 288
+    Height = 309
     Top = 32
     Width = 195
     Align = alLeft
-    ClientHeight = 288
+    ClientHeight = 309
     ClientWidth = 195
     Font.CharSet = GREEK_CHARSET
     Font.Color = clWindowText
@@ -280,7 +280,7 @@ object MainForm: TMainForm
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 320
+    Top = 341
     Width = 795
     Panels = <    
       item
@@ -305,7 +305,7 @@ object MainForm: TMainForm
   end
   object PageControl: TPageControl
     Left = 200
-    Height = 288
+    Height = 309
     Top = 32
     Width = 595
     ActivePage = TabSheetBible
@@ -340,7 +340,7 @@ object MainForm: TMainForm
   end
   object Splitter: TSplitter
     Left = 195
-    Height = 288
+    Height = 309
     Top = 32
     Width = 5
   end

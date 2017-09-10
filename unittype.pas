@@ -35,7 +35,16 @@ type
 
  TContentArray = array of TContent;
 
- TOptions = record
+ {
+ struct CopyOptions : OptionSet
+    let rawValue: Int
+    static let abbreviate = CopyOptions(rawValue: 1 << 0)
+    static let  quotation = CopyOptions(rawValue: 1 << 1)
+    static let  enumerate = CopyOptions(rawValue: 1 << 2)
+    static let endinglink = CopyOptions(rawValue: 1 << 3)
+ }
+
+ TCopyOptions = record
     cvAbbr  : boolean;
     cvEnd   : boolean;
     cvDelim : boolean;
@@ -68,7 +77,7 @@ const
     );
 
 var
-  Options : TOptions;
+  Options : TCopyOptions;
 
 var
   myBibleArray : array [1..80] of integer = (

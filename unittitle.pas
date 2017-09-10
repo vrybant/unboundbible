@@ -54,6 +54,7 @@ var
   i : integer;
 begin
   Result := 'english.sqlite';
+  language := LowerCase(language);
 
   List := TStringList.Create;
   path := AppLocation + titleDirectory + slash + '*.sqlite';

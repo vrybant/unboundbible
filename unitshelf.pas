@@ -47,9 +47,7 @@ type
     oldTestament : boolean;
     newTestament : boolean;
     apocrypha    : boolean;
-    ssText       : integer;
     loaded       : boolean;
-    langEnable   : boolean;
   private
     function  GetItem(index: integer): TBook;
     procedure SetItem(index: integer; lst: TBook);
@@ -128,7 +126,12 @@ end;
 
 function IsOldTestament(n: integer): boolean;
 begin
-  Result := not IsNewTestament(n);
+  Result := n < 40;
+end;
+
+function IsApocrypha(n: integer): boolean;
+begin
+  Result := n > 66;
 end;
 
 //========================================================================================
@@ -162,9 +165,7 @@ begin
   copyright    := '';
   language     := 'english';
   filetype     := '';
-  ssText       :=  0;
   loaded       := False;
-  langEnable   := False;
   oldTestament := False;
   newTestament := False;
   apocrypha    := False;
@@ -212,8 +213,8 @@ begin
         try value := Query.FieldByName('value').AsString; except end;
 
         if key = 'description'   then name     := value;
-        if key = 'language'      then language := value;
         if key = 'detailed_info' then info     := value;
+        if key = 'language'      then language := value;
 
         Query.Next;
       end;
@@ -224,19 +225,6 @@ begin
     //
   end;
 
-  language := LowerCase(language);
-  {
-  Output('fileName = ' + fileName);
-
-  if fileFormat = unbound then Output('fileFormat = unbound');
-  if fileFormat = mybible then Output('fileFormat = mybible');
-
-  Output('name = ' + name);
-  Output('info = ' + info);
-  Output('language = ' + language);
-  Output('-');
-  }
-  LoadDatabase; /// TEMPORARY
 end;
 
 procedure TBible.LoadDatabase;
@@ -246,6 +234,8 @@ var
   n : integer;
 begin
   if loaded then exit;
+
+  Output(fileName + ' loaded');
 
   try
     Title := TTitle.Create(language);
@@ -265,6 +255,9 @@ begin
             Book.title := Title.getTitle(book.number);
             Book.abbr  := Title.getAbbr(book.number);
             Add(Book);
+            if IsOldTestament(n) then oldTestament := true;
+            if IsNewTestament(n) then newTestament := true;
+            if IsApocrypha(n)    then apocrypha    := true;
           end;
       finally
         Query.Next;
@@ -469,7 +462,7 @@ begin
 
   j:=0;
   for i:=0 to Length(Contents)-1 do
-    if IsOldTestament(Contents[i].verse.book) then
+    if not IsNewTestament(Contents[i].verse.book) then
       begin
         Result[j] := Contents[i];
         Inc(j);
@@ -524,7 +517,8 @@ begin
     Exit;
   end;
 
-  Result := RankContents(Contents);
+  if (fileFormat = unbound) and apocrypha then Result := RankContents(Contents)
+    else Result := Contents;
 end;
 
 procedure TBible.GetTitles(var List: TStringList);
@@ -570,16 +564,12 @@ end;
 
 procedure TBible.SavePrivate(const IniFile : TIniFile);
 begin
-  if not LangEnable then IniFile.WriteString(FileName,'Language',Language);
-  IniFile.WriteBool(FileName,'Compare'    ,Compare     );
-//IniFile.WriteBool(FileName,'RightToLeft',RightToLeft );
+  IniFile.WriteBool(FileName, 'Compare', Compare);
 end;
 
 procedure TBible.ReadPrivate(const IniFile : TIniFile);
 begin
-  if not LangEnable then Language := IniFile.ReadString(FileName,'Language',Language);
-  Compare     := IniFile.ReadBool(FileName,'Compare'    ,True  );
-//RightToLeft := IniFile.ReadBool(FileName,'RightToLeft',False );
+  Compare := IniFile.ReadBool(FileName, 'Compare', True);
 end;
 
 function TBible.Add(lst: TBook): integer;
@@ -587,14 +577,10 @@ begin
   Result := inherited Add(lst);
 end;
 
-{---}
-
 function TBible.GetItem(index: integer): TBook;
 begin
   Result := TBook(inherited Items[index]);
 end;
-
-{---}
 
 procedure TBible.SetItem(index: integer; lst: TBook);
 begin

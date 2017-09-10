@@ -436,11 +436,6 @@ begin
   LoadTranslate;
 end;
 
-procedure TMainForm.FormActivate(Sender: TObject);
-begin
-  if ListBoxCh.Items.Count = 0 then LoadChapter; // вызов первый раз
-end;
-
 procedure TMainForm.CreateRichEditComponents;
 begin
   RichEditBible := TSuperEdit.Create(self);
@@ -1056,7 +1051,7 @@ begin
     UpdateStatusBar;
     MakeBookList;
     Shelf.VerseToBeginning(ActiveVerse);
-    // LoadChapter; // В Delphi работало нормально, но в Лазарус RichMemo не загружается из Stream,
+    // LoadChapter; // RichMemo не загружается из Stream,
                     // поэтому LoadChapter вызываем из FormActivate
   end;
 
@@ -1075,10 +1070,10 @@ begin
   ToolButtonFB.Visible := not FBPageVisited;
 
   {$ifdef unix}
-  ActionLeft.Visible := False;
-  ActionCenter.Visible := False;
-  ActionRight.Visible := False;
-  ActionBullets.Visible := False;
+  ActionLeft    .Visible := False;
+  ActionCenter  .Visible := False;
+  ActionRight   .Visible := False;
+  ActionBullets .Visible := False;
   ToolSeparator1.Visible := False;
   ToolSeparator2.Visible := False;
   ToolSeparator3.Visible := False;
@@ -1101,6 +1096,11 @@ begin
   {$endif}
 
   UpdateActionImage;
+end;
+
+procedure TMainForm.FormActivate(Sender: TObject);
+begin
+  if ListBoxCh.Items.Count = 0 then LoadChapter; // вызов первый раз
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
