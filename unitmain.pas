@@ -493,6 +493,7 @@ end;
 
 procedure TMainForm.UpdateStatusBar;
 begin
+  if Shelf.Count = 0 then Exit;
   StatusBar.Panels[3].Text := ' ' + Bible.Copyright;
   if RichEditNotes.Modified then StatusBar.Panels[1].Text := sModified
                             else StatusBar.Panels[1].Text := '';
@@ -535,6 +536,7 @@ begin
   if Button = mbRight then ShowPopup;
 
   if Button <> mbLeft then Exit;
+  if Shelf.Count = 0  then Exit;
 
   s := (Sender as TSuperEdit).Hypertext;
   v := Bible.SrtToVerse(s);
