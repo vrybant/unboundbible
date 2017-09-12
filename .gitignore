@@ -10,3 +10,4 @@ __history
 bin/*
 *.sh
 titles/text/*
+components/*

@@ -10,7 +10,7 @@ unit UnitEdit;
 interface
 
 uses
-  {$ifdef mswindows} Windows, {$endif} Forms, SysUtils,
+  {$ifdef windows} Windows, {$endif} Forms, SysUtils,
   Classes, Graphics, Controls, ExtCtrls, LCLProc, LCLType,
   UnitMemo, UnitLib;
 
@@ -127,7 +127,7 @@ begin
   until not Colored;
 
   inc(x1);
-  {$ifdef mswindows} dec(x2); {$endif}
+  {$ifdef windows} dec(x2); {$endif}
 
   SetSel(x1, x2); Result := SelText;
   SetSel(n1, n2);
@@ -155,7 +155,7 @@ end;
 procedure TSuperEdit.KeyUp(var Key: Word; Shift: TShiftState);
 begin
   inherited;
-  {$ifdef mswindows}
+  {$ifdef windows}
   if Hyperlink and not ReadOnly and (Key = VK_CONTROL) then ShowCaret(Handle);
   {$endif}
 end;
@@ -186,7 +186,7 @@ begin
   until not Colored; // or (x2 > x0+5)
 
                       inc(x1);
-// {$ifdef mswindows} dec(x2); {$endif}
+// {$ifdef windows} dec(x2); {$endif}
 
   SetSel(x1,x2); Result := MyStrToInt(SelText);
   SetSel(x1,x1+1);
@@ -202,7 +202,7 @@ begin
   if x1 <> x2 then SetSel(x1,x2);
 end;
 
-{$ifdef mswindows}
+{$ifdef windows}
 procedure TSuperEdit.SelectParagraph(n : integer);
 var
   w, line : string;

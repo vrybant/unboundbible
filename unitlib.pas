@@ -3,10 +3,11 @@ unit UnitLib;
 interface
 
 uses
-  {$ifdef mswindows} Windows, ShFolder, {$endif}
+  {$ifdef windows} Windows, ShFolder, {$endif}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Buttons, ExtCtrls, ClipBrd, FileUtil, LCLProc,
-  {$ifdef unix} Process, {$endif} LazUtf8;
+  {$ifdef unix} LazLogger, {$endif}
+  {$ifdef darwin} Process, {$endif} LazUtf8;
 
 type
   TStringArray  = array of string;
@@ -47,7 +48,7 @@ function Utf8ToRTF(const s: string): string;
 
 procedure StreamWrite  (var Stream: TMemoryStream; s: string);
 procedure StreamWriteLn(var Stream: TMemoryStream; s: string);
-{$ifdef mswindows} procedure StreamToClipboard(Stream : TMemoryStream); {$endif}
+{$ifdef windows} procedure StreamToClipboard(Stream : TMemoryStream); {$endif}
 
 // file's functions
 
@@ -247,7 +248,7 @@ begin
   Stream.WriteBuffer(Pointer(s)^, Length(s));
 end;
 
-{$ifdef mswindows}
+{$ifdef windows}
 procedure StreamToClipboard(Stream : TMemoryStream);
 var
   Clipboard : TClipBoard;
@@ -310,7 +311,7 @@ end;
  CSIDL_COMMON_DOCUMENTS, { All Users\Documents }
  *)
 
-{$ifdef mswindows}
+{$ifdef windows}
 function GetSpecialFolderPath(FolderID: Cardinal): string;
 var
   s : PChar;
@@ -328,7 +329,7 @@ end;
 
 function UserDocumentsPath : string;
 begin
-{$ifdef mswindows}
+{$ifdef windows}
   Result := GetSpecialFolderPath(CSIDL_PERSONAL);
 {$else}
   Result := GetEnvironmentVariableUTF8('HOME');
@@ -337,7 +338,7 @@ end;
 
 function AppDataFolder : string;
 begin
-{$ifdef mswindows}
+{$ifdef windows}
   Result := GetSpecialFolderPath(CSIDL_APPDATA);
 {$else}
   Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library';
@@ -351,7 +352,7 @@ end;
 
 function IniFileName: string;
 begin
-{$ifdef mswindows}
+{$ifdef windows}
   Result := AppDataPath + Slash + 'config.ini';
 {$else}
   Result := GetAppConfigFile(False);
@@ -379,14 +380,12 @@ begin
   {$endif}
 end;
 
-{$ifdef mswindows}
 procedure OpenFolder(path : string);
 begin
-   ShellExecute(0,'open',PChar(marks(path)),'','',SW_SHOW);
+  {$ifdef windows} ShellExecute(0,'open',PChar(marks(path)),'','',SW_SHOW); {$endif}
 end;
-{$endif}
 
-{$ifdef unix}
+{$ifdef darwin}
 procedure OpenFolder(path : string);
 begin
   with TProcess.Create(nil) do
@@ -428,7 +427,7 @@ function GetDefaultLanguage: string;
 begin
   Result := 'english';
 
-  {$ifdef mswindows}
+  {$ifdef windows}
   case Lo(GetSystemDefaultLangID) of
     LANG_RUSSIAN   : Result := 'russian';
     LANG_SPANISH   : Result := 'spanish';
@@ -448,13 +447,14 @@ end;
 
 procedure Output(s: string);
 begin
-  {$ifdef mswindows} OutputDebugString(PChar(s)) {$endif}
+  {$ifdef windows} OutputDebugString(PChar(s)); {$endif}
+  {$ifdef linux} DebugLn(s); {$endif}
 end;
 
 initialization
   CurrFont := TFont.Create;
-  CurrFont.Name := {$ifdef mswindows} 'Tahoma' {$else} 'default' {$endif};
-  CurrFont.Size := {$ifdef mswindows} 12 {$else} 14 {$endif};
+  CurrFont.Name := {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
+  CurrFont.Size := {$ifdef windows} 12 {$else} 14 {$endif};
 
 finalization
   CurrFont.Free;

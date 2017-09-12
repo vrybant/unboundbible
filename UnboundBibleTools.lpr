@@ -1,10 +1,8 @@
 program UnboundBibleTools;
 
-{$mode objfpc}{$H+}
-
 uses
-  {$ifdef unux}{$ifdef UseCThreads} cthreads, {$endif}{$endif}
-  {$ifdef unix} printer4lazarus, {$endif}
+  {$ifdef unix}{$ifdef UseCThreads} cthreads, {$endif}{$endif}
+  {$ifdef darwin} printer4lazarus, {$endif}
   Interfaces, Graphics, Forms, richmemopackage, UnitEdit, UnitShelf,
   UnitMain, UnitLang, UnitAbout, UnitInfo, UnitSearch, UnitTool, UnitCompare,
   UnitClass, UnitOptions, UnitCopy, UnitMemo, UnitTrans;

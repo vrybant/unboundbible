@@ -3,7 +3,7 @@ unit UnitMain;
 interface
 
 uses
-//{$ifdef mswindows} ShellAPI, {$endif}
+//{$ifdef windows} ShellAPI, {$endif}
   {$ifdef unix} UnitMemo, {$endif}
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
@@ -269,7 +269,7 @@ begin
   for i := 0 to Shelf.Count - 1 do
   begin
     ComboBox.Items.Add(Shelf[i].Name);
-    {$ifdef mswindows} if i = Shelf.Current then ComboBox.ItemIndex := i; {$endif}
+    {$ifdef windows} if i = Shelf.Current then ComboBox.ItemIndex := i; {$endif}
   end;
 end;
 
@@ -341,10 +341,9 @@ begin
 end;
 
 procedure TMainForm.CmdStyle2(Sender: TObject);
-var
-  ParaNumbering : TParaNumbering;
+{$ifdef windows} var ParaNumbering : TParaNumbering; {$endif}
 begin
-  {$ifdef mswindows}
+  {$ifdef windows}
   with RichEditNotes do
     begin
       if Sender = ActionLeft    then SetParaAlignment(SelStart, SelLength, paLeft   );
@@ -712,7 +711,7 @@ begin
   if not RichEditNotes.Modified then Exit;
   SelectPage(apNotes);
 
-  {$ifdef mswindows}
+  {$ifdef windows}
     Response := MessageBox(Handle, PChar(ms_Save), PChar(ms_Confirm), MB_YESNOCANCEL or MB_ICONQUESTION);
   {$else}
     Response := MessageDlg(ms_Save, mtConfirmation, mbYesNoCancel, 0);
@@ -834,7 +833,7 @@ begin
 end;
 
 procedure TMainForm.UpDownButtons;
-{$ifdef mswindows} var ParaNumbering : TParaNumbering; {$endif}
+{$ifdef windows} var ParaNumbering : TParaNumbering; {$endif}
 begin
   if PageControl.ActivePageIndex <> apNotes then Exit;
 
@@ -845,7 +844,7 @@ begin
       ToolButtonUnderline.Down := fsUnderline in SelAttributes.Style;
       ToolButtonLink.Down := clNavy = SelAttributes.Color;
 
-      {$ifdef mswindows}
+      {$ifdef windows}
 
       case GetParaAlignment(SelStart) of
         paLeft: ToolButtonLeft.Down := True;
@@ -1461,7 +1460,7 @@ begin
   FormTranslate.Repaint;
 end;
 
-{$ifdef mswindows}
+{$ifdef windows}
 procedure TMainForm.VersesToClipboard;
 var
   Stream : TMemoryStream;
@@ -1469,8 +1468,8 @@ var
 begin
   Stream := TMemoryStream.Create;
   Range := RichEditBible.GetRange;
-  ActiveVerse.Number := Range.from;
-  ActiveVerse.Count  := Range.till - Range.from + 1;
+  ActiveVerse.number := Range.from;
+  ActiveVerse.count  := Range.till - Range.from + 1;
   Load_Verses(Stream);
   StreamToClipboard(Stream);
   Stream.free;
@@ -1497,8 +1496,8 @@ begin
     end;
 
   Range := RichEditBible.GetRange;
-  ActiveVerse.Verse := Range.from;
-  ActiveVerse.Range := Range.till;
+  ActiveVerse.number := Range.from;
+  ActiveVerse.count  := Range.till - Range.from + 1;
   Load_Verses(Stream);
 
   RichEditPreview.LoadRichText(Stream);

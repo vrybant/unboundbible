@@ -3,7 +3,7 @@ unit UnitMemo;
 interface
 
 uses
-  {$ifdef mswindows} Windows, Printers, OSPrinters, {$endif}
+  {$ifdef windows} Windows, Printers, OSPrinters, {$endif}
   Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo;
 
 type
@@ -13,10 +13,10 @@ type
     function  GetAttributes: TFontParams;
     procedure SetAttributes(const value: TFontParams);
     procedure SelectionChange;  dynamic;
-    {$ifdef mswindows} function  GetModified: boolean; {$endif}
-    {$ifdef mswindows} procedure SetModified(value: boolean); {$endif}
+    {$ifdef windows} function  GetModified: boolean; {$endif}
+    {$ifdef windows} procedure SetModified(value: boolean); {$endif}
   protected
-    {$ifdef mswindows}
+    {$ifdef windows}
     function LineCount: integer;
     function LineIndex(x: longint): integer;
     {$endif}
@@ -36,7 +36,7 @@ type
     procedure SaveToFile(const FileName : string);
     property SelAttributes: TFontParams read GetAttributes write SetAttributes;
     property OnSelectionChange: TNotifyEvent read FOnSelChange write FOnSelChange;
-    {$ifdef mswindows} property Modified: boolean read GetModified write SetModified; {$endif}
+    {$ifdef windows} property Modified: boolean read GetModified write SetModified; {$endif}
   end;
 
 
@@ -53,7 +53,7 @@ begin
   inherited Destroy;
 end;
 
-{$ifdef mswindows}
+{$ifdef windows}
 
 function TRichMemoEx.LineCount: integer;
 begin
@@ -96,7 +96,7 @@ end;
 
 function TRichMemoEx.CanUndo: boolean;
 begin
-  {$ifdef mswindows}
+  {$ifdef windows}
   Result := SendMessage(Handle, EM_CANUNDO,  0, 0) <> 0;
   {$else}
   Result := True;
@@ -110,7 +110,7 @@ end;
 
 procedure TRichMemoEx.SelectAll;
 begin
-  {$ifdef mswindows}
+  {$ifdef windows}
   SendMessage(Handle, EM_SETSEL, 0, -1);
   {$else}
   SetSel(0,100000);
@@ -132,7 +132,7 @@ end;
 
 procedure TRichMemoEx.SetSel(x1,x2: integer);
 begin
-  {$ifdef mswindows}
+  {$ifdef windows}
   SendMessage(Handle, EM_SETSEL, x1, x2);
   {$else}
   SelStart  := x1;
@@ -142,7 +142,7 @@ end;
 
 procedure TRichMemoEx.GetSel(var x1,x2: integer);
 begin
-  {$ifdef mswindows}
+  {$ifdef windows}
   SendMessage(Handle, EM_GETSEL, {%H-}integer(@x1), {%H-}integer(@x2));
   {$else}
   x1 := SelStart;
@@ -152,7 +152,7 @@ end;
 
 procedure TRichMemoEx.HideCursor;
 begin
-  {$ifdef mswindows} HideCaret(Handle); {$endif}
+  {$ifdef windows} HideCaret(Handle); {$endif}
 end;
 
 procedure TRichMemoEx.LoadFromFile(const FileName : string);
