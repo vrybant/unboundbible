@@ -658,6 +658,7 @@ procedure TShelf.SetCurrent(FileName: string);
 var i : integer;
 begin
   Current := 0;
+  if Count = 0 then Exit;
   for i:= Count-1 downto 0 do
     if Items[i].FileName = FileName then Current := i;
   Self[Current].LoadDatabase; ;

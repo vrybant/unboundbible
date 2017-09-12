@@ -1424,6 +1424,7 @@ end;
 procedure TMainForm.LoadChapter;
 begin
   Load_Chapter(RichEditBible);
+  if Shelf.Count = 0 then Exit;
   MakeChapterList(Bible.ChaptersCount(ActiveVerse));
   if FormTranslate.Visible then LoadTranslate;
   SelectPage(apBible);
