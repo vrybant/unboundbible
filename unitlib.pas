@@ -443,7 +443,7 @@ begin
   {$endif}
 
   {$ifdef unix}
-  if RussianEdition then {%H-}Result := 'russian';
+  if RussianEdition then Result := 'russian';
   {$endif}
 end;
 

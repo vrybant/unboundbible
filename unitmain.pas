@@ -269,7 +269,7 @@ begin
   for i := 0 to Shelf.Count - 1 do
   begin
     ComboBox.Items.Add(Shelf[i].Name);
-    {$ifdef windows} if i = Shelf.Current then ComboBox.ItemIndex := i; {$endif}
+    {$ifndef darwin} if i = Shelf.Current then ComboBox.ItemIndex := i; {$endif}
   end;
 end;
 
