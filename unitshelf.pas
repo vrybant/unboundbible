@@ -606,7 +606,7 @@ constructor TShelf.Create;
 begin
   inherited;
 
-//AddBibles(AppPath + Slash + BibleDirectory);
+  AddBibles(AppLocation + Slash + BibleDirectory);
   AddBibles(AppDataPath + Slash + BibleDirectory);
 
   ReadPrivates;

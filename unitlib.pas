@@ -222,6 +222,8 @@ var
   p: PChar;
   unicode: Cardinal;
   CharLen: integer;
+const
+  endchar = {$ifdef linux} ' ' {$else} '?' {$endif};
 begin
   Result := '';
   p := PChar(s);
@@ -229,7 +231,7 @@ begin
     unicode := UTF8CharacterToUnicode(p,CharLen);
     if unicode = 0 then Continue;
     if unicode < $80 then Result := Result + char(unicode)
-                     else Result := Result + '\u' + IntToStr(unicode) + '?';
+                     else Result := Result + '\u' + IntToStr(unicode) + endchar;
 
     inc(p,CharLen);
   until (CharLen=0) or (unicode=0);
@@ -454,7 +456,7 @@ end;
 initialization
   CurrFont := TFont.Create;
   CurrFont.Name := {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
-  CurrFont.Size := {$ifdef windows} 12 {$else} 14 {$endif};
+  CurrFont.Size := {$ifdef darwin} 14 {$else} 12 {$endif};
 
 finalization
   CurrFont.Free;
