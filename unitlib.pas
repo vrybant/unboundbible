@@ -1,5 +1,8 @@
 unit UnitLib;
 
+{$define debugmode}
+{$ifdef unix} {$undef RussianEdition} {$endif}
+
 interface
 
 uses
@@ -21,7 +24,6 @@ type
 const
   AppName = 'Unbound Bible Tools';
   VersionInfo = '2.0';
-  {$ifdef unix} RussianEdition = False; {$endif}
 
 const
   BibleDirectory = 'bibles';
@@ -443,14 +445,16 @@ begin
   {$endif}
 
   {$ifdef unix}
-  if RussianEdition then Result := 'russian';
+    {$ifdef RussianEdition} Result := 'russian'; {$endif}
   {$endif}
 end;
 
 procedure Output(s: string);
 begin
-  {$ifdef windows} OutputDebugString(PChar(s)); {$endif}
-  {$ifdef linux} DebugLn(s); {$endif}
+  {$ifdef debugmode}
+    {$ifdef windows} OutputDebugString(PChar(s)); {$endif}
+    {$ifdef linux} DebugLn(s); {$endif}
+  {$endif}
 end;
 
 initialization
