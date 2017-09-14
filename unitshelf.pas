@@ -606,7 +606,7 @@ constructor TShelf.Create;
 begin
   inherited;
 
-  AddBibles(AppLocation + Slash + BibleDirectory);
+//AddBibles(AppLocation + Slash + BibleDirectory);
   AddBibles(AppDataPath + Slash + BibleDirectory);
 
   ReadPrivates;
@@ -690,7 +690,7 @@ var
   IniFile : TIniFile;
   i : integer;
 begin
-  IniFile := TIniFile.Create(IniFileName);
+  IniFile := TIniFile.Create(ConfigFile);
   for i:=0 to Count-1 do Items[i].SavePrivate(IniFile);
   IniFile.Free;
 end;
@@ -700,7 +700,7 @@ var
   IniFile : TIniFile;
   i : integer;
 begin
-  IniFile := TIniFile.Create(IniFileName);
+  IniFile := TIniFile.Create(ConfigFile);
   for i:=0 to Count-1 do Items[i].ReadPrivate(IniFile);
   IniFile.Free;
 end;

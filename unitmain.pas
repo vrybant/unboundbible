@@ -1218,7 +1218,7 @@ var
 begin
   if Shelf.Count = 0 then Exit;
 
-  IniFile := TIniFile.Create(IniFileName);
+  IniFile := TIniFile.Create(ConfigFile);
 
   if WindowState = wsNormal then
   begin
@@ -1265,9 +1265,9 @@ var
   BibleFile: string;
   i, max: integer;
 begin
-  IniFile := TIniFile.Create(IniFileName);
+  IniFile := TIniFile.Create(ConfigFile);
   {
-  if IniFile.ReadString('Application', 'State', 'Normal') = 'Maximized'  // не работает !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  if IniFile.ReadString('Application', 'State', 'Normal') = 'Maximized'  // not working
     then WindowState := wsMaximized else WindowState := wsNormal;
   }
   BibleFile := IniFile.ReadString('Application', 'FileName', GetDefaultBible);

@@ -9,8 +9,8 @@ uses
   {$ifdef windows} Windows, ShFolder, {$endif}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Buttons, ExtCtrls, ClipBrd, FileUtil, LCLProc,
-  {$ifdef unix} LazLogger, {$endif}
-  {$ifdef darwin} Process, {$endif} LazUtf8;
+  {$ifdef linux} LazLogger, {$endif}
+  {$ifdef unix} Process, {$endif} LazUtf8;
 
 type
   TStringArray  = array of string;
@@ -22,13 +22,12 @@ type
   end;
 
 const
-  AppName = 'Unbound Bible Tools';
+  AppName = 'Unbound Bible';
   VersionInfo = '2.0';
 
 const
-  BibleDirectory = 'bibles';
+  BibleDirectory = 'Bibles';
   TitleDirectory = 'titles';
-  VerseDirectory = 'verse';
 
 // string's functions
 
@@ -58,8 +57,8 @@ function ExtractOnlyName(s: string): string;
 procedure GetFileList(const Path: string; const List: TStrings; Ext: boolean);
 function AppLocation: string;
 function UserDocumentsPath : string;
-function AppDataPath : string;
-function IniFileName : string;
+function AppDataPath: string;
+function ConfigFile: string;
 function TempFileName: string;
 procedure CreateDirectories;
 procedure OpenFolder(path : string);
@@ -296,6 +295,7 @@ function AppLocation: string;
 {$ifdef darwin} var n : integer; {$endif}
 begin
   Result := Application.Location;
+
   {$ifdef darwin}
   n := Pos('MacOS',Result);
   if n > 0 then
@@ -342,11 +342,9 @@ end;
 
 function AppDataFolder : string;
 begin
-{$ifdef windows}
-  Result := GetSpecialFolderPath(CSIDL_APPDATA);
-{$else}
-  Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library';
-{$endif}
+{$ifdef windows} Result := GetSpecialFolderPath(CSIDL_APPDATA); {$endif}
+{$ifdef linux  } Result := GetEnvironmentVariableUTF8('HOME');  {$endif}
+{$ifdef darwin } Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library'; {$endif}
 end;
 
 function AppDataPath : string;
@@ -354,7 +352,7 @@ begin
   Result := AppDataFolder + Slash + AppName;
 end;
 
-function IniFileName: string;
+function ConfigFile: string;
 begin
 {$ifdef windows}
   Result := AppDataPath + Slash + 'config.ini';
@@ -375,26 +373,27 @@ begin
   dir := AppDataPath + Slash + BibleDirectory;
   if not DirectoryExists(dir) then ForceDirectories(dir);
 
-//  dir := AppDataPath + Slash + CommentaryDirectory;
-//  if not DirectoryExists(dir) then ForceDirectories(dir);
-
   {$ifdef darwin}
   dir := ExtractFilePath(GetAppConfigFile(False));
   if not DirectoryExists(dir) then ForceDirectories(dir);
   {$endif}
 end;
 
+{$ifdef windows}
 procedure OpenFolder(path : string);
 begin
-  {$ifdef windows} ShellExecute(0,'open',PChar(marks(path)),'','',SW_SHOW); {$endif}
+  ShellExecute(0,'open',PChar(marks(path)),'','',SW_SHOW);
 end;
+{$endif}
 
-{$ifdef darwin}
+{$ifdef unix}
 procedure OpenFolder(path : string);
 begin
   with TProcess.Create(nil) do
   try
-    CommandLine {%H-}:= 'open ' + marks(path);
+    {$ifdef darwin} Executable := 'open ';    {$endif}
+    {$ifdef linux } Executable := 'xdg-open'; {$endif}
+    Parameters.Add(path);
     Options := [poUsePipes];
     try
       Execute;

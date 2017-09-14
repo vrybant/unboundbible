@@ -10,7 +10,7 @@ uses
 {$R *.res}
 
 begin
-  Application.Title:='Unbound Bible Tools';
+  Application.Title:='Unbound Bible';
   Application.Initialize;
   Application.CreateForm(TMainForm,      MainForm);
   Application.CreateForm(TAboutBox,      AboutBox);

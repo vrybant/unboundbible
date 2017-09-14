@@ -58,7 +58,7 @@ procedure TFormTranslate.SaveIniFile;
 var
   IniFile: TIniFile;
 begin
-  IniFile := TIniFile.Create(IniFileName);
+  IniFile := TIniFile.Create(ConfigFile);
 
   if WindowState = wsNormal then
     begin
@@ -75,7 +75,7 @@ procedure TFormTranslate.ReadIniFile;
 var
   IniFile: TIniFile;
 begin
-  IniFile := TIniFile.Create(IniFileName);
+  IniFile := TIniFile.Create(ConfigFile);
 
   Height := IniFile.ReadInteger('Translation', 'Height', Screen.Height - 400);
   Width := IniFile.ReadInteger('Translation', 'Width', 300);
