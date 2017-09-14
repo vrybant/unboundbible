@@ -7,10 +7,9 @@ interface
 
 uses
   {$ifdef windows} Windows, ShFolder, {$endif}
-  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Buttons, ExtCtrls, ClipBrd, FileUtil, LCLProc,
   {$ifdef linux} LazLogger, {$endif}
-  {$ifdef unix} Process, {$endif} LazUtf8;
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, Buttons,
+  ExtCtrls, ClipBrd, FileUtil, LCLProc, Process, LazUtf8;
 
 type
   TStringArray  = array of string;
@@ -23,17 +22,13 @@ type
 
 const
   AppName = 'Unbound Bible';
-  VersionInfo = '2.0';
-
-const
-  BibleDirectory = 'Bibles';
   TitleDirectory = 'titles';
+  VersionInfo = '2.0';
 
 // string's functions
 
 function IsNumeral(c: char): boolean;
 function IsLetter(c: char): boolean;
-function Marks(st: string): string;
 function Prefix(ps, st: string): boolean;
 function OneUpCase(st: string): string;
 function MyStrToInt(st: string): integer;
@@ -89,11 +84,6 @@ end;
 function IsLetter(c: char): boolean;
 begin
   Result := ord(c) > 64;  // A-65
-end;
-
-function Marks(st: string): string;
-begin
-  Result := '"' + st + '"';
 end;
 
 function Prefix(ps, st: string): boolean;
@@ -303,18 +293,6 @@ begin
   {$endif}
 end;
 
- (*
- CSIDL_PERSONAL, { My Documents }
- CSIDL_APPDATA, { Application Data }
- CSIDL_COMMON_APPDATA, { All Users\Application Data }
- CSIDL_WINDOWS, { GetWindowsDirectory() }
- CSIDL_SYSTEM,  { GetSystemDirectory() }
- CSIDL_PROGRAM_FILES, { C:\Program Files }
- CSIDL_MYPICTURES, { My Pictures }
- CSIDL_PROGRAM_FILES_COMMON, { C:\Program Files\Common }
- CSIDL_COMMON_DOCUMENTS, { All Users\Documents }
- *)
-
 {$ifdef windows}
 function GetSpecialFolderPath(FolderID: Cardinal): string;
 var
@@ -340,25 +318,18 @@ begin
 {$endif}
 end;
 
-function AppDataFolder : string;
-begin
-{$ifdef windows} Result := GetSpecialFolderPath(CSIDL_APPDATA); {$endif}
-{$ifdef linux  } Result := GetEnvironmentVariableUTF8('HOME');  {$endif}
-{$ifdef darwin } Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library'; {$endif}
-end;
-
 function AppDataPath : string;
 begin
-  Result := AppDataFolder + Slash + AppName;
+ {$ifdef windows} Result := UserDocumentsPath; {$endif}
+ {$ifdef linux  } Result := GetEnvironmentVariableUTF8('HOME');  {$endif}
+ {$ifdef darwin } Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library'; {$endif}
+ Result := Result + Slash + AppName;
+ output(result);
 end;
 
 function ConfigFile: string;
 begin
-{$ifdef windows}
-  Result := AppDataPath + Slash + 'config.ini';
-{$else}
-  Result := GetAppConfigFile(False);
-{$endif}
+  Result := GetAppConfigDir(False) + 'config.ini';
 end;
 
 function TempFileName: string; // for printing
@@ -370,7 +341,7 @@ procedure CreateDirectories;
 var
   dir : string;
 begin
-  dir := AppDataPath + Slash + BibleDirectory;
+  dir := AppDataPath;
   if not DirectoryExists(dir) then ForceDirectories(dir);
 
   {$ifdef darwin}
@@ -379,20 +350,13 @@ begin
   {$endif}
 end;
 
-{$ifdef windows}
 procedure OpenFolder(path : string);
 begin
-  ShellExecute(0,'open',PChar(marks(path)),'','',SW_SHOW);
-end;
-{$endif}
-
-{$ifdef unix}
-procedure OpenFolder(path : string);
-begin
-  with TProcess.Create(nil) do
+ with TProcess.Create(nil) do
   try
-    {$ifdef darwin} Executable := 'open ';    {$endif}
-    {$ifdef linux } Executable := 'xdg-open'; {$endif}
+    {$ifdef windows} Executable := 'explorer'; {$endif}
+    {$ifdef darwin } Executable := 'open ';    {$endif}
+    {$ifdef linux  } Executable := 'xdg-open'; {$endif}
     Parameters.Add(path);
     Options := [poUsePipes];
     try
@@ -404,7 +368,6 @@ begin
     Free;
   end;
 end;
-{$endif}
 
 {$ifdef darwin}
 procedure PrintFile(filename : string);

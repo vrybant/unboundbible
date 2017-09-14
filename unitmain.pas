@@ -1208,7 +1208,7 @@ end;
 
 procedure TMainForm.miBibleFolderClick(Sender: TObject);
 begin
-  OpenFolder(AppDataPath + Slash + BibleDirectory);
+  OpenFolder(AppDataPath);
 end;
 
 procedure TMainForm.SaveIniFile;
@@ -1415,11 +1415,11 @@ begin
   with RichEditBible.Lines do
   begin
     Add('');
-    Add('  WELCOME TO UNBOUND BIBLE TOOLS !');
+    Add('  WELCOME TO UNBOUND BIBLE APPLICATION !');
     Add('');
     Add('  Please, perform the following steps :');
     Add('     1) Download bibles which you want from  http://unboundbible.org');
-    Add('     2) Unzip it to  ' + AppLocation + BibleDirectory + '  folder');
+    Add('     2) Unzip it to  ' + AppDataPath + '  folder');
   end;
 end;
 
