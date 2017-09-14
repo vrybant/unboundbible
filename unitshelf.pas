@@ -235,17 +235,15 @@ var
 begin
   if loaded then exit;
 
-  Output(fileName + ' loaded');
-
+  Title := TTitle.Create(language);
   try
-    Title := TTitle.Create(language);
     Query.SQL.Text := 'SELECT DISTINCT ' + z.book + ' FROM ' + z.bible;
     Query.Clear;
     Query.Open;
 
     while not Query.Eof do
-      try
-        n := Query.FieldByName(z.book).AsInteger;
+      begin
+        try n := Query.FieldByName(z.book).AsInteger; except n := 0 end;
 
         if n > 0 then
           begin
@@ -259,14 +257,16 @@ begin
             if IsNewTestament(n) then newTestament := true;
             if IsApocrypha(n)    then apocrypha    := true;
           end;
-      finally
+
         Query.Next;
       end;
 
     loaded := true;
-  finally
-    Title.Free;
+  except
+    //
   end;
+
+  Title.Free;
 end;
 
 function TBible.EncodeIndex(index: integer): integer;
