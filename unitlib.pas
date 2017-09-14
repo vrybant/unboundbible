@@ -324,7 +324,6 @@ begin
  {$ifdef linux  } Result := GetEnvironmentVariableUTF8('HOME');  {$endif}
  {$ifdef darwin } Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library'; {$endif}
  Result := Result + Slash + AppName;
- output(result);
 end;
 
 function ConfigFile: string;

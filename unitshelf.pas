@@ -47,6 +47,7 @@ type
     oldTestament : boolean;
     newTestament : boolean;
     apocrypha    : boolean;
+    connected    : boolean;
     loaded       : boolean;
   private
     function  GetItem(index: integer): TBook;
@@ -165,10 +166,11 @@ begin
   copyright    := '';
   language     := 'english';
   filetype     := '';
-  loaded       := False;
-  oldTestament := False;
-  newTestament := False;
-  apocrypha    := False;
+  connected    := false;
+  loaded       := false;
+  oldTestament := false;
+  newTestament := false;
+  apocrypha    := false;
 
   OpenDatabase;
 end;
@@ -184,7 +186,6 @@ begin
     SQLite3CreateFunctions(Connection.Handle);
     Connection.ExecuteDirect('PRAGMA case_sensitive_like = 1');
   except
-    Output('Failed connection to database');
     Exit;
   end;
 
@@ -198,6 +199,8 @@ begin
     try info      := Query.FieldByName('Description').AsString; except end;
     try copyright := Query.FieldByName('Copyright'  ).AsString; except end;
     try language  := Query.FieldByName('Language'   ).AsString; except end;
+
+    connected := true;
   except
     //
   end;
@@ -221,6 +224,7 @@ begin
 
     fileFormat := mybible;
     z := mybibleStringAlias;
+    connected := true;
   except
     //
   end;
@@ -606,7 +610,7 @@ constructor TShelf.Create;
 begin
   inherited;
 
-//AddBibles(AppLocation + Slash + 'bibles');
+//AddBibles(AppLocation);
   AddBibles(AppDataPath);
 
   ReadPrivates;
@@ -614,34 +618,31 @@ end;
 
 procedure TShelf.AddBibles(path: string);
 var
+  Item : TBible;
   List : TStringList;
      i : integer;
 begin
   List := TStringList.Create;
-
   GetFileList(path + Slash + '*.*', List, True);
 
   for i:= 0 to List.Count-1 do
-    Add(TBible.Create(path, List[i]));
+    begin
+      Item := TBible.Create(path, List[i]);
+      if Item.connected then Add(Item) else Item.Free;
+    end;
 
   List.Free;
 end;
-
-{---}
 
 function TShelf.Add(TheBible: TBible): integer;
 begin
   Result := inherited Add(Pointer(TheBible));
 end;
 
-{---}
-
 function TShelf.GetItem(Index: Integer): TBible;
 begin
   Result := TBible(inherited Items[Index]);
 end;
-
-{---}
 
 procedure TShelf.SetItem(Index: Integer; TheBible: TBible);
 begin
