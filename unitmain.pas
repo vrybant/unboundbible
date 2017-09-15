@@ -227,7 +227,6 @@ type
     procedure RichEditNotesChange(Sender: TObject);
     procedure RichEditNotesSelectionChange(Sender: TObject);
     procedure SaveIniFile;
-    procedure SaveIntro;
     procedure SearchText(s: string);
     procedure SelectPage(page: integer);
     procedure Translate;
@@ -377,11 +376,8 @@ begin
   UpdateStatusBar;
   MakeBookList;
   if Bible.BookByNum(ActiveVerse.Book) = nil then Shelf.VerseToBeginning(ActiveVerse);
-  {$ifdef linux}
-    GoToVerseMessage := true; // ListBoxBook doesn't repaint in the linux until GoToVerse executed.
-  {$else}
-    GoToVerse;
-  {$endif}
+  // ListBoxBook doesn't repaint in the linux until GoToVerse executed.
+  {$ifdef linux} GoToVerseMessage := true; {$else} GoToVerse; {$endif}
 end;
 
 procedure TMainForm.ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
@@ -869,7 +865,7 @@ begin
       {$endif}
 
       ActionEditUndo.Enabled := CanUndo;
-    finally
+    except
       //
     end;
 end;
@@ -1062,8 +1058,8 @@ begin
     UpdateStatusBar;
     MakeBookList;
     Shelf.VerseToBeginning(ActiveVerse);
-    // LoadChapter; // RichMemo не загружается из Stream,
-                    // поэтому LoadChapter вызываем из FormActivate
+    // LoadChapter; // RichMemo doesn't load from Stream,
+                    // so we call LoadChapter from FormActivate
   end;
 
   if Shelf.Count = 0 then
@@ -1072,7 +1068,6 @@ begin
     ActionOptions.Enabled := False;
     ActionCompare.Enabled := False;
     ActionCopyAs .Enabled := False; // ??
-    SaveIntro;
   end;
 
   NoteFileName := sUntitled;
@@ -1116,7 +1111,11 @@ end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
-  if ListBoxCh.Items.Count = 0 then LoadChapter; // вызов первый раз
+  if ListBoxCh.Items.Count = 0 then
+    begin
+      LoadChapter; // first time
+      GoToVerse;
+    end;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -1408,7 +1407,6 @@ begin
   ListBoxBook.Items.Assign(List);
   List.Free;
 
-  if ListBoxBook.Count > 0 then ListBoxBook.ItemIndex := 0;
   ListBoxBook.Items.EndUpdate;
 end;
 
@@ -1432,19 +1430,6 @@ begin
   ListBoxCh.Items.EndUpdate;
 
   {$ifdef darwin} bag01 := False; {$endif}
-end;
-
-procedure TMainForm.SaveIntro;
-begin
-  with RichEditBible.Lines do
-  begin
-    Add('');
-    Add('  WELCOME TO UNBOUND BIBLE APPLICATION !');
-    Add('');
-    Add('  Please, perform the following steps :');
-    Add('     1) Download bibles which you want from  http://unboundbible.org');
-    Add('     2) Unzip it to  ' + AppDataPath + '  folder');
-  end;
 end;
 
 procedure TMainForm.LoadChapter;
