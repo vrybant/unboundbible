@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Height = 384
   Top = 459
   Width = 795
-  Caption = 'Unbound Bible Tools'
+  Caption = 'Unbound Bible'
   ClientHeight = 364
   ClientWidth = 795
   Menu = MainMenu

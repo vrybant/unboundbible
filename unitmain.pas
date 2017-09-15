@@ -488,7 +488,7 @@ end;
 
 procedure TMainForm.UpdateCaption;
 begin
-  Caption := AppName; // + ' ' + VersionInfo;
+  Caption := AppName + ' ' + VersionInfo;
 end;
 
 procedure TMainForm.UpdateStatusBar;
@@ -1030,6 +1030,8 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  Caption := AppName + ' ' + VersionInfo + ' - Open Source Application';
+
   CreateRichEditComponents;
   CreateDirectories;
 
@@ -1048,7 +1050,6 @@ begin
 
   if Shelf.Count > 0 then
   begin
-    UpdateCaption;
     UpdateStatusBar;
     MakeBookList;
     Shelf.VerseToBeginning(ActiveVerse);

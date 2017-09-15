@@ -5,12 +5,12 @@ uses
   {$ifdef darwin} printer4lazarus, {$endif}
   Interfaces, Graphics, Forms, richmemopackage, UnitEdit, UnitShelf,
   UnitMain, UnitLang, UnitAbout, UnitInfo, UnitSearch, UnitTool, UnitCompare,
-  UnitClass, UnitOptions, UnitCopy, UnitMemo, UnitTrans;
+  UnitClass, UnitOptions, UnitCopy, UnitMemo, UnitTrans, unittip;
 
 {$R *.res}
 
 begin
-  Application.Title:='Unbound Bible Tools';
+  Application.Title:='Unbound Bible';
   Application.Initialize;
   Application.CreateForm(TMainForm,      MainForm);
   Application.CreateForm(TAboutBox,      AboutBox);
@@ -19,6 +19,7 @@ begin
   Application.CreateForm(TCompareForm,   CompareForm);
   Application.CreateForm(TFormOptions,   FormOptions);
   Application.CreateForm(TFormCopy,      FormCopy);
+  Application.CreateForm(TFormTip,       FormTip);
   Application.CreateForm(TFormTranslate, FormTranslate);
   MainForm.TranslateAll;
   Application.Run;
