@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 332
+  Left = 331
   Height = 384
-  Top = 459
+  Top = 434
   Width = 795
   Caption = 'Unbound Bible'
   ClientHeight = 364
@@ -239,6 +239,7 @@ object MainForm: TMainForm
       ItemHeight = 0
       OnClick = ListBoxBookClick
       ParentFont = False
+      ScrollWidth = 127
       TabOrder = 0
     end
     object ListBoxCh: TListBox
@@ -255,6 +256,7 @@ object MainForm: TMainForm
       ItemHeight = 0
       OnClick = ListBoxChClick
       ParentFont = False
+      ScrollWidth = 43
       TabOrder = 1
     end
     object ComboBox: TComboBox
@@ -2868,5 +2870,11 @@ object MainForm: TMainForm
     Options = [poDisablePrintToFile]
     left = 320
     top = 160
+  end
+  object IdleTimer: TIdleTimer
+    Enabled = False
+    OnTimer = IdleTimerTimer
+    left = 472
+    top = 104
   end
 end

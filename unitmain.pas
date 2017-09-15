@@ -10,8 +10,12 @@ uses
   ClipBrd, StdActns, RichMemo, UnitEdit, PrintersDlgs, Types;
 
 type
+
+  { TMainForm }
+
   TMainForm = class(TForm)
     ActionOnline: TAction;
+    IdleTimer: TIdleTimer;
     miTranslate: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
@@ -174,6 +178,7 @@ type
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure IdleTimerTimer(Sender: TObject);
     procedure ListBoxBookClick(Sender: TObject);
     procedure ListBoxChClick(Sender: TObject);
     procedure miBibleFolderClick(Sender: TObject);
@@ -196,6 +201,7 @@ type
     ReopenList: TStringList;
     {$ifdef darwin} bag01 : boolean; {$endif}
     {$ifdef darwin} bag02 : boolean; {$endif}
+    {$ifdef linux } GoToVerseMessage   : boolean; {$endif}
     function RichEdit: TSuperEdit;
     function CheckFileSave: boolean;
     procedure BibleMenuInit;
@@ -370,9 +376,12 @@ begin
 //UpdateCaption;
   UpdateStatusBar;
   MakeBookList;
-  if Bible.BookByNum(ActiveVerse.Book) = nil then Shelf.VerseToBeginning(ActiveVerse); // check verse
-  LoadChapter;
-  GoToVerse;
+  if Bible.BookByNum(ActiveVerse.Book) = nil then Shelf.VerseToBeginning(ActiveVerse);
+  {$ifdef linux}
+    GoToVerseMessage := true; // ListBoxBook doesn't repaint in the linux until GoToVerse executed.
+  {$else}
+    GoToVerse;
+  {$endif}
 end;
 
 procedure TMainForm.ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
@@ -1059,10 +1068,10 @@ begin
 
   if Shelf.Count = 0 then
   begin
-    ActionSearch.Enabled := False;
+    ActionSearch .Enabled := False;
     ActionOptions.Enabled := False;
     ActionCompare.Enabled := False;
-    ActionCopyAs.Enabled := False; // ??
+    ActionCopyAs .Enabled := False; // ??
     SaveIntro;
   end;
 
@@ -1095,6 +1104,11 @@ begin
 
   UpdateMenuImage;
   UpdateShortCut;
+  {$endif}
+
+  {$ifdef linux}
+  GoToVerseMessage   := false;
+  IdleTimer.Enabled  := true;
   {$endif}
 
   UpdateActionImage;
@@ -1342,6 +1356,17 @@ begin
   {$ifdef darwin} if ComboBox.ItemIndex = -1 then ComboBoxSetIndex; {$endif}
 end;
 
+procedure TMainForm.IdleTimerTimer(Sender: TObject);
+begin
+  {$ifdef linux}
+  if GoToVerseMessage then
+    begin
+      GoToVerseMessage := false;
+      GoToVerse;
+    end;
+  {$endif}
+end;
+
 procedure TMainForm.PageControlChange(Sender: TObject);
 begin
   EnableButtons;
@@ -1385,8 +1410,6 @@ begin
 
   if ListBoxBook.Count > 0 then ListBoxBook.ItemIndex := 0;
   ListBoxBook.Items.EndUpdate;
-
-  // Repaint;  // important
 end;
 
 //-----------------------------------------------------------------------------------------
