@@ -212,6 +212,7 @@ type
     procedure LoadTranslate(Verse: TVerse);
     procedure MakeBookList;
     procedure MakeChapterList(n: integer);
+    {$ifdef darwin} procedure ScrollBoxes; {$endif}
     procedure OnLangClick(Sender: TObject);
     procedure OnReopenClick(Sender: TObject);
     procedure PerformFileOpen(const FileName: string);
@@ -420,38 +421,18 @@ end;
 procedure TMainForm.GoToVerse(Verse: TVerse; select: boolean);
 var
   Book : TBook;
-
-  {$ifdef darwin}
-  procedure MakeBoxexVisible;
-  var i: integer;
-  begin
-    for i:=0 to ListBoxBook.Count-1 do
-      begin
-        if ListBoxBook.ItemFullyVisible(ListBoxBook.ItemIndex) then break;
-        ListBoxBook.TopIndex := i;
-      end;
-    for i:=0 to ListBoxCh.Count-1 do
-      begin
-        if ListBoxCh.ItemFullyVisible(ListBoxCh.ItemIndex) then break;
-        ListBoxCh.TopIndex := i;
-      end;
-  end;
-  {$endif}
-
 begin
   {$ifdef darwin} bag02 := True; {$endif}
-
   Book := Bible.BookByNum(Verse.Book);
   if Book = nil then Exit;
 
   SelectBook(Book.title);
+  ActiveVerse := Verse;
   LoadChapter;
+  {$ifdef darwin} ScrollBoxes; {$endif}
 
-  {$ifdef darwin} MakeVisible; {$endif}
   if select then RichEditBible.SelectParagraph(Verse.Number);
   {$ifdef darwin} bag02 := False; {$endif}
-
-  ActiveVerse := Verse;
   Repaint;
 end;
 
@@ -1440,6 +1421,23 @@ begin
 
   {$ifdef darwin} bag01 := False; {$endif}
 end;
+
+{$ifdef darwin}
+procedure TMainForm.ScrollBoxes;
+var i: integer;
+begin
+  for i:=0 to ListBoxBook.Count-1 do
+    begin
+      if ListBoxBook.ItemFullyVisible(ListBoxBook.ItemIndex) then break;
+      ListBoxBook.TopIndex := i;
+    end;
+  for i:=0 to ListBoxCh.Count-1 do
+    begin
+      if ListBoxCh.ItemFullyVisible(ListBoxCh.ItemIndex) then break;
+      ListBoxCh.TopIndex := i;
+    end;
+end;
+{$endif}
 
 procedure TMainForm.LoadChapter;
 begin
