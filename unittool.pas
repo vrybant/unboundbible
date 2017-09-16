@@ -2,52 +2,25 @@ unit UnitTool;
 
 interface
 
-uses SysUtils, Classes, Controls, Graphics, ClipBrd, UnitClass, UnitEdit, LazUtf8;
+uses SysUtils, Classes, Controls, Graphics, ClipBrd,
+  //UnitClass,
+  LazUtf8, UnitEdit, UnitType;
 
 procedure Load_Chapter(SuperEdit: TSuperEdit);
 procedure Search_Text (SuperEdit: TSuperEdit; st: string; var count: integer);
 procedure Load_Compare(SuperEdit: TSuperEdit);
-procedure Load_Translate(SuperEdit: TSuperEdit);
+procedure Load_Translate(SuperEdit: TSuperEdit; Verse: TVerse);
 procedure Load_Verses(Stream: TMemoryStream);
 procedure Show_Message(SuperEdit: TSuperEdit; s: string);
 
 implementation
 
-uses UnitShelf, UnitType, UnitSearch, UnitLib;
+uses UnitShelf, UnitSearch, UnitLib;
 
 procedure Replacement(var s: string);
 begin
   // Replace(s,'[','\cf4\i ' );
   // Replace(s,']','\cf1\i0 ');
-end;
-
-procedure SeachToList(const ws: WideString; var List: TWideStringList);
-var
-  p : array[1..100] of integer;
-  i : integer;
-  n : integer;
-  s : WideString;
-begin
-  List.Clear;
-
-  p[1] := 0;
-  n := 1;
-
-  for i:=1 to length(ws) do
-    if ws[i] = ' ' then
-      begin
-        inc(n);
-        p[n] := i;
-      end;
-
-  inc(n);
-  p[n] := length(ws) + 1;
-
-  for i:=1 to n-1 do
-    begin
-      s := Copy(ws,p[i]+1,p[i+1]-p[i]-1);
-      if s <> '' then List.Add(s);
-    end;
 end;
 
 procedure Load_Chapter(SuperEdit: TSuperEdit);
@@ -242,7 +215,7 @@ begin
   List.free;
 end;
 
-procedure Load_Translate(SuperEdit: TSuperEdit);
+procedure Load_Translate(SuperEdit: TSuperEdit; Verse: TVerse);
 var
     List : TStringList;
     Text : string;
@@ -255,7 +228,7 @@ begin
   Shelf.LoadComparedBibles;
   SuperEdit.OpenStream;
 
-  s := '\cf3 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
+  s := '\cf3 ' + Bible.VerseToStr(Verse, true) + '\par ';
   SuperEdit.WriteLn(s);
 
   old := Shelf.Current;
@@ -266,7 +239,7 @@ begin
       if not Bible.Compare then Continue;
 
       List := TStringList.Create;
-      Bible.GetRange(ActiveVerse, List);
+      Bible.GetRange(Verse, List);
 
       if List.Count > 0 then
         begin

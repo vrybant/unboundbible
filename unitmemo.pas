@@ -31,6 +31,7 @@ type
     procedure HideCursor;
     procedure SetSel(x1,x2: integer);
     procedure GetSel(var x1,x2: integer);
+    function Selected: boolean;
     procedure SelectAll; // override;
     procedure LoadFromFile(const FileName : string);
     procedure SaveToFile(const FileName : string);
@@ -91,7 +92,7 @@ end;
 
 function TRichMemoEx.GetAttributes: TFontParams;
 begin
-  GetTextAttributes(SelStart, Result);
+  GetTextAttributes(SelStart, Result{%H-});
 end;
 
 function TRichMemoEx.CanUndo: boolean;
@@ -148,6 +149,11 @@ begin
   x1 := SelStart;
   x2 := SelStart + SelLength;
   {$endif}
+end;
+
+function TRichMemoEx.Selected: boolean;
+begin
+  Result := SelLength > 0;
 end;
 
 procedure TRichMemoEx.HideCursor;

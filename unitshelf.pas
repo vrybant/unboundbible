@@ -62,6 +62,7 @@ type
     procedure LoadDatabase;
     function BookByNum(n: integer): TBook;  // перенестив private ?
     function BookByName(s: string): TBook;
+    function FirstVerse: TVerse;
     function VerseToStr(Verse: TVerse; full: boolean): string;
     function SrtToVerse(link : string): TVerse;
     procedure SetTitles;
@@ -95,7 +96,6 @@ type
     procedure SetCurrent(index: integer); overload;
     procedure SavePrivates;
     procedure ReadPrivates;
-    procedure VerseToBeginning(var verse: TVerse);
   end;
 
 var
@@ -310,6 +310,15 @@ begin
   Result := nil;
   for i:=0 to Count-1 do
     if Items[i].Title = s then Result := Items[i];
+end;
+
+function TBible.FirstVerse: TVerse;
+begin
+  Result.Book    := 1;
+  Result.Chapter := 1;
+  Result.Number  := 1;
+  Result.Count   := 1;
+  if not OldTestament then Result.Book := 40;
 end;
 
 function TBible.VerseToStr(verse: TVerse; full: boolean): string;
@@ -712,15 +721,6 @@ begin
   SavePrivates;
   for i:=0 to Count-1 do Items[i].Free;
   inherited Destroy;
-end;
-
-procedure TShelf.VerseToBeginning(var verse: TVerse);
-begin
-  verse.Book := 1;
-  verse.Chapter := 1;
-  verse.Number := 1;
-  verse.Count := 1;
-  if not Items[current].OldTestament then verse.Book := 40;
 end;
 
 end.

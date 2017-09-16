@@ -7,12 +7,9 @@ uses
   {$ifdef unix} UnitMemo, {$endif}
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
-  ClipBrd, StdActns, RichMemo, UnitEdit, PrintersDlgs, Types;
+  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnitEdit, UnitType;
 
 type
-
-  { TMainForm }
-
   TMainForm = class(TForm)
     ActionOnline: TAction;
     IdleTimer: TIdleTimer;
@@ -195,25 +192,24 @@ type
     RichEditCompare: TSuperEdit;
     RichEditNotes: TSuperEdit;
     NoteFileName: string;
-//  Apocrypha  : boolean;
-//  FDragging: boolean;
     ReopenMax: integer;
     ReopenList: TStringList;
     {$ifdef darwin} bag01 : boolean; {$endif}
     {$ifdef darwin} bag02 : boolean; {$endif}
-    {$ifdef linux } GoToVerseMessage   : boolean; {$endif}
+    {$ifdef linux } IdleMessage : string; {$endif}
     function RichEdit: TSuperEdit;
     function CheckFileSave: boolean;
-    procedure BibleMenuInit;
+    procedure ComboBoxInit;
     {$ifdef darwin} procedure ComboBoxSetIndex; {$endif}
     procedure CreateRichEditComponents;
     procedure EnableButtons;
     procedure UpDownButtons;
-    procedure GoToVerse;
+    procedure SelectBook(title: string);
+    procedure GoToVerse(Verse: TVerse; select: boolean);
     procedure LangMenuInit;
     procedure LoadChapter;
     procedure LoadCompare;
-    procedure LoadTranslate;
+    procedure LoadTranslate(Verse: TVerse);
     procedure MakeBookList;
     procedure MakeChapterList(n: integer);
     procedure OnLangClick(Sender: TObject);
@@ -250,7 +246,7 @@ implementation
 
 uses
   UnitAbout, UnitInfo, UnitSearch, UnitCompare, UnitTool, UnitOptions,
-  UnitLib, UnitLang, UnitType, UnitShelf, UnitCopy, UnitTrans;
+  UnitLib, UnitLang, UnitShelf, UnitCopy, UnitTrans;
 
 resourcestring
   sUntitled = 'Untitled';
@@ -265,7 +261,7 @@ const
 
 {$R *.lfm}
 
-procedure TMainForm.BibleMenuInit;
+procedure TMainForm.ComboBoxInit;
 var
   i : integer;
 begin
@@ -287,158 +283,6 @@ begin
     if i = Shelf.Current then ComboBox.ItemIndex := i;
 end;
 {$endif}
-
-procedure TMainForm.CmdAbout(Sender: TObject);
-begin
-  AboutBox.ShowModal;
-end;
-
-procedure TMainForm.CmdStyle(Sender: TObject);
-var
-  fp: TFontParams;
-  tempStart, tempLength: integer;
-begin
-  fp := RichEditNotes.SelAttributes;
-
-  tempStart  := RichEditNotes.SelStart;
-  tempLength := RichEditNotes.SelLength;
-
-  if RichEditNotes.SelLength = 0 then RichEditNotes.SelectWord;
-
-  if Sender = ActionBold then
-    if fsBold in fp.Style then fp.Style := fp.Style - [fsBold]
-                          else fp.Style := fp.Style + [fsBold];
-
-  if Sender = ActionItalic then
-    if fsItalic in fp.Style then fp.Style := fp.Style - [fsItalic]
-                            else fp.Style := fp.Style + [fsItalic];
-
-  if Sender = ActionUnderline then
-    if fsUnderline in fp.Style then fp.Style := fp.Style - [fsUnderline]
-                               else fp.Style := fp.Style + [fsUnderline];
-
-  if Sender = ActionLink then
-    if fp.Color = clNavy then fp.Color := clBlack
-                         else fp.Color := clNavy;
-
-  if Sender = ActionFont then
-  begin
-    FontDialog.Font.Name  := fp.Name;
-    FontDialog.Font.Size  := fp.Size;
-    FontDialog.Font.Style := fp.Style;
-    FontDialog.Font.Color := fp.Color;
-
-    if FontDialog.Execute then
-    begin
-      fp.Name  := FontDialog.Font.Name;
-      fp.Size  := FontDialog.Font.Size;
-      fp.Style := FontDialog.Font.Style;
-      fp.Color := FontDialog.Font.Color;
-    end;
-  end;
-
-  RichEditNotes.SelAttributes := fp;
-
-  RichEditNotes.SelStart := tempStart; // unselect word
-  RichEditNotes.SelLength := tempLength;
-
-  RichEditNotes.Repaint;
-end;
-
-procedure TMainForm.CmdStyle2(Sender: TObject);
-{$ifdef windows} var ParaNumbering : TParaNumbering; {$endif}
-begin
-  {$ifdef windows}
-  with RichEditNotes do
-    begin
-      if Sender = ActionLeft    then SetParaAlignment(SelStart, SelLength, paLeft   );
-      if Sender = ActionCenter  then SetParaAlignment(SelStart, SelLength, paCenter );
-      if Sender = ActionRight   then SetParaAlignment(SelStart, SelLength, paRight  );
-
-      if Sender = ActionBullets then
-        begin
-          GetParaNumbering(SelStart, ParaNumbering );
-          if ToolButtonBullets.Down
-            then ParaNumbering.Style := pnBullet
-            else ParaNumbering.Style := pnNone;
-          SetParaNumbering(SelStart, SelLength, ParaNumbering );
-        end;
-    end;
-
-  RichEditNotes.Repaint;
-  {$endif}
-end;
-
-procedure TMainForm.ComboBoxChange(Sender: TObject);
-begin
-  Shelf.SetCurrent(ComboBox.ItemIndex);
-//UpdateCaption;
-  UpdateStatusBar;
-  MakeBookList;
-  if Bible.BookByNum(ActiveVerse.Book) = nil then Shelf.VerseToBeginning(ActiveVerse);
-  // ListBoxBook doesn't repaint in the linux until GoToVerse executed.
-  {$ifdef linux} GoToVerseMessage := true; {$else} GoToVerse; {$endif}
-end;
-
-procedure TMainForm.ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
-begin
-  ComboBox.canvas.fillrect(ARect);
-  Canvas.TextOut(ARect.Left + 5, ARect.Top, ComboBox.Items[Index]);
-  Canvas.TextOut(ARect.Left + 220, ARect.Top, '[ru]');
-end;
-
-procedure TMainForm.CmdCompare(Sender: TObject);
-begin
-  CompareForm.ShowModal;
-  LoadCompare;
-end;
-
-procedure TMainForm.CmdOnlineExecute(Sender: TObject);
-begin
-  //
-end;
-
-procedure TMainForm.CmdEdit(Sender: TObject);
-begin
-  if Sender = ActionEditCut then
-    begin
-      RichEdit.CopyToClipboard;
-      RichEdit.ClearSelection;
-    end;
-
-  if Sender = ActionEditCopy   then RichEdit.CopyToClipboard;
-  if Sender = ActionEditPaste  then RichEdit.PasteFromClipboard;
-  if Sender = ActionEditDel    then RichEdit.ClearSelection;
-  if Sender = ActionEditSelAll then RichEdit.SelectAll;
-  if Sender = ActionEditUndo   then RichEdit.Undo;
-end;
-
-procedure TMainForm.CmdCopyAs(Sender: TObject);
-var
-  Range : TRange;
-begin
-  Range := RichEditBible.GetRange;
-  FormCopy.SetRange(Range);
-  FormCopy.ShowModal;
-  {$ifdef darwin} RichEditBible.RestoreSelection; {$endif}
-end;
-
-procedure TMainForm.CmdCopyVerses(Sender: TObject);
-begin
-  VersesToClipboard;
-end;
-
-procedure TMainForm.CmdSearch(Sender: TObject);
-begin
-  SearchForm.Edit.Font.Name := CurrFont.Name;
-  if SearchForm.ShowModal = mrOk then SearchText(SearchForm.Edit.Text);
-end;
-
-procedure TMainForm.CmdTrans(Sender: TObject);
-begin
-  FormTranslate.Show;
-  LoadTranslate;
-end;
 
 procedure TMainForm.CreateRichEditComponents;
 begin
@@ -521,7 +365,7 @@ begin
       Range := RichEditBible.GetRange;
       ActiveVerse.Number := Range.from;
       ActiveVerse.Count  := Range.till - Range.from + 1;
-      if FormTranslate.Visible then LoadTranslate;
+      if FormTranslate.Visible then LoadTranslate(ActiveVerse);
     end;
 
   if Button = mbRight then
@@ -535,8 +379,8 @@ end;
 
 procedure TMainForm.RichEditCommonMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
-  v,o : TVerse;
-    s : string;
+  Verse : TVerse;
+  s : string;
 begin
   if Button = mbRight then ShowPopup;
 
@@ -544,38 +388,41 @@ begin
   if Shelf.Count = 0  then Exit;
 
   s := (Sender as TSuperEdit).Hypertext;
-  v := Bible.SrtToVerse(s);
+  Verse := Bible.SrtToVerse(s);
+  if Verse.Book = 0 then Exit;
 
-  if v.Book = 0 then Exit;
+  if FormTranslate.Visible then LoadTranslate(Verse);
 
-  if FormTranslate.Visible then
-    begin
-      o := ActiveVerse;
-      ActiveVerse := v; LoadTranslate;
-      ActiveVerse := o;
-    end;
-
-  if (Sender = RichEditSearch) or (not FormTranslate.Visible) or (ssCtrl in Shift) then
-    begin
-      ActiveVerse := v;
-      GoToVerse;
-    end;
+  if (Sender = RichEditSearch) or (not FormTranslate.Visible) or (ssCtrl in Shift)
+    then GoToVerse(Verse, True);
 end;
 
-procedure TMainForm.GoToVerse;
+procedure TMainForm.SelectBook(title: string);
 var
-  Book : TBook;
-  k : integer;
+  index : integer;
 
-  procedure SeekBook;
+  function ItemFromTitle: integer;
   var i: integer;
   begin
-    k := -1;
+    Result := -1;
     for i := 0 to ListBoxBook.Items.Count - 1 do
-      if ListBoxBook.Items[i] = Book.Title then k := i;
+      if ListBoxBook.Items[i] = title then Result := i;
   end;
 
-  procedure MakeVisible;
+begin
+  index := ItemFromTitle;
+  if index < 0 then Exit;
+
+  ListBoxBook.ItemIndex := index;
+  ListBoxCh.ItemIndex := ActiveVerse.Chapter - 1;
+end;
+
+procedure TMainForm.GoToVerse(Verse: TVerse; select: boolean);
+var
+  Book : TBook;
+
+  {$ifdef darwin}
+  procedure MakeBoxexVisible;
   var i: integer;
   begin
     for i:=0 to ListBoxBook.Count-1 do
@@ -589,32 +436,22 @@ var
         ListBoxCh.TopIndex := i;
       end;
   end;
+  {$endif}
 
 begin
   {$ifdef darwin} bag02 := True; {$endif}
 
-  Book := Bible.BookByNum(ActiveVerse.Book);
+  Book := Bible.BookByNum(Verse.Book);
   if Book = nil then Exit;
 
-  SeekBook;
-
-  if k < 0 then
-    begin
-      LoadChapter;
-      SeekBook;
-    end;
-
-  if k < 0 then Exit; // wrong link
-
+  SelectBook(Book.title);
   LoadChapter;
 
-  ListBoxBook.ItemIndex := k;
-  ListBoxCh.ItemIndex := ActiveVerse.Chapter - 1;
-
   {$ifdef darwin} MakeVisible; {$endif}
-
-  RichEditBible.SelectParagraph(ActiveVerse.Number);
+  if select then RichEditBible.SelectParagraph(Verse.Number);
   {$ifdef darwin} bag02 := False; {$endif}
+
+  ActiveVerse := Verse;
   Repaint;
 end;
 
@@ -946,6 +783,181 @@ begin
   StatusBar.Panels[4].Text := ' ' + ExtractOnlyName(NoteFileName);
 end;
 
+procedure TMainForm.SelectPage(page: integer);
+begin
+  PageControl.ActivePageIndex := page;
+  EnableButtons;
+  UpdateStatusBar;
+  Refresh;
+  if page <> apNotes then RichEdit.HideCursor;
+end;
+
+//=================================================================================================
+//                                       Actions
+//=================================================================================================
+
+procedure TMainForm.CmdAbout(Sender: TObject);
+begin
+  AboutBox.ShowModal;
+end;
+
+procedure TMainForm.CmdStyle(Sender: TObject);
+var
+  fp: TFontParams;
+  tempStart, tempLength: integer;
+begin
+  fp := RichEditNotes.SelAttributes;
+
+  tempStart  := RichEditNotes.SelStart;
+  tempLength := RichEditNotes.SelLength;
+
+  if RichEditNotes.SelLength = 0 then RichEditNotes.SelectWord;
+
+  if Sender = ActionBold then
+    if fsBold in fp.Style then fp.Style := fp.Style - [fsBold]
+                          else fp.Style := fp.Style + [fsBold];
+
+  if Sender = ActionItalic then
+    if fsItalic in fp.Style then fp.Style := fp.Style - [fsItalic]
+                            else fp.Style := fp.Style + [fsItalic];
+
+  if Sender = ActionUnderline then
+    if fsUnderline in fp.Style then fp.Style := fp.Style - [fsUnderline]
+                               else fp.Style := fp.Style + [fsUnderline];
+
+  if Sender = ActionLink then
+    if fp.Color = clNavy then fp.Color := clBlack
+                         else fp.Color := clNavy;
+
+  if Sender = ActionFont then
+  begin
+    FontDialog.Font.Name  := fp.Name;
+    FontDialog.Font.Size  := fp.Size;
+    FontDialog.Font.Style := fp.Style;
+    FontDialog.Font.Color := fp.Color;
+
+    if FontDialog.Execute then
+    begin
+      fp.Name  := FontDialog.Font.Name;
+      fp.Size  := FontDialog.Font.Size;
+      fp.Style := FontDialog.Font.Style;
+      fp.Color := FontDialog.Font.Color;
+    end;
+  end;
+
+  RichEditNotes.SelAttributes := fp;
+
+  RichEditNotes.SelStart := tempStart; // unselect word
+  RichEditNotes.SelLength := tempLength;
+
+  RichEditNotes.Repaint;
+end;
+
+procedure TMainForm.CmdStyle2(Sender: TObject);
+{$ifdef windows} var ParaNumbering : TParaNumbering; {$endif}
+begin
+  {$ifdef windows}
+  with RichEditNotes do
+    begin
+      if Sender = ActionLeft    then SetParaAlignment(SelStart, SelLength, paLeft   );
+      if Sender = ActionCenter  then SetParaAlignment(SelStart, SelLength, paCenter );
+      if Sender = ActionRight   then SetParaAlignment(SelStart, SelLength, paRight  );
+
+      if Sender = ActionBullets then
+        begin
+          GetParaNumbering(SelStart, ParaNumbering );
+          if ToolButtonBullets.Down
+            then ParaNumbering.Style := pnBullet
+            else ParaNumbering.Style := pnNone;
+          SetParaNumbering(SelStart, SelLength, ParaNumbering );
+        end;
+    end;
+
+  RichEditNotes.Repaint;
+  {$endif}
+end;
+
+procedure TMainForm.ComboBoxChange(Sender: TObject);
+var
+  select : boolean;
+begin
+  Shelf.SetCurrent(ComboBox.ItemIndex);
+//UpdateCaption;
+  UpdateStatusBar;
+  MakeBookList;
+
+  select := RichEditBible.Selected;
+  if Bible.BookByNum(ActiveVerse.Book) = nil then select := false;
+  if not select then ActiveVerse := Bible.FirstVerse;
+
+  {$ifdef linux}
+    if select then IdleMessage := 'GotoVerse(ActiveVerse,true)'
+              else IdleMessage := 'GotoVerse(ActiveVerse,false)';
+  {$else}
+    GotoVerse(ActiveVerse,select);
+  {$endif}
+end;
+
+procedure TMainForm.ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
+begin
+  ComboBox.canvas.fillrect(ARect);
+  Canvas.TextOut(ARect.Left + 5, ARect.Top, ComboBox.Items[Index]);
+  Canvas.TextOut(ARect.Left + 220, ARect.Top, '[ru]');
+end;
+
+procedure TMainForm.CmdCompare(Sender: TObject);
+begin
+  CompareForm.ShowModal;
+  LoadCompare;
+end;
+
+procedure TMainForm.CmdOnlineExecute(Sender: TObject);
+begin
+  //
+end;
+
+procedure TMainForm.CmdEdit(Sender: TObject);
+begin
+  if Sender = ActionEditCut then
+    begin
+      RichEdit.CopyToClipboard;
+      RichEdit.ClearSelection;
+    end;
+
+  if Sender = ActionEditCopy   then RichEdit.CopyToClipboard;
+  if Sender = ActionEditPaste  then RichEdit.PasteFromClipboard;
+  if Sender = ActionEditDel    then RichEdit.ClearSelection;
+  if Sender = ActionEditSelAll then RichEdit.SelectAll;
+  if Sender = ActionEditUndo   then RichEdit.Undo;
+end;
+
+procedure TMainForm.CmdCopyAs(Sender: TObject);
+var
+  Range : TRange;
+begin
+  Range := RichEditBible.GetRange;
+  FormCopy.SetRange(Range);
+  FormCopy.ShowModal;
+  {$ifdef darwin} RichEditBible.RestoreSelection; {$endif}
+end;
+
+procedure TMainForm.CmdCopyVerses(Sender: TObject);
+begin
+  VersesToClipboard;
+end;
+
+procedure TMainForm.CmdSearch(Sender: TObject);
+begin
+  SearchForm.Edit.Font.Name := CurrFont.Name;
+  if SearchForm.ShowModal = mrOk then SearchText(SearchForm.Edit.Text);
+end;
+
+procedure TMainForm.CmdTrans(Sender: TObject);
+begin
+  FormTranslate.Show;
+  LoadTranslate(ActiveVerse);
+end;
+
 procedure TMainForm.CmdFileNew(Sender: TObject);
 begin
   SelectPage(apNotes);
@@ -1011,22 +1023,13 @@ procedure TMainForm.CmdFilePrint(Sender: TObject);
 var
   prm : TPrintParams;
 begin
-  InitPrintParams(prm);
+  InitPrintParams(prm{%H-});
   if PrintDialog.Execute then RichEdit.Print(prm);
 end;
 
 procedure TMainForm.CmdExit(Sender: TObject);
 begin
   Close
-end;
-
-procedure TMainForm.SelectPage(page: integer);
-begin
-  PageControl.ActivePageIndex := page;
-  EnableButtons;
-  UpdateStatusBar;
-  Refresh;
-  if page <> apNotes then RichEdit.HideCursor;
 end;
 
 //=================================================================================================
@@ -1049,7 +1052,7 @@ begin
   NoteFileName := sUntitled;
 
   ReadIniFile;
-  BibleMenuInit;
+  ComboBoxInit;
   LangMenuInit;
   ReopenMenuInit;
 
@@ -1057,7 +1060,7 @@ begin
   begin
     UpdateStatusBar;
     MakeBookList;
-    Shelf.VerseToBeginning(ActiveVerse);
+    ActiveVerse := Bible.FirstVerse;
     // LoadChapter; // RichMemo doesn't load from Stream,
                     // so we call LoadChapter from FormActivate
   end;
@@ -1095,15 +1098,15 @@ begin
 
   N4.Visible            := False;
   miExit.Visible        := False;
-  ActionExit.Enabled       := False;
+  ActionExit.Enabled    := False;
 
   UpdateMenuImage;
   UpdateShortCut;
   {$endif}
 
   {$ifdef linux}
-  GoToVerseMessage   := false;
-  IdleTimer.Enabled  := true;
+  IdleMessage := '';
+  IdleTimer.Enabled := true;
   {$endif}
 
   UpdateActionImage;
@@ -1111,11 +1114,7 @@ end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
-  if ListBoxCh.Items.Count = 0 then
-    begin
-      LoadChapter; // first time
-      GoToVerse;
-    end;
+  if ListBoxCh.Items.Count = 0 then LoadChapter; // first time
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -1358,10 +1357,16 @@ end;
 procedure TMainForm.IdleTimerTimer(Sender: TObject);
 begin
   {$ifdef linux}
-  if GoToVerseMessage then
+  if IdleMessage = 'GotoVerse(ActiveVerse,true)' then
     begin
-      GoToVerseMessage := false;
-      GoToVerse;
+      IdleMessage := '';
+      GotoVerse(ActiveVerse,true);
+    end;
+
+  if IdleMessage = 'GotoVerse(ActiveVerse,false)' then
+    begin
+      IdleMessage := '';
+      GotoVerse(ActiveVerse,false);
     end;
   {$endif}
 end;
@@ -1397,7 +1402,10 @@ end;
 procedure TMainForm.MakeBookList;
 var
   List: TStringList;
+  l : boolean;
 begin
+  l := ListBoxBook.ItemIndex < 0;
+
   ListBoxBook.Items.BeginUpdate;
   ListBoxBook.Items.Clear;
   ListBoxBook.Font := CurrFont;
@@ -1407,6 +1415,7 @@ begin
   ListBoxBook.Items.Assign(List);
   List.Free;
 
+  if l and (ListBoxBook.Count > 0) then ListBoxBook.ItemIndex := 0;
   ListBoxBook.Items.EndUpdate;
 end;
 
@@ -1437,7 +1446,7 @@ begin
   Load_Chapter(RichEditBible);
   if Shelf.Count = 0 then Exit;
   MakeChapterList(Bible.ChaptersCount(ActiveVerse));
-  if FormTranslate.Visible then LoadTranslate;
+  if FormTranslate.Visible then LoadTranslate(ActiveVerse);
   SelectPage(apBible);
 end;
 
@@ -1466,9 +1475,9 @@ begin
   Load_Compare(RichEditCompare);
 end;
 
-procedure TMainForm.LoadTranslate;
+procedure TMainForm.LoadTranslate(Verse: TVerse);
 begin
-  Load_Translate(FormTranslate.RichEditTranslate);
+  Load_Translate(FormTranslate.RichEditTranslate, Verse);
   FormTranslate.Repaint;
 end;
 
