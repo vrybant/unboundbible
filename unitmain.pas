@@ -4,10 +4,10 @@ interface
 
 uses
 //{$ifdef windows} ShellAPI, {$endif}
-  {$ifdef unix} UnitMemo, {$endif}
+  {$ifdef unix} RichMemoEx, {$endif}
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
-  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnitEdit, UnitType;
+  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnitMemo, UnitType;
 
 type
   TMainForm = class(TForm)
@@ -187,21 +187,21 @@ type
     procedure StatusBarDblClick(Sender: TObject);
     procedure ToolButtonFBClick(Sender: TObject);
   private
-    RichEditBible: TSuperEdit;
-    RichEditSearch: TSuperEdit;
-    RichEditCompare: TSuperEdit;
-    RichEditNotes: TSuperEdit;
+    MemoBible  : TUnboundMemo;
+    MemoSearch : TUnboundMemo;
+    MemoCompare: TUnboundMemo;
+    MemoNotes  : TUnboundMemo;
     NoteFileName: string;
     ReopenMax: integer;
     ReopenList: TStringList;
     {$ifdef darwin} bag01 : boolean; {$endif}
     {$ifdef darwin} bag02 : boolean; {$endif}
     {$ifdef linux } IdleMessage : string; {$endif}
-    function RichEdit: TSuperEdit;
+    function UnboundMemo: TUnboundMemo;
     function CheckFileSave: boolean;
     procedure ComboBoxInit;
     {$ifdef darwin} procedure ComboBoxSetIndex; {$endif}
-    procedure CreateRichEditComponents;
+    procedure CreateMemoComponents;
     procedure EnableButtons;
     procedure UpDownButtons;
     procedure SelectBook(title: string);
@@ -219,10 +219,10 @@ type
     procedure ReadIniFile;
     procedure RebuildReopenList;
     procedure ReopenMenuInit;
-    procedure RichEditBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
-    procedure RichEditCommonMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
-    procedure RichEditNotesChange(Sender: TObject);
-    procedure RichEditNotesSelectionChange(Sender: TObject);
+    procedure MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+    procedure MemoCommonMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+    procedure MemoNotesChange(Sender: TObject);
+    procedure MemoNotesSelectionChange(Sender: TObject);
     procedure SaveIniFile;
     procedure SearchText(s: string);
     procedure SelectPage(page: integer);
@@ -285,24 +285,24 @@ begin
 end;
 {$endif}
 
-procedure TMainForm.CreateRichEditComponents;
+procedure TMainForm.CreateMemoComponents;
 begin
-  RichEditBible := TSuperEdit.Create(self);
-  RichEditSearch := TSuperEdit.Create(self);
-  RichEditCompare := TSuperEdit.Create(self);
-  RichEditNotes := TSuperEdit.Create(self);
+  MemoBible   := TUnboundMemo.Create(self);
+  MemoSearch  := TUnboundMemo.Create(self);
+  MemoCompare := TUnboundMemo.Create(self);
+  MemoNotes   := TUnboundMemo.Create(self);
 
-  with RichEditBible do
+  with MemoBible do
   begin
     Parent := TabSheetBible;
     Align := alClient;
     HideSelection := False;
     ScrollBars := ssBoth;
     ReadOnly := True;
-    OnMouseUp := RichEditBibleMouseUp;
+    OnMouseUp := MemoBibleMouseUp;
   end;
 
-  with RichEditSearch do
+  with MemoSearch do
   begin
     Parent := TabSheetSearch;
     Align := alClient;
@@ -310,29 +310,29 @@ begin
     ScrollBars := ssBoth;
     ReadOnly := True;
     Hyperlink := True;
-    OnMouseUp := RichEditCommonMouseUp;
+    OnMouseUp := MemoCommonMouseUp;
   end;
 
-  with RichEditCompare do
+  with MemoCompare do
   begin
     Parent := TabSheetCompare;
     Align := alClient;
     HideSelection := False;
     ScrollBars := ssBoth;
     ReadOnly := True;
-    OnMouseUp := RichEditCommonMouseUp;
+    OnMouseUp := MemoCommonMouseUp;
   end;
 
-  with RichEditNotes do
+  with MemoNotes do
   begin
     Parent := TabSheetNotes;
     Align := alClient;
     HideSelection := False;
     ScrollBars := ssBoth;
     Hyperlink := True;
-    OnChange := RichEditNotesChange;
-    OnSelectionChange := RichEditNotesSelectionChange;
-    OnMouseUp := RichEditCommonMouseUp;
+    OnChange := MemoNotesChange;
+    OnSelectionChange := MemoNotesSelectionChange;
+    OnMouseUp := MemoCommonMouseUp;
   end;
 end;
 
@@ -345,7 +345,7 @@ procedure TMainForm.UpdateStatusBar;
 begin
   if Shelf.Count = 0 then Exit;
   StatusBar.Panels[3].Text := ' ' + Bible.Copyright;
-  if RichEditNotes.Modified then StatusBar.Panels[1].Text := sModified
+  if MemoNotes.Modified then StatusBar.Panels[1].Text := sModified
                             else StatusBar.Panels[1].Text := '';
 end;
 
@@ -357,13 +357,13 @@ begin
   PopupMenu.Popup(CursorPos.X, CursorPos.Y);
 end;
 
-procedure TMainForm.RichEditBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+procedure TMainForm.MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
   Range : TRange;
 begin
   if Button = mbLeft then
     begin
-      Range := RichEditBible.GetRange;
+      Range := MemoBible.GetRange;
       ActiveVerse.Number := Range.from;
       ActiveVerse.Count  := Range.till - Range.from + 1;
       if FormTranslate.Visible then LoadTranslate(ActiveVerse);
@@ -371,14 +371,14 @@ begin
 
   if Button = mbRight then
     begin
-      {$ifdef darwin} RichEditBible.RestoreSelection; {$endif}
+      {$ifdef darwin} MemoBible.RestoreSelection; {$endif}
       ShowPopup;
     end;
 
-  {$ifdef darwin} if Button = mbLeft then RichEditBible.SaveSelection; {$endif}
+  {$ifdef darwin} if Button = mbLeft then MemoBible.SaveSelection; {$endif}
 end;
 
-procedure TMainForm.RichEditCommonMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+procedure TMainForm.MemoCommonMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
   Verse : TVerse;
   s : string;
@@ -388,13 +388,13 @@ begin
   if Button <> mbLeft then Exit;
   if Shelf.Count = 0  then Exit;
 
-  s := (Sender as TSuperEdit).Hypertext;
+  s := (Sender as TUnboundMemo).Hypertext;
   Verse := Bible.SrtToVerse(s);
   if Verse.Book = 0 then Exit;
 
   if FormTranslate.Visible then LoadTranslate(Verse);
 
-  if (Sender = RichEditSearch) or (not FormTranslate.Visible) or (ssCtrl in Shift)
+  if (Sender = MemoSearch) or (not FormTranslate.Visible) or (ssCtrl in Shift)
     then GoToVerse(Verse, True);
 end;
 
@@ -425,17 +425,17 @@ begin
   ActiveVerse := Verse;
   LoadChapter;
 
-  if select then RichEditBible.SelectParagraph(Verse.Number);
+  if select then MemoBible.SelectParagraph(Verse.Number);
   {$ifdef darwin} bag02 := False; {$endif}
   Repaint;
 end;
 
-procedure TMainForm.RichEditNotesChange(Sender: TObject);
+procedure TMainForm.MemoNotesChange(Sender: TObject);
 begin
   UpdateStatusBar;
 end;
 
-procedure TMainForm.RichEditNotesSelectionChange(Sender: TObject);
+procedure TMainForm.MemoNotesSelectionChange(Sender: TObject);
 begin
   UpDownButtons;
 end;
@@ -527,7 +527,7 @@ var
 begin
   Result := True;
 
-  if not RichEditNotes.Modified then Exit;
+  if not MemoNotes.Modified then Exit;
   SelectPage(apNotes);
 
   {$ifdef windows}
@@ -542,7 +542,7 @@ begin
     idYes:
     begin
       CmdFileSave(self);
-      Result := not RichEditNotes.Modified;
+      Result := not MemoNotes.Modified;
     end;
     idNo: {Nothing};
     idCancel: Result := False; // Abort;
@@ -611,13 +611,13 @@ begin
     end;
 end;
 
-function TMainForm.RichEdit: TSuperEdit;
+function TMainForm.UnboundMemo: TUnboundMemo;
 begin
   case PageControl.ActivePageIndex of
-    apBible   : Result := RichEditBible;
-    apSearch  : Result := RichEditSearch;
-    apCompare : Result := RichEditCompare;
-    apNotes   : Result := RichEditNotes;
+    apBible   : Result := MemoBible;
+    apSearch  : Result := MemoSearch;
+    apCompare : Result := MemoCompare;
+    apNotes   : Result := MemoNotes;
     else
       Result := nil;
   end;
@@ -656,7 +656,7 @@ procedure TMainForm.UpDownButtons;
 begin
   if PageControl.ActivePageIndex <> apNotes then Exit;
 
-  with RichEditNotes do
+  with MemoNotes do
     try
       ToolButtonBold.Down := fsBold in SelAttributes.Style;
       ToolButtonItalic.Down := fsItalic in SelAttributes.Style;
@@ -748,12 +748,12 @@ end;
 procedure TMainForm.PerformFileOpen(const FileName: string);
 begin
   if not FileExists(FileName) then Exit;
-  RichEditNotes.LoadFromFile(FileName);
+  MemoNotes.LoadFromFile(FileName);
   NoteFileName := FileName;
   RebuildReopenList;
   SelectPage(apNotes);
-  RichEditNotes.SetFocus;
-  RichEditNotes.Modified := False;
+  MemoNotes.SetFocus;
+  MemoNotes.Modified := False;
   UpdateStatusBar;
   StatusBar.Panels[4].Text := ' ' + ExtractOnlyName(NoteFileName);
 end;
@@ -764,7 +764,7 @@ begin
   EnableButtons;
   UpdateStatusBar;
   Refresh;
-  if page <> apNotes then RichEdit.HideCursor;
+  if page <> apNotes then UnboundMemo.HideCursor;
 end;
 
 //=================================================================================================
@@ -781,12 +781,12 @@ var
   fp: TFontParams;
   tempStart, tempLength: integer;
 begin
-  fp := RichEditNotes.SelAttributes;
+  fp := MemoNotes.SelAttributes;
 
-  tempStart  := RichEditNotes.SelStart;
-  tempLength := RichEditNotes.SelLength;
+  tempStart  := MemoNotes.SelStart;
+  tempLength := MemoNotes.SelLength;
 
-  if RichEditNotes.SelLength = 0 then RichEditNotes.SelectWord;
+  if MemoNotes.SelLength = 0 then MemoNotes.SelectWord;
 
   if Sender = ActionBold then
     if fsBold in fp.Style then fp.Style := fp.Style - [fsBold]
@@ -820,19 +820,19 @@ begin
     end;
   end;
 
-  RichEditNotes.SelAttributes := fp;
+  MemoNotes.SelAttributes := fp;
 
-  RichEditNotes.SelStart := tempStart; // unselect word
-  RichEditNotes.SelLength := tempLength;
+  MemoNotes.SelStart := tempStart; // unselect word
+  MemoNotes.SelLength := tempLength;
 
-  RichEditNotes.Repaint;
+  MemoNotes.Repaint;
 end;
 
 procedure TMainForm.CmdStyle2(Sender: TObject);
 {$ifdef windows} var ParaNumbering : TParaNumbering; {$endif}
 begin
   {$ifdef windows}
-  with RichEditNotes do
+  with MemoNotes do
     begin
       if Sender = ActionLeft    then SetParaAlignment(SelStart, SelLength, paLeft   );
       if Sender = ActionCenter  then SetParaAlignment(SelStart, SelLength, paCenter );
@@ -848,7 +848,7 @@ begin
         end;
     end;
 
-  RichEditNotes.Repaint;
+  MemoNotes.Repaint;
   {$endif}
 end;
 
@@ -861,7 +861,7 @@ begin
   UpdateStatusBar;
   MakeBookList;
 
-  select := RichEditBible.Selected;
+  select := MemoBible.Selected;
   if Bible.BookByNum(ActiveVerse.Book) = nil then select := false;
   if not select then ActiveVerse := Bible.FirstVerse;
 
@@ -895,25 +895,25 @@ procedure TMainForm.CmdEdit(Sender: TObject);
 begin
   if Sender = ActionEditCut then
     begin
-      RichEdit.CopyToClipboard;
-      RichEdit.ClearSelection;
+      UnboundMemo.CopyToClipboard;
+      UnboundMemo.ClearSelection;
     end;
 
-  if Sender = ActionEditCopy   then RichEdit.CopyToClipboard;
-  if Sender = ActionEditPaste  then RichEdit.PasteFromClipboard;
-  if Sender = ActionEditDel    then RichEdit.ClearSelection;
-  if Sender = ActionEditSelAll then RichEdit.SelectAll;
-  if Sender = ActionEditUndo   then RichEdit.Undo;
+  if Sender = ActionEditCopy   then UnboundMemo.CopyToClipboard;
+  if Sender = ActionEditPaste  then UnboundMemo.PasteFromClipboard;
+  if Sender = ActionEditDel    then UnboundMemo.ClearSelection;
+  if Sender = ActionEditSelAll then UnboundMemo.SelectAll;
+  if Sender = ActionEditUndo   then UnboundMemo.Undo;
 end;
 
 procedure TMainForm.CmdCopyAs(Sender: TObject);
 var
   Range : TRange;
 begin
-  Range := RichEditBible.GetRange;
+  Range := MemoBible.GetRange;
   FormCopy.SetRange(Range);
   FormCopy.ShowModal;
-  {$ifdef darwin} RichEditBible.RestoreSelection; {$endif}
+  {$ifdef darwin} MemoBible.RestoreSelection; {$endif}
 end;
 
 procedure TMainForm.CmdCopyVerses(Sender: TObject);
@@ -938,8 +938,8 @@ begin
   SelectPage(apNotes);
   if not CheckFileSave then Exit;
   NoteFileName := sUntitled;
-  RichEditNotes.Lines.Clear;
-  RichEditNotes.Modified := False;
+  MemoNotes.Lines.Clear;
+  MemoNotes.Modified := False;
   UpdateStatusBar;
 end;
 
@@ -949,20 +949,20 @@ begin
   if OpenDialog.Execute then
   begin
     PerformFileOpen(OpenDialog.FileName);
-    RichEditNotes.ReadOnly := ofReadOnly in OpenDialog.Options;
+    MemoNotes.ReadOnly := ofReadOnly in OpenDialog.Options;
   end;
 end;
 
 procedure TMainForm.CmdFileSave(Sender: TObject);
 begin
   SelectPage(apNotes);
-  if not RichEditNotes.Modified then Exit;
+  if not MemoNotes.Modified then Exit;
   if NoteFileName = sUntitled then
     CmdFileSaveAs(Sender)
   else
   begin
-    RichEditNotes.SaveToFile(NoteFileName);
-    RichEditNotes.Modified := False;
+    MemoNotes.SaveToFile(NoteFileName);
+    MemoNotes.Modified := False;
     UpdateStatusBar;
   end;
 end;
@@ -983,12 +983,12 @@ begin
       if MessageDlg(Format(ms_OverWrite, [SaveDialog.FileName]),
         mtConfirmation, mbYesNoCancel, 0) <> idYes then Exit;
 
-    RichEditNotes.SaveToFile(SaveDialog.FileName);
+    MemoNotes.SaveToFile(SaveDialog.FileName);
     NoteFileName := SaveDialog.FileName;
 
     RebuildReopenList;
 
-    RichEditNotes.Modified := False;
+    MemoNotes.Modified := False;
     UpdateStatusBar;
     StatusBar.Panels[4].Text := ' ' + ExtractOnlyName(SaveDialog.FileName);
   end;
@@ -999,7 +999,7 @@ var
   prm : TPrintParams;
 begin
   InitPrintParams(prm{%H-});
-  if PrintDialog.Execute then RichEdit.Print(prm);
+  if PrintDialog.Execute then UnboundMemo.Print(prm);
 end;
 
 procedure TMainForm.CmdExit(Sender: TObject);
@@ -1015,7 +1015,7 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Caption := AppName + ' ' + VersionInfo + ' - Open Source Application';
 
-  CreateRichEditComponents;
+  CreateMemoComponents;
   CreateDirectories;
 
   Shelf := TShelf.Create;
@@ -1049,8 +1049,8 @@ begin
   end;
 
   NoteFileName := sUntitled;
-  RichEditNotes.Lines.Clear;
-  RichEditNotes.Font.Size := CurrFont.Size;
+  MemoNotes.Lines.Clear;
+  MemoNotes.Font.Size := CurrFont.Size;
   ToolButtonFB.Visible := not FBPageVisited;
 
   {$ifdef unix}
@@ -1155,8 +1155,8 @@ begin
   bag01 := False;
   {$endif}
 
-  // RichEditNotes.SetEditRect;
-  // RichEdit.HideCursor;
+  // MemoNotes.SetEditRect;
+  // Memo.HideCursor;
 end;
 
 procedure TMainForm.CmdInfo(Sender: TObject);
@@ -1333,16 +1333,12 @@ procedure TMainForm.IdleTimerTimer(Sender: TObject);
 begin
   {$ifdef linux}
   if IdleMessage = 'GotoVerse(ActiveVerse,true)' then
-    begin
-      IdleMessage := '';
-      GotoVerse(ActiveVerse,true);
-    end;
+                    GotoVerse(ActiveVerse,true);
 
   if IdleMessage = 'GotoVerse(ActiveVerse,false)' then
-    begin
-      IdleMessage := '';
-      GotoVerse(ActiveVerse,false);
-    end;
+                    GotoVerse(ActiveVerse,false);
+
+  if IdleMessage <> '' then IdleMessage := '';
   {$endif}
 end;
 
@@ -1351,10 +1347,10 @@ begin
   EnableButtons;
   UpDownButtons;
   UpdateStatusBar;
-  RichEdit.SetFocus;
-  RichEdit.Repaint;
+  UnboundMemo.SetFocus;
+  UnboundMemo.Repaint;
   if PageControl.ActivePageIndex = apCompare then LoadCompare;
-  if PageControl.ActivePageIndex <> apNotes then RichEdit.HideCursor;
+  if PageControl.ActivePageIndex <> apNotes then UnboundMemo.HideCursor;
 end;
 
 procedure TMainForm.RadioButtonClick(Sender: TObject);
@@ -1435,7 +1431,7 @@ end;
 
 procedure TMainForm.LoadChapter;
 begin
-  Load_Chapter(RichEditBible);
+  Load_Chapter(MemoBible);
   if Shelf.Count = 0 then Exit;
   MakeChapterList(Bible.ChaptersCount(ActiveVerse));
   if FormTranslate.Visible then LoadTranslate(ActiveVerse);
@@ -1448,28 +1444,28 @@ var
 //Today : longint;
 begin
   StatusBar.Panels[2].Text := '';
-  RichEdit.Cursor := crHourGlass;
+  UnboundMemo.Cursor := crHourGlass;
 
 //Today := GetTickCount;
-  Search_Text(RichEditSearch, s, Count);
+  Search_Text(MemoSearch, s, Count);
 
   StatusBar.Panels[2].Text := ' ' + IntToStr(Count) + ' ' + ms_found;
 //StatusBar.Panels[2].Text := ' ' + IntToStr(GetTickCount - Today);
 
-  RichEdit.Cursor := crArrow;
+  UnboundMemo.Cursor := crArrow;
   SelectPage(apSearch);
 end;
 
 procedure TMainForm.LoadCompare;
 begin
-  if not Shelf.IsLoaded then Show_Message(RichEditCompare, ms_loading);
+  if not Shelf.IsLoaded then Show_Message(MemoCompare, ms_loading);
   SelectPage(apCompare);
-  Load_Compare(RichEditCompare);
+  Load_Compare(MemoCompare);
 end;
 
 procedure TMainForm.LoadTranslate(Verse: TVerse);
 begin
-  Load_Translate(FormTranslate.RichEditTranslate, Verse);
+  Load_Translate(FormTranslate.MemoTranslate, Verse);
   FormTranslate.Repaint;
 end;
 
@@ -1480,7 +1476,7 @@ var
   Range : TRange;
 begin
   Stream := TMemoryStream.Create;
-  Range := RichEditBible.GetRange;
+  Range := MemoBible.GetRange;
   ActiveVerse.number := Range.from;
   ActiveVerse.count  := Range.till - Range.from + 1;
   Load_Verses(Stream);
@@ -1492,14 +1488,14 @@ end;
 {$ifdef unix}
 procedure TMainForm.VersesToClipboard;
 var
-  RichEditPreview : TRichMemo;
+  MemoPreview : TRichMemo;
   Stream: TMemoryStream;
   Range : TRange;
 begin
   Stream := TMemoryStream.Create;
-  RichEditPreview := TRichMemo.Create(self);
+  MemoPreview := TRichMemo.Create(self);
 
-  with RichEditPreview do
+  with MemoPreview do
     begin
       Parent := MainForm;
       Left   := 0;
@@ -1508,17 +1504,17 @@ begin
       Width  := 100;
     end;
 
-  Range := RichEditBible.GetRange;
+  Range := MemoBible.GetRange;
   ActiveVerse.number := Range.from;
   ActiveVerse.count  := Range.till - Range.from + 1;
   Load_Verses(Stream);
 
-  RichEditPreview.LoadRichText(Stream);
-  RichEditPreview.SelectAll;
-  RichEditPreview.CopyToClipboard;
+  MemoPreview.LoadRichText(Stream);
+  MemoPreview.SelectAll;
+  MemoPreview.CopyToClipboard;
 
   Stream.Free;
-  RichEditPreview.Free;
+  MemoPreview.Free;
 end;
 {$endif}
 

@@ -1,185 +1,346 @@
 unit UnitMemo;
 
+{*******************************************************}
+{              SuperEdit Lazarus Component              }
+{                       GNU GPL                         }
+{               Vladimir Rybant Software                }
+{                  vladimirrybant.org                   }
+{*******************************************************}
+
 interface
 
 uses
-  {$ifdef windows} Windows, Printers, OSPrinters, {$endif}
-  Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo;
+  {$ifdef windows} Windows, {$endif} Forms, SysUtils,
+  Classes, Graphics, Controls, ExtCtrls, LCLProc, LCLType,
+  RichMemoEx, UnitLib;
 
 type
-  TRichMemoEx = class(TRichMemo)
-  private
-    FOnSelChange: TNotifyEvent;
-    function  GetAttributes: TFontParams;
-    procedure SetAttributes(const value: TFontParams);
-    procedure SelectionChange;  dynamic;
-    {$ifdef windows} function  GetModified: boolean; {$endif}
-    {$ifdef windows} procedure SetModified(value: boolean); {$endif}
+  TUnboundMemo = class(TRichMemoEx)
   protected
-    {$ifdef windows}
-    function LineCount: integer;
-    function LineIndex(x: longint): integer;
-    {$endif}
-    procedure KeyUp(var Key: Word; Shift: TShiftState); override;
-    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure CreateWnd; override;
+    procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
+    procedure MouseUp  (Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure KeyUp  (var Key: Word; Shift: TShiftState); override;
+  private
+    SelStartTemp  : integer;
+    SelLengthTemp : integer;
+    function  Colored: boolean;
+    function  GetLink: string;
+    function  GetParagraphNumber: integer;
   public
-    {$ifdef unix} Modified : boolean; {$endif}
+    Stream : TMemoryStream;
+    Hyperlink : boolean;
+    Hypertext : string;
     constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-    function LoadRichText(Source: TStream): Boolean; override;
-    function CanUndo: boolean;
-    procedure HideCursor;
-    procedure SetSel(x1,x2: integer);
-    procedure GetSel(var x1,x2: integer);
-    function Selected: boolean;
-    procedure SelectAll; // override;
-    procedure LoadFromFile(const FileName : string);
-    procedure SaveToFile(const FileName : string);
-    property SelAttributes: TFontParams read GetAttributes write SetAttributes;
-    property OnSelectionChange: TNotifyEvent read FOnSelChange write FOnSelChange;
-    {$ifdef windows} property Modified: boolean read GetModified write SetModified; {$endif}
+    function  GetRange: TRange;
+    procedure SelectParagraph(n : integer);
+    function  GetStartSelection: integer;
+    function  GetEndSelection: integer;
+    procedure SelectWord;
+    procedure OpenStream;
+    procedure CloseStream;
+    procedure Write(s: string);
+    procedure WriteLn(s: string);
+    procedure SaveSelection;
+    procedure RestoreSelection;
   end;
 
+procedure SaveTitle(var m: TMemoryStream);
+procedure SaveTail(var m: TMemoryStream);
 
 implementation
 
-constructor TRichMemoEx.Create(AOwner: TComponent);
+procedure SaveTitle(var m: TMemoryStream);
 begin
-  inherited Create(AOwner);
-  {$ifdef unix} Modified := False; {$endif}
+  StreamWriteLn(m,'{\rtf1\ansi\ansicpg1251\cocoartf1187 ');
+  StreamWriteLn(m,'{\fonttbl\f0\fcharset0 '+ CurrFont.Name + ';}');
+  StreamWriteLn(m,'{\colortbl;');
+  StreamWriteLn(m,'\red0\green0\blue0;'       ); // 1 black
+  StreamWriteLn(m,'\red255\green0\blue0;'     ); // 2 red
+  StreamWriteLn(m,'\red0\green0\blue128;'     ); // 3 navy
+  StreamWriteLn(m,'\red0\green128\blue0;'     ); // 4 green
+  StreamWriteLn(m,'\red128\green128\blue128;}'); // 5 gray
+
+  StreamWrite(m,'\f0\cf1');
+  StreamWrite(m,'\fs' + IntToStr(CurrFont.Size * 2)); // font size
+
+// if fsBold in CurrFont.Style then StreamWrite(m,'\b'); // bold
+// if RightToLeft then StreamWrite(m,'\rtlpar') else StreamWrite(m,'\ltrpar');
+// if Bible.RightToLeft then StreamWrite(m,'\qr') else StreamWrite(m,'\ql');
+
+  StreamWriteLn(m,''); // important
 end;
 
-destructor TRichMemoEx.Destroy;
+procedure SaveTail(var m: TMemoryStream);
 begin
-  inherited Destroy;
+  StreamWriteLn(m,'}');
+  StreamWriteLn(m,'');
+end;
+
+//=================================================================================================
+//                                      TSuperEdit
+//=================================================================================================
+
+constructor TUnboundMemo.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+
+  Hyperlink := False;
+  Hypertext := '';
+  Cursor := crArrow;
+  SelStartTemp  := 0;
+  SelLengthTemp := 0;
+end;
+
+procedure TUnboundMemo.CreateWnd;
+begin
+  inherited;
+  if ReadOnly then HideCursor;
+end;
+
+function TUnboundMemo.Colored: boolean;
+begin
+  Result := SelAttributes.Color = clNavy
+end;
+
+function TUnboundMemo.GetLink: string;
+var
+  x1,x2,x0 : integer;
+  n1,n2 : integer;
+begin
+  Result := '';
+  if (SelLength > 0) or not Colored then Exit;
+  GetSel(n1,n2);
+
+  x0 := SelStart;
+  x1 := x0;
+  repeat
+    dec(x1);
+    SetSel(x1, x1);
+  until not Colored or (x1 < 0);
+
+  x2 := x0;
+  repeat
+    inc(x2);
+    SetSel(x2, x2);
+  until not Colored;
+
+  inc(x1);
+  {$ifdef windows} dec(x2); {$endif}
+
+  SetSel(x1, x2); Result := SelText;
+  SetSel(n1, n2);
+end;
+
+procedure TUnboundMemo.MouseMove(Shift: TShiftState; X, Y: Integer);
+begin
+  inherited;
+  if ReadOnly or (ssCtrl in Shift) then HideCursor;
+end;
+
+procedure TUnboundMemo.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if Hyperlink then Hypertext := GetLink else Hypertext := '';
+  if ReadOnly or (ssCtrl in Shift) then HideCursor;
+  inherited;
+end;
+
+procedure TUnboundMemo.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  inherited;
+  if ReadOnly or (ssCtrl in Shift) then HideCursor;
+end;
+
+procedure TUnboundMemo.KeyUp(var Key: Word; Shift: TShiftState);
+begin
+  inherited;
+  {$ifdef windows}
+  if Hyperlink and not ReadOnly and (Key = VK_CONTROL) then ShowCaret(Handle);
+  {$endif}
+end;
+
+function TUnboundMemo.GetParagraphNumber: integer;
+var
+  x0,x1,x2 : integer;
+begin
+  Result := 0;
+
+  GetSel(x1,x0); // must be equal
+
+  while not Colored and (x1 > 0) do
+    begin
+      dec(x1);
+      SetSel(x1, x1);
+    end;
+
+  repeat
+    dec(x1);
+    SetSel(x1, x1);
+  until not Colored or (x1 < 0);
+
+  x2 := x1;
+  repeat
+    inc(x2);
+    SetSel(x2, x2);
+  until not Colored; // or (x2 > x0+5)
+
+                      inc(x1);
+// {$ifdef windows} dec(x2); {$endif}
+
+  SetSel(x1,x2); Result := MyStrToInt(SelText);
+  SetSel(x1,x1+1);
+end;
+
+function TUnboundMemo.GetRange: TRange;
+var
+  x1,x2 : integer;
+begin
+  GetSel(x1,x2);
+  SetSel(x2,x2); Result.till := GetParagraphNumber;
+  SetSel(x1,x1); Result.from := GetParagraphNumber;
+  if x1 <> x2 then SetSel(x1,x2);
 end;
 
 {$ifdef windows}
-
-function TRichMemoEx.LineCount: integer;
+procedure TUnboundMemo.SelectParagraph(n : integer);
+var
+  w, line : string;
+  i, len, x : integer;
 begin
-  Result := SendMessage(Handle, EM_GETLINECOUNT,0,0);
-end;
+  HideSelection := False; // important
 
-function TRichMemoEx.LineIndex(x: longint): integer;
-begin
-  Result := SendMessage(Handle, EM_LINEINDEX,x,0);
-end;
+  w := ' ' + IntToStr(n) + ' ';
+  len := length(w);
 
-function TRichMemoEx.GetModified: boolean;
-begin
-  Result := SendMessage(Handle, EM_GETMODIFY,  0, 0) <> 0;
-end;
+  for i:=0 to LineCount - 1 do
+    begin
+      line := Lines[i];
 
-procedure TRichMemoEx.SetModified(value: boolean);
-begin
-  SendMessage(Handle, EM_SETMODIFY, Byte(value), 0);
+      if copy(line,1,len) = w then
+         begin
+           x := LineIndex(i);
+           SetSel(x,x+1);
+           HideCursor;
+         end;
+    end;
 end;
-
 {$endif}
 
-function TRichMemoEx.LoadRichText(Source: TStream): Boolean;
-begin
-  Source.Seek(0,soFromBeginning);
-  Result := inherited LoadRichText(Source);
-end;
-
-procedure TRichMemoEx.SetAttributes(const value: TFontParams);
-begin
-  SetTextAttributes(SelStart, SelLength, value);
-  SelectionChange;
-end;
-
-function TRichMemoEx.GetAttributes: TFontParams;
-begin
-  GetTextAttributes(SelStart, Result{%H-});
-end;
-
-function TRichMemoEx.CanUndo: boolean;
-begin
-  {$ifdef windows}
-  Result := SendMessage(Handle, EM_CANUNDO,  0, 0) <> 0;
-  {$else}
-  Result := True;
-  {$endif}
-end;
-
-procedure TRichMemoEx.SelectionChange;
-begin
-  if Assigned(OnSelectionChange) then OnSelectionChange(Self);
-end;
-
-procedure TRichMemoEx.SelectAll;
-begin
-  {$ifdef windows}
-  SendMessage(Handle, EM_SETSEL, 0, -1);
-  {$else}
-  SetSel(0,100000);
-  {$endif}
-end;
-
-procedure TRichMemoEx.KeyUp(var Key: Word; Shift: TShiftState);
-begin
-  inherited KeyUp(Key, Shift);
-  SelectionChange;
-  {$ifdef unix} Modified := True; {$endif}
-end;
-
-procedure TRichMemoEx.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  inherited MouseUp(Button, Shift, X, Y);
-  SelectionChange;
-end;
-
-procedure TRichMemoEx.SetSel(x1,x2: integer);
-begin
-  {$ifdef windows}
-  SendMessage(Handle, EM_SETSEL, x1, x2);
-  {$else}
-  SelStart  := x1;
-  SelLength := x2-x1;
-  {$endif}
-end;
-
-procedure TRichMemoEx.GetSel(var x1,x2: integer);
-begin
-  {$ifdef windows}
-  SendMessage(Handle, EM_GETSEL, {%H-}integer(@x1), {%H-}integer(@x2));
-  {$else}
-  x1 := SelStart;
-  x2 := SelStart + SelLength;
-  {$endif}
-end;
-
-function TRichMemoEx.Selected: boolean;
-begin
-  Result := SelLength > 0;
-end;
-
-procedure TRichMemoEx.HideCursor;
-begin
-  {$ifdef windows} HideCaret(Handle); {$endif}
-end;
-
-procedure TRichMemoEx.LoadFromFile(const FileName : string);
+{$ifdef unix}
+procedure TUnboundMemo.SelectParagraph(n : integer);
 var
-  Stream : TMemoryStream;
+  i, x : integer;
+  L : boolean;
+begin
+  L := False;
+  x := 0;
+
+  i := 0;
+  while True do
+    begin
+      SetSel(i,i);
+      if SelStart <> i then break;
+
+      if Colored then
+        begin
+          if not L then
+            begin
+              inc(x);
+              if x = n then
+                begin
+                  SetSel(i,i+1);
+                  break;
+                end;
+            end;
+          L := True;
+        end;
+
+      if not Colored then L := False;
+      inc(i);
+    end;
+
+  SetFocus;
+end;
+{$endif}
+
+function TUnboundMemo.GetStartSelection: integer;
+var
+  i, temp : integer;
+begin
+  temp := SelStart;
+     i := SelStart;
+
+  SetSel(i-1,i);
+  while (SelText <> ' ') and (i > 0)  do
+    begin
+      dec(i);
+      SetSel(i-1,i);
+    end;
+
+  Result := i;
+  SetSel(temp, temp);
+end;
+
+function TUnboundMemo.GetEndSelection: integer;
+var
+  i, len, temp : integer;
+begin
+  temp := SelStart;
+     i := SelStart;
+   len := i + 50;
+
+  SetSel(i,i+1);
+  while (LowerCase(SelText) <> UpperCase(SelText)) and (i < len) do
+    begin
+      inc(i);
+      SetSel(i,i+1);
+    end;
+
+  Result := i;
+  SetSel(temp, temp);
+end;
+
+procedure TUnboundMemo.SelectWord;
+begin
+  SelStart  := GetStartSelection;
+  SelLength := GetEndSelection - SelStart;
+end;
+
+procedure TUnboundMemo.OpenStream;
 begin
   Stream := TMemoryStream.Create;
-  Stream.LoadFromFile(FileName);
+  SaveTitle(Stream);
+end;
+
+procedure TUnboundMemo.Write(s: string);
+begin
+  StreamWrite(Stream,Utf8ToRTF(s));
+end;
+
+procedure TUnboundMemo.WriteLn(s: string);
+begin
+  StreamWriteLn(Stream,Utf8ToRTF(s));
+end;
+
+procedure TUnboundMemo.CloseStream;
+begin
+  SaveTail(Stream);
   LoadRichText(Stream);
-  Stream.Free;
+  Stream.free;
+  SelStart := 0;
 end;
 
-procedure TRichMemoEx.SaveToFile(const FileName : string);
-var
-  Stream : TMemoryStream;
+procedure TUnboundMemo.SaveSelection;
 begin
-  Stream := TMemoryStream.Create;
-  SaveRichText(Stream);
-  Stream.Seek(0,soFromBeginning);
-  Stream.SaveToFile(FileName);
-  Stream.Free;
+  SelStartTemp  := SelStart;
+  SelLengthTemp := SelLength;
+end;
+
+procedure TUnboundMemo.RestoreSelection;
+begin
+  SelStart  := SelStartTemp;
+  SelLength := SelLengthTemp;
 end;
 
 end.

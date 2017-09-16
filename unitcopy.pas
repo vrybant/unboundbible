@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls, RichMemo, UnitLib, UnitEdit;
+  StdCtrls, ExtCtrls, RichMemo, UnitLib, UnitMemo;
 
 type
   TFormCopy = class(TForm)
@@ -24,7 +24,7 @@ type
     procedure RadioGroupClick(Sender: TObject);
   private
     Range: TRange;
-    RichEditPreview : TSuperEdit;
+    RichEditPreview : TUnboundMemo;
     Stream: TMemoryStream;
     procedure CopyToClipboard;
   public
@@ -63,7 +63,7 @@ end;
 procedure TFormCopy.FormCreate(Sender: TObject);
 begin
   Stream := TMemoryStream.Create;
-  RichEditPreview := TSuperEdit.Create(self);
+  RichEditPreview := TUnboundMemo.Create(self);
 
   with RichEditPreview do
     begin

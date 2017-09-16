@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, IniFiles, UnitEdit; // ComCtrls, RichMemo
+  StdCtrls, IniFiles, UnitMemo;
 
 type
   TFormTranslate = class(TForm)
@@ -14,7 +14,7 @@ type
     procedure SaveIniFile;
     procedure ReadIniFile;
   public
-    RichEditTranslate : TSuperEdit;
+    MemoTranslate : TUnboundMemo;
     procedure Translate;
   end;
 
@@ -34,9 +34,9 @@ begin
 
 procedure TFormTranslate.FormCreate(Sender: TObject);
 begin
-  RichEditTranslate := TSuperEdit.Create(self);
+  MemoTranslate := TUnboundMemo.Create(self);
 
-  with RichEditTranslate do
+  with MemoTranslate do
   begin
     Parent := FormTranslate;
     Align := alClient;
@@ -51,7 +51,7 @@ end;
 procedure TFormTranslate.FormDestroy(Sender: TObject);
 begin
   SaveIniFile;
-  RichEditTranslate.Free;
+  MemoTranslate.Free;
 end;
 
 procedure TFormTranslate.SaveIniFile;

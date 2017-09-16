@@ -60,106 +60,106 @@
         <UnitName Value="UnitLib"/>
       </Unit2>
       <Unit3>
-        <Filename Value="unitedit.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitEdit"/>
-      </Unit3>
-      <Unit4>
         <Filename Value="unitshelf.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitShelf"/>
-      </Unit4>
-      <Unit5>
+      </Unit3>
+      <Unit4>
         <Filename Value="unitlang.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitLang"/>
-      </Unit5>
-      <Unit6>
+      </Unit4>
+      <Unit5>
         <Filename Value="unitabout.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AboutBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitAbout"/>
-      </Unit6>
-      <Unit7>
+      </Unit5>
+      <Unit6>
         <Filename Value="unitsearch.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SearchForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitSearch"/>
-      </Unit7>
-      <Unit8>
+      </Unit6>
+      <Unit7>
         <Filename Value="unittool.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitTool"/>
-      </Unit8>
-      <Unit9>
+      </Unit7>
+      <Unit8>
         <Filename Value="unitcompare.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="CompareForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitCompare"/>
-      </Unit9>
-      <Unit10>
+      </Unit8>
+      <Unit9>
         <Filename Value="unitinfo.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="InfoBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitInfo"/>
-      </Unit10>
-      <Unit11>
-        <Filename Value="unitmemo.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitMemo"/>
-      </Unit11>
-      <Unit12>
+      </Unit9>
+      <Unit10>
         <Filename Value="unitoptions.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormOptions"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitOptions"/>
-      </Unit12>
-      <Unit13>
+      </Unit10>
+      <Unit11>
         <Filename Value="unitcopy.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormCopy"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitCopy"/>
-      </Unit13>
-      <Unit14>
+      </Unit11>
+      <Unit12>
         <Filename Value="unittrans.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormTranslate"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitTrans"/>
-      </Unit14>
-      <Unit15>
+      </Unit12>
+      <Unit13>
         <Filename Value="unittype.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitType"/>
-      </Unit15>
-      <Unit16>
+      </Unit13>
+      <Unit14>
         <Filename Value="unittitle.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitTitle"/>
-      </Unit16>
-      <Unit17>
+      </Unit14>
+      <Unit15>
         <Filename Value="unitsqliteex.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitSQLiteEx"/>
-      </Unit17>
-      <Unit18>
+      </Unit15>
+      <Unit16>
         <Filename Value="unittip.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormTip"/>
         <ResourceBaseClass Value="Form"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="richmemoex.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RichMemoEx"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="unitmemo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitMemo"/>
       </Unit18>
     </Units>
   </ProjectOptions>

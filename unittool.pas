@@ -4,14 +4,14 @@ interface
 
 uses SysUtils, Classes, Controls, Graphics, ClipBrd,
   //UnitClass,
-  LazUtf8, UnitEdit, UnitType;
+  LazUtf8, UnitMemo, UnitType;
 
-procedure Load_Chapter(SuperEdit: TSuperEdit);
-procedure Search_Text (SuperEdit: TSuperEdit; st: string; var count: integer);
-procedure Load_Compare(SuperEdit: TSuperEdit);
-procedure Load_Translate(SuperEdit: TSuperEdit; Verse: TVerse);
+procedure Load_Chapter(SuperEdit: TUnboundMemo);
+procedure Search_Text (SuperEdit: TUnboundMemo; st: string; var count: integer);
+procedure Load_Compare(SuperEdit: TUnboundMemo);
+procedure Load_Translate(SuperEdit: TUnboundMemo; Verse: TVerse);
 procedure Load_Verses(Stream: TMemoryStream);
-procedure Show_Message(SuperEdit: TSuperEdit; s: string);
+procedure Show_Message(SuperEdit: TUnboundMemo; s: string);
 
 implementation
 
@@ -23,7 +23,7 @@ begin
   // Replace(s,']','\cf1\i0 ');
 end;
 
-procedure Load_Chapter(SuperEdit: TSuperEdit);
+procedure Load_Chapter(SuperEdit: TUnboundMemo);
 var
    List : TStringList;
    text : string;
@@ -84,7 +84,7 @@ begin
     Highlight(s, line, Options);
 end;
 
-procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
+procedure Search_Text(SuperEdit: TUnboundMemo; st: string; var count: integer);
   var
     ContentArray : TContentArray;
     v : TVerse;
@@ -110,7 +110,7 @@ procedure Search_Text(SuperEdit: TSuperEdit; st: string; var count: integer);
     SuperEdit.CloseStream;
   end;
 
-procedure Load_Compare(SuperEdit: TSuperEdit);
+procedure Load_Compare(SuperEdit: TUnboundMemo);
 var
     List : TStringList;
     Text : string;
@@ -215,7 +215,7 @@ begin
   List.free;
 end;
 
-procedure Load_Translate(SuperEdit: TSuperEdit; Verse: TVerse);
+procedure Load_Translate(SuperEdit: TUnboundMemo; Verse: TVerse);
 var
     List : TStringList;
     Text : string;
@@ -263,7 +263,7 @@ begin
   SuperEdit.CloseStream;
 end;
 
-procedure Show_Message(SuperEdit: TSuperEdit; s: string);
+procedure Show_Message(SuperEdit: TUnboundMemo; s: string);
 begin
   SuperEdit.OpenStream;
   SuperEdit.WriteLn('\f0\cf1');
