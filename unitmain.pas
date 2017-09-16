@@ -400,22 +400,17 @@ end;
 
 procedure TMainForm.SelectBook(title: string);
 var
-  index : integer;
-
-  function ItemFromTitle: integer;
-  var i: integer;
-  begin
-    Result := -1;
-    for i := 0 to ListBoxBook.Items.Count - 1 do
-      if ListBoxBook.Items[i] = title then Result := i;
-  end;
-
+  i, index : integer;
 begin
-  index := ItemFromTitle;
+  index := -1;
+  for i:=0 to ListBoxBook.Items.Count-1 do
+    if ListBoxBook.Items[i] = title then index := i;
+
   if index < 0 then Exit;
 
   ListBoxBook.ItemIndex := index;
   ListBoxCh.ItemIndex := ActiveVerse.Chapter - 1;
+  {$ifdef darwin} ScrollBoxes; {$endif}
 end;
 
 procedure TMainForm.GoToVerse(Verse: TVerse; select: boolean);
@@ -429,7 +424,6 @@ begin
   SelectBook(Book.title);
   ActiveVerse := Verse;
   LoadChapter;
-  {$ifdef darwin} ScrollBoxes; {$endif}
 
   if select then RichEditBible.SelectParagraph(Verse.Number);
   {$ifdef darwin} bag02 := False; {$endif}
