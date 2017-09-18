@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, IniFiles, UnitMemo;
+  StdCtrls, IniFiles, UnboundMemo;
 
 type
   TFormTranslate = class(TForm)

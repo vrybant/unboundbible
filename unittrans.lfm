@@ -7,5 +7,5 @@ object FormTranslate: TFormTranslate
   FormStyle = fsStayOnTop
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.4.0.4'
+  LCLVersion = '1.6.4.0'
 end

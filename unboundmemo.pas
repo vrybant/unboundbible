@@ -1,4 +1,4 @@
-unit UnitMemo;
+unit UnboundMemo;
 
 {*******************************************************}
 {              SuperEdit Lazarus Component              }
@@ -12,9 +12,12 @@ interface
 uses
   {$ifdef windows} Windows, {$endif} Forms, SysUtils,
   Classes, Graphics, Controls, ExtCtrls, LCLProc, LCLType,
-  RichMemoEx, UnitLib;
+  RichMemo, RichMemoEx, UnitLib;
 
 type
+  TPara_Numbering = TParaNumbering;
+
+
   TUnboundMemo = class(TRichMemoEx)
   protected
     procedure CreateWnd; override;

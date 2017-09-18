@@ -5,7 +5,7 @@ uses
   {$ifdef darwin} printer4lazarus, {$endif}
   Interfaces, Graphics, Forms, richmemopackage, UnitShelf,
   UnitMain, UnitLang, UnitAbout, UnitInfo, UnitSearch, UnitTool, UnitCompare,
-  UnitOptions, UnitCopy, UnitTrans, unittip, UnitMemo, RichMemoEx;
+  UnitOptions, UnitCopy, UnitTrans, unittip, RichMemoEx;
 
 {$R *.res}
 

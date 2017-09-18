@@ -2,9 +2,7 @@ unit UnitTool;
 
 interface
 
-uses SysUtils, Classes, Controls, Graphics, ClipBrd,
-  //UnitClass,
-  LazUtf8, UnitMemo, UnitType;
+uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnboundMemo, UnitType;
 
 procedure Load_Chapter(SuperEdit: TUnboundMemo);
 procedure Search_Text (SuperEdit: TUnboundMemo; st: string; var count: integer);

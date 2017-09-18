@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls, RichMemo, UnitLib, UnitMemo;
+  StdCtrls, ExtCtrls, RichMemo, UnitLib, UnboundMemo;
 
 type
   TFormCopy = class(TForm)

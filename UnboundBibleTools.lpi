@@ -157,9 +157,9 @@
         <UnitName Value="RichMemoEx"/>
       </Unit17>
       <Unit18>
-        <Filename Value="unitmemo.pas"/>
+        <Filename Value="unboundmemo.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitMemo"/>
+        <UnitName Value="UnboundMemo"/>
       </Unit18>
     </Units>
   </ProjectOptions>

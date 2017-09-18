@@ -3,11 +3,10 @@ unit UnitMain;
 interface
 
 uses
-//{$ifdef windows} ShellAPI, {$endif}
   {$ifdef unix} RichMemoEx, {$endif}
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
-  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnitMemo, UnitType;
+  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitType;
 
 type
   TMainForm = class(TForm)
