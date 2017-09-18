@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls, RichMemo, UnitLib, UnboundMemo;
+  StdCtrls, ExtCtrls, UnitLib, RichMemo, UnboundMemo, RichStream;
 
 type
   TFormCopy = class(TForm)
@@ -23,13 +23,13 @@ type
     procedure FormPaint(Sender: TObject);
     procedure RadioGroupClick(Sender: TObject);
   private
-    Range: TRange;
-    RichEditPreview : TUnboundMemo;
-    Stream: TMemoryStream;
+    Range: TMemoRange;
+    MemoPreview : TUnboundMemo;
+    Stream: TRichStream;
     procedure CopyToClipboard;
   public
     procedure Translate;
-    procedure SetRange(r: TRange);
+    procedure SetRange(r: TMemoRange);
   end;
 
 var
@@ -55,17 +55,17 @@ begin
   CheckGroup .Items[2] := T('Verses.End'      );
 end;
 
-procedure TFormCopy.SetRange(r: TRange);
+procedure TFormCopy.SetRange(r: TMemoRange);
 begin
   Range := r;
 end;
 
 procedure TFormCopy.FormCreate(Sender: TObject);
 begin
-  Stream := TMemoryStream.Create;
-  RichEditPreview := TUnboundMemo.Create(self);
+  Stream := TRichStream.Create;
+  MemoPreview := TUnboundMemo.Create(self);
 
-  with RichEditPreview do
+  with MemoPreview do
     begin
       Parent := FormCopy;
       HideSelection := True;
@@ -97,9 +97,10 @@ end;
 
 procedure TFormCopy.CopyToClipboard;
 begin
-  RichEditPreview.SelectAll;
-  RichEditPreview.CopyToClipboard;
-  RichEditPreview.SetSel(0,0);
+  MemoPreview.SelectAll;
+  MemoPreview.CopyToClipboard;
+  MemoPreview.SelStart  := 0;
+  MemoPreview.SelLength := 0;
 end;
 
 procedure TFormCopy.CheckGroupItemClick(Sender: TObject; Index: integer);
@@ -128,14 +129,15 @@ begin
   ActiveVerse.Number := Range.from;
   ActiveVerse.Count  := Range.till;
   Load_Verses(Stream);
-  RichEditPreview.LoadRichText(Stream);
-  RichEditPreview.SetSel(0,0);
+  MemoPreview.LoadRichText(Stream);
+  MemoPreview.SelStart  := 0;
+  MemoPreview.SelLength := 0;
 end;
 
 procedure TFormCopy.FormDestroy(Sender: TObject);
 begin
   Stream.Free;
-  RichEditPreview.Free;
+  MemoPreview.Free;
 end;
 
 end.

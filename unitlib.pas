@@ -38,12 +38,9 @@ procedure Replace(var s: string; const oldPattern, newPattern: String);
 function StringToList(ch: Char; st: string): TStringArray;
 function CleanTags(s: string): string;
 function DeleteTags(s: string): string;
-function Utf8ToRTF(const s: string): string;
 
-// stream's functions
+// сlipboard's function
 
-procedure StreamWrite  (var Stream: TMemoryStream; s: string);
-procedure StreamWriteLn(var Stream: TMemoryStream; s: string);
 {$ifdef windows} procedure StreamToClipboard(Stream : TMemoryStream); {$endif}
 
 // file's functions
@@ -101,15 +98,11 @@ begin
 end;
 
 function MyStrToInt(st: string): integer;
-var
-  v : integer;
-  r : integer;
+var v, r : integer;
 begin
   st := Trim(st);
   Val(st, v, r);
-
-  if r=0 then Result := v
-         else Result := 0;
+  if r=0 then Result := v else Result := 0;
 end;
 
 function CleanString(s: string): string;
@@ -208,38 +201,7 @@ begin
     end;
 end;
 
-function Utf8ToRTF(const s: string): string;
-var
-  p: PChar;
-  unicode: Cardinal;
-  CharLen: integer;
-const
-  endchar = {$ifdef linux} ' ' {$else} '?' {$endif};
-begin
-  Result := '';
-  p := PChar(s);
-  repeat
-    unicode := UTF8CharacterToUnicode(p,CharLen);
-    if unicode = 0 then Continue;
-    if unicode < $80 then Result := Result + char(unicode)
-                     else Result := Result + '\u' + IntToStr(unicode) + endchar;
-
-    inc(p,CharLen);
-  until (CharLen=0) or (unicode=0);
-end;
-
-// stream's functions
-
-procedure StreamWrite(var Stream: TMemoryStream; s: string);
-begin
-  Stream.WriteBuffer(Pointer(s)^, Length(s));
-end;
-
-procedure StreamWriteLn(var Stream: TMemoryStream; s: string);
-begin
-  s := s + CRLF;
-  Stream.WriteBuffer(Pointer(s)^, Length(s));
-end;
+// сlipboard's function
 
 {$ifdef windows}
 procedure StreamToClipboard(Stream : TMemoryStream);

@@ -9,6 +9,9 @@ uses
   ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitType;
 
 type
+
+  { TMainForm }
+
   TMainForm = class(TForm)
     ActionOnline: TAction;
     IdleTimer: TIdleTimer;
@@ -246,7 +249,7 @@ implementation
 
 uses
   UnitAbout, UnitInfo, UnitSearch, UnitCompare, UnitTool, UnitOptions,
-  UnitLib, UnitLang, UnitShelf, UnitCopy, UnitTrans;
+  RichStream, UnitLib, UnitLang, UnitShelf, UnitCopy, UnitTrans;
 
 resourcestring
   sUntitled = 'Untitled';
@@ -358,7 +361,7 @@ end;
 
 procedure TMainForm.MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
-  Range : TRange;
+  Range : TMemoRange;
 begin
   if Button = mbLeft then
     begin
@@ -907,7 +910,7 @@ end;
 
 procedure TMainForm.CmdCopyAs(Sender: TObject);
 var
-  Range : TRange;
+  Range : TMemoRange;
 begin
   Range := MemoBible.GetRange;
   FormCopy.SetRange(Range);
@@ -1471,10 +1474,10 @@ end;
 {$ifdef windows}
 procedure TMainForm.VersesToClipboard;
 var
-  Stream : TMemoryStream;
-  Range : TRange;
+  Stream : TRichStream;
+  Range : TMemoRange;
 begin
-  Stream := TMemoryStream.Create;
+  Stream := TRichStream.Create;
   Range := MemoBible.GetRange;
   ActiveVerse.number := Range.from;
   ActiveVerse.count  := Range.till - Range.from + 1;

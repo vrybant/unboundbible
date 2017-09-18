@@ -1,24 +1,21 @@
 unit UnboundMemo;
 
-{*******************************************************}
-{              SuperEdit Lazarus Component              }
-{                       GNU GPL                         }
-{               Vladimir Rybant Software                }
-{                  vladimirrybant.org                   }
-{*******************************************************}
-
 interface
 
 uses
   {$ifdef windows} Windows, {$endif} Forms, SysUtils,
-  Classes, Graphics, Controls, ExtCtrls, LCLProc, LCLType,
-  RichMemo, RichMemoEx, UnitLib;
+  Classes, Graphics, Controls, ExtCtrls, LCLProc, LCLType, LazUTF8,
+  RichMemo, RichMemoEx, RichStream;
 
 type
   TPara_Numbering = TParaNumbering;
 
+  TMemoRange = record
+    from : integer;
+    till : integer;
+  end;
 
-  TUnboundMemo = class(TRichMemoEx)
+  TUnboundMemo = class(TRichMemoExtended)
   protected
     procedure CreateWnd; override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
@@ -32,58 +29,33 @@ type
     function  GetLink: string;
     function  GetParagraphNumber: integer;
   public
-    Stream : TMemoryStream;
+    Stream : TRichStream;
     Hyperlink : boolean;
     Hypertext : string;
     constructor Create(AOwner: TComponent); override;
-    function  GetRange: TRange;
+    function  GetRange: TMemoRange;
     procedure SelectParagraph(n : integer);
     function  GetStartSelection: integer;
     function  GetEndSelection: integer;
     procedure SelectWord;
-    procedure OpenStream;
-    procedure CloseStream;
-    procedure Write(s: string);
-    procedure WriteLn(s: string);
     procedure SaveSelection;
     procedure RestoreSelection;
+    procedure OpenStream;
+    procedure CloseStream;
+    procedure WriteLn(s: string);
   end;
 
-procedure SaveTitle(var m: TMemoryStream);
-procedure SaveTail(var m: TMemoryStream);
+procedure Register;
 
 implementation
 
-procedure SaveTitle(var m: TMemoryStream);
+function MyStrToInt(st: string): integer;
+var v, r : integer;
 begin
-  StreamWriteLn(m,'{\rtf1\ansi\ansicpg1251\cocoartf1187 ');
-  StreamWriteLn(m,'{\fonttbl\f0\fcharset0 '+ CurrFont.Name + ';}');
-  StreamWriteLn(m,'{\colortbl;');
-  StreamWriteLn(m,'\red0\green0\blue0;'       ); // 1 black
-  StreamWriteLn(m,'\red255\green0\blue0;'     ); // 2 red
-  StreamWriteLn(m,'\red0\green0\blue128;'     ); // 3 navy
-  StreamWriteLn(m,'\red0\green128\blue0;'     ); // 4 green
-  StreamWriteLn(m,'\red128\green128\blue128;}'); // 5 gray
-
-  StreamWrite(m,'\f0\cf1');
-  StreamWrite(m,'\fs' + IntToStr(CurrFont.Size * 2)); // font size
-
-// if fsBold in CurrFont.Style then StreamWrite(m,'\b'); // bold
-// if RightToLeft then StreamWrite(m,'\rtlpar') else StreamWrite(m,'\ltrpar');
-// if Bible.RightToLeft then StreamWrite(m,'\qr') else StreamWrite(m,'\ql');
-
-  StreamWriteLn(m,''); // important
+  st := Trim(st);
+  Val(st, v, r);
+  if r=0 then Result := v else Result := 0;
 end;
-
-procedure SaveTail(var m: TMemoryStream);
-begin
-  StreamWriteLn(m,'}');
-  StreamWriteLn(m,'');
-end;
-
-//=================================================================================================
-//                                      TSuperEdit
-//=================================================================================================
 
 constructor TUnboundMemo.Create(AOwner: TComponent);
 begin
@@ -114,7 +86,7 @@ var
 begin
   Result := '';
   if (SelLength > 0) or not Colored then Exit;
-  GetSel(n1,n2);
+  GetSel(n1{%H-},n2{%H-});
 
   x0 := SelStart;
   x1 := x0;
@@ -169,7 +141,7 @@ var
 begin
   Result := 0;
 
-  GetSel(x1,x0); // must be equal
+  GetSel(x1{%H-},x0{%H-}); // must be equal
 
   while not Colored and (x1 > 0) do
     begin
@@ -188,18 +160,18 @@ begin
     SetSel(x2, x2);
   until not Colored; // or (x2 > x0+5)
 
-                      inc(x1);
-// {$ifdef windows} dec(x2); {$endif}
+  inc(x1);
+//{$ifdef windows} dec(x2); {$endif}
 
   SetSel(x1,x2); Result := MyStrToInt(SelText);
   SetSel(x1,x1+1);
 end;
 
-function TUnboundMemo.GetRange: TRange;
+function TUnboundMemo.GetRange: TMemoRange;
 var
   x1,x2 : integer;
 begin
-  GetSel(x1,x2);
+  GetSel(x1{%H-},x2{%H-});
   SetSel(x2,x2); Result.till := GetParagraphNumber;
   SetSel(x1,x1); Result.from := GetParagraphNumber;
   if x1 <> x2 then SetSel(x1,x2);
@@ -310,30 +282,6 @@ begin
   SelLength := GetEndSelection - SelStart;
 end;
 
-procedure TUnboundMemo.OpenStream;
-begin
-  Stream := TMemoryStream.Create;
-  SaveTitle(Stream);
-end;
-
-procedure TUnboundMemo.Write(s: string);
-begin
-  StreamWrite(Stream,Utf8ToRTF(s));
-end;
-
-procedure TUnboundMemo.WriteLn(s: string);
-begin
-  StreamWriteLn(Stream,Utf8ToRTF(s));
-end;
-
-procedure TUnboundMemo.CloseStream;
-begin
-  SaveTail(Stream);
-  LoadRichText(Stream);
-  Stream.free;
-  SelStart := 0;
-end;
-
 procedure TUnboundMemo.SaveSelection;
 begin
   SelStartTemp  := SelStart;
@@ -344,6 +292,31 @@ procedure TUnboundMemo.RestoreSelection;
 begin
   SelStart  := SelStartTemp;
   SelLength := SelLengthTemp;
+end;
+
+procedure TUnboundMemo.OpenStream;
+begin
+  Stream := TRichStream.Create;
+  Stream.Font.Assign(Font);
+  Stream.Open;
+end;
+
+procedure TUnboundMemo.WriteLn(s: string);
+begin
+  Stream.WriteLn(s);
+end;
+
+procedure TUnboundMemo.CloseStream;
+begin
+  Stream.Close;
+  LoadRichText(Stream);
+  Stream.Free;
+  SelStart := 0;
+end;
+
+procedure Register;
+begin
+  RegisterComponents('Common Controls',[TUnboundMemo]);
 end;
 
 end.

@@ -7,7 +7,7 @@ uses
   Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo;
 
 type
-  TRichMemoEx = class(TRichMemo)
+  TRichMemoExtended = class(TRichMemo)
   private
     FOnSelChange: TNotifyEvent;
     function  GetAttributes: TFontParams;
@@ -16,6 +16,8 @@ type
     {$ifdef windows} function  GetModified: boolean; {$endif}
     {$ifdef windows} procedure SetModified(value: boolean); {$endif}
   protected
+    procedure SetSel(x1,x2: integer);
+    procedure GetSel(var x1,x2: integer);
     {$ifdef windows}
     function LineCount: integer;
     function LineIndex(x: longint): integer;
@@ -29,10 +31,8 @@ type
     function LoadRichText(Source: TStream): Boolean; override;
     function CanUndo: boolean;
     procedure HideCursor;
-    procedure SetSel(x1,x2: integer);
-    procedure GetSel(var x1,x2: integer);
     function Selected: boolean;
-    procedure SelectAll; // override;
+    procedure SelectAll;
     procedure LoadFromFile(const FileName : string);
     procedure SaveToFile(const FileName : string);
     property SelAttributes: TFontParams read GetAttributes write SetAttributes;
@@ -43,59 +43,59 @@ type
 
 implementation
 
-constructor TRichMemoEx.Create(AOwner: TComponent);
+constructor TRichMemoExtended.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   {$ifdef unix} Modified := False; {$endif}
 end;
 
-destructor TRichMemoEx.Destroy;
+destructor TRichMemoExtended.Destroy;
 begin
   inherited Destroy;
 end;
 
 {$ifdef windows}
 
-function TRichMemoEx.LineCount: integer;
+function TRichMemoExtended.LineCount: integer;
 begin
   Result := SendMessage(Handle, EM_GETLINECOUNT,0,0);
 end;
 
-function TRichMemoEx.LineIndex(x: longint): integer;
+function TRichMemoExtended.LineIndex(x: longint): integer;
 begin
   Result := SendMessage(Handle, EM_LINEINDEX,x,0);
 end;
 
-function TRichMemoEx.GetModified: boolean;
+function TRichMemoExtended.GetModified: boolean;
 begin
   Result := SendMessage(Handle, EM_GETMODIFY,  0, 0) <> 0;
 end;
 
-procedure TRichMemoEx.SetModified(value: boolean);
+procedure TRichMemoExtended.SetModified(value: boolean);
 begin
   SendMessage(Handle, EM_SETMODIFY, Byte(value), 0);
 end;
 
 {$endif}
 
-function TRichMemoEx.LoadRichText(Source: TStream): Boolean;
+function TRichMemoExtended.LoadRichText(Source: TStream): Boolean;
 begin
   Source.Seek(0,soFromBeginning);
   Result := inherited LoadRichText(Source);
 end;
 
-procedure TRichMemoEx.SetAttributes(const value: TFontParams);
+procedure TRichMemoExtended.SetAttributes(const value: TFontParams);
 begin
   SetTextAttributes(SelStart, SelLength, value);
   SelectionChange;
 end;
 
-function TRichMemoEx.GetAttributes: TFontParams;
+function TRichMemoExtended.GetAttributes: TFontParams;
 begin
   GetTextAttributes(SelStart, Result{%H-});
 end;
 
-function TRichMemoEx.CanUndo: boolean;
+function TRichMemoExtended.CanUndo: boolean;
 begin
   {$ifdef windows}
   Result := SendMessage(Handle, EM_CANUNDO,  0, 0) <> 0;
@@ -104,12 +104,12 @@ begin
   {$endif}
 end;
 
-procedure TRichMemoEx.SelectionChange;
+procedure TRichMemoExtended.SelectionChange;
 begin
   if Assigned(OnSelectionChange) then OnSelectionChange(Self);
 end;
 
-procedure TRichMemoEx.SelectAll;
+procedure TRichMemoExtended.SelectAll;
 begin
   {$ifdef windows}
   SendMessage(Handle, EM_SETSEL, 0, -1);
@@ -118,20 +118,20 @@ begin
   {$endif}
 end;
 
-procedure TRichMemoEx.KeyUp(var Key: Word; Shift: TShiftState);
+procedure TRichMemoExtended.KeyUp(var Key: Word; Shift: TShiftState);
 begin
   inherited KeyUp(Key, Shift);
   SelectionChange;
   {$ifdef unix} Modified := True; {$endif}
 end;
 
-procedure TRichMemoEx.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TRichMemoExtended.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   inherited MouseUp(Button, Shift, X, Y);
   SelectionChange;
 end;
 
-procedure TRichMemoEx.SetSel(x1,x2: integer);
+procedure TRichMemoExtended.SetSel(x1,x2: integer);
 begin
   {$ifdef windows}
   SendMessage(Handle, EM_SETSEL, x1, x2);
@@ -141,7 +141,7 @@ begin
   {$endif}
 end;
 
-procedure TRichMemoEx.GetSel(var x1,x2: integer);
+procedure TRichMemoExtended.GetSel(var x1,x2: integer);
 begin
   {$ifdef windows}
   SendMessage(Handle, EM_GETSEL, {%H-}integer(@x1), {%H-}integer(@x2));
@@ -151,17 +151,17 @@ begin
   {$endif}
 end;
 
-function TRichMemoEx.Selected: boolean;
+function TRichMemoExtended.Selected: boolean;
 begin
   Result := SelLength > 0;
 end;
 
-procedure TRichMemoEx.HideCursor;
+procedure TRichMemoExtended.HideCursor;
 begin
   {$ifdef windows} HideCaret(Handle); {$endif}
 end;
 
-procedure TRichMemoEx.LoadFromFile(const FileName : string);
+procedure TRichMemoExtended.LoadFromFile(const FileName : string);
 var
   Stream : TMemoryStream;
 begin
@@ -171,7 +171,7 @@ begin
   Stream.Free;
 end;
 
-procedure TRichMemoEx.SaveToFile(const FileName : string);
+procedure TRichMemoExtended.SaveToFile(const FileName : string);
 var
   Stream : TMemoryStream;
 begin

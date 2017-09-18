@@ -1,4 +1,4 @@
-unit unittip;
+unit UnitTip;
 
 {$mode delphi}
 

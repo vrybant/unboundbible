@@ -10,6 +10,8 @@ __history
 bin/*
 *.sh
 titles/text/*
-components/*
+components/richmemo/*
+components/unboundmemo/lib/*
+components/unboundmemo/backup/*
 bibles/*
 UnboundBibleTools

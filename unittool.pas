@@ -2,14 +2,14 @@ unit UnitTool;
 
 interface
 
-uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnboundMemo, UnitType;
+uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnboundMemo, RichStream, UnitType;
 
-procedure Load_Chapter(SuperEdit: TUnboundMemo);
-procedure Search_Text (SuperEdit: TUnboundMemo; st: string; var count: integer);
-procedure Load_Compare(SuperEdit: TUnboundMemo);
-procedure Load_Translate(SuperEdit: TUnboundMemo; Verse: TVerse);
-procedure Load_Verses(Stream: TMemoryStream);
-procedure Show_Message(SuperEdit: TUnboundMemo; s: string);
+procedure Load_Chapter(Memo: TUnboundMemo);
+procedure Search_Text (Memo: TUnboundMemo; st: string; var count: integer);
+procedure Load_Compare(Memo: TUnboundMemo);
+procedure Load_Translate(Memo: TUnboundMemo; Verse: TVerse);
+procedure Load_Verses(Stream: TRichStream);
+procedure Show_Message(Memo: TUnboundMemo; s: string);
 
 implementation
 
@@ -21,7 +21,7 @@ begin
   // Replace(s,']','\cf1\i0 ');
 end;
 
-procedure Load_Chapter(SuperEdit: TUnboundMemo);
+procedure Load_Chapter(Memo: TUnboundMemo);
 var
    List : TStringList;
    text : string;
@@ -29,7 +29,7 @@ var
 begin
   if Shelf.Count = 0 then Exit;
 
-  SuperEdit.OpenStream;
+  Memo.OpenStream;
   List := TStringList.Create;
   Bible.GetChapter(ActiveVerse,List);
 
@@ -38,11 +38,11 @@ begin
       text := DeleteTags(List[i]);
       text := '\cf3 ' + ' ' + IntToStr(i+1) + '\cf1 ' + ' ' + text + '\i0\par';
       Replacement(text);
-      SuperEdit.WriteLn(text);
+      Memo.WriteLn(text);
     end;
 
   List.free;
-  SuperEdit.CloseStream;
+  Memo.CloseStream;
 end;
 
 procedure Highlight(var s: string; target: string; Options: TSearchOptions);
@@ -82,7 +82,7 @@ begin
     Highlight(s, line, Options);
 end;
 
-procedure Search_Text(SuperEdit: TUnboundMemo; st: string; var count: integer);
+procedure Search_Text(Memo: TUnboundMemo; st: string; var count: integer);
   var
     ContentArray : TContentArray;
     v : TVerse;
@@ -91,7 +91,7 @@ procedure Search_Text(SuperEdit: TUnboundMemo; st: string; var count: integer);
   begin
     if Shelf.Count = 0 then Exit;
 
-    SuperEdit.OpenStream;
+    Memo.OpenStream;
     ContentArray := Bible.Search(st, CurrentSearchOptions, CurrentSearchRange);
 
     for i:=0 to Length(ContentArray)-1 do
@@ -102,13 +102,13 @@ procedure Search_Text(SuperEdit: TUnboundMemo; st: string; var count: integer);
         Highlights(text,st,CurrentSearchOptions);
         text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + text + '\i0\par\par';
         Replacement(text);
-        SuperEdit.WriteLn(text);
+        Memo.WriteLn(text);
       end;
 
-    SuperEdit.CloseStream;
+    Memo.CloseStream;
   end;
 
-procedure Load_Compare(SuperEdit: TUnboundMemo);
+procedure Load_Compare(Memo: TUnboundMemo);
 var
     List : TStringList;
     Text : string;
@@ -119,10 +119,10 @@ begin
   if Shelf.Count = 0 then Exit;
 
   Shelf.LoadComparedBibles;
-  SuperEdit.OpenStream;
+  Memo.OpenStream;
 
   s := '\cf1 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
-  SuperEdit.WriteLn(s);
+  Memo.WriteLn(s);
 
   old := Shelf.Current;
 
@@ -137,7 +137,7 @@ begin
       if List.Count > 0 then
         begin
           s:= '\par\cf3 ' + Bible.Name + '\par\cf1 ';
-          SuperEdit.WriteLn(s);
+          Memo.WriteLn(s);
         end;
 
       for j:=0 to List.Count-1 do
@@ -145,7 +145,7 @@ begin
           Text := DeleteTags(List[j]);
           s := Text + '\i0\par';
           Replacement(s);
-          SuperEdit.WriteLn(s);
+          Memo.WriteLn(s);
         end;
 
       List.free;
@@ -153,10 +153,10 @@ begin
 
   Shelf.SetCurrent(old);
 
-  SuperEdit.CloseStream;
+  Memo.CloseStream;
 end;
 
-procedure Load_Verses(Stream: TMemoryStream);
+procedure Load_Verses(Stream: TRichStream);
 var
     Book : TBook;
     List : TStringList;
@@ -170,7 +170,7 @@ var
     s := Bible.VerseToStr(ActiveVerse,not Options.cvAbbr);
     if Options.cvDelim then s := '(' + s + ')';
     s := '\f0\cf3 ' + s + '\cf1 ' + ' ' + par;
-    StreamWriteLn(Stream,Utf8ToRTF(s));
+    Stream.WriteLn(s);
   end;
 
 begin
@@ -178,7 +178,7 @@ begin
   if Book = nil then Exit;
 
   List := TStringList.Create;
-  SaveTitle(Stream);
+  Stream.Open;
 
   if Options.cvWrap then par := '\par ' else par := '';
 
@@ -197,23 +197,22 @@ begin
       s := s + '\i0 '+ ' ' + par;
 
       Replacement(s);
-      StreamWriteLn(Stream,Utf8ToRTF(s));
+      Stream.WriteLn(s);
     end;
 
   if Options.cvEnd then
     begin
-      StreamWriteLn(Stream,'');
+      Stream.WriteLn('');
       MakeLink;
     end;
 
-  if not Options.cvWrap then StreamWriteLn(Stream,'\par');
-
-  SaveTail(Stream);
+  if not Options.cvWrap then Stream.WriteLn('\par');
+  Stream.Close;
 
   List.free;
 end;
 
-procedure Load_Translate(SuperEdit: TUnboundMemo; Verse: TVerse);
+procedure Load_Translate(Memo: TUnboundMemo; Verse: TVerse);
 var
     List : TStringList;
     Text : string;
@@ -224,10 +223,10 @@ begin
   if Shelf.Count = 0 then Exit;
 
   Shelf.LoadComparedBibles;
-  SuperEdit.OpenStream;
+  Memo.OpenStream;
 
   s := '\cf3 ' + Bible.VerseToStr(Verse, true) + '\par ';
-  SuperEdit.WriteLn(s);
+  Memo.WriteLn(s);
 
   old := Shelf.Current;
 
@@ -242,7 +241,7 @@ begin
       if List.Count > 0 then
         begin
           s:= '\par\cf4 ' + Bible.Name + '\par\par\cf1 ';
-          SuperEdit.WriteLn(s);
+          Memo.WriteLn(s);
         end;
 
       for j:=0 to List.Count-1 do
@@ -250,7 +249,7 @@ begin
           Text := DeleteTags(List[j]);
           s := Text + '\i0\par';
           Replacement(s);
-          SuperEdit.WriteLn(s);
+          Memo.WriteLn(s);
         end;
 
       List.free;
@@ -258,17 +257,17 @@ begin
 
   Shelf.SetCurrent(old);
 
-  SuperEdit.CloseStream;
+  Memo.CloseStream;
 end;
 
-procedure Show_Message(SuperEdit: TUnboundMemo; s: string);
+procedure Show_Message(Memo: TUnboundMemo; s: string);
 begin
-  SuperEdit.OpenStream;
-  SuperEdit.WriteLn('\f0\cf1');
-  SuperEdit.WriteLn('\fs' + IntToStr(CurrFont.Size * 2));
+  Memo.OpenStream;
+  Memo.WriteLn('\f0\cf1');
+  Memo.WriteLn('\fs' + IntToStr(CurrFont.Size * 2));
   s := '\cf1 ' + ' ' + s + '\par\par ';
-  SuperEdit.WriteLn(s);
-  SuperEdit.CloseStream;
+  Memo.WriteLn(s);
+  Memo.CloseStream;
 end;
 
 end.

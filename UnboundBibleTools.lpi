@@ -29,19 +29,22 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="Printer4Lazarus"/>
+        <PackageName Value="unboundmemopackage"/>
       </Item1>
       <Item2>
-        <PackageName Value="richmemopackage"/>
-        <MinVersion Major="1" Valid="True"/>
+        <PackageName Value="Printer4Lazarus"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="richmemopackage"/>
+        <MinVersion Major="1" Valid="True"/>
       </Item3>
+      <Item4>
+        <PackageName Value="LCL"/>
+      </Item4>
     </RequiredPackages>
-    <Units Count="19">
+    <Units Count="17">
       <Unit0>
         <Filename Value="UnboundBibleTools.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -150,17 +153,8 @@
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormTip"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UnitTip"/>
       </Unit16>
-      <Unit17>
-        <Filename Value="richmemoex.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="RichMemoEx"/>
-      </Unit17>
-      <Unit18>
-        <Filename Value="unboundmemo.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UnboundMemo"/>
-      </Unit18>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
