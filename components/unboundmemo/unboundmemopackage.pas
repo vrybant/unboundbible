@@ -7,7 +7,7 @@ unit unboundmemopackage;
 interface
 
 uses
-  UnboundMemo, RichStream, LazarusPackageIntf;
+  UnboundMemo, LazarusPackageIntf;
 
 implementation
 

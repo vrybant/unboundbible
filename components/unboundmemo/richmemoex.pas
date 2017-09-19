@@ -7,7 +7,7 @@ uses
   Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo;
 
 type
-  TRichMemoExtended = class(TRichMemo)
+  TRichMemoEx = class(TRichMemo)
   private
     FOnSelChange: TNotifyEvent;
     function  GetAttributes: TFontParams;
@@ -43,59 +43,59 @@ type
 
 implementation
 
-constructor TRichMemoExtended.Create(AOwner: TComponent);
+constructor TRichMemoEx.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   {$ifdef unix} Modified := False; {$endif}
 end;
 
-destructor TRichMemoExtended.Destroy;
+destructor TRichMemoEx.Destroy;
 begin
   inherited Destroy;
 end;
 
 {$ifdef windows}
 
-function TRichMemoExtended.LineCount: integer;
+function TRichMemoEx.LineCount: integer;
 begin
   Result := SendMessage(Handle, EM_GETLINECOUNT,0,0);
 end;
 
-function TRichMemoExtended.LineIndex(x: longint): integer;
+function TRichMemoEx.LineIndex(x: longint): integer;
 begin
   Result := SendMessage(Handle, EM_LINEINDEX,x,0);
 end;
 
-function TRichMemoExtended.GetModified: boolean;
+function TRichMemoEx.GetModified: boolean;
 begin
   Result := SendMessage(Handle, EM_GETMODIFY,  0, 0) <> 0;
 end;
 
-procedure TRichMemoExtended.SetModified(value: boolean);
+procedure TRichMemoEx.SetModified(value: boolean);
 begin
   SendMessage(Handle, EM_SETMODIFY, Byte(value), 0);
 end;
 
 {$endif}
 
-function TRichMemoExtended.LoadRichText(Source: TStream): Boolean;
+function TRichMemoEx.LoadRichText(Source: TStream): Boolean;
 begin
   Source.Seek(0,soFromBeginning);
   Result := inherited LoadRichText(Source);
 end;
 
-procedure TRichMemoExtended.SetAttributes(const value: TFontParams);
+procedure TRichMemoEx.SetAttributes(const value: TFontParams);
 begin
   SetTextAttributes(SelStart, SelLength, value);
   SelectionChange;
 end;
 
-function TRichMemoExtended.GetAttributes: TFontParams;
+function TRichMemoEx.GetAttributes: TFontParams;
 begin
   GetTextAttributes(SelStart, Result{%H-});
 end;
 
-function TRichMemoExtended.CanUndo: boolean;
+function TRichMemoEx.CanUndo: boolean;
 begin
   {$ifdef windows}
   Result := SendMessage(Handle, EM_CANUNDO,  0, 0) <> 0;
@@ -104,12 +104,12 @@ begin
   {$endif}
 end;
 
-procedure TRichMemoExtended.SelectionChange;
+procedure TRichMemoEx.SelectionChange;
 begin
   if Assigned(OnSelectionChange) then OnSelectionChange(Self);
 end;
 
-procedure TRichMemoExtended.SelectAll;
+procedure TRichMemoEx.SelectAll;
 begin
   {$ifdef windows}
   SendMessage(Handle, EM_SETSEL, 0, -1);
@@ -118,20 +118,20 @@ begin
   {$endif}
 end;
 
-procedure TRichMemoExtended.KeyUp(var Key: Word; Shift: TShiftState);
+procedure TRichMemoEx.KeyUp(var Key: Word; Shift: TShiftState);
 begin
   inherited KeyUp(Key, Shift);
   SelectionChange;
   {$ifdef unix} Modified := True; {$endif}
 end;
 
-procedure TRichMemoExtended.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TRichMemoEx.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   inherited MouseUp(Button, Shift, X, Y);
   SelectionChange;
 end;
 
-procedure TRichMemoExtended.SetSel(x1,x2: integer);
+procedure TRichMemoEx.SetSel(x1,x2: integer);
 begin
   {$ifdef windows}
   SendMessage(Handle, EM_SETSEL, x1, x2);
@@ -141,7 +141,7 @@ begin
   {$endif}
 end;
 
-procedure TRichMemoExtended.GetSel(var x1,x2: integer);
+procedure TRichMemoEx.GetSel(var x1,x2: integer);
 begin
   {$ifdef windows}
   SendMessage(Handle, EM_GETSEL, {%H-}integer(@x1), {%H-}integer(@x2));
@@ -151,17 +151,17 @@ begin
   {$endif}
 end;
 
-function TRichMemoExtended.Selected: boolean;
+function TRichMemoEx.Selected: boolean;
 begin
   Result := SelLength > 0;
 end;
 
-procedure TRichMemoExtended.HideCursor;
+procedure TRichMemoEx.HideCursor;
 begin
   {$ifdef windows} HideCaret(Handle); {$endif}
 end;
 
-procedure TRichMemoExtended.LoadFromFile(const FileName : string);
+procedure TRichMemoEx.LoadFromFile(const FileName : string);
 var
   Stream : TMemoryStream;
 begin
@@ -171,7 +171,7 @@ begin
   Stream.Free;
 end;
 
-procedure TRichMemoExtended.SaveToFile(const FileName : string);
+procedure TRichMemoEx.SaveToFile(const FileName : string);
 var
   Stream : TMemoryStream;
 begin

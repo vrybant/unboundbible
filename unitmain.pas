@@ -249,7 +249,7 @@ implementation
 
 uses
   UnitAbout, UnitInfo, UnitSearch, UnitCompare, UnitTool, UnitOptions,
-  RichStream, UnitLib, UnitLang, UnitShelf, UnitCopy, UnitTrans;
+  UnitStream, UnitLib, UnitLang, UnitShelf, UnitCopy, UnitTrans;
 
 resourcestring
   sUntitled = 'Untitled';
@@ -1431,44 +1431,77 @@ begin
 end;
 {$endif}
 
+//----------------------------------------------------------------------------------------
+//                                       tools
+//----------------------------------------------------------------------------------------
+
 procedure TMainForm.LoadChapter;
+var
+  Stream : TRichStream;
 begin
-  Load_Chapter(MemoBible);
   if Shelf.Count = 0 then Exit;
+  Stream := TRichStream.Create;
+
+  Load_Chapter(Stream);
+  MemoBible.LoadRichText(Stream);
   MakeChapterList(Bible.ChaptersCount(ActiveVerse));
   if FormTranslate.Visible then LoadTranslate(ActiveVerse);
   SelectPage(apBible);
+
+  Stream.Free;
 end;
 
 procedure TMainForm.SearchText(s: string);
 var
+  Stream : TRichStream;
+var
   Count: integer;
 //Today : longint;
 begin
+  Stream := TRichStream.Create;
   StatusBar.Panels[2].Text := '';
-  UnboundMemo.Cursor := crHourGlass;
+  MemoSearch.Cursor := crHourGlass;
 
 //Today := GetTickCount;
-  Search_Text(MemoSearch, s, Count);
+  Search_Text(Stream, s, Count);
+  MemoSearch.LoadRichText(Stream);
 
   StatusBar.Panels[2].Text := ' ' + IntToStr(Count) + ' ' + ms_found;
 //StatusBar.Panels[2].Text := ' ' + IntToStr(GetTickCount - Today);
 
-  UnboundMemo.Cursor := crArrow;
+  MemoSearch.Cursor := crArrow;
   SelectPage(apSearch);
+  Stream.Free;
 end;
 
 procedure TMainForm.LoadCompare;
+var
+  Stream : TRichStream;
 begin
-  if not Shelf.IsLoaded then Show_Message(MemoCompare, ms_loading);
+  if not Shelf.IsLoaded then
+    begin
+      Stream := TRichStream.Create;
+      Show_Message(Stream, ms_loading);
+      MemoCompare.LoadRichText(Stream);
+      Stream.Free;
+    end;
+
+  Stream := TRichStream.Create;
   SelectPage(apCompare);
-  Load_Compare(MemoCompare);
+  Load_Compare(Stream);
+  MemoCompare.LoadRichText(Stream);
+  Stream.Free;
 end;
 
 procedure TMainForm.LoadTranslate(Verse: TVerse);
+var
+  Stream : TRichStream;
 begin
-  Load_Translate(FormTranslate.MemoTranslate, Verse);
+  Stream := TRichStream.Create;
+  Load_Translate(Stream, Verse);
+  FormTranslate.MemoTranslate.LoadRichText(Stream);
   FormTranslate.Repaint;
+  Stream.Free;
 end;
 
 {$ifdef windows}

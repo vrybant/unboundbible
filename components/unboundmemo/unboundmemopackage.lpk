@@ -11,7 +11,7 @@
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
     </CompilerOptions>
-    <Files Count="4">
+    <Files Count="3">
       <Item1>
         <Filename Value="unboundmemo.pas"/>
         <HasRegisterProc Value="True"/>
@@ -26,10 +26,6 @@
         <Filename Value="unboundmemopackage.lrs"/>
         <Type Value="LRS"/>
       </Item3>
-      <Item4>
-        <Filename Value="richstream.pas"/>
-        <UnitName Value="RichStream"/>
-      </Item4>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>

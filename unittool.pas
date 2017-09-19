@@ -2,14 +2,14 @@ unit UnitTool;
 
 interface
 
-uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnboundMemo, RichStream, UnitType;
+uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitStream, UnitType;
 
-procedure Load_Chapter(Memo: TUnboundMemo);
-procedure Search_Text (Memo: TUnboundMemo; st: string; var count: integer);
-procedure Load_Compare(Memo: TUnboundMemo);
-procedure Load_Translate(Memo: TUnboundMemo; Verse: TVerse);
+procedure Load_Chapter(Stream: TRichStream);
+procedure Search_Text (Stream: TRichStream; st: string; var count: integer);
+procedure Load_Compare(Stream: TRichStream);
+procedure Load_Translate(Stream: TRichStream; Verse: TVerse);
 procedure Load_Verses(Stream: TRichStream);
-procedure Show_Message(Memo: TUnboundMemo; s: string);
+procedure Show_Message(Stream: TRichStream; s: string);
 
 implementation
 
@@ -21,7 +21,7 @@ begin
   // Replace(s,']','\cf1\i0 ');
 end;
 
-procedure Load_Chapter(Memo: TUnboundMemo);
+procedure Load_Chapter(Stream: TRichStream);
 var
    List : TStringList;
    text : string;
@@ -29,7 +29,7 @@ var
 begin
   if Shelf.Count = 0 then Exit;
 
-  Memo.OpenStream;
+  Stream.Open;
   List := TStringList.Create;
   Bible.GetChapter(ActiveVerse,List);
 
@@ -38,11 +38,11 @@ begin
       text := DeleteTags(List[i]);
       text := '\cf3 ' + ' ' + IntToStr(i+1) + '\cf1 ' + ' ' + text + '\i0\par';
       Replacement(text);
-      Memo.WriteLn(text);
+      Stream.Writeln(text);
     end;
 
   List.free;
-  Memo.CloseStream;
+  Stream.Close;
 end;
 
 procedure Highlight(var s: string; target: string; Options: TSearchOptions);
@@ -82,7 +82,7 @@ begin
     Highlight(s, line, Options);
 end;
 
-procedure Search_Text(Memo: TUnboundMemo; st: string; var count: integer);
+procedure Search_Text(Stream: TRichStream; st: string; var count: integer);
   var
     ContentArray : TContentArray;
     v : TVerse;
@@ -91,7 +91,7 @@ procedure Search_Text(Memo: TUnboundMemo; st: string; var count: integer);
   begin
     if Shelf.Count = 0 then Exit;
 
-    Memo.OpenStream;
+    Stream.Open;
     ContentArray := Bible.Search(st, CurrentSearchOptions, CurrentSearchRange);
 
     for i:=0 to Length(ContentArray)-1 do
@@ -102,13 +102,13 @@ procedure Search_Text(Memo: TUnboundMemo; st: string; var count: integer);
         Highlights(text,st,CurrentSearchOptions);
         text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + text + '\i0\par\par';
         Replacement(text);
-        Memo.WriteLn(text);
+        Stream.Writeln(text);
       end;
 
-    Memo.CloseStream;
+    Stream.Close;
   end;
 
-procedure Load_Compare(Memo: TUnboundMemo);
+procedure Load_Compare(Stream: TRichStream);
 var
     List : TStringList;
     Text : string;
@@ -119,10 +119,10 @@ begin
   if Shelf.Count = 0 then Exit;
 
   Shelf.LoadComparedBibles;
-  Memo.OpenStream;
+  Stream.Open;
 
   s := '\cf1 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
-  Memo.WriteLn(s);
+  Stream.Writeln(s);
 
   old := Shelf.Current;
 
@@ -137,7 +137,7 @@ begin
       if List.Count > 0 then
         begin
           s:= '\par\cf3 ' + Bible.Name + '\par\cf1 ';
-          Memo.WriteLn(s);
+          Stream.Writeln(s);
         end;
 
       for j:=0 to List.Count-1 do
@@ -145,7 +145,7 @@ begin
           Text := DeleteTags(List[j]);
           s := Text + '\i0\par';
           Replacement(s);
-          Memo.WriteLn(s);
+          Stream.Writeln(s);
         end;
 
       List.free;
@@ -153,7 +153,7 @@ begin
 
   Shelf.SetCurrent(old);
 
-  Memo.CloseStream;
+  Stream.Close;
 end;
 
 procedure Load_Verses(Stream: TRichStream);
@@ -170,7 +170,7 @@ var
     s := Bible.VerseToStr(ActiveVerse,not Options.cvAbbr);
     if Options.cvDelim then s := '(' + s + ')';
     s := '\f0\cf3 ' + s + '\cf1 ' + ' ' + par;
-    Stream.WriteLn(s);
+    Stream.Writeln(s);
   end;
 
 begin
@@ -197,22 +197,22 @@ begin
       s := s + '\i0 '+ ' ' + par;
 
       Replacement(s);
-      Stream.WriteLn(s);
+      Stream.Writeln(s);
     end;
 
   if Options.cvEnd then
     begin
-      Stream.WriteLn('');
+      Stream.Writeln('');
       MakeLink;
     end;
 
-  if not Options.cvWrap then Stream.WriteLn('\par');
+  if not Options.cvWrap then Stream.Writeln('\par');
   Stream.Close;
 
   List.free;
 end;
 
-procedure Load_Translate(Memo: TUnboundMemo; Verse: TVerse);
+procedure Load_Translate(Stream: TRichStream; Verse: TVerse);
 var
     List : TStringList;
     Text : string;
@@ -223,10 +223,10 @@ begin
   if Shelf.Count = 0 then Exit;
 
   Shelf.LoadComparedBibles;
-  Memo.OpenStream;
+  Stream.Open;
 
   s := '\cf3 ' + Bible.VerseToStr(Verse, true) + '\par ';
-  Memo.WriteLn(s);
+  Stream.Writeln(s);
 
   old := Shelf.Current;
 
@@ -241,7 +241,7 @@ begin
       if List.Count > 0 then
         begin
           s:= '\par\cf4 ' + Bible.Name + '\par\par\cf1 ';
-          Memo.WriteLn(s);
+          Stream.Writeln(s);
         end;
 
       for j:=0 to List.Count-1 do
@@ -249,7 +249,7 @@ begin
           Text := DeleteTags(List[j]);
           s := Text + '\i0\par';
           Replacement(s);
-          Memo.WriteLn(s);
+          Stream.Writeln(s);
         end;
 
       List.free;
@@ -257,17 +257,17 @@ begin
 
   Shelf.SetCurrent(old);
 
-  Memo.CloseStream;
+  Stream.Close;
 end;
 
-procedure Show_Message(Memo: TUnboundMemo; s: string);
+procedure Show_Message(Stream: TRichStream; s: string);
 begin
-  Memo.OpenStream;
-  Memo.WriteLn('\f0\cf1');
-  Memo.WriteLn('\fs' + IntToStr(CurrFont.Size * 2));
+  Stream.Open;
+  Stream.Writeln('\f0\cf1');
+  Stream.Writeln('\fs' + IntToStr(CurrFont.Size * 2));
   s := '\cf1 ' + ' ' + s + '\par\par ';
-  Memo.WriteLn(s);
-  Memo.CloseStream;
+  Stream.Writeln(s);
+  Stream.Close;
 end;
 
 end.

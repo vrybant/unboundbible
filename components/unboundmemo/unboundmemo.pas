@@ -5,7 +5,7 @@ interface
 uses
   {$ifdef windows} Windows, {$endif} Forms, SysUtils,
   Classes, Graphics, Controls, ExtCtrls, LCLProc, LCLType, LazUTF8,
-  RichMemo, RichMemoEx, RichStream;
+  RichMemo, RichMemoEx;
 
 type
   TPara_Numbering = TParaNumbering;
@@ -15,7 +15,7 @@ type
     till : integer;
   end;
 
-  TUnboundMemo = class(TRichMemoExtended)
+  TUnboundMemo = class(TRichMemoEx)
   protected
     procedure CreateWnd; override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
@@ -29,7 +29,6 @@ type
     function  GetLink: string;
     function  GetParagraphNumber: integer;
   public
-    Stream : TRichStream;
     Hyperlink : boolean;
     Hypertext : string;
     constructor Create(AOwner: TComponent); override;
@@ -40,9 +39,6 @@ type
     procedure SelectWord;
     procedure SaveSelection;
     procedure RestoreSelection;
-    procedure OpenStream;
-    procedure CloseStream;
-    procedure WriteLn(s: string);
   end;
 
 procedure Register;
@@ -292,26 +288,6 @@ procedure TUnboundMemo.RestoreSelection;
 begin
   SelStart  := SelStartTemp;
   SelLength := SelLengthTemp;
-end;
-
-procedure TUnboundMemo.OpenStream;
-begin
-  Stream := TRichStream.Create;
-  Stream.Font.Assign(Font);
-  Stream.Open;
-end;
-
-procedure TUnboundMemo.WriteLn(s: string);
-begin
-  Stream.WriteLn(s);
-end;
-
-procedure TUnboundMemo.CloseStream;
-begin
-  Stream.Close;
-  LoadRichText(Stream);
-  Stream.Free;
-  SelStart := 0;
 end;
 
 procedure Register;
