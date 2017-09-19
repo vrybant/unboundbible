@@ -29,8 +29,8 @@ type
     function  GetLink: string;
     function  GetParagraphNumber: integer;
   public
-    Hyperlink : boolean;
-    Hypertext : string;
+    linkable : boolean;
+    hyperlink : string;
     constructor Create(AOwner: TComponent); override;
     function  GetRange: TMemoRange;
     procedure SelectParagraph(n : integer);
@@ -57,8 +57,8 @@ constructor TUnboundMemo.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
-  Hyperlink := False;
-  Hypertext := '';
+  linkable := False;
+  hyperlink := '';
   Cursor := crArrow;
   SelStartTemp  := 0;
   SelLengthTemp := 0;
@@ -112,7 +112,7 @@ end;
 
 procedure TUnboundMemo.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  if Hyperlink then Hypertext := GetLink else Hypertext := '';
+  if linkable then hyperlink := GetLink else hyperlink := '';
   if ReadOnly or (ssCtrl in Shift) then HideCursor;
   inherited;
 end;
@@ -127,7 +127,7 @@ procedure TUnboundMemo.KeyUp(var Key: Word; Shift: TShiftState);
 begin
   inherited;
   {$ifdef windows}
-  if Hyperlink and not ReadOnly and (Key = VK_CONTROL) then ShowCaret(Handle);
+  if linkable and not ReadOnly and (Key = VK_CONTROL) then ShowCaret(Handle);
   {$endif}
 end;
 

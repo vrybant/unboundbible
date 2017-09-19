@@ -9,19 +9,19 @@ object FormCopy: TFormCopy
   ClientWidth = 398
   OnActivate = FormActivate
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   OnPaint = FormPaint
   Position = poDesktopCenter
   LCLVersion = '1.6.4.0'
-  object RichMemoTemp: TRichMemo
+  object Memo: TUnboundMemo
+    Cursor = crArrow
     Left = 8
     Height = 180
     Top = 8
     Width = 383
     Color = clWhite
-    HideSelection = False
+    HideSelection = True
+    ScrollBars = ssAutoVertical
     TabOrder = 0
-    Visible = False
     ZoomFactor = 1
   end
   object ButtonCopy: TButton

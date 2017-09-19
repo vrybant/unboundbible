@@ -1,12 +1,10 @@
 unit UnitCopy;
 
-{$H+}
-
 interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls, UnitLib, RichMemo, UnboundMemo, UnitStream;
+  StdCtrls, ExtCtrls, UnitLib, UnboundMemo, UnitStream;
 
 type
   TFormCopy = class(TForm)
@@ -14,18 +12,15 @@ type
     ButtonCopy: TButton;
     CheckGroup: TCheckGroup;
     RadioGroup: TRadioGroup;
-    RichMemoTemp: TRichMemo;
+    Memo: TUnboundMemo;
     procedure ButtonCopyClick(Sender: TObject);
     procedure CheckGroupItemClick(Sender: TObject; {%H-}Index: integer);
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure RadioGroupClick(Sender: TObject);
   private
     Range: TMemoRange;
-    MemoPreview : TUnboundMemo;
-    Stream: TRichStream;
     procedure CopyToClipboard;
   public
     procedure Translate;
@@ -37,7 +32,7 @@ var
 
 implementation
 
-uses UnitShelf, UnitTool, UnitType, UnitLang;
+uses UnitTool, UnitType, UnitLang;
 
 {$R *.lfm}
 
@@ -62,22 +57,7 @@ end;
 
 procedure TFormCopy.FormCreate(Sender: TObject);
 begin
-  Stream := TRichStream.Create;
-  MemoPreview := TUnboundMemo.Create(self);
-
-  with MemoPreview do
-    begin
-      Parent := FormCopy;
-      HideSelection := True;
-      ScrollBars := ssVertical;
-      Hyperlink := False;
-      Color := clWhite;
-      Left := RichMemoTemp.Left;
-      Top  := RichMemoTemp.Top;
-      Width  := RichMemoTemp.Width;
-      Height := RichMemoTemp.Height;
-    end;
-
+  Memo.linkable := False;
 end;
 
 procedure TFormCopy.FormActivate(Sender: TObject);
@@ -97,10 +77,10 @@ end;
 
 procedure TFormCopy.CopyToClipboard;
 begin
-  MemoPreview.SelectAll;
-  MemoPreview.CopyToClipboard;
-  MemoPreview.SelStart  := 0;
-  MemoPreview.SelLength := 0;
+  Memo.SelectAll;
+  Memo.CopyToClipboard;
+  Memo.SelStart  := 0;
+  Memo.SelLength := 0;
 end;
 
 procedure TFormCopy.CheckGroupItemClick(Sender: TObject; Index: integer);
@@ -124,20 +104,13 @@ begin
 end;
 
 procedure TFormCopy.FormPaint(Sender: TObject);
+var
+  Stream: TRichStream;
 begin
-  Stream.Clear;
-  ActiveVerse.Number := Range.from;
-  ActiveVerse.Count  := Range.till;
+  Stream := TRichStream.Create;
   Load_Verses(Stream);
-  MemoPreview.LoadRichText(Stream);
-  MemoPreview.SelStart  := 0;
-  MemoPreview.SelLength := 0;
-end;
-
-procedure TFormCopy.FormDestroy(Sender: TObject);
-begin
+  Memo.LoadRichText(Stream);
   Stream.Free;
-  MemoPreview.Free;
 end;
 
 end.

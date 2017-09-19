@@ -311,7 +311,7 @@ begin
     HideSelection := False;
     ScrollBars := ssBoth;
     ReadOnly := True;
-    Hyperlink := True;
+    linkable := True;
     OnMouseUp := MemoCommonMouseUp;
   end;
 
@@ -331,7 +331,7 @@ begin
     Align := alClient;
     HideSelection := False;
     ScrollBars := ssBoth;
-    Hyperlink := True;
+    linkable := True;
     OnChange := MemoNotesChange;
     OnSelectionChange := MemoNotesSelectionChange;
     OnMouseUp := MemoCommonMouseUp;
@@ -390,7 +390,7 @@ begin
   if Button <> mbLeft then Exit;
   if Shelf.Count = 0  then Exit;
 
-  s := (Sender as TUnboundMemo).Hypertext;
+  s := (Sender as TUnboundMemo).hyperlink;
   Verse := Bible.SrtToVerse(s);
   if Verse.Book = 0 then Exit;
 
