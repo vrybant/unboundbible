@@ -8,13 +8,6 @@ uses
   RichMemo, RichMemoEx;
 
 type
-  TPara_Numbering = TParaNumbering;
-
-  TMemoRange = record
-    from : integer;
-    till : integer;
-  end;
-
   TUnboundMemo = class(TRichMemoEx)
   protected
     procedure CreateWnd; override;
@@ -28,14 +21,17 @@ type
     function  Colored: boolean;
     function  GetLink: string;
     function  GetParagraphNumber: integer;
-  public
-    linkable : boolean;
-    hyperlink : string;
-    constructor Create(AOwner: TComponent); override;
-    function  GetRange: TMemoRange;
-    procedure SelectParagraph(n : integer);
+    procedure GetParagraphRange;
     function  GetStartSelection: integer;
     function  GetEndSelection: integer;
+  public
+    linkable : boolean;
+    paragraphic : boolean;
+    hyperlink : string;
+    ParagraphStart : integer;
+    ParagraphEnd : integer;
+    constructor Create(AOwner: TComponent); override;
+    procedure SelectParagraph(n : integer);
     procedure SelectWord;
     procedure SaveSelection;
     procedure RestoreSelection;
@@ -58,10 +54,13 @@ begin
   inherited Create(AOwner);
 
   linkable := False;
+  paragraphic := False;
   hyperlink := '';
-  Cursor := crArrow;
-  SelStartTemp  := 0;
+  ParagraphStart := 0;
+  ParagraphEnd := 0;
+  SelStartTemp := 0;
   SelLengthTemp := 0;
+  Cursor := crArrow;
 end;
 
 procedure TUnboundMemo.CreateWnd;
@@ -113,6 +112,7 @@ end;
 procedure TUnboundMemo.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if linkable then hyperlink := GetLink else hyperlink := '';
+  if paragraphic and (Button = mbLeft) then GetParagraphRange;
   if ReadOnly or (ssCtrl in Shift) then HideCursor;
   inherited;
 end;
@@ -163,13 +163,13 @@ begin
   SetSel(x1,x1+1);
 end;
 
-function TUnboundMemo.GetRange: TMemoRange;
+procedure TUnboundMemo.GetParagraphRange;
 var
   x1,x2 : integer;
 begin
   GetSel(x1{%H-},x2{%H-});
-  SetSel(x2,x2); Result.till := GetParagraphNumber;
-  SetSel(x1,x1); Result.from := GetParagraphNumber;
+  SetSel(x2,x2); ParagraphEnd   := GetParagraphNumber;
+  SetSel(x1,x1); ParagraphStart := GetParagraphNumber;
   if x1 <> x2 then SetSel(x1,x2);
 end;
 

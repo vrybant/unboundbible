@@ -16,15 +16,14 @@ type
     procedure ButtonCopyClick(Sender: TObject);
     procedure CheckGroupItemClick(Sender: TObject; {%H-}Index: integer);
     procedure FormActivate(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure RadioGroupClick(Sender: TObject);
   private
-    Range: TMemoRange;
     procedure CopyToClipboard;
   public
+    ParagraphStart : integer;
+    ParagraphEnd : integer;
     procedure Translate;
-    procedure SetRange(r: TMemoRange);
   end;
 
 var
@@ -48,16 +47,6 @@ begin
   CheckGroup .Items[0] := T('Verses.Abbr'     );
   CheckGroup .Items[1] := T('Verses.Brackets' );
   CheckGroup .Items[2] := T('Verses.End'      );
-end;
-
-procedure TFormCopy.SetRange(r: TMemoRange);
-begin
-  Range := r;
-end;
-
-procedure TFormCopy.FormCreate(Sender: TObject);
-begin
-  Memo.linkable := False;
 end;
 
 procedure TFormCopy.FormActivate(Sender: TObject);

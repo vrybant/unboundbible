@@ -301,6 +301,7 @@ begin
     HideSelection := False;
     ScrollBars := ssBoth;
     ReadOnly := True;
+    Paragraphic := True;
     OnMouseUp := MemoBibleMouseUp;
   end;
 
@@ -360,14 +361,11 @@ begin
 end;
 
 procedure TMainForm.MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
-var
-  Range : TMemoRange;
 begin
   if Button = mbLeft then
     begin
-      Range := MemoBible.GetRange;
-      ActiveVerse.Number := Range.from;
-      ActiveVerse.Count  := Range.till - Range.from + 1;
+      ActiveVerse.Number := MemoBible.ParagraphStart;
+      ActiveVerse.Count  := MemoBible.ParagraphEnd - MemoBible.ParagraphStart + 1;
       if FormTranslate.Visible then LoadTranslate(ActiveVerse);
     end;
 
@@ -909,11 +907,7 @@ begin
 end;
 
 procedure TMainForm.CmdCopyAs(Sender: TObject);
-var
-  Range : TMemoRange;
 begin
-  Range := MemoBible.GetRange;
-  FormCopy.SetRange(Range);
   FormCopy.ShowModal;
   {$ifdef darwin} MemoBible.RestoreSelection; {$endif}
 end;
@@ -1508,12 +1502,10 @@ end;
 procedure TMainForm.VersesToClipboard;
 var
   Stream : TRichStream;
-  Range : TMemoRange;
 begin
   Stream := TRichStream.Create;
-  Range := MemoBible.GetRange;
-  ActiveVerse.number := Range.from;
-  ActiveVerse.count  := Range.till - Range.from + 1;
+  ActiveVerse.number := MemoBible.ParagraphStart;
+  ActiveVerse.count  := MemoBible.ParagraphEnd - MemoBible.ParagraphStart + 1;
   Load_Verses(Stream);
   StreamToClipboard(Stream);
   Stream.free;
