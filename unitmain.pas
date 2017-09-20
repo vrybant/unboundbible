@@ -32,6 +32,11 @@ type
     FileOpen1: TFileOpen;
     EditCut1: TEditCut;
 
+    MemoBible: TUnboundMemo;
+    MemoSearch: TUnboundMemo;
+    MemoCompare: TUnboundMemo;
+    MemoNotes: TUnboundMemo;
+
     ActionCopyVerses: TAction;
     ActionEditSelAll: TEditSelectAll;
     ActionFont: TAction;
@@ -180,6 +185,10 @@ type
     procedure IdleTimerTimer(Sender: TObject);
     procedure ListBoxBookClick(Sender: TObject);
     procedure ListBoxChClick(Sender: TObject);
+    procedure MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure MemoCommonMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+    procedure MemoNotesChange(Sender: TObject);
+    procedure MemoNotesSelectionChange(Sender: TObject);
     procedure miBibleFolderClick(Sender: TObject);
     procedure miDownloadClick(Sender: TObject);
     procedure miHomeClick(Sender: TObject);
@@ -189,10 +198,6 @@ type
     procedure StatusBarDblClick(Sender: TObject);
     procedure ToolButtonFBClick(Sender: TObject);
   private
-    MemoBible  : TUnboundMemo;
-    MemoSearch : TUnboundMemo;
-    MemoCompare: TUnboundMemo;
-    MemoNotes  : TUnboundMemo;
     NoteFileName: string;
     ReopenMax: integer;
     ReopenList: TStringList;
@@ -203,7 +208,6 @@ type
     function CheckFileSave: boolean;
     procedure ComboBoxInit;
     {$ifdef darwin} procedure ComboBoxSetIndex; {$endif}
-    procedure CreateMemoComponents;
     procedure EnableButtons;
     procedure UpDownButtons;
     procedure SelectBook(title: string);
@@ -221,10 +225,6 @@ type
     procedure ReadIniFile;
     procedure RebuildReopenList;
     procedure ReopenMenuInit;
-    procedure MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
-    procedure MemoCommonMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
-    procedure MemoNotesChange(Sender: TObject);
-    procedure MemoNotesSelectionChange(Sender: TObject);
     procedure SaveIniFile;
     procedure SearchText(s: string);
     procedure SelectPage(page: integer);
@@ -287,58 +287,6 @@ begin
 end;
 {$endif}
 
-procedure TMainForm.CreateMemoComponents;
-begin
-  MemoBible   := TUnboundMemo.Create(self);
-  MemoSearch  := TUnboundMemo.Create(self);
-  MemoCompare := TUnboundMemo.Create(self);
-  MemoNotes   := TUnboundMemo.Create(self);
-
-  with MemoBible do
-  begin
-    Parent := TabSheetBible;
-    Align := alClient;
-    HideSelection := False;
-    ScrollBars := ssBoth;
-    ReadOnly := True;
-    Paragraphic := True;
-    OnMouseUp := MemoBibleMouseUp;
-  end;
-
-  with MemoSearch do
-  begin
-    Parent := TabSheetSearch;
-    Align := alClient;
-    HideSelection := False;
-    ScrollBars := ssBoth;
-    ReadOnly := True;
-    linkable := True;
-    OnMouseUp := MemoCommonMouseUp;
-  end;
-
-  with MemoCompare do
-  begin
-    Parent := TabSheetCompare;
-    Align := alClient;
-    HideSelection := False;
-    ScrollBars := ssBoth;
-    ReadOnly := True;
-    OnMouseUp := MemoCommonMouseUp;
-  end;
-
-  with MemoNotes do
-  begin
-    Parent := TabSheetNotes;
-    Align := alClient;
-    HideSelection := False;
-    ScrollBars := ssBoth;
-    linkable := True;
-    OnChange := MemoNotesChange;
-    OnSelectionChange := MemoNotesSelectionChange;
-    OnMouseUp := MemoCommonMouseUp;
-  end;
-end;
-
 procedure TMainForm.UpdateCaption;
 begin
   Caption := AppName + ' ' + VersionInfo;
@@ -359,6 +307,10 @@ begin
   GetCursorPos(CursorPos);
   PopupMenu.Popup(CursorPos.X, CursorPos.Y);
 end;
+
+//----------------------------------------------------------------------------------------
+//                                   memo's events
+//----------------------------------------------------------------------------------------
 
 procedure TMainForm.MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
@@ -398,6 +350,18 @@ begin
     then GoToVerse(Verse, True);
 end;
 
+procedure TMainForm.MemoNotesChange(Sender: TObject);
+begin
+  UpdateStatusBar;
+end;
+
+procedure TMainForm.MemoNotesSelectionChange(Sender: TObject);
+begin
+  UpDownButtons;
+end;
+
+//----------------------------------------------------------------------------------------
+
 procedure TMainForm.SelectBook(title: string);
 var
   i, index : integer;
@@ -428,16 +392,6 @@ begin
   if select then MemoBible.SelectParagraph(Verse.Number);
   {$ifdef darwin} bag02 := False; {$endif}
   Repaint;
-end;
-
-procedure TMainForm.MemoNotesChange(Sender: TObject);
-begin
-  UpdateStatusBar;
-end;
-
-procedure TMainForm.MemoNotesSelectionChange(Sender: TObject);
-begin
-  UpDownButtons;
 end;
 
 procedure TMainForm.Translate;
@@ -1011,7 +965,6 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Caption := AppName + ' ' + VersionInfo + ' - Open Source Application';
 
-  CreateMemoComponents;
   CreateDirectories;
 
   Shelf := TShelf.Create;
