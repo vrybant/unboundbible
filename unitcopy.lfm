@@ -1,7 +1,7 @@
 object FormCopy: TFormCopy
-  Left = 1296
+  Left = 1295
   Height = 308
-  Top = 174
+  Top = 149
   Width = 398
   BorderStyle = bsDialog
   Caption = 'Copy Verses'

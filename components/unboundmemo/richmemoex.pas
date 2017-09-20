@@ -25,7 +25,7 @@ type
     procedure KeyUp(var Key: Word; Shift: TShiftState); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
   public
-    {$ifdef unix} Modified : boolean; {$endif}
+    {$ifdef darwin} Modified : boolean; {$endif}
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function LoadRichText(Source: TStream): Boolean; override;
@@ -46,7 +46,7 @@ implementation
 constructor TRichMemoEx.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  {$ifdef unix} Modified := False; {$endif}
+  {$ifdef darwin} Modified := False; {$endif}
 end;
 
 destructor TRichMemoEx.Destroy;
@@ -122,7 +122,7 @@ procedure TRichMemoEx.KeyUp(var Key: Word; Shift: TShiftState);
 begin
   inherited KeyUp(Key, Shift);
   SelectionChange;
-  {$ifdef unix} Modified := True; {$endif}
+  {$ifdef darwin} Modified := True; {$endif}
 end;
 
 procedure TRichMemoEx.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

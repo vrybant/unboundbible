@@ -7,6 +7,9 @@ uses
   StdCtrls, ExtCtrls, UnitLib, UnboundMemo, UnitStream;
 
 type
+
+  { TFormCopy }
+
   TFormCopy = class(TForm)
     ButtonCancel: TButton;
     ButtonCopy: TButton;
@@ -100,6 +103,8 @@ begin
   Load_Verses(Stream);
   Memo.LoadRichText(Stream);
   Stream.Free;
+
+  output('*');
 end;
 
 end.

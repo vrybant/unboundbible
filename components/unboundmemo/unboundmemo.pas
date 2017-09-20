@@ -3,7 +3,7 @@ unit UnboundMemo;
 interface
 
 uses
-  {$ifdef windows} Windows, {$endif} Forms, SysUtils,
+  {$ifdef windows} Windows, {$endif} Forms, SysUtils, LResources,
   Classes, Graphics, Controls, ExtCtrls, LCLProc, LCLType, LazUTF8,
   RichMemo, RichMemoEx;
 
@@ -16,6 +16,8 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure KeyUp  (var Key: Word; Shift: TShiftState); override;
   private
+    FLinkable : boolean;
+    FParagraphic : boolean;
     SelStartTemp  : integer;
     SelLengthTemp : integer;
     function  Colored: boolean;
@@ -25,16 +27,17 @@ type
     function  GetStartSelection: integer;
     function  GetEndSelection: integer;
   public
-    linkable : boolean;
-    paragraphic : boolean;
-    hyperlink : string;
+    Hyperlink : string;
     ParagraphStart : integer;
-    ParagraphEnd : integer;
+    ParagraphCount : integer;
     constructor Create(AOwner: TComponent); override;
     procedure SelectParagraph(n : integer);
     procedure SelectWord;
     procedure SaveSelection;
     procedure RestoreSelection;
+  published
+    property Linkable    : boolean read FLinkable    write FLinkable    default False;
+    property Paragraphic : boolean read FParagraphic write FParagraphic default False;
   end;
 
 procedure Register;
@@ -53,11 +56,9 @@ constructor TUnboundMemo.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
-  linkable := False;
-  paragraphic := False;
-  hyperlink := '';
+  Hyperlink := '';
   ParagraphStart := 0;
-  ParagraphEnd := 0;
+  ParagraphCount := 0;
   SelStartTemp := 0;
   SelLengthTemp := 0;
   Cursor := crArrow;
@@ -111,8 +112,8 @@ end;
 
 procedure TUnboundMemo.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  if linkable then hyperlink := GetLink else hyperlink := '';
-  if paragraphic and (Button = mbLeft) then GetParagraphRange;
+  if Linkable then Hyperlink := GetLink else Hyperlink := '';
+  if Paragraphic and (Button = mbLeft) then GetParagraphRange;
   if ReadOnly or (ssCtrl in Shift) then HideCursor;
   inherited;
 end;
@@ -127,7 +128,7 @@ procedure TUnboundMemo.KeyUp(var Key: Word; Shift: TShiftState);
 begin
   inherited;
   {$ifdef windows}
-  if linkable and not ReadOnly and (Key = VK_CONTROL) then ShowCaret(Handle);
+  if Linkable and not ReadOnly and (Key = VK_CONTROL) then ShowCaret(Handle);
   {$endif}
 end;
 
@@ -165,11 +166,13 @@ end;
 
 procedure TUnboundMemo.GetParagraphRange;
 var
+  ParagraphEnd : integer;
   x1,x2 : integer;
 begin
   GetSel(x1{%H-},x2{%H-});
   SetSel(x2,x2); ParagraphEnd   := GetParagraphNumber;
   SetSel(x1,x1); ParagraphStart := GetParagraphNumber;
+  ParagraphCount := ParagraphEnd - ParagraphStart + 1;
   if x1 <> x2 then SetSel(x1,x2);
 end;
 
@@ -292,6 +295,7 @@ end;
 
 procedure Register;
 begin
+  {$I unboundmemoicon.lrs}
   RegisterComponents('Common Controls',[TUnboundMemo]);
 end;
 

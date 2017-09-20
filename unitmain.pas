@@ -3,7 +3,7 @@ unit UnitMain;
 interface
 
 uses
-  {$ifdef unix} RichMemoEx, {$endif}
+  {$ifdef darwin} RichMemoEx, {$endif}
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
   ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitType;
@@ -365,7 +365,7 @@ begin
   if Button = mbLeft then
     begin
       ActiveVerse.Number := MemoBible.ParagraphStart;
-      ActiveVerse.Count  := MemoBible.ParagraphEnd - MemoBible.ParagraphStart + 1;
+      ActiveVerse.Count  := MemoBible.ParagraphCount;
       if FormTranslate.Visible then LoadTranslate(ActiveVerse);
     end;
 
@@ -1505,7 +1505,7 @@ var
 begin
   Stream := TRichStream.Create;
   ActiveVerse.number := MemoBible.ParagraphStart;
-  ActiveVerse.count  := MemoBible.ParagraphEnd - MemoBible.ParagraphStart + 1;
+  ActiveVerse.count  := MemoBible.ParagraphCount;
   Load_Verses(Stream);
   StreamToClipboard(Stream);
   Stream.free;
@@ -1515,12 +1515,11 @@ end;
 {$ifdef unix}
 procedure TMainForm.VersesToClipboard;
 var
-  MemoPreview : TRichMemo;
-  Stream: TMemoryStream;
-  Range : TRange;
+  MemoPreview : TUnboundMemo;
+  Stream: TRichStream;
 begin
-  Stream := TMemoryStream.Create;
-  MemoPreview := TRichMemo.Create(self);
+  Stream := TRichStream.Create;
+  MemoPreview := TUnboundMemo.Create(self);
 
   with MemoPreview do
     begin
@@ -1531,9 +1530,8 @@ begin
       Width  := 100;
     end;
 
-  Range := MemoBible.GetRange;
-  ActiveVerse.number := Range.from;
-  ActiveVerse.count  := Range.till - Range.from + 1;
+  ActiveVerse.Number := MemoPreview.ParagraphStart;
+  ActiveVerse.Count  := MemoPreview.ParagraphCount;
   Load_Verses(Stream);
 
   MemoPreview.LoadRichText(Stream);
