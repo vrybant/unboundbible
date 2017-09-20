@@ -3,18 +3,17 @@ unit UnitTrans;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, IniFiles, UnboundMemo;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, IniFiles, UnboundMemo;
 
 type
   TFormTranslate = class(TForm)
+    Memo: TUnboundMemo;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
     procedure SaveIniFile;
     procedure ReadIniFile;
   public
-    MemoTranslate : TUnboundMemo;
     procedure Translate;
   end;
 
@@ -34,24 +33,12 @@ begin
 
 procedure TFormTranslate.FormCreate(Sender: TObject);
 begin
-  MemoTranslate := TUnboundMemo.Create(self);
-
-  with MemoTranslate do
-  begin
-    Parent := FormTranslate;
-    Align := alClient;
-    HideSelection := False;
-    ScrollBars := ssBoth;
-    ReadOnly := True;
-  end;
-
   ReadIniFile;
 end;
 
 procedure TFormTranslate.FormDestroy(Sender: TObject);
 begin
   SaveIniFile;
-  MemoTranslate.Free;
 end;
 
 procedure TFormTranslate.SaveIniFile;

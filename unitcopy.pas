@@ -18,7 +18,7 @@ type
     procedure FormActivate(Sender: TObject);
     procedure RadioGroupClick(Sender: TObject);
   private
-    procedure Load;
+    procedure LoadText;
     procedure CopyToClipboard;
   public
     ParagraphStart : integer;
@@ -63,10 +63,10 @@ begin
       if     cvWrap and     cvNum then RadioGroup.ItemIndex := 3;
     end;
 
-  Load;
+  LoadText;
 end;
 
-procedure TFormCopy.Load;
+procedure TFormCopy.LoadText;
 var
   Stream: TRichStream;
 begin
@@ -89,7 +89,7 @@ begin
   Options.cvAbbr  := CheckGroup.Checked[0];
   Options.cvDelim := CheckGroup.Checked[1];
   Options.cvEnd   := CheckGroup.Checked[2];
-  Load;
+  LoadText;
   Repaint;
 end;
 
@@ -102,7 +102,7 @@ procedure TFormCopy.RadioGroupClick(Sender: TObject);
 begin
   Options.cvWrap := (RadioGroup.ItemIndex = 1) or (RadioGroup.ItemIndex = 3);
   Options.cvNum  := (RadioGroup.ItemIndex = 2) or (RadioGroup.ItemIndex = 3);
-  Load;
+  LoadText;
   Repaint;
 end;
 

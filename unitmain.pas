@@ -1493,7 +1493,7 @@ var
 begin
   Stream := TRichStream.Create;
   Load_Translate(Stream, Verse);
-  FormTranslate.MemoTranslate.LoadRichText(Stream);
+  FormTranslate.Memo.LoadRichText(Stream);
   FormTranslate.Repaint;
   Stream.Free;
 end;
