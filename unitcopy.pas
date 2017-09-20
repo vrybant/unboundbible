@@ -7,9 +7,6 @@ uses
   StdCtrls, ExtCtrls, UnitLib, UnboundMemo, UnitStream;
 
 type
-
-  { TFormCopy }
-
   TFormCopy = class(TForm)
     ButtonCancel: TButton;
     ButtonCopy: TButton;
@@ -19,9 +16,9 @@ type
     procedure ButtonCopyClick(Sender: TObject);
     procedure CheckGroupItemClick(Sender: TObject; {%H-}Index: integer);
     procedure FormActivate(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
     procedure RadioGroupClick(Sender: TObject);
   private
+    procedure Load;
     procedure CopyToClipboard;
   public
     ParagraphStart : integer;
@@ -65,6 +62,18 @@ begin
       if not cvWrap and     cvNum then RadioGroup.ItemIndex := 2;
       if     cvWrap and     cvNum then RadioGroup.ItemIndex := 3;
     end;
+
+  Load;
+end;
+
+procedure TFormCopy.Load;
+var
+  Stream: TRichStream;
+begin
+  Stream := TRichStream.Create;
+  Load_Verses(Stream);
+  Memo.LoadRichText(Stream);
+  Stream.Free;
 end;
 
 procedure TFormCopy.CopyToClipboard;
@@ -80,6 +89,7 @@ begin
   Options.cvAbbr  := CheckGroup.Checked[0];
   Options.cvDelim := CheckGroup.Checked[1];
   Options.cvEnd   := CheckGroup.Checked[2];
+  Load;
   Repaint;
 end;
 
@@ -92,19 +102,8 @@ procedure TFormCopy.RadioGroupClick(Sender: TObject);
 begin
   Options.cvWrap := (RadioGroup.ItemIndex = 1) or (RadioGroup.ItemIndex = 3);
   Options.cvNum  := (RadioGroup.ItemIndex = 2) or (RadioGroup.ItemIndex = 3);
+  Load;
   Repaint;
-end;
-
-procedure TFormCopy.FormPaint(Sender: TObject);
-var
-  Stream: TRichStream;
-begin
-  Stream := TRichStream.Create;
-  Load_Verses(Stream);
-  Memo.LoadRichText(Stream);
-  Stream.Free;
-
-  output('*');
 end;
 
 end.

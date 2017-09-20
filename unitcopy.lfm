@@ -8,7 +8,6 @@ object FormCopy: TFormCopy
   ClientHeight = 308
   ClientWidth = 398
   OnActivate = FormActivate
-  OnPaint = FormPaint
   Position = poDesktopCenter
   LCLVersion = '1.6.4.0'
   object Memo: TUnboundMemo
