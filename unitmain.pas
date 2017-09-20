@@ -68,8 +68,8 @@ type
     ActionInfo: THelpAction;
     ActionTrans: TAction;
 
-    ListBoxCh: TListBox;
-    ListBoxBook: TListBox;
+    ChapterBox: TListBox;
+    BookBox: TListBox;
     MenuItem1: TMenuItem;
     Ruler: TPanel;
     PanelLeft: TPanel;
@@ -183,8 +183,8 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure IdleTimerTimer(Sender: TObject);
-    procedure ListBoxBookClick(Sender: TObject);
-    procedure ListBoxChClick(Sender: TObject);
+    procedure BookBoxClick(Sender: TObject);
+    procedure ChapterBoxClick(Sender: TObject);
     procedure MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure MemoCommonMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure MemoNotesChange(Sender: TObject);
@@ -367,13 +367,13 @@ var
   i, index : integer;
 begin
   index := -1;
-  for i:=0 to ListBoxBook.Items.Count-1 do
-    if ListBoxBook.Items[i] = title then index := i;
+  for i:=0 to BookBox.Items.Count-1 do
+    if BookBox.Items[i] = title then index := i;
 
   if index < 0 then Exit;
 
-  ListBoxBook.ItemIndex := index;
-  ListBoxCh.ItemIndex := ActiveVerse.Chapter - 1;
+  BookBox.ItemIndex := index;
+  ChapterBox.ItemIndex := ActiveVerse.Chapter - 1;
   {$ifdef darwin} ScrollBoxes; {$endif}
 end;
 
@@ -1018,7 +1018,7 @@ begin
   bag01 := False;
   bag02 := False;
 
-  ListBoxCh.Width := ListBoxCh.Width + 5;
+  ChapterBox.Width := ChapterBox.Width + 5;
 
   N4.Visible            := False;
   miExit.Visible        := False;
@@ -1038,7 +1038,7 @@ end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
-  if ListBoxCh.Items.Count = 0 then LoadChapter; // first time
+  if ChapterBox.Items.Count = 0 then LoadChapter; // first time
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -1079,27 +1079,27 @@ begin
   ComboBox.Top   := 4;
   ComboBox.Width := PanelLeft.Width - 16;
 
-  ListBoxBook.Top := ComboBox.Top + ComboBox.Height + 4;
-  ListBoxCh.Top   := ListBoxBook.Top;
+  BookBox.Top := ComboBox.Top + ComboBox.Height + 4;
+  ChapterBox.Top := BookBox.Top;
 
-  ListBoxBook.Height := PanelLeft.Height - ComboBox.Top - ComboBox.Height - 10;
-  ListBoxCh.Height   := ListBoxBook.Height;
+  BookBox.Height := PanelLeft.Height - ComboBox.Top - ComboBox.Height - 10;
+  ChapterBox.Height := BookBox.Height;
 
-  ListBoxBook.Width := PanelLeft.Width - 70;
-  ListBoxCh.Left    := PanelLeft.Width - 55;
+  BookBox.Width := PanelLeft.Width - 70;
+  ChapterBox.Left := PanelLeft.Width - 55;
 
   // StatusBar.Panels[3].Width := Width - 500;
 
   {$ifdef darwin}
   bag01 := True;
 
-  o := ListBoxBook.ItemIndex;
-  if ListBoxBook.Items.Count > 0 then ListBoxBook.ItemIndex := 1;
-  ListBoxBook.ItemIndex := o;
+  o := BookBox.ItemIndex;
+  if BookBox.Items.Count > 0 then BookBox.ItemIndex := 1;
+  BookBox.ItemIndex := o;
 
-  o := ListBoxCh.ItemIndex;
-  if ListBoxCh.Items.Count > 0 then ListBoxCh.ItemIndex := 1;
-  ListBoxCh.ItemIndex := o;
+  o := ChapterBox.ItemIndex;
+  if ChapterBox.Items.Count > 0 then ChapterBox.ItemIndex := 1;
+  ChapterBox.ItemIndex := o;
 
   bag01 := False;
   {$endif}
@@ -1113,14 +1113,14 @@ begin
   InfoBox.ShowModal;
 end;
 
-procedure TMainForm.ListBoxBookClick(Sender: TObject);
+procedure TMainForm.BookBoxClick(Sender: TObject);
 var
   Book : TBook;
   s : string;
 begin
   {$ifdef darwin} if bag01 or bag02 then Exit; {$endif}
-  if ListBoxBook.Count = 0 then Exit;
-  s := ListBoxBook.Items[ListBoxBook.ItemIndex];
+  if BookBox.Count = 0 then Exit;
+  s := BookBox.Items[BookBox.ItemIndex];
 
   Book := Bible.BookByName(s);
   if Book = nil then Exit;
@@ -1130,14 +1130,14 @@ begin
   ActiveVerse.Number := 1;
   ActiveVerse.Count := 1;
 
-  ListBoxCh.ItemIndex := 0;
+  ChapterBox.ItemIndex := 0;
   LoadChapter;
 end;
 
-procedure TMainForm.ListBoxChClick(Sender: TObject);
+procedure TMainForm.ChapterBoxClick(Sender: TObject);
 begin
   {$ifdef darwin} if bag01 or bag02 then Exit; {$endif}
-  ActiveVerse.Chapter := ListBoxCh.ItemIndex + 1;
+  ActiveVerse.Chapter := ChapterBox.ItemIndex + 1;
   ActiveVerse.Number := 1;
   ActiveVerse.Count := 1;
   LoadChapter;
@@ -1324,19 +1324,19 @@ var
   List: TStringList;
   l : boolean;
 begin
-  l := ListBoxBook.ItemIndex < 0;
+  l := BookBox.ItemIndex < 0;
 
-  ListBoxBook.Items.BeginUpdate;
-  ListBoxBook.Items.Clear;
-  ListBoxBook.Font := CurrFont;
+  BookBox.Items.BeginUpdate;
+  BookBox.Items.Clear;
+  BookBox.Font := CurrFont;
 
   List := TStringList.Create;
   Bible.GetTitles(List);
-  ListBoxBook.Items.Assign(List);
+  BookBox.Items.Assign(List);
   List.Free;
 
-  if l and (ListBoxBook.Count > 0) then ListBoxBook.ItemIndex := 0;
-  ListBoxBook.Items.EndUpdate;
+  if l and (BookBox.Count > 0) then BookBox.ItemIndex := 0;
+  BookBox.Items.EndUpdate;
 end;
 
 //-----------------------------------------------------------------------------------------
@@ -1345,18 +1345,18 @@ procedure TMainForm.MakeChapterList(n: integer);
 var
   i: integer;
 begin
-  if ListBoxCh.Items.Count = n then Exit;
+  if ChapterBox.Items.Count = n then Exit;
 
   {$ifdef darwin} bag01 := True; {$endif}
 
-  ListBoxCh.Items.BeginUpdate;
-  ListBoxCh.Items.Clear;
+  ChapterBox.Items.BeginUpdate;
+  ChapterBox.Items.Clear;
 
-  for i := 1 to n do ListBoxCh.Items.Add(IntToStr(i));
-  {$ifdef darwin} if n = 1 then ListBoxCh.Items.Add(''); {$endif}
+  for i := 1 to n do ChapterBox.Items.Add(IntToStr(i));
+  {$ifdef darwin} if n = 1 then ChapterBox.Items.Add(''); {$endif}
 
-  ListBoxCh.ItemIndex := 0;
-  ListBoxCh.Items.EndUpdate;
+  ChapterBox.ItemIndex := 0;
+  ChapterBox.Items.EndUpdate;
 
   {$ifdef darwin} bag01 := False; {$endif}
 end;
@@ -1365,15 +1365,15 @@ end;
 procedure TMainForm.ScrollBoxes;
 var i: integer;
 begin
-  for i:=0 to ListBoxBook.Count-1 do
+  for i:=0 to BookBox.Count-1 do
     begin
-      if ListBoxBook.ItemFullyVisible(ListBoxBook.ItemIndex) then break;
-      ListBoxBook.TopIndex := i;
+      if BookBox.ItemFullyVisible(BookBox.ItemIndex) then break;
+      BookBox.TopIndex := i;
     end;
-  for i:=0 to ListBoxCh.Count-1 do
+  for i:=0 to ChapterBox.Count-1 do
     begin
-      if ListBoxCh.ItemFullyVisible(ListBoxCh.ItemIndex) then break;
-      ListBoxCh.TopIndex := i;
+      if ChapterBox.ItemFullyVisible(ChapterBox.ItemIndex) then break;
+      ChapterBox.TopIndex := i;
     end;
 end;
 {$endif}
