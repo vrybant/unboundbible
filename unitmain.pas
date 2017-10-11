@@ -185,8 +185,9 @@ type
     procedure IdleTimerTimer(Sender: TObject);
     procedure BookBoxClick(Sender: TObject);
     procedure ChapterBoxClick(Sender: TObject);
+    procedure MemoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure MemoCommonMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+    procedure MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure MemoNotesChange(Sender: TObject);
     procedure MemoNotesSelectionChange(Sender: TObject);
     procedure miBibleFolderClick(Sender: TObject);
@@ -330,7 +331,7 @@ begin
   {$ifdef darwin} if Button = mbLeft then MemoBible.SaveSelection; {$endif}
 end;
 
-procedure TMainForm.MemoCommonMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+procedure TMainForm.MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
   Verse : TVerse;
   s : string;
@@ -358,6 +359,11 @@ end;
 procedure TMainForm.MemoNotesSelectionChange(Sender: TObject);
 begin
   UpDownButtons;
+end;
+
+procedure TMainForm.MemoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+begin
+  Handled := True; // disable system popup menu
 end;
 
 //----------------------------------------------------------------------------------------

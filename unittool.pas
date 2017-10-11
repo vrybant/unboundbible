@@ -15,10 +15,19 @@ implementation
 
 uses UnitShelf, UnitSearch, UnitLib;
 
-procedure Replacement(var s: string);
+procedure Replacement(var s: string; J: boolean);
 begin
-  // Replace(s,'[','\cf4\i ' );
-  // Replace(s,']','\cf1\i0 ');
+  Replace(s, '<S>','\super '     );
+  Replace(s,'</S>','\nosupersub ');
+  Replace(s, '<i>','\i ' );
+  Replace(s,'</i>','\i0 ');
+  Replace(s,'<FI>','\i ' );
+  Replace(s,'<Fi>','\i0 ');
+  if not J then Exit;
+  Replace(s, '<J>','\cf2 ');
+  Replace(s,'</J>','\cf1 ');
+  Replace(s,'<FR>','\cf2 ' );
+  Replace(s,'<Fr>','\cf1 ');
 end;
 
 procedure Load_Chapter(Stream: TRichStream);
@@ -35,9 +44,10 @@ begin
 
   for i:=0 to List.Count-1 do
     begin
-      text := DeleteTags(List[i]);
+      text := List[i];
+      Replacement(text,true);
+      DeleteTags(text);
       text := '\cf3 ' + ' ' + IntToStr(i+1) + '\cf1 ' + ' ' + text + '\i0\par';
-      Replacement(text);
       Stream.Writeln(text);
     end;
 
@@ -98,10 +108,11 @@ procedure Search_Text(Stream: TRichStream; st: string; var count: integer);
       begin
         v := ContentArray[i].verse;
         link := Bible.VerseToStr(v,true);
-        text := DeleteTags(ContentArray[i].text);
+        text := ContentArray[i].text;
+        Replacement(text,false);
+        DeleteTags(text);
         Highlights(text,st,CurrentSearchOptions);
         text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + text + '\i0\par\par';
-        Replacement(text);
         Stream.Writeln(text);
       end;
 
@@ -110,11 +121,9 @@ procedure Search_Text(Stream: TRichStream; st: string; var count: integer);
 
 procedure Load_Compare(Stream: TRichStream);
 var
-    List : TStringList;
-    Text : string;
-       s : string;
-     old : integer;
-     i,j : integer;
+  List : TStringList;
+  text, s : string;
+  i, j, old : integer;
 begin
   if Shelf.Count = 0 then Exit;
 
@@ -142,9 +151,10 @@ begin
 
       for j:=0 to List.Count-1 do
         begin
-          Text := DeleteTags(List[j]);
-          s := Text + '\i0\par';
-          Replacement(s);
+          text := List[j];
+          Replacement(text,false);
+          DeleteTags(text);
+          s := text + '\i0\par';
           Stream.Writeln(s);
         end;
 
@@ -158,11 +168,10 @@ end;
 
 procedure Load_Verses(Stream: TRichStream);
 var
-    Book : TBook;
-    List : TStringList;
-     par : string;
-       s : string;
-       i : integer;
+  Book : TBook;
+  List : TStringList;
+  par, text, s : string;
+  i : integer;
 
   procedure MakeLink;
   var s : string;
@@ -193,10 +202,11 @@ begin
         if Options.cvWrap or (ActiveVerse.Count > 1) or Options.cvEnd
           then s := s + '(' + IntToStr(ActiveVerse.Number + i) + ') ';
 
-      s := s + DeleteTags(List[i]);
-      s := s + '\i0 '+ ' ' + par;
+      text := List[i];
+      Replacement(text,false);
+      DeleteTags(text);
+      s := s + text + '\i0 '+ ' ' + par;
 
-      Replacement(s);
       Stream.Writeln(s);
     end;
 
@@ -214,11 +224,9 @@ end;
 
 procedure Load_Translate(Stream: TRichStream; Verse: TVerse);
 var
-    List : TStringList;
-    Text : string;
-       s : string;
-     old : integer;
-     i,j : integer;
+  List : TStringList;
+  text, s : string;
+  i, j, old : integer;
 begin
   if Shelf.Count = 0 then Exit;
 
@@ -246,9 +254,10 @@ begin
 
       for j:=0 to List.Count-1 do
         begin
-          Text := DeleteTags(List[j]);
-          s := Text + '\i0\par';
-          Replacement(s);
+          text := List[j];
+          Replacement(text,false);
+          DeleteTags(text);
+          s := text + '\i0\par';
           Stream.Writeln(s);
         end;
 

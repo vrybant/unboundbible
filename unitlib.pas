@@ -37,7 +37,7 @@ function StringPos(subst: string; s: string): TIntegerArray;
 procedure Replace(var s: string; const oldPattern, newPattern: String);
 function StringToList(ch: Char; st: string): TStringArray;
 function CleanTags(s: string): string;
-function DeleteTags(s: string): string;
+procedure DeleteTags(var s: string);
 
 // сlipboard's function
 
@@ -186,19 +186,21 @@ begin
   Result := s;
 end;
 
-function DeleteTags(s: string): string;
+procedure DeleteTags(var s: string);
 var
+  result : string;
   i : integer;
   l : boolean;
 begin
-  Result := '';
+  result := '';
   l := True;
   for i:=1 to Length(s) do
     begin
       if s[i]='<' then l := False;
-      if l then Result := Result + s[i];
+      if l then result := result + s[i];
       if s[i]='>' then l := True;
     end;
+  s := result;
 end;
 
 // сlipboard's function
