@@ -275,19 +275,14 @@ end;
 
 function UserDocumentsPath : string;
 begin
-{$ifdef windows}
-  Result := GetSpecialFolderPath(CSIDL_PERSONAL);
-{$else}
-  Result := GetEnvironmentVariableUTF8('HOME');
-{$endif}
+{$ifdef windows} Result := GetSpecialFolderPath(CSIDL_PERSONAL); {$endif}
+{$ifdef linux  } Result := GetEnvironmentVariableUTF8('HOME'); {$endif}
+{$ifdef darwin } Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library'; {$endif} // ?
 end;
 
 function AppDataPath : string;
 begin
- {$ifdef windows} Result := UserDocumentsPath; {$endif}
- {$ifdef linux  } Result := GetEnvironmentVariableUTF8('HOME');  {$endif}
- {$ifdef darwin } Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library'; {$endif}
- Result := Result + Slash + AppName;
+ Result := UserDocumentsPath + Slash + AppName;
 end;
 
 function ConfigFile: string;
