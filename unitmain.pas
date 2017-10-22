@@ -154,7 +154,7 @@ type
     ToolButtonRight: TToolButton;
     ToolButtonBullets: TToolButton;
 
-    procedure CmdOnlineExecute(Sender: TObject);
+    procedure CmdOnline(Sender: TObject);
     procedure CmdCompare(Sender: TObject);
     procedure CmdOptions(Sender: TObject);
     procedure CmdStyle(Sender: TObject);
@@ -846,9 +846,13 @@ begin
   LoadCompare;
 end;
 
-procedure TMainForm.CmdOnlineExecute(Sender: TObject);
+procedure TMainForm.CmdOnline(Sender: TObject);
+var s : string;
 begin
-  //
+  if not (ActiveVerse.book in [1..66]) then Exit;
+  s := BibleHubArray[ActiveVerse.book];
+  s := s + '/' +  IntToStr(ActiveVerse.chapter) + '-' + IntToStr(ActiveVerse.number) + '.htm';
+  OpenURL('http://biblehub.com/interlinear/' + s);
 end;
 
 procedure TMainForm.CmdEdit(Sender: TObject);
