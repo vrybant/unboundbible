@@ -42,7 +42,7 @@ object MainForm: TMainForm
       ParentShowHint = False
     end
     object ToolSeparator2: TToolButton
-      Left = 266
+      Left = 210
       Height = 28
       Top = 0
       Width = 10
@@ -77,7 +77,7 @@ object MainForm: TMainForm
       Action = ActionSearch
     end
     object ToolSeparator3: TToolButton
-      Left = 416
+      Left = 360
       Height = 28
       Top = 0
       Width = 10
@@ -85,27 +85,27 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButtonCut: TToolButton
-      Left = 276
+      Left = 220
       Top = 0
       Action = ActionEditCut
     end
     object ToolButtonCopy: TToolButton
-      Left = 304
+      Left = 248
       Top = 0
       Action = ActionEditCopy
     end
     object ToolButtonPaste: TToolButton
-      Left = 360
+      Left = 304
       Top = 0
       Action = ActionEditPaste
     end
     object ToolButtonUndo: TToolButton
-      Left = 388
+      Left = 332
       Top = 0
       Action = ActionEditUndo
     end
     object ToolSeparator4: TToolButton
-      Left = 566
+      Left = 510
       Height = 28
       Top = 0
       Width = 10
@@ -121,7 +121,7 @@ object MainForm: TMainForm
       ShowHint = True
     end
     object ToolSeparator5: TToolButton
-      Left = 660
+      Left = 604
       Height = 28
       Top = 0
       Width = 10
@@ -131,31 +131,31 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButtonBold: TToolButton
-      Left = 454
+      Left = 398
       Top = 0
       Action = ActionBold
       Style = tbsCheck
     end
     object ToolButtonItalic: TToolButton
-      Left = 482
+      Left = 426
       Top = 0
       Action = ActionItalic
       Style = tbsCheck
     end
     object ToolButtonUnderline: TToolButton
-      Left = 510
+      Left = 454
       Top = 0
       Action = ActionUnderline
       Style = tbsCheck
     end
     object ToolButtonLink: TToolButton
-      Left = 538
+      Left = 482
       Top = 0
       Action = ActionLink
       Style = tbsCheck
     end
     object ToolButtonLeft: TToolButton
-      Left = 576
+      Left = 520
       Top = 0
       Action = ActionLeft
       Grouped = True
@@ -163,7 +163,7 @@ object MainForm: TMainForm
     end
     object ToolButtonCenter: TToolButton
       Tag = 2
-      Left = 604
+      Left = 548
       Top = 0
       Action = ActionCenter
       Grouped = True
@@ -171,25 +171,25 @@ object MainForm: TMainForm
     end
     object ToolButtonRight: TToolButton
       Tag = 1
-      Left = 632
+      Left = 576
       Top = 0
       Action = ActionRight
       Grouped = True
       Style = tbsCheck
     end
     object ToolButtonBullets: TToolButton
-      Left = 670
+      Left = 614
       Top = 0
       Action = ActionBullets
       Style = tbsCheck
     end
     object ToolButtonFont: TToolButton
-      Left = 426
+      Left = 370
       Top = 0
       Action = ActionFont
     end
     object ToolButtonVerses: TToolButton
-      Left = 332
+      Left = 276
       Top = 0
       Action = ActionCopyVerses
       ParentShowHint = False
@@ -202,18 +202,6 @@ object MainForm: TMainForm
       Width = 10
       Caption = 'ToolSeparator1'
       Style = tbsDivider
-    end
-    object ToolButtonTrans: TToolButton
-      Left = 210
-      Top = 0
-      Action = ActionTrans
-      ImageIndex = 35
-    end
-    object ToolButtonOnline: TToolButton
-      Left = 238
-      Top = 0
-      Action = ActionOnline
-      ImageIndex = 37
     end
   end
   object PanelLeft: TPanel
@@ -553,6 +541,10 @@ object MainForm: TMainForm
           EAFFFBF7F3FFFEFDFDFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00
         }
         ImageIndex = 35
+      end
+      object miInterlinear: TMenuItem
+        Action = ActionInterline
+        Caption = 'Interlinear'
       end
       object miPrint: TMenuItem
         Action = ActionFilePrint
@@ -2686,6 +2678,13 @@ object MainForm: TMainForm
         FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       }
     end
+    object MenuItem4: TMenuItem
+      Caption = '-'
+    end
+    object pmInterlinear: TMenuItem
+      Action = ActionInterline
+      Caption = 'Interlinear (biblehub.com)'
+    end
   end
   object ActionList: TActionList
     left = 400
@@ -2909,9 +2908,9 @@ object MainForm: TMainForm
       Caption = 'CmdTrans'
       OnExecute = CmdTrans
     end
-    object ActionOnline: TAction
+    object ActionInterline: TAction
       Caption = 'CmdOnline'
-      OnExecute = CmdOnline
+      OnExecute = CmdInterline
     end
   end
   object OpenDialog: TOpenDialog

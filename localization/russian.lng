@@ -22,6 +22,7 @@ Menu.Help         = Справка
 Menu.Search       = Поиск
 Menu.Compare      = Сравнение
 Menu.Translate    = Перевод
+Menu.Interlinear  = Подстрочник
 Menu.Print        = Печать
 Menu.Font         = Шрифт
 Menu.Options      = Настройки

@@ -13,8 +13,11 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
-    ActionOnline: TAction;
+    ActionInterline: TAction;
     IdleTimer: TIdleTimer;
+    MenuItem4: TMenuItem;
+    miInterlinear: TMenuItem;
+    pmInterlinear: TMenuItem;
     miTranslate: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
@@ -23,8 +26,6 @@ type
     MenuItem3: TMenuItem;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
-    ToolButtonOnline: TToolButton;
-    ToolButtonTrans: TToolButton;
     ToolSeparator1: TToolButton;
     ToolButtonVerses: TToolButton;
     ActionList: TActionList;
@@ -154,7 +155,7 @@ type
     ToolButtonRight: TToolButton;
     ToolButtonBullets: TToolButton;
 
-    procedure CmdOnline(Sender: TObject);
+    procedure CmdInterline(Sender: TObject);
     procedure CmdCompare(Sender: TObject);
     procedure CmdOptions(Sender: TObject);
     procedure CmdStyle(Sender: TObject);
@@ -404,17 +405,18 @@ procedure TMainForm.Translate;
 begin
   miTools.Caption := T('Menu.Tools');
   miEdit.Caption := T('Menu.Edit');
-  //miBible       .Caption := T('Menu.Bible'       );
+//miBible.Caption := T('Menu.Bible');
   miNotes.Caption := T('Menu.Notes');
   miHelp.Caption := T('Menu.Help');
   miSearch.Caption := T('Menu.Search');
   miCompare.Caption := T('Compare.Caption');
   miTranslate.Caption := T('Menu.Translate');
+  miInterlinear.Caption := T('Menu.Interlinear');
   miPrint.Caption := T('Menu.Print');
-  //miDefaultFont .Caption := T('Menu.Font'        );
+//miDefaultFont.Caption := T('Menu.Font');
   miOptions.Caption := T('Menu.Options');
   miLocalization.Caption := T('Menu.Localization');
-  //miLangEdit    .Caption := T('Menu.LangEdit'    );
+//miLangEdit.Caption := T('Menu.LangEdit');
   miExit.Caption := T('Menu.Exit');
   miUndo.Caption := T('Menu.Undo');
   miCut.Caption := T('Menu.Cut');
@@ -432,8 +434,8 @@ begin
 
   miInformation.Caption := T('Menu.Info');
   miManual.Caption := T('Menu.Manual');
-  miHome        .Caption := T('Menu.HomePage'    );
-//miUBPage      .Caption := T('Menu.UBPage'      );
+  miHome.Caption := T('Menu.HomePage');
+//miUBPage.Caption := T('Menu.UBPage');
   miDownload.Caption := T('Menu.Download');
   miBibleFolder.Caption := T('Menu.BibleFolder');
   miHelpAbout.Caption := T('Menu.About');
@@ -441,9 +443,9 @@ begin
   pmCut.Caption := T('Menu.Cut');
   pmCopy.Caption := T('Menu.Copy');
   pmPaste.Caption := T('Menu.Paste');
-
   pmCopyAs.Caption := T('Menu.CopyAs');
   pmVerses.Caption := T('Menu.Verses');
+  pmInterlinear.Caption := T('Menu.Interlinear') + ' (biblehub.com)';
 
   TabSheetBible.Caption := TT('Menu.Bible');
   TabSheetSearch.Caption := TT('Menu.Search');
@@ -462,7 +464,6 @@ begin
   ToolButtonPaste.Hint := T('Menu.Paste');
   ToolButtonUndo.Hint := T('Menu.Undo');
   ToolButtonCompare.Hint := T('Compare.Caption');
-  ToolButtonTrans.Hint := T('Menu.Translate');
 
   ToolButtonFont.Hint := T('Main.FontName');
   ToolButtonBold.Hint := T('Main.Bold');
@@ -846,7 +847,7 @@ begin
   LoadCompare;
 end;
 
-procedure TMainForm.CmdOnline(Sender: TObject);
+procedure TMainForm.CmdInterline(Sender: TObject);
 var s : string;
 begin
   if not (ActiveVerse.book in [1..66]) then Exit;

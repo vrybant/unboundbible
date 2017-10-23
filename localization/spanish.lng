@@ -23,6 +23,7 @@ Menu.Help         = Ayuda
 Menu.Search       = Buscar...
 Menu.Compare      = Comparar
 Menu.Translate    = Interpretación
+Menu.Interlinear  = Interlineal
 Menu.Print        = Imprimir...
 Menu.Font         = Fuente
 Menu.Options      = Opciones

@@ -22,6 +22,7 @@ Menu.Help         = Ohje
 Menu.Search       = Etsi...
 Menu.Compare      = Vertaa...
 Menu.Translate    = Käännös
+Menu.Interlinear  = Interlinear
 Menu.Print        = Tulosta
 Menu.Font         = Oletus Fontti
 Menu.Options      = Asetukset
