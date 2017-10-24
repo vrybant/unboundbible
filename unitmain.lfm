@@ -378,15 +378,15 @@ object MainForm: TMainForm
     end
     object TabSheetNotes: TTabSheet
       Caption = 'Notes'
-      ClientHeight = 278
-      ClientWidth = 585
+      ClientHeight = 279
+      ClientWidth = 587
       ImageIndex = 2
       object MemoNotes: TUnboundMemo
         Cursor = crArrow
         Left = 0
-        Height = 278
+        Height = 279
         Top = 0
-        Width = 585
+        Width = 587
         Align = alClient
         HideSelection = False
         OnChange = MemoNotesChange
@@ -396,6 +396,7 @@ object MainForm: TMainForm
         ScrollBars = ssBoth
         TabOrder = 0
         ZoomFactor = 1
+        OnAttrChange = MemoNotesAttrChange
         Linkable = True
       end
     end

@@ -7,21 +7,21 @@ uses
   Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo;
 
 type
+  TAttrChangeEvent = procedure of object;
+
   TRichMemoEx = class(TRichMemo)
   private
-    FOnSelChange: TNotifyEvent;
+    FOnAttrChange: TAttrChangeEvent;
     function  GetAttributes: TFontParams;
     procedure SetAttributes(const value: TFontParams);
-    procedure SelectionChange;  dynamic;
+    procedure DoAttributesChange;
     {$ifdef windows} function  GetModified: boolean; {$endif}
     {$ifdef windows} procedure SetModified(value: boolean); {$endif}
   protected
     procedure SetSel(x1,x2: integer);
     procedure GetSel(var x1,x2: integer);
-    {$ifdef windows}
-    function LineCount: integer;
-    function LineIndex(x: longint): integer;
-    {$endif}
+    {$ifdef windows} function LineCount: integer; {$endif}
+    {$ifdef windows} function LineIndex(x: longint): integer; {$endif}
     procedure KeyUp(var Key: Word; Shift: TShiftState); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
   public
@@ -36,8 +36,9 @@ type
     procedure LoadFromFile(const FileName : string);
     procedure SaveToFile(const FileName : string);
     property SelAttributes: TFontParams read GetAttributes write SetAttributes;
-    property OnSelectionChange: TNotifyEvent read FOnSelChange write FOnSelChange;
     {$ifdef windows} property Modified: boolean read GetModified write SetModified; {$endif}
+  published
+    property OnAttrChange: TAttrChangeEvent read FOnAttrChange write FOnAttrChange;
   end;
 
 
@@ -87,12 +88,12 @@ end;
 procedure TRichMemoEx.SetAttributes(const value: TFontParams);
 begin
   SetTextAttributes(SelStart, SelLength, value);
-  SelectionChange;
+  DoAttributesChange;
 end;
 
 function TRichMemoEx.GetAttributes: TFontParams;
 begin
-  GetTextAttributes(SelStart, Result{%H-});
+  GetTextAttributes(SelStart, Result);
 end;
 
 function TRichMemoEx.CanUndo: boolean;
@@ -104,9 +105,9 @@ begin
   {$endif}
 end;
 
-procedure TRichMemoEx.SelectionChange;
+procedure TRichMemoEx.DoAttributesChange;
 begin
-  if Assigned(OnSelectionChange) then OnSelectionChange(Self);
+  if Assigned(OnAttrChange) then OnAttrChange;
 end;
 
 procedure TRichMemoEx.SelectAll;
@@ -121,14 +122,14 @@ end;
 procedure TRichMemoEx.KeyUp(var Key: Word; Shift: TShiftState);
 begin
   inherited KeyUp(Key, Shift);
-  SelectionChange;
+  DoAttributesChange;
   {$ifdef darwin} Modified := True; {$endif}
 end;
 
 procedure TRichMemoEx.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   inherited MouseUp(Button, Shift, X, Y);
-  SelectionChange;
+  DoAttributesChange;
 end;
 
 procedure TRichMemoEx.SetSel(x1,x2: integer);
