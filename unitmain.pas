@@ -191,7 +191,6 @@ type
     procedure MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure MemoNotesAttrChange;
     procedure MemoNotesChange(Sender: TObject);
-    procedure MemoNotesSelectionChange(Sender: TObject);
     procedure miBibleFolderClick(Sender: TObject);
     procedure miDownloadClick(Sender: TObject);
     procedure miHomeClick(Sender: TObject);
@@ -353,19 +352,14 @@ begin
     then GoToVerse(Verse, True);
 end;
 
-procedure TMainForm.MemoNotesAttrChange;
-begin
-  {$ifdef windows} UpDownButtons; {$endif}
-end;
-
 procedure TMainForm.MemoNotesChange(Sender: TObject);
 begin
   UpdateStatusBar;
 end;
 
-procedure TMainForm.MemoNotesSelectionChange(Sender: TObject);
+procedure TMainForm.MemoNotesAttrChange;
 begin
-  {$ifdef unix} UpDownButtons; {$endif}
+  UpDownButtons;
 end;
 
 procedure TMainForm.MemoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);

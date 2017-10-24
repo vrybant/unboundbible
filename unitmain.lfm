@@ -332,15 +332,15 @@ object MainForm: TMainForm
     end
     object TabSheetSearch: TTabSheet
       Caption = 'Search'
-      ClientHeight = 278
-      ClientWidth = 585
+      ClientHeight = 279
+      ClientWidth = 587
       ImageIndex = 1
       object MemoSearch: TUnboundMemo
         Cursor = crArrow
         Left = 0
-        Height = 278
+        Height = 279
         Top = 0
-        Width = 585
+        Width = 587
         Align = alClient
         HideSelection = False
         OnContextPopup = MemoContextPopup
@@ -354,8 +354,8 @@ object MainForm: TMainForm
     end
     object TabSheetCompare: TTabSheet
       Caption = 'Compare'
-      ClientHeight = 278
-      ClientWidth = 585
+      ClientHeight = 279
+      ClientWidth = 587
       Font.Color = clWindowText
       Font.Height = -12
       ImageIndex = 3
@@ -363,9 +363,9 @@ object MainForm: TMainForm
       object MemoCompare: TUnboundMemo
         Cursor = crArrow
         Left = 0
-        Height = 278
+        Height = 279
         Top = 0
-        Width = 585
+        Width = 587
         Align = alClient
         HideSelection = False
         OnContextPopup = MemoContextPopup
@@ -392,7 +392,6 @@ object MainForm: TMainForm
         OnChange = MemoNotesChange
         OnContextPopup = MemoContextPopup
         OnMouseUp = MemoMouseUp
-        OnSelectionChange = MemoNotesSelectionChange
         ScrollBars = ssBoth
         TabOrder = 0
         ZoomFactor = 1
