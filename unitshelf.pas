@@ -230,6 +230,7 @@ begin
     //
   end;
 
+  if Prefix('heb',language) or Prefix('arab',language) then RightToLeft := true;
 end;
 
 procedure TBible.LoadDatabase;
@@ -263,8 +264,8 @@ begin
         Query.Next;
       end;
 
-    loaded := true;
     SetTitles;
+    loaded := true;
   except
     //
   end;
@@ -283,9 +284,6 @@ begin
       self[i].title := Title.getTitle(self[i].number);
       self[i].abbr  := Title.getAbbr(self[i].number);
     end;
-
-  language := Title.FileName; // eng -> english
-  if (language = 'hebrew') or (language = 'arabic') then RightToLeft := true;
 
   Title.Free;
 end;

@@ -8,8 +8,6 @@ uses
 type
   TTitle = class
   public
-    FileName : string;
-    FilePath : string;
     constructor Create(language: string);
     function GetTitle(n: integer): string;
     function GetAbbr(n: integer): string;
@@ -29,6 +27,9 @@ uses
   UnitLib;
 
 constructor TTitle.Create(language: string);
+var
+  FileName : string;
+  FilePath : string;
 begin
   inherited Create;
 
