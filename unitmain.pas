@@ -1343,6 +1343,8 @@ begin
 
   List := TStringList.Create;
   Bible.GetTitles(List);
+  BookBox.BiDiMode := bdLeftToRight;
+  if Bible.RightToLeft then BookBox.BiDiMode := bdRightToLeft;
   BookBox.Items.Assign(List);
   List.Free;
 

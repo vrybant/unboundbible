@@ -63,7 +63,7 @@ begin
   Write('\f0\cf1');
   Write('\fs' + IntToStr(CurrFont.Size * 2));
 
-  if RightToLeft then WriteLn('\rtlpar');
+  if RightToLeft then WriteLn('\rtlpar\qr');
   WriteLn(''); // important
 end;
 
