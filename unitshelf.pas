@@ -230,7 +230,7 @@ begin
     //
   end;
 
-  if Prefix('heb',language) or Prefix('arab',language) then RightToLeft := true;
+  RightToLeft := GetRightToLeft(language);
 end;
 
 procedure TBible.LoadDatabase;

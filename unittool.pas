@@ -189,6 +189,7 @@ begin
   if Book = nil then Exit;
 
   List := TStringList.Create;
+  Stream.RightToLeft := Bible.RightToLeft;
   Stream.Open;
 
   if Options.cvWrap then par := '\par ' else par := '';

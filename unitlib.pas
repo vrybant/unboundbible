@@ -59,6 +59,7 @@ procedure OpenFolder(path : string);
 // system's functions
 
 function GetDefaultLanguage: string;
+function GetRightToLeft(language: string): boolean;
 procedure Output(s: string);
 
 var
@@ -367,6 +368,14 @@ begin
   {$ifdef unix}
     {$ifdef RussianEdition} Result := 'russian'; {$endif}
   {$endif}
+end;
+
+function GetRightToLeft(language: string): boolean;
+begin
+   Result := false;
+   if Prefix('heb' ,language) or
+      Prefix('arab',language) or
+      Prefix('far' ,language) then Result := true;
 end;
 
 procedure Output(s: string);
