@@ -38,7 +38,9 @@ var
 begin
   if Shelf.Count = 0 then Exit;
 
+  Stream.RightToLeft := Bible.RightToLeft;
   Stream.Open;
+
   List := TStringList.Create;
   Bible.GetChapter(ActiveVerse,List);
 

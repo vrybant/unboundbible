@@ -11,7 +11,7 @@ const
   BookMax = 86;
 
 type
-  TBook = class(TObject)
+  TBook = class
   public
     title  : string;
     abbr   : string;
@@ -39,7 +39,7 @@ type
     fileType     : string;
     note         : string;
     {-}
-    rightToLeft  : boolean;
+    RightToLeft  : boolean;
     compare      : boolean;
     fontName     : TFontName;
     fontSize     : integer;
@@ -168,6 +168,7 @@ begin
   filetype     := '';
   connected    := false;
   loaded       := false;
+  RightToLeft  := false;
   oldTestament := false;
   newTestament := false;
   apocrypha    := false;
@@ -233,13 +234,11 @@ end;
 
 procedure TBible.LoadDatabase;
 var
-  Title : TTitle;
   Book : TBook;
   n : integer;
 begin
   if loaded then exit;
 
-  Title := TTitle.Create(language);
   try
     Query.SQL.Text := 'SELECT DISTINCT ' + z.book + ' FROM ' + z.bible;
     Query.Clear;
@@ -253,9 +252,8 @@ begin
           begin
             Book := TBook.Create;
             Book.number := DecodeIndex(n);
+            Book.title := IntToStr(n);
             Book.id := n;
-            Book.title := Title.getTitle(book.number);
-            Book.abbr  := Title.getAbbr(book.number);
             Add(Book);
             if IsOldTestament(n) then oldTestament := true;
             if IsNewTestament(n) then newTestament := true;
@@ -266,9 +264,28 @@ begin
       end;
 
     loaded := true;
+    SetTitles;
   except
     //
   end;
+
+end;
+
+procedure TBible.SetTitles;
+var
+  Title : TTitle;
+  i : integer;
+begin
+  Title := TTitle.Create(Language);
+
+  for i:=0 to Count-1 do
+    begin
+      self[i].title := Title.getTitle(self[i].number);
+      self[i].abbr  := Title.getAbbr(self[i].number);
+    end;
+
+  language := Title.FileName; // eng -> english
+  if (language = 'hebrew') or (language = 'arabic') then RightToLeft := true;
 
   Title.Free;
 end;
@@ -391,17 +408,6 @@ begin
       if Prefix(Items[i].title,link) then GetLink(i,true );
       if Prefix(Items[i].abbr ,link) then GetLink(i,false);
     end;
-end;
-
-procedure TBible.SetTitles;
-var
-  Title : TTitle;
-  i : integer;
-begin
-  Title := TTitle.Create(Language);
-  for i:=0 to Count-1 do
-    self[i].Title := Title.GetTitle(self[i].Number);
-  Title.Free;
 end;
 
 function TBible.GetVerse(Verse: TVerse): string;
@@ -601,9 +607,12 @@ begin
 end;
 
 destructor TBible.Destroy;
+var
+  i : integer;
 begin
-  InfoList.Free;
+  for i:=0 to Count-1 do Items[i].Free;
 
+  InfoList.Free;
   Query.Free;
   Transaction.Free;
   Connection.Free;

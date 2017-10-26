@@ -6,8 +6,10 @@ uses
   Classes, SysUtils, DB, SQLdb, SQLite3conn, IBConnection;
 
 type
-  TTitle = class(TStringList)
+  TTitle = class
   public
+    FileName : string;
+    FilePath : string;
     constructor Create(language: string);
     function GetTitle(n: integer): string;
     function GetAbbr(n: integer): string;
@@ -30,11 +32,14 @@ constructor TTitle.Create(language: string);
 begin
   inherited Create;
 
+  FileName := GetFileName(language);
+  FilePath := AppLocation + TitleDirectory + Slash + FileName + '.sqlite';
+
   Connection  := TSQLite3Connection.Create(nil);
   Transaction := TSQLTransaction.Create(nil);
   Query       := TSQLQuery.Create(nil);
 
-  Connection.DatabaseName := GetFileName(language);
+  Connection.DatabaseName := FilePath;
   Connection.CharSet := 'UTF8';
   Connection.Transaction := Transaction;
   Query.DataBase := Connection;
@@ -50,24 +55,21 @@ end;
 function TTitle.GetFileName(language: string): string;
 var
   List : TStringList;
-  path : string;
+  Path : string;
   i : integer;
 begin
-  Result := 'english.sqlite';
+  Result := 'english';
   language := LowerCase(language);
 
   List := TStringList.Create;
-  path := AppLocation + titleDirectory + slash + '*.sqlite';
 
-  GetFileList(path, List, True);
+  Path := AppLocation + titleDirectory + slash + '*.sqlite';
+  GetFileList(Path, List, False);
 
   for i:= 0 to List.Count-1 do
-    if Prefix(language, List[i]) then
-      Result := List[i];
+    if Prefix(language, List[i]) then Result := List[i];
 
   List.Free;
-
-  Result := AppLocation + titleDirectory + slash + Result;
 end;
 
 function TTitle.GetTitleEx(n: integer; abbreviation: boolean): string;

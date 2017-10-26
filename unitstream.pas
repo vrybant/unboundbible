@@ -10,6 +10,8 @@ type
   protected
     procedure Write(s: string); overload;
   public
+    RightToLeft : boolean;
+    constructor Create;
     procedure Open;
     procedure Close;
     procedure WriteLn(s: string);
@@ -42,6 +44,11 @@ begin
   until (CharLen=0) or (unicode=0);
 end;
 
+constructor TRichStream.Create;
+begin
+  inherited Create;
+end;
+
 procedure TRichStream.Open;
 begin
   WriteLn('{\rtf1\ansi\ansicpg1251\cocoartf1187 ');
@@ -54,12 +61,9 @@ begin
   WriteLn('\red128\green128\blue128;}'); // 5 gray
 
   Write('\f0\cf1');
-  Write('\fs' + IntToStr(CurrFont.Size * 2)); // font size
+  Write('\fs' + IntToStr(CurrFont.Size * 2));
 
-// if fsBold in CurrFont.Style then Write('\b'); // bold
-// if RightToLeft then StreamWrite(m,'\rtlpar') else Write('\ltrpar');
-// if Bible.RightToLeft then StreamWrite(m,'\qr') else Write('\ql');
-
+  if RightToLeft then WriteLn('\rtlpar');
   WriteLn(''); // important
 end;
 

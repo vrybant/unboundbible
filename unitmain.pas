@@ -1269,7 +1269,7 @@ procedure TMainForm.CmdOptions(Sender: TObject);
 begin
   if FormOptions.ShowModal = mrOk then
   begin
-    Bible.SetTitles;
+    //Bible.SetTitles;
     MakeBookList;
     LoadChapter;
     Repaint;
