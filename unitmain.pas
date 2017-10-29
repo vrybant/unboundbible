@@ -392,9 +392,10 @@ begin
   Book := Bible.BookByNum(Verse.Book);
   if Book = nil then Exit;
 
-  SelectBook(Book.title);
   ActiveVerse := Verse;
   LoadChapter;
+  SelectBook(Book.title);
+  ChapterBox.ItemIndex := Verse.Chapter - 1;
 
   if select then MemoBible.SelectParagraph(Verse.Number);
   {$ifdef darwin} bag02 := False; {$endif}

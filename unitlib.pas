@@ -373,9 +373,9 @@ end;
 function GetRightToLeft(language: string): boolean;
 begin
    Result := false;
-   if Prefix('heb' ,language) or
-      Prefix('arab',language) or
-      Prefix('far' ,language) then Result := true;
+   if Prefix('he' ,language) or
+      Prefix('ara',language) or
+      Prefix('fa' ,language) then Result := true;
 end;
 
 procedure Output(s: string);
