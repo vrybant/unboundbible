@@ -21,7 +21,7 @@ type
     miTranslate: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
-    FontDialogNote: TFontDialog;
+    FontDialogNotes: TFontDialog;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     OpenDialog: TOpenDialog;
@@ -250,7 +250,7 @@ var
 implementation
 
 uses
-  UnitAbout, UnitInfo, UnitSearch, UnitCompare, UnitTool, UnitOptions,
+  UnitAbout, UnitInfo, UnitSearch, UnitCompare, UnitTool,
   UnitStream, UnitLib, UnitLang, UnitShelf, UnitCopy, UnitTrans;
 
 resourcestring
@@ -768,17 +768,17 @@ begin
 
   if Sender = ActionFont then
   begin
-    FontDialog.Font.Name  := fp.Name;
-    FontDialog.Font.Size  := fp.Size;
-    FontDialog.Font.Style := fp.Style;
-    FontDialog.Font.Color := fp.Color;
+    FontDialogNotes.Font.Name  := fp.Name;
+    FontDialogNotes.Font.Size  := fp.Size;
+    FontDialogNotes.Font.Style := fp.Style;
+    FontDialogNotes.Font.Color := fp.Color;
 
-    if FontDialog.Execute then
+    if FontDialogNotes.Execute then
     begin
-      fp.Name  := FontDialog.Font.Name;
-      fp.Size  := FontDialog.Font.Size;
-      fp.Style := FontDialog.Font.Style;
-      fp.Color := FontDialog.Font.Color;
+      fp.Name  := FontDialogNotes.Font.Name;
+      fp.Size  := FontDialogNotes.Font.Size;
+      fp.Style := FontDialogNotes.Font.Style;
+      fp.Color := FontDialogNotes.Font.Color;
     end;
   end;
 
@@ -1074,7 +1074,6 @@ begin
   Lang := TLang.Create;
 
                 Translate;
-  FormOptions  .Translate;
   SearchForm   .Translate;
   CompareForm  .Translate;
   InfoBox      .Translate;
@@ -1268,9 +1267,10 @@ end;
 
 procedure TMainForm.CmdOptions(Sender: TObject);
 begin
-  if FormOptions.ShowModal = mrOk then
+  FontDialog.Font.Assign(CurrFont);
+  if FontDialog.Execute then
   begin
-    //Bible.SetTitles;
+    CurrFont.Assign(FontDialog.Font);
     MakeBookList;
     LoadChapter;
     Repaint;
@@ -1340,7 +1340,7 @@ begin
 
   BookBox.Items.BeginUpdate;
   BookBox.Items.Clear;
-  BookBox.Font := CurrFont;
+  BookBox.Font.Assign(CurrFont);
 
   List := TStringList.Create;
   Bible.GetTitles(List);
@@ -1359,6 +1359,7 @@ procedure TMainForm.MakeChapterList(n: integer);
 var
   i: integer;
 begin
+  ChapterBox.Font.Assign(CurrFont);
   if ChapterBox.Items.Count = n then Exit;
 
   {$ifdef darwin} bag01 := True; {$endif}

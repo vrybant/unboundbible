@@ -2930,7 +2930,7 @@ object MainForm: TMainForm
     left = 320
     top = 216
   end
-  object FontDialogNote: TFontDialog
+  object FontDialogNotes: TFontDialog
     MinFontSize = 0
     MaxFontSize = 0
     left = 240
