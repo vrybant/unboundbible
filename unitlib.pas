@@ -60,7 +60,9 @@ procedure OpenFolder(path : string);
 
 function GetDefaultLanguage: string;
 function GetRightToLeft(language: string): boolean;
-procedure Output(s: string);
+function WidthInPixels(s: string): integer;
+procedure Output(s: string); overload;
+procedure Output(n: integer); overload;
 
 var
   CurrFont: TFont;
@@ -378,12 +380,30 @@ begin
       Prefix('fa' ,language) then Result := true;
 end;
 
+function WidthInPixels(s: string): integer;
+var
+  Bitmap: TBitmap;
+begin
+  Bitmap := TBitmap.Create;
+  try
+    Bitmap.Canvas.Font := CurrFont;
+    Result := Bitmap.Canvas.TextWidth(s);
+  finally
+    Bitmap.Free;
+  end;
+end;
+
 procedure Output(s: string);
 begin
   {$ifdef debugmode}
     {$ifdef windows} OutputDebugString(PChar(s)); {$endif}
     {$ifdef linux} DebugLn(s); {$endif}
   {$endif}
+end;
+
+procedure Output(n: integer);
+begin
+  Output(IntToStr(n));
 end;
 
 initialization

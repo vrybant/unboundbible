@@ -220,7 +220,7 @@ object MainForm: TMainForm
     object BookBox: TListBox
       Left = 7
       Height = 274
-      Top = 30
+      Top = 33
       Width = 129
       Font.Color = clWindowText
       Font.Height = -13
@@ -233,14 +233,10 @@ object MainForm: TMainForm
     object ChapterBox: TListBox
       Left = 144
       Height = 274
-      Top = 30
+      Top = 33
       Width = 45
-      Font.CharSet = RUSSIAN_CHARSET
       Font.Color = clWindowText
       Font.Height = -15
-      Font.Name = 'Tahoma'
-      Font.Pitch = fpVariable
-      Font.Quality = fqDraft
       ItemHeight = 0
       OnClick = ChapterBoxClick
       ParentFont = False
@@ -250,10 +246,9 @@ object MainForm: TMainForm
     object ComboBox: TComboBox
       Left = 7
       Height = 25
-      Top = 2
+      Top = 4
       Width = 178
       DropDownCount = 12
-      Font.CharSet = GREEK_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
       ItemHeight = 17

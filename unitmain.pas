@@ -1087,8 +1087,7 @@ end;
 procedure TMainForm.FormPaint(Sender: TObject);
 {$ifdef darwin} var o : integer; {$endif}
 begin
-  ComboBox.Top   := 4;
-  ComboBox.Width := PanelLeft.Width - 16;
+  ComboBox.Width := PanelLeft.Width - 14;
 
   BookBox.Top := ComboBox.Top + ComboBox.Height + 4;
   ChapterBox.Top := BookBox.Top;
@@ -1096,10 +1095,11 @@ begin
   BookBox.Height := PanelLeft.Height - ComboBox.Top - ComboBox.Height - 10;
   ChapterBox.Height := BookBox.Height;
 
-  BookBox.Width := PanelLeft.Width - 70;
-  ChapterBox.Left := PanelLeft.Width - 55;
+  ChapterBox.Width := WidthInPixels('150') + 30;
+  BookBox.Width := PanelLeft.Width - ChapterBox.Width - 8;
+  ChapterBox.Left := PanelLeft.Width - ChapterBox.Width + 5;
 
-  // StatusBar.Panels[3].Width := Width - 500;
+// StatusBar.Panels[3].Width := Width - 500;
 
   {$ifdef darwin}
   bag01 := True;
@@ -1273,7 +1273,8 @@ begin
     CurrFont.Assign(FontDialog.Font);
     MakeBookList;
     LoadChapter;
-    Repaint;
+    FormPaint(self);
+    Invalidate;
   end;
 end;
 
