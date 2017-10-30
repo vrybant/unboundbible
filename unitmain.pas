@@ -409,13 +409,12 @@ begin
 //miBible.Caption := T('Menu.Bible');
   miNotes.Caption := T('Menu.Notes');
   miHelp.Caption := T('Menu.Help');
-  miSearch.Caption := T('Menu.Search');
-  miCompare.Caption := T('Compare.Caption');
+  miSearch.Caption := T('Menu.Search') + '...';
+  miCompare.Caption := T('Compare.Caption') + '...';
   miTranslate.Caption := T('Menu.Translate');
   miInterlinear.Caption := T('Menu.Interlinear');
   miPrint.Caption := T('Menu.Print');
-//miDefaultFont.Caption := T('Menu.Font');
-  miOptions.Caption := T('Menu.Options');
+  miOptions.Caption := T('Menu.Font') + '...';
   miLocalization.Caption := T('Menu.Localization');
 //miLangEdit.Caption := T('Menu.LangEdit');
   miExit.Caption := T('Menu.Exit');
@@ -425,12 +424,12 @@ begin
   miPaste.Caption := T('Menu.Paste');
   miClear.Caption := T('Menu.Clear');
   miSelectAll.Caption := T('Menu.SelectAll');
-  miCopyAs.Caption := T('Menu.CopyAs');
+  miCopyAs.Caption := T('Menu.CopyAs') + '...';
   miVerses.Caption := T('Menu.Verses');
   miNoteNew.Caption := T('Menu.New');
-  miNoteOpen.Caption := T('Menu.Open');
+  miNoteOpen.Caption := T('Menu.Open') + '...';
   miNoteSave.Caption := T('Menu.Save');
-  miNoteSaveAs.Caption := T('Menu.SaveAs');
+  miNoteSaveAs.Caption := T('Menu.SaveAs') + '...';
   miReopen.Caption := T('Menu.Reopen');
 
   miInformation.Caption := T('Menu.Info');
@@ -444,7 +443,7 @@ begin
   pmCut.Caption := T('Menu.Cut');
   pmCopy.Caption := T('Menu.Copy');
   pmPaste.Caption := T('Menu.Paste');
-  pmCopyAs.Caption := T('Menu.CopyAs');
+  pmCopyAs.Caption := T('Menu.CopyAs') + '...';
   pmVerses.Caption := T('Menu.Verses');
   pmInterlinear.Caption := T('Menu.Interlinear') + ' (biblehub.com)';
 

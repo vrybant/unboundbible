@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 319
+  Left = 320
   Height = 384
-  Top = 491
+  Top = 508
   Width = 795
   Caption = 'Unbound Bible'
   ClientHeight = 364
@@ -626,7 +626,7 @@ object MainForm: TMainForm
       end
       object miOptions: TMenuItem
         Action = ActionOptions
-        Caption = 'Options'
+        Caption = 'Font...'
         Bitmap.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000FF00FF00FF00
