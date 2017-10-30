@@ -275,8 +275,6 @@ end;
 procedure Show_Message(Stream: TRichStream; s: string);
 begin
   Stream.Open;
-  Stream.Writeln('\f0\cf1');
-  Stream.Writeln('\fs' + IntToStr(CurrFont.Size * 2));
   s := '\cf1 ' + ' ' + s + '\par\par ';
   Stream.Writeln(s);
   Stream.Close;

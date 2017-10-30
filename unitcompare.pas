@@ -7,8 +7,7 @@ uses
 
 type
   TCompareForm = class(TForm)
-    OKButton: TButton;
-    CancelButton: TButton;
+    ButtonCompare: TButton;
     CheckListBox: TCheckListBox;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -33,9 +32,7 @@ uses UnitShelf, UnitLang;
 procedure TCompareForm.Translate;
 begin
   Caption := ' ' + T('Compare.Caption');
-
-      OKButton.Caption := T('Button.OK'    );
-  CancelButton.Caption := T('Button.Cancel');
+  ButtonCompare.Caption := T('Menu.Compare');
 end;
 
 procedure TCompareForm.FormCreate(Sender: TObject);
@@ -43,8 +40,7 @@ begin
   MakeListBox;
 
   {$ifdef darwin}
-  OKButton.Visible := False;
-  CancelButton.Visible := False;
+  ButtonCompare.Visible := False;
   Height := 182;
   {$endif}
 end;
@@ -77,8 +73,7 @@ end;
 
 procedure TCompareForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  {$ifdef unix} ModalResult := mrOk; {$endif}
-  if ModalResult = mrOk then ListBoxToShelf;
+  ListBoxToShelf;
 end;
 
 end.

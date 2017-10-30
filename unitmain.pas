@@ -843,8 +843,7 @@ end;
 
 procedure TMainForm.CmdCompare(Sender: TObject);
 begin
-  CompareForm.ShowModal;
-  LoadCompare;
+  if CompareForm.ShowModal = mrOk then LoadCompare;
 end;
 
 procedure TMainForm.CmdInterline(Sender: TObject);
