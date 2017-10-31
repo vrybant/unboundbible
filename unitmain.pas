@@ -116,7 +116,6 @@ type
     miSearch: TMenuItem;
     miBibleFolder: TMenuItem;
     miReopen: TMenuItem;
-    miInformation: TMenuItem;
     N9: TMenuItem;
     miManual: TMenuItem;
     miVerses: TMenuItem;
@@ -419,7 +418,6 @@ begin
   miNoteSaveAs.Caption := T('Menu.SaveAs') + '...';
   miReopen.Caption := T('Menu.Reopen');
 
-  miInformation.Caption := T('Menu.Info');
   miManual.Caption := T('Menu.Manual');
   miHome.Caption := T('Menu.HomePage');
 //miUBPage.Caption := T('Menu.UBPage');
@@ -1117,7 +1115,6 @@ begin
 
   ChapterBox.ItemIndex := 0;
   LoadChapter;
-  UpdateStatus('');
 end;
 
 procedure TMainForm.ChapterBoxClick(Sender: TObject);
