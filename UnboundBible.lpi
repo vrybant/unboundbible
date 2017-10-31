@@ -6,7 +6,7 @@
     <General>
       <SessionStorage Value="InIDEConfig"/>
       <MainUnit Value="0"/>
-      <Title Value="Unbound Bible Tools"/>
+      <Title Value="Unbound Bible"/>
       <ResourceType Value="res"/>
       <Icon Value="0"/>
     </General>
@@ -46,7 +46,7 @@
     </RequiredPackages>
     <Units Count="16">
       <Unit0>
-        <Filename Value="UnboundBibleTools.lpr"/>
+        <Filename Value="UnboundBible.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
@@ -150,7 +150,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="UnboundBibleTools"/>
+      <Filename Value="UnboundBible"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

@@ -1,4 +1,4 @@
-program UnboundBibleTools;
+program UnboundBible;
 
 uses
   {$ifdef unix}{$ifdef UseCThreads} cthreads, {$endif}{$endif}
