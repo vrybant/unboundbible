@@ -1432,8 +1432,6 @@ var
   Stream : TRichStream;
 begin
   Stream := TRichStream.Create;
-  ActiveVerse.number := MemoBible.ParagraphStart;
-  ActiveVerse.count  := MemoBible.ParagraphCount;
   Load_Verses(Stream);
   StreamToClipboard(Stream);
   Stream.free;
@@ -1458,8 +1456,6 @@ begin
       Width  := 100;
     end;
 
-  ActiveVerse.Number := MemoPreview.ParagraphStart;
-  ActiveVerse.Count  := MemoPreview.ParagraphCount;
   Load_Verses(Stream);
 
   MemoPreview.LoadRichText(Stream);

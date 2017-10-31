@@ -198,6 +198,9 @@ begin
            HideCursor;
          end;
     end;
+
+  ParagraphStart := n;
+  ParagraphCount := 1;
 end;
 {$endif}
 
