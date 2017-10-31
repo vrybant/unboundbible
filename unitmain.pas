@@ -196,7 +196,6 @@ type
     procedure ToolButtonFBClick(Sender: TObject);
   private
     NoteFileName: string;
-    ReopenMax: integer;
     ReopenList: TStringList;
     {$ifdef darwin} bag01 : boolean; {$endif}
     {$ifdef darwin} bag02 : boolean; {$endif}
@@ -248,8 +247,9 @@ uses
   UnitAbout, UnitSearch, UnitCompare, UnitTool,
   UnitStream, UnitLib, UnitLang, UnitShelf, UnitCopy, UnitTrans;
 
-resourcestring
+const
   sUntitled = 'Untitled';
+  ReopenMax = 10;
 
 const
   ms_Save : string = '';
@@ -1157,7 +1157,6 @@ begin
   IniFile.WriteInteger('Application', 'Splitter', PanelLeft.Width);
   IniFile.WriteString('Application', 'Interface', FaceLang);
   IniFile.WriteBool('Application', 'ShortLink', ShortLink);
-  IniFile.WriteInteger('Application', 'ReopenMax', ReopenMax);
   IniFile.WriteBool('Application', 'ShortLink', ShortLink);
   IniFile.WriteBool('Application', 'FBPage', FBPageVisited);
   IniFile.WriteBool('Options', 'cvAbbr', Options.cvAbbr);
@@ -1202,7 +1201,6 @@ begin
   PanelLeft.Width := IniFile.ReadInteger('Application', 'Splitter', 250);
   FaceLang := IniFile.ReadString('Application', 'Interface', GetDefaultLanguage);
   ShortLink := IniFile.ReadBool('Application', 'ShortLink', True);
-  ReopenMax := IniFile.ReadInteger('Application', 'ReopenMax', 5);
   FBPageVisited := IniFile.ReadBool('Application', 'FBPage', False);
   Options.cvAbbr := IniFile.ReadBool('Options', 'cvAbbr', False);
   Options.cvDelim := IniFile.ReadBool('Options', 'cvDelim', False);
