@@ -66,7 +66,6 @@ type
     ActionAbout: THelpAction;
     ActionSearch: TAction;
     ActionCopyAs: TAction;
-    ActionInfo: THelpAction;
     ActionTrans: TAction;
 
     ChapterBox: TListBox;
@@ -169,7 +168,6 @@ type
     procedure CmdFileSaveAs(Sender: TObject);
     procedure CmdFilePrint(Sender: TObject);
     procedure CmdExit(Sender: TObject);
-    procedure CmdInfo(Sender: TObject);
     procedure CmdStyle2(Sender: TObject);
     procedure CmdCopyVerses(Sender: TObject);
     procedure CmdCopyAs(Sender: TObject);
@@ -190,14 +188,12 @@ type
     procedure MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure MemoNotesAttrChange;
-    procedure MemoNotesChange(Sender: TObject);
     procedure miBibleFolderClick(Sender: TObject);
     procedure miDownloadClick(Sender: TObject);
     procedure miHomeClick(Sender: TObject);
     procedure miManualClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
     procedure RadioButtonClick(Sender: TObject);
-    procedure StatusBarDblClick(Sender: TObject);
     procedure ToolButtonFBClick(Sender: TObject);
   private
     NoteFileName: string;
@@ -231,8 +227,8 @@ type
     procedure SearchText(s: string);
     procedure SelectPage(page: integer);
     procedure Translate;
-    procedure UpdateCaption;
-    procedure UpdateStatusBar;
+    procedure UpdateCaption(s: string);
+    procedure UpdateStatus(s: string);
     procedure UpdateActionImage;
     procedure VersesToClipboard;
     procedure ShowPopup;
@@ -250,12 +246,11 @@ var
 implementation
 
 uses
-  UnitAbout, UnitInfo, UnitSearch, UnitCompare, UnitTool,
+  UnitAbout, UnitSearch, UnitCompare, UnitTool,
   UnitStream, UnitLib, UnitLang, UnitShelf, UnitCopy, UnitTrans;
 
 resourcestring
   sUntitled = 'Untitled';
-  sModified = 'Modified';
 
 const
   ms_Save : string = '';
@@ -289,17 +284,14 @@ begin
 end;
 {$endif}
 
-procedure TMainForm.UpdateCaption;
+procedure TMainForm.UpdateCaption(s: string);
 begin
-  Caption := AppName + ' ' + VersionInfo;
+  Caption := AppName + ' ' + VersionInfo + ' - ' + s;
 end;
 
-procedure TMainForm.UpdateStatusBar;
+procedure TMainForm.UpdateStatus(s: string);
 begin
-  if Shelf.Count = 0 then Exit;
-  StatusBar.Panels[3].Text := ' ' + Bible.Copyright;
-  if MemoNotes.Modified then StatusBar.Panels[1].Text := sModified
-                            else StatusBar.Panels[1].Text := '';
+  StatusBar.SimpleText := '  ' + s;
 end;
 
 procedure TMainForm.ShowPopup;
@@ -350,11 +342,6 @@ begin
 
   if (Sender = MemoSearch) or (not FormTranslate.Visible) or (ssCtrl in Shift)
     then GoToVerse(Verse, True);
-end;
-
-procedure TMainForm.MemoNotesChange(Sender: TObject);
-begin
-  UpdateStatusBar;
 end;
 
 procedure TMainForm.MemoNotesAttrChange;
@@ -715,15 +702,13 @@ begin
   SelectPage(apNotes);
   MemoNotes.SetFocus;
   MemoNotes.Modified := False;
-  UpdateStatusBar;
-  StatusBar.Panels[4].Text := ' ' + ExtractOnlyName(NoteFileName);
+  UpdateCaption(ExtractOnlyName(NoteFileName));
 end;
 
 procedure TMainForm.SelectPage(page: integer);
 begin
   PageControl.ActivePageIndex := page;
   EnableButtons;
-  UpdateStatusBar;
   Refresh;
   if page <> apNotes then UnboundMemo.HideCursor;
 end;
@@ -818,8 +803,7 @@ var
   select : boolean;
 begin
   Shelf.SetCurrent(ComboBox.ItemIndex);
-//UpdateCaption;
-  UpdateStatusBar;
+  UpdateStatus(Bible.Info);
   MakeBookList;
 
   select := MemoBible.Selected;
@@ -900,7 +884,7 @@ begin
   NoteFileName := sUntitled;
   MemoNotes.Lines.Clear;
   MemoNotes.Modified := False;
-  UpdateStatusBar;
+  UpdateCaption(NoteFileName);
 end;
 
 procedure TMainForm.CmdFileOpen(Sender: TObject);
@@ -923,7 +907,6 @@ begin
   begin
     MemoNotes.SaveToFile(NoteFileName);
     MemoNotes.Modified := False;
-    UpdateStatusBar;
   end;
 end;
 
@@ -949,8 +932,7 @@ begin
     RebuildReopenList;
 
     MemoNotes.Modified := False;
-    UpdateStatusBar;
-    StatusBar.Panels[4].Text := ' ' + ExtractOnlyName(SaveDialog.FileName);
+    UpdateCaption(ExtractOnlyName(NoteFileName));
   end;
 end;
 
@@ -992,9 +974,9 @@ begin
 
   if Shelf.Count > 0 then
   begin
-    UpdateStatusBar;
     MakeBookList;
     ActiveVerse := Bible.FirstVerse;
+    UpdateStatus(Bible.Info);
     // LoadChapter; // RichMemo doesn't load from Stream,
                     // so we call LoadChapter from FormActivate
   end;
@@ -1074,7 +1056,6 @@ begin
                 Translate;
   SearchForm   .Translate;
   CompareForm  .Translate;
-  InfoBox      .Translate;
   AboutBox     .Translate;
   FormCopy     .Translate;
   FormTranslate.Translate;
@@ -1090,12 +1071,12 @@ begin
   BookBox.Top := ComboBox.Top + ComboBox.Height + 4;
   ChapterBox.Top := BookBox.Top;
 
-  BookBox.Height := PanelLeft.Height - ComboBox.Top - ComboBox.Height - 10;
+  BookBox.Height := PanelLeft.Height - ComboBox.Top - ComboBox.Height - 10; // 5
   ChapterBox.Height := BookBox.Height;
 
   ChapterBox.Width := WidthInPixels('150') + 30;
-  BookBox.Width := PanelLeft.Width - ChapterBox.Width - 8;
-  ChapterBox.Left := PanelLeft.Width - ChapterBox.Width + 5;
+  BookBox.Width := PanelLeft.Width - ChapterBox.Width - 18;
+  ChapterBox.Left := PanelLeft.Width - ChapterBox.Width - 5; // + 5;
 
 // StatusBar.Panels[3].Width := Width - 500;
 
@@ -1117,11 +1098,6 @@ begin
   // Memo.HideCursor;
 end;
 
-procedure TMainForm.CmdInfo(Sender: TObject);
-begin
-  InfoBox.ShowModal;
-end;
-
 procedure TMainForm.BookBoxClick(Sender: TObject);
 var
   Book : TBook;
@@ -1141,6 +1117,7 @@ begin
 
   ChapterBox.ItemIndex := 0;
   LoadChapter;
+  UpdateStatus('');
 end;
 
 procedure TMainForm.ChapterBoxClick(Sender: TObject);
@@ -1306,7 +1283,7 @@ procedure TMainForm.PageControlChange(Sender: TObject);
 begin
   EnableButtons;
   UpDownButtons;
-  UpdateStatusBar;
+  UpdateStatus('');
   UnboundMemo.SetFocus;
   UnboundMemo.Repaint;
   if PageControl.ActivePageIndex = apCompare then LoadCompare;
@@ -1317,11 +1294,6 @@ procedure TMainForm.RadioButtonClick(Sender: TObject);
 begin
   MakeBookList;
   LoadChapter;
-end;
-
-procedure TMainForm.StatusBarDblClick(Sender: TObject);
-begin
-  ActionInfo.Execute;
 end;
 
 procedure TMainForm.ToolButtonFBClick(Sender: TObject);
@@ -1415,23 +1387,15 @@ end;
 procedure TMainForm.SearchText(s: string);
 var
   Stream : TRichStream;
-var
   Count: integer;
-//Today : longint;
 begin
   Stream := TRichStream.Create;
-  StatusBar.Panels[2].Text := '';
   MemoSearch.Cursor := crHourGlass;
-
-//Today := GetTickCount;
   Search_Text(Stream, s, Count);
   MemoSearch.LoadRichText(Stream);
-
-  StatusBar.Panels[2].Text := ' ' + IntToStr(Count) + ' ' + ms_found;
-//StatusBar.Panels[2].Text := ' ' + IntToStr(GetTickCount - Today);
-
   MemoSearch.Cursor := crArrow;
   SelectPage(apSearch);
+  UpdateStatus(IntToStr(Count) + ' ' + ms_found);
   Stream.Free;
 end;
 

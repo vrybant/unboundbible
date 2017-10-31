@@ -24,7 +24,6 @@ type
     Transaction: TSQLTransaction;
     Query      : TSQLQuery;
     {-}
-    InfoList     : TStringList;
     info         : string;
     filePath     : string;
     fileName     : string;
@@ -152,8 +151,6 @@ begin
   Connection.Transaction := Transaction;
   Query.DataBase := Connection;
 
-  InfoList := TStringList.Create;
-
   self.filePath := filePath;
   self.fileName := fileName;
 
@@ -231,6 +228,7 @@ begin
   end;
 
   RightToLeft := GetRightToLeft(language);
+  DeleteTags(info);
 end;
 
 procedure TBible.LoadDatabase;
@@ -610,7 +608,6 @@ var
 begin
   for i:=0 to Count-1 do Items[i].Free;
 
-  InfoList.Free;
   Query.Free;
   Transaction.Free;
   Connection.Free;

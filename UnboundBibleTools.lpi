@@ -44,7 +44,7 @@
         <PackageName Value="LCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="16">
       <Unit0>
         <Filename Value="UnboundBibleTools.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -102,56 +102,48 @@
         <UnitName Value="UnitCompare"/>
       </Unit8>
       <Unit9>
-        <Filename Value="unitinfo.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="InfoBox"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UnitInfo"/>
-      </Unit9>
-      <Unit10>
         <Filename Value="unitcopy.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormCopy"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitCopy"/>
-      </Unit10>
-      <Unit11>
+      </Unit9>
+      <Unit10>
         <Filename Value="unittrans.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormTranslate"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitTrans"/>
-      </Unit11>
-      <Unit12>
+      </Unit10>
+      <Unit11>
         <Filename Value="unittype.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitType"/>
-      </Unit12>
-      <Unit13>
+      </Unit11>
+      <Unit12>
         <Filename Value="unittitle.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitTitle"/>
-      </Unit13>
-      <Unit14>
+      </Unit12>
+      <Unit13>
         <Filename Value="unitsqliteex.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitSQLiteEx"/>
-      </Unit14>
-      <Unit15>
+      </Unit13>
+      <Unit14>
         <Filename Value="unittip.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormTip"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitTip"/>
-      </Unit15>
-      <Unit16>
+      </Unit14>
+      <Unit15>
         <Filename Value="unitstream.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitStream"/>
-      </Unit16>
+      </Unit15>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

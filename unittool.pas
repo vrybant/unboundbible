@@ -105,8 +105,9 @@ procedure Search_Text(Stream: TRichStream; st: string; var count: integer);
 
     Stream.Open;
     ContentArray := Bible.Search(st, CurrentSearchOptions, CurrentSearchRange);
+    Count := Length(ContentArray);
 
-    for i:=0 to Length(ContentArray)-1 do
+    for i:=0 to Count-1 do
       begin
         v := ContentArray[i].verse;
         link := Bible.VerseToStr(v,true);

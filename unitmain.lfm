@@ -267,26 +267,8 @@ object MainForm: TMainForm
     Height = 23
     Top = 341
     Width = 795
-    Panels = <    
-      item
-        Width = 120
-      end    
-      item
-        Alignment = taCenter
-        Width = 60
-      end    
-      item
-        Width = 150
-      end    
-      item
-        Width = 800
-      end    
-      item
-        Alignment = taCenter
-        Width = 50
-      end>
-    SimplePanel = False
-    OnDblClick = StatusBarDblClick
+    Panels = <>
+    SimpleText = ' SimpleText'
   end
   object PageControl: TPageControl
     Left = 200
@@ -384,7 +366,6 @@ object MainForm: TMainForm
         Width = 587
         Align = alClient
         HideSelection = False
-        OnChange = MemoNotesChange
         OnContextPopup = MemoContextPopup
         OnMouseUp = MemoMouseUp
         ScrollBars = ssBoth
@@ -584,7 +565,6 @@ object MainForm: TMainForm
         Caption = '-'
       end
       object miInformation: TMenuItem
-        Action = ActionInfo
         Caption = 'Information'
         Bitmap.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
@@ -2759,12 +2739,6 @@ object MainForm: TMainForm
       Caption = '&Font...'
       Enabled = False
       OnExecute = CmdEdit
-    end
-    object ActionInfo: THelpAction
-      Category = 'Help'
-      Caption = 'InfoCmd'
-      ImageIndex = 0
-      OnExecute = CmdInfo
     end
     object ActionFont: TAction
       Tag = 13
