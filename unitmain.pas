@@ -1063,20 +1063,20 @@ end;
 
 procedure TMainForm.FormPaint(Sender: TObject);
 {$ifdef darwin} var o : integer; {$endif}
+const
+  Streak = 3;
 begin
-  ComboBox.Width := PanelLeft.Width - 14;
+  ComboBox.Width := PanelLeft.Width - ComboBox.Left - Streak;
 
-  BookBox.Top := ComboBox.Top + ComboBox.Height + 4;
+  BookBox.Top := ComboBox.Top + ComboBox.Height + Streak;
   ChapterBox.Top := BookBox.Top;
 
-  BookBox.Height := PanelLeft.Height - ComboBox.Top - ComboBox.Height - 10; // 5
+  BookBox.Height := PanelLeft.Height - BookBox.Top - BookBox.Left;
   ChapterBox.Height := BookBox.Height;
 
   ChapterBox.Width := WidthInPixels('150') + 30;
-  BookBox.Width := PanelLeft.Width - ChapterBox.Width - 18;
-  ChapterBox.Left := PanelLeft.Width - ChapterBox.Width - 5; // + 5;
-
-// StatusBar.Panels[3].Width := Width - 500;
+  BookBox.Width := PanelLeft.Width - BookBox.Left - BookBox.Left - ChapterBox.Width - Streak;
+  ChapterBox.Left := PanelLeft.Width - ChapterBox.Width - Streak;
 
   {$ifdef darwin}
   bag01 := True;
@@ -1091,9 +1091,6 @@ begin
 
   bag01 := False;
   {$endif}
-
-  // MemoNotes.SetEditRect;
-  // Memo.HideCursor;
 end;
 
 procedure TMainForm.BookBoxClick(Sender: TObject);
@@ -1231,8 +1228,8 @@ end;
 
 procedure TMainForm.miDownloadClick(Sender: TObject);
 begin
-//OpenURL('http://vladimirrybant.org/index.php?page=download');
-  OpenURL('http://unbound.biola.edu/index.cfm?method=downloads.showDownloadMain');
+  if facelang = 'russian' then OpenURL('http://ph4.ru/b4_index.php')
+                          else OpenURL('http://ph4.org/b4_index.php');
 end;
 
 procedure TMainForm.CmdOptions(Sender: TObject);
@@ -1293,7 +1290,7 @@ end;
 
 procedure TMainForm.ToolButtonFBClick(Sender: TObject);
 begin
-  OpenURL('http://www.facebook.com/unbound.bible.tools/');
+  OpenURL('http://facebook.com/unbound.bible');
   FBPageVisited := True;
 end;
 
