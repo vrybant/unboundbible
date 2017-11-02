@@ -221,7 +221,7 @@ object MainForm: TMainForm
       Left = 4
       Height = 274
       Top = 31
-      Width = 132
+      Width = 134
       Font.Color = clWindowText
       Font.Height = -13
       ItemHeight = 0
