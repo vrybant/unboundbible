@@ -25,13 +25,13 @@ object CompareForm: TCompareForm
     ParentFont = False
     TabOrder = 1
   end
-  object ButtonCompare: TButton
-    Left = 185
+  object ButtonOK: TButton
+    Left = 188
     Height = 25
     Top = 261
     Width = 80
     AutoSize = True
-    Caption = 'Compare'
+    Caption = 'OK'
     Constraints.MaxWidth = 80
     Constraints.MinWidth = 80
     Default = True

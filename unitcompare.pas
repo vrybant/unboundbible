@@ -6,8 +6,11 @@ uses
   Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, CheckLst, SysUtils;
 
 type
+
+  { TCompareForm }
+
   TCompareForm = class(TForm)
-    ButtonCompare: TButton;
+    ButtonOK: TButton;
     CheckListBox: TCheckListBox;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -32,7 +35,7 @@ uses UnitShelf, UnitLang;
 procedure TCompareForm.Translate;
 begin
   Caption := ' ' + T('Compare.Caption');
-  ButtonCompare.Caption := T('Menu.Compare');
+  ButtonOK.Caption := T('Button.OK');
 end;
 
 procedure TCompareForm.FormCreate(Sender: TObject);
@@ -40,7 +43,7 @@ begin
   MakeListBox;
 
   {$ifdef darwin}
-  ButtonCompare.Visible := False;
+  ButtonOK.Visible := False;
   Height := 182;
   {$endif}
 end;

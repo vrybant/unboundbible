@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 320
+  Left = 355
   Height = 384
-  Top = 508
+  Top = 551
   Width = 795
   Caption = 'Unbound Bible'
   ClientHeight = 364
@@ -218,36 +218,34 @@ object MainForm: TMainForm
     ParentFont = False
     TabOrder = 1
     object BookBox: TListBox
-      Left = 7
+      Left = 4
       Height = 274
-      Top = 33
-      Width = 129
+      Top = 31
+      Width = 132
       Font.Color = clWindowText
       Font.Height = -13
       ItemHeight = 0
       OnClick = BookBoxClick
       ParentFont = False
-      ScrollWidth = 127
       TabOrder = 0
     end
     object ChapterBox: TListBox
       Left = 144
       Height = 274
-      Top = 33
+      Top = 31
       Width = 45
       Font.Color = clWindowText
       Font.Height = -15
       ItemHeight = 0
       OnClick = ChapterBoxClick
       ParentFont = False
-      ScrollWidth = 43
       TabOrder = 1
     end
     object ComboBox: TComboBox
-      Left = 7
+      Left = 4
       Height = 25
-      Top = 4
-      Width = 178
+      Top = 2
+      Width = 185
       DropDownCount = 12
       Font.Color = clWindowText
       Font.Height = -13
@@ -268,7 +266,6 @@ object MainForm: TMainForm
     Top = 341
     Width = 795
     Panels = <>
-    SimpleText = ' SimpleText'
   end
   object PageControl: TPageControl
     Left = 200
@@ -967,6 +964,7 @@ object MainForm: TMainForm
           BFFF7273CCFFE1E2ECFFFF00FF00FF00FF00FF00FF00FF00FF00
         }
         ImageIndex = 32
+        Visible = False
         OnClick = miManualClick
       end
       object miHome: TMenuItem

@@ -41,12 +41,12 @@ begin
   Caption := ' ' + T('Menu.About');
 
   LabelVersion.Caption := 'Version' + ' ' + VersionInfo;
-  LabelTeam.Caption := ' Developer: Vladimir Rybant ';
+  LabelTeam.Caption := '  Developer: Vladimir Rybant';
 
   if FaceLang <> 'russian' then Exit;
 
   LabelVersion.Caption := 'Версия'  + ' ' + VersionInfo;
-  LabelTeam.Caption := ' Разработка: Владимир Рыбант';
+  LabelTeam.Caption := 'Разработка: Владимир Рыбант';
 end;
 
 procedure TAboutBox.ImageFacebookClick(Sender: TObject);
