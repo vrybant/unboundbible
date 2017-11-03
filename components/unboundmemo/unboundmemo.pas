@@ -91,13 +91,14 @@ begin
     SetSel(x1, x1);
   until not Colored or (x1 < 0);
 
+  if x1 < 0 then inc(x1);
+
   x2 := x0;
   repeat
     inc(x2);
     SetSel(x2, x2);
   until not Colored;
 
-  inc(x1);
   {$ifdef windows} dec(x2); {$endif}
 
   SetSel(x1, x2); Result := SelText;
