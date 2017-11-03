@@ -593,6 +593,7 @@ begin
 
   ActionCopyAs.Enabled := B;
   ActionCopyVerses.Enabled := B;
+  ActionInterline.Enabled := B;
 
   UpdateActionImage;
 end;
