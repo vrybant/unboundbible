@@ -4,20 +4,24 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls, UnitLib, UnboundMemo, UnitStream;
+  StdCtrls, ExtCtrls, UnboundMemo, UnitLib, UnitType, UnitStream;
 
 type
+
+  { TFormCopy }
+
   TFormCopy = class(TForm)
     ButtonCancel: TButton;
     ButtonCopy: TButton;
+    CheckBox: TCheckBox;
     CheckGroup: TCheckGroup;
-    RadioGroup: TRadioGroup;
     Memo: TUnboundMemo;
     procedure ButtonCopyClick(Sender: TObject);
     procedure CheckGroupItemClick(Sender: TObject; {%H-}Index: integer);
     procedure FormActivate(Sender: TObject);
-    procedure RadioGroupClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
   private
+    TempOptions : TCopyOptions;
     procedure LoadText;
     procedure CopyToClipboard;
   public
@@ -31,7 +35,14 @@ var
 
 implementation
 
-uses UnitTool, UnitType, UnitLang;
+uses UnitTool, UnitLang;
+
+const
+  cgAbbreviate  = 0;
+  cgEnumerated  = 1;
+  cgGuillemets  = 2;
+  cgParentheses = 3;
+  cgEnd         = 4;
 
 {$R *.lfm}
 
@@ -39,29 +50,30 @@ procedure TFormCopy.Translate;
 begin
   Caption := ' ' + T('Verses.Caption');
 
-  CheckGroup  .Caption := T('Verses.Options'  );
-  RadioGroup  .Caption := T('Verses.Format'   );
-  ButtonCopy  .Caption := T('Menu.Copy'       );
-  ButtonCancel.Caption := T('Button.Cancel'   );
+  CheckGroup  .Caption := T('Verses.Options' );
+  ButtonCopy  .Caption := T('Menu.Copy'      );
+  ButtonCancel.Caption := T('Button.Cancel'  );
 
-  CheckGroup .Items[0] := T('Verses.Abbr'     );
-  CheckGroup .Items[1] := T('Verses.Brackets' );
-  CheckGroup .Items[2] := T('Verses.End'      );
+  CheckGroup.Items[cgAbbreviate]  := T('Verses.Abbreviate'  );
+  CheckGroup.Items[cgEnumerated]  := T('Verses.Enumerated'  );
+  CheckGroup.Items[cgGuillemets]  := T('Verses.Guillemets'  );
+  CheckGroup.Items[cgParentheses] := T('Verses.Parentheses' );
+  CheckGroup.Items[cgEnd]         := T('Verses.End'         );
+
+  CheckBox.Caption := T('Verses.Default');
 end;
 
 procedure TFormCopy.FormActivate(Sender: TObject);
 begin
-  with Options do
-    begin
-      CheckGroup.Checked[0] := cvAbbr;
-      CheckGroup.Checked[1] := cvDelim;
-      CheckGroup.Checked[2] := cvEnd;
+  TempOptions := Options;
 
-      if not cvWrap and not cvNum then RadioGroup.ItemIndex := 0;
-      if     cvWrap and not cvNum then RadioGroup.ItemIndex := 1;
-      if not cvWrap and     cvNum then RadioGroup.ItemIndex := 2;
-      if     cvWrap and     cvNum then RadioGroup.ItemIndex := 3;
-    end;
+  CheckGroup.Checked[cgAbbreviate]  := Options.cvAbbreviate;
+  CheckGroup.Checked[cgEnumerated]  := Options.cvEnumerated;
+  CheckGroup.Checked[cgGuillemets]  := Options.cvGuillemets;
+  CheckGroup.Checked[cgParentheses] := Options.cvParentheses;
+  CheckGroup.Checked[cgEnd]         := Options.cvEnd;
+
+  CheckBox.Checked:= False;
 
   LoadText;
 end;
@@ -86,9 +98,11 @@ end;
 
 procedure TFormCopy.CheckGroupItemClick(Sender: TObject; Index: integer);
 begin
-  Options.cvAbbr  := CheckGroup.Checked[0];
-  Options.cvDelim := CheckGroup.Checked[1];
-  Options.cvEnd   := CheckGroup.Checked[2];
+  Options.cvAbbreviate  := CheckGroup.Checked[cgAbbreviate];
+  Options.cvEnumerated  := CheckGroup.Checked[cgEnumerated];
+  Options.cvGuillemets  := CheckGroup.Checked[cgGuillemets];
+  Options.cvParentheses := CheckGroup.Checked[cgParentheses];
+  Options.cvEnd         := CheckGroup.Checked[cgEnd];
   LoadText;
   Repaint;
 end;
@@ -98,12 +112,10 @@ begin
   CopyToClipboard;
 end;
 
-procedure TFormCopy.RadioGroupClick(Sender: TObject);
+procedure TFormCopy.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  Options.cvWrap := (RadioGroup.ItemIndex = 1) or (RadioGroup.ItemIndex = 3);
-  Options.cvNum  := (RadioGroup.ItemIndex = 2) or (RadioGroup.ItemIndex = 3);
-  LoadText;
-  Repaint;
+  if self.ModalResult <> mrOk then Options := TempOptions;
+  if (self.ModalResult = mrOk) and (not CheckBox.Checked) then Options := TempOptions;
 end;
 
 end.

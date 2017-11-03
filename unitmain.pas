@@ -1156,11 +1156,11 @@ begin
   IniFile.WriteBool('Application', 'ShortLink', ShortLink);
   IniFile.WriteBool('Application', 'ShortLink', ShortLink);
   IniFile.WriteBool('Application', 'FBPage', FBPageVisited);
-  IniFile.WriteBool('Options', 'cvAbbr', Options.cvAbbr);
-  IniFile.WriteBool('Options', 'cvDelim', Options.cvDelim);
+  IniFile.WriteBool('Options', 'cvAbbreviate', Options.cvAbbreviate);
+  IniFile.WriteBool('Options', 'cvEnumerated', Options.cvEnumerated);
+  IniFile.WriteBool('Options', 'cvGuillemets', Options.cvGuillemets);
+  IniFile.WriteBool('Options', 'cvParentheses', Options.cvParentheses);
   IniFile.WriteBool('Options', 'cvEnd', Options.cvEnd);
-  IniFile.WriteBool('Options', 'cvNum', Options.cvNum);
-  IniFile.WriteBool('Options', 'cvWrap', Options.cvWrap);
   IniFile.WriteInteger('Reopen', 'Count', ReopenList.Count);
 
   for i := 0 to ReopenList.Count - 1 do
@@ -1199,11 +1199,11 @@ begin
   FaceLang := IniFile.ReadString('Application', 'Interface', GetDefaultLanguage);
   ShortLink := IniFile.ReadBool('Application', 'ShortLink', True);
   FBPageVisited := IniFile.ReadBool('Application', 'FBPage', False);
-  Options.cvAbbr := IniFile.ReadBool('Options', 'cvAbbr', False);
-  Options.cvDelim := IniFile.ReadBool('Options', 'cvDelim', False);
+  Options.cvAbbreviate := IniFile.ReadBool('Options', 'cvAbbreviate', False);
+  Options.cvEnumerated := IniFile.ReadBool('Options', 'cvEnumerated', False);
+  Options.cvGuillemets := IniFile.ReadBool('Options', 'cvGuillemets', False);
+  Options.cvParentheses := IniFile.ReadBool('Options', 'cvParentheses', False);
   Options.cvEnd := IniFile.ReadBool('Options', 'cvEnd', False);
-  Options.cvNum := IniFile.ReadBool('Options', 'cvNum', False);
-  Options.cvWrap := IniFile.ReadBool('Options', 'cvWrap', False);
   Max := IniFile.ReadInteger('Reopen', 'Count', ReopenList.Count);
 
   for i := 0 to Max - 1 do

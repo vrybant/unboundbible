@@ -35,21 +35,12 @@ type
 
  TContentArray = array of TContent;
 
- {
- struct CopyOptions : OptionSet
-    let rawValue: Int
-    static let abbreviate = CopyOptions(rawValue: 1 << 0)
-    static let  quotation = CopyOptions(rawValue: 1 << 1)
-    static let  enumerate = CopyOptions(rawValue: 1 << 2)
-    static let endinglink = CopyOptions(rawValue: 1 << 3)
- }
-
  TCopyOptions = record
-    cvAbbr  : boolean;
-    cvEnd   : boolean;
-    cvDelim : boolean;
-    cvNum   : boolean;
-    cvWrap  : boolean;
+    cvAbbreviate  : boolean;
+    cvEnumerated  : boolean;
+    cvGuillemets  : boolean;
+    cvParentheses : boolean;
+    cvEnd         : boolean;
   end;
 
 const

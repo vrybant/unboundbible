@@ -173,16 +173,14 @@ procedure Load_Verses(Stream: TRichStream);
 var
   Book : TBook;
   List : TStringList;
-  par, text, s : string;
+  s, q, t : string;
   i : integer;
 
-  procedure MakeLink;
-  var s : string;
+  function Link: string;
   begin
-    s := Bible.VerseToStr(ActiveVerse,not Options.cvAbbr);
-    if Options.cvDelim then s := '(' + s + ')';
-    s := '\f0\cf3 ' + s + '\cf1 ' + ' ' + par;
-    Stream.Writeln(s);
+    Result := Bible.VerseToStr(ActiveVerse,not Options.cvAbbreviate);
+    Result := '\cf3 ' + Result + '\cf1 ';
+    if Options.cvParentheses then Result := '(' + Result + ')';
   end;
 
 begin
@@ -190,37 +188,32 @@ begin
   if Book = nil then Exit;
 
   List := TStringList.Create;
-  Stream.RightToLeft := Bible.RightToLeft;
-  Stream.Open;
-
-  if Options.cvWrap then par := '\par ' else par := '';
-
-  if not Options.cvEnd then MakeLink;
   Bible.GetRange(ActiveVerse,List);
 
+  q := '';
   for i:=0 to List.Count-1 do
     begin
-      s := '\cf1 ';
+      if Options.cvEnumerated then
+        if ActiveVerse.Count > 1 then
+          if (i>0) or ((i=0) and Options.cvEnd) then
+            q := q + '(' + IntToStr(ActiveVerse.Number + i) + ') ';
 
-      if Options.cvNum then
-        if Options.cvWrap or (ActiveVerse.Count > 1) or Options.cvEnd
-          then s := s + '(' + IntToStr(ActiveVerse.Number + i) + ') ';
-
-      text := List[i];
-      Replacement(text,false);
-      DeleteTags(text);
-      s := s + text + '\i0 '+ ' ' + par;
-
-      Stream.Writeln(s);
+      t := List[i];
+      Replacement(t,false);
+      DeleteTags(t);
+      q := q + t + ' ';
     end;
 
-  if Options.cvEnd then
-    begin
-      Stream.Writeln('');
-      MakeLink;
-    end;
+  q := Trim(q);
+  s := '\cf1 ';
 
-  if not Options.cvWrap then Stream.Writeln('\par');
+  if Options.cvGuillemets then q := '«' + q + '»';
+  if Options.cvEnd then s := q + ' '+ Link else s := Link + ' ' + q;
+
+  Stream.RightToLeft := Bible.RightToLeft;
+  Stream.Open;
+  Stream.Writeln(s);
+  Stream.Writeln('\par ');
   Stream.Close;
 
   List.free;
