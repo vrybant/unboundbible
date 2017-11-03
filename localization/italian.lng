@@ -1,7 +1,7 @@
 ﻿
 ****************************************************************************
 *                                                                          *
-*           The Unbound Bible Tools - International Support File           *
+*                Unbound Bible - International Support File                *
 *                                                                          *
 ****************************************************************************
 *                                                                          *
@@ -93,9 +93,12 @@ Options.Abbreviate  = Accorcia i nomi dei libri
 Verses.Caption     = Copia Versetti
 Verses.Options     = Options
 Verses.Format      = Format
-Verses.Abbr        = Abbreviate book names
-Verses.Brackets    = Round brackets
+Verses.Abbreviate  = Abbreviate book names
+Verses.Enumerated  = Enumerated
+Verses.Guillemets  = Guillemets
+Verses.Parentheses = Parentheses
 Verses.End         = Link in the end
+Verses.Default     = Set default
 
 Compare.Caption   = Modulos
 

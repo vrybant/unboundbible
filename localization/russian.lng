@@ -1,7 +1,7 @@
 
 ****************************************************************************
 *                                                                          *
-*             Unbound Bible Tools - International Support File             *
+*                Unbound Bible - International Support File                *
 *                                                                          *
 ****************************************************************************
 *                                                                          *
@@ -93,9 +93,12 @@ Options.Abbreviate  = Короткие ссылки
 Verses.Caption     = Копировать как
 Verses.Options     = Настройки
 Verses.Format      = Формат
-Verses.Abbr        = Короткая ссылка
-Verses.Brackets    = Круглые скобки
+Verses.Abbreviate  = Короткая ссылка
+Verses.Enumerated  = Нумерация стихов
+Verses.Guillemets  = Кавычки
+Verses.Parentheses = Круглые скобки
 Verses.End         = Ссылка в конце
+Verses.Default     = По умолчанию
 
 Compare.Caption   = Модули
 
