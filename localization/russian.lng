@@ -98,7 +98,7 @@ Verses.Enumerated  = Нумерация стихов
 Verses.Guillemets  = Кавычки
 Verses.Parentheses = Круглые скобки
 Verses.End         = Ссылка в конце
-Verses.Default     = По умолчанию
+Verses.Default     = Запомнить
 
 Compare.Caption   = Модули
 
