@@ -974,7 +974,7 @@ begin
   if Shelf.Count > 0 then
   begin
     MakeBookList;
-    ActiveVerse := Bible.FirstVerse;
+    if ActiveVerse.book = 0 then ActiveVerse := Bible.FirstVerse;
     UpdateStatus(Bible.Info);
     // LoadChapter; // RichMemo doesn't load from Stream,
                     // so we call LoadChapter from FormActivate
@@ -1157,11 +1157,15 @@ begin
   IniFile.WriteBool('Application', 'ShortLink', ShortLink);
   IniFile.WriteBool('Application', 'ShortLink', ShortLink);
   IniFile.WriteBool('Application', 'FBPage', FBPageVisited);
-  IniFile.WriteBool('Options', 'cvAbbreviate', Options.cvAbbreviate);
-  IniFile.WriteBool('Options', 'cvEnumerated', Options.cvEnumerated);
-  IniFile.WriteBool('Options', 'cvGuillemets', Options.cvGuillemets);
-  IniFile.WriteBool('Options', 'cvParentheses', Options.cvParentheses);
-  IniFile.WriteBool('Options', 'cvEnd', Options.cvEnd);
+  IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
+  IniFile.WriteBool('Options', 'Enumerated', Options.cvEnumerated);
+  IniFile.WriteBool('Options', 'Guillemets', Options.cvGuillemets);
+  IniFile.WriteBool('Options', 'Parentheses', Options.cvParentheses);
+  IniFile.WriteBool('Options', 'End', Options.cvEnd);
+  IniFile.WriteInteger('Verse', 'Book', ActiveVerse.book);
+  IniFile.WriteInteger('Verse', 'Chapter', ActiveVerse.chapter);
+  IniFile.WriteInteger('Verse', 'Number', ActiveVerse.number);
+  IniFile.WriteInteger('Verse', 'Count', ActiveVerse.count);
   IniFile.WriteInteger('Reopen', 'Count', ReopenList.Count);
 
   for i := 0 to ReopenList.Count - 1 do
@@ -1200,11 +1204,15 @@ begin
   FaceLang := IniFile.ReadString('Application', 'Interface', GetDefaultLanguage);
   ShortLink := IniFile.ReadBool('Application', 'ShortLink', True);
   FBPageVisited := IniFile.ReadBool('Application', 'FBPage', False);
-  Options.cvAbbreviate := IniFile.ReadBool('Options', 'cvAbbreviate', False);
-  Options.cvEnumerated := IniFile.ReadBool('Options', 'cvEnumerated', False);
-  Options.cvGuillemets := IniFile.ReadBool('Options', 'cvGuillemets', False);
-  Options.cvParentheses := IniFile.ReadBool('Options', 'cvParentheses', False);
-  Options.cvEnd := IniFile.ReadBool('Options', 'cvEnd', False);
+  Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
+  Options.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);
+  Options.cvGuillemets := IniFile.ReadBool('Options', 'Guillemets', False);
+  Options.cvParentheses := IniFile.ReadBool('Options', 'Parentheses', False);
+  Options.cvEnd := IniFile.ReadBool('Options', 'End', False);
+  ActiveVerse.book := IniFile.ReadInteger('Verse', 'Book', 0);
+  ActiveVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);
+  ActiveVerse.number := IniFile.ReadInteger('Verse', 'Number', 0);
+  ActiveVerse.count := IniFile.ReadInteger('Verse', 'Count', 0);
   Max := IniFile.ReadInteger('Reopen', 'Count', ReopenList.Count);
 
   for i := 0 to Max - 1 do
