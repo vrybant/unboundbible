@@ -65,9 +65,9 @@ type
     function VerseToStr(Verse: TVerse; full: boolean): string;
     function SrtToVerse(link : string): TVerse;
     procedure SetTitles;
-    function  GetVerse(Verse: TVerse): string;
     procedure GetChapter(Verse: TVerse; List: TStringList);
     procedure GetRange(Verse: TVerse; List: TStringList);
+    function GoodLink(Verse: TVerse): boolean;
     function  Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     procedure GetTitles(var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
@@ -109,6 +109,10 @@ const
 
 function Bible: TBible;
 function Comparison(Item1, Item2: Pointer): integer; // for TShelf
+
+function IsNewTestament(n: integer): boolean;
+function IsOldTestament(n: integer): boolean;
+function IsApocrypha(n: integer): boolean;
 
 implementation
 
@@ -406,11 +410,6 @@ begin
     end;
 end;
 
-function TBible.GetVerse(Verse: TVerse): string;
-begin
-  Result := '';
-end;
-
 procedure TBible.GetChapter(Verse: TVerse; List: TStringList);
 var
   index : integer;
@@ -467,6 +466,16 @@ begin
   except
     //
   end;
+end;
+
+function TBible.GoodLink(Verse: TVerse): boolean;
+var
+  List: TStringList;
+begin
+  List := TStringList.Create;
+  GetRange(Verse, List);
+  Result := List.Count > 0;
+  List.Free;
 end;
 
 function TBible.RankContents(const Contents: TContentArray): TContentArray;

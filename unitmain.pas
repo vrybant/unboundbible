@@ -3,6 +3,7 @@ unit UnitMain;
 interface
 
 uses
+  {$ifdef windows} Windows, {$endif}
   {$ifdef darwin} RichMemoEx, {$endif}
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
@@ -205,7 +206,7 @@ type
     {$ifdef darwin} procedure ComboBoxSetIndex; {$endif}
     procedure EnableButtons;
     procedure UpDownButtons;
-    procedure SelectBook(title: string);
+    procedure SelectBook(title: string; scroll: boolean);
     procedure GoToVerse(Verse: TVerse; select: boolean);
     procedure LangMenuInit;
     procedure LoadChapter;
@@ -285,10 +286,10 @@ begin
   if Shelf.Count > 0 then
   begin
     MakeBookList;
-    if ActiveVerse.book = 0 then ActiveVerse := Bible.FirstVerse;
+    if not Bible.GoodLink(ActiveVerse) then ActiveVerse := Bible.FirstVerse;
     UpdateStatus(Bible.Info);
     // LoadChapter; // RichMemo doesn't load from Stream,
-                    // so we call LoadChapter from FormActivate
+                    // so we call it from FormActivate
   end;
 
   if Shelf.Count = 0 then
@@ -340,7 +341,7 @@ end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
-  if ChapterBox.Items.Count = 0 then LoadChapter; // first time
+  if ChapterBox.Items.Count = 0 then GoToVerse(ActiveVerse,(ActiveVerse.number > 1)); // first time
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -847,7 +848,7 @@ begin
   PopupMenu.Popup(CursorPos.X, CursorPos.Y);
 end;
 
-procedure TMainForm.SelectBook(title: string);
+procedure TMainForm.SelectBook(title: string; scroll: boolean);
 var
   i, index : integer;
 begin
@@ -858,7 +859,7 @@ begin
   if index < 0 then Exit;
 
   BookBox.ItemIndex := index;
-  ChapterBox.ItemIndex := ActiveVerse.Chapter - 1;
+  if scroll then BookBox.TopIndex := index;
   {$ifdef darwin} ScrollBoxes; {$endif}
 end;
 
@@ -867,12 +868,15 @@ var
   Book : TBook;
 begin
   {$ifdef darwin} bag02 := True; {$endif}
+  if not Bible.GoodLink(Verse) then Exit;
+
   Book := Bible.BookByNum(Verse.Book);
   if Book = nil then Exit;
 
   ActiveVerse := Verse;
   LoadChapter;
-  SelectBook(Book.title);
+
+  SelectBook(Book.title, IsNewTestament(Verse.book));
   ChapterBox.ItemIndex := Verse.Chapter - 1;
 
   if select then MemoBible.SelectParagraph(Verse.Number);
