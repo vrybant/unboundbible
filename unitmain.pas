@@ -15,7 +15,6 @@ type
   TMainForm = class(TForm)
     ActionInterline: TAction;
     IdleTimer: TIdleTimer;
-    MenuItem4: TMenuItem;
     miInterlinear: TMenuItem;
     pmInterlinear: TMenuItem;
     miTranslate: TMenuItem;
@@ -38,35 +37,35 @@ type
     MemoCompare: TUnboundMemo;
     MemoNotes: TUnboundMemo;
 
-    ActionCopyVerses: TAction;
-    ActionEditSelAll: TEditSelectAll;
-    ActionFont: TAction;
-    ActionOptions: TAction;
-    ActionBullets: TAction;
-    ActionRight: TAction;
-    ActionCenter: TAction;
-    ActionLeft: TAction;
-    ActionLink: TAction;
-    ActionUnderline: TAction;
-    ActionItalic: TAction;
+    ActionAbout: THelpAction;
     ActionBold: TAction;
+    ActionBullets: TAction;
+    ActionCenter: TAction;
     ActionCompare: TAction;
+    ActionCopyAs: TAction;
+    ActionCopyVerses: TAction;
     ActionEditCopy: TAction;
     ActionEditCut: TAction;
     ActionEditDel: TAction;
     ActionEditFont: TAction;
     ActionEditPaste: TAction;
+    ActionEditSelAll: TEditSelectAll;
     ActionEditUndo: TAction;
     ActionExit: TAction;
     ActionFileNew: TAction;
     ActionFileOpen: TAction;
     ActionFilePrint: TAction;
-    ActionFileSaveAs: TAction;
     ActionFileSave: TAction;
-    ActionAbout: THelpAction;
+    ActionFileSaveAs: TAction;
+    ActionFont: TAction;
+    ActionItalic: TAction;
+    ActionLeft: TAction;
+    ActionLink: TAction;
+    ActionOptions: TAction;
+    ActionRight: TAction;
     ActionSearch: TAction;
-    ActionCopyAs: TAction;
     ActionTrans: TAction;
+    ActionUnderline: TAction;
 
     ChapterBox: TListBox;
     BookBox: TListBox;
@@ -84,41 +83,41 @@ type
     TabSheetNotes: TTabSheet;
 
     MainMenu: TMainMenu;
+    miBibleFolder: TMenuItem;
+    miClear: TMenuItem;
+    miCompare: TMenuItem;
+    miCopy: TMenuItem;
+    miCopyAs: TMenuItem;
+    miCut: TMenuItem;
+    miDownload: TMenuItem;
+    miEdit: TMenuItem;
+    miExit: TMenuItem;
+    miHelp: TMenuItem;
+    miHelpAbout: TMenuItem;
+    miHome: TMenuItem;
+    miLocalization: TMenuItem;
+    miManual: TMenuItem;
     miNoteNew: TMenuItem;
     miNoteOpen: TMenuItem;
+    miNotes: TMenuItem;
     miNoteSave: TMenuItem;
     miNoteSaveAs: TMenuItem;
-    miHelpAbout: TMenuItem;
-    miTools: TMenuItem;
-    miDownload: TMenuItem;
-    miHome: TMenuItem;
-    miNotes: TMenuItem;
-    miHelp: TMenuItem;
-    miEdit: TMenuItem;
-    miCopyAs: TMenuItem;
-    miSelectAll: TMenuItem;
-    miClear: TMenuItem;
+    miOptions: TMenuItem;
     miPaste: TMenuItem;
-    miCopy: TMenuItem;
-    miCut: TMenuItem;
+    miPrint: TMenuItem;
+    miReopen: TMenuItem;
+    miSearch: TMenuItem;
+    miSelectAll: TMenuItem;
+    miTools: TMenuItem;
+    miUndo: TMenuItem;
+    miVerses: TMenuItem;
     N1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
     N4: TMenuItem;
     N5: TMenuItem;
     N6: TMenuItem;
-    miUndo: TMenuItem;
-    miExit: TMenuItem;
-    miLocalization: TMenuItem;
-    miOptions: TMenuItem;
-    miPrint: TMenuItem;
-    miCompare: TMenuItem;
-    miSearch: TMenuItem;
-    miBibleFolder: TMenuItem;
-    miReopen: TMenuItem;
     N9: TMenuItem;
-    miManual: TMenuItem;
-    miVerses: TMenuItem;
 
     PopupMenu: TPopupMenu;
     pmCut: TMenuItem;
@@ -128,48 +127,48 @@ type
     pmVerses: TMenuItem;
 
     StandardToolBar: TToolBar;
+    ToolButtonBold: TToolButton;
+    ToolButtonBullets: TToolButton;
+    ToolButtonCenter: TToolButton;
+    ToolButtonCompare: TToolButton;
+    ToolButtonCopy: TToolButton;
+    ToolButtonCut: TToolButton;
     ToolButtonFB: TToolButton;
-    ToolSeparator2: TToolButton;
+    ToolButtonFont: TToolButton;
+    ToolButtonItalic: TToolButton;
+    ToolButtonLeft: TToolButton;
+    ToolButtonLink: TToolButton;
     ToolButtonNew: TToolButton;
     ToolButtonOpen: TToolButton;
-    ToolButtonSave: TToolButton;
-    ToolButtonPrint: TToolButton;
-    ToolButtonSearch: TToolButton;
-    ToolSeparator3: TToolButton;
-    ToolButtonCut: TToolButton;
-    ToolButtonCopy: TToolButton;
     ToolButtonPaste: TToolButton;
-    ToolButtonUndo: TToolButton;
-    ToolSeparator4: TToolButton;
-    ToolButtonCompare: TToolButton;
-    ToolButtonFont: TToolButton;
-    ToolSeparator5: TToolButton;
-    ToolButtonBold: TToolButton;
-    ToolButtonItalic: TToolButton;
-    ToolButtonUnderline: TToolButton;
-    ToolButtonLink: TToolButton;
-    ToolButtonLeft: TToolButton;
-    ToolButtonCenter: TToolButton;
+    ToolButtonPrint: TToolButton;
     ToolButtonRight: TToolButton;
-    ToolButtonBullets: TToolButton;
+    ToolButtonSave: TToolButton;
+    ToolButtonSearch: TToolButton;
+    ToolButtonUnderline: TToolButton;
+    ToolButtonUndo: TToolButton;
+    ToolSeparator2: TToolButton;
+    ToolSeparator3: TToolButton;
+    ToolSeparator4: TToolButton;
+    ToolSeparator5: TToolButton;
 
-    procedure CmdInterline(Sender: TObject);
-    procedure CmdCompare(Sender: TObject);
-    procedure CmdOptions(Sender: TObject);
-    procedure CmdStyle(Sender: TObject);
     procedure CmdAbout(Sender: TObject);
-    procedure CmdSearch(Sender: TObject);
-    procedure CmdTrans(Sender: TObject);
+    procedure CmdCompare(Sender: TObject);
+    procedure CmdCopyAs(Sender: TObject);
+    procedure CmdCopyVerses(Sender: TObject);
     procedure CmdEdit(Sender: TObject);
+    procedure CmdExit(Sender: TObject);
     procedure CmdFileNew(Sender: TObject);
     procedure CmdFileOpen(Sender: TObject);
+    procedure CmdFilePrint(Sender: TObject);
     procedure CmdFileSave(Sender: TObject);
     procedure CmdFileSaveAs(Sender: TObject);
-    procedure CmdFilePrint(Sender: TObject);
-    procedure CmdExit(Sender: TObject);
+    procedure CmdInterline(Sender: TObject);
+    procedure CmdOptions(Sender: TObject);
+    procedure CmdSearch(Sender: TObject);
+    procedure CmdStyle(Sender: TObject);
     procedure CmdStyle2(Sender: TObject);
-    procedure CmdCopyVerses(Sender: TObject);
-    procedure CmdCopyAs(Sender: TObject);
+    procedure CmdTrans(Sender: TObject);
 
     procedure ComboBoxChange(Sender: TObject);
     procedure ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
@@ -260,132 +259,136 @@ const
 
 {$R *.lfm}
 
-procedure TMainForm.ComboBoxInit;
-var
-  i : integer;
-begin
-  ComboBox.Items.Clear;
+//=================================================================================================
+//                                     Create Main Form
+//=================================================================================================
 
-  for i := 0 to Shelf.Count - 1 do
+procedure TMainForm.FormCreate(Sender: TObject);
+begin
+  Caption := AppName + ' ' + VersionInfo + ' - Open Source Application';
+
+  CreateDirectories;
+
+  Shelf := TShelf.Create;
+  ReopenList := TStringList.Create;
+  Shelf.Sort(Comparison);
+
+  SaveDialog.InitialDir := UserDocumentsPath;
+
+  NoteFileName := sUntitled;
+
+  ReadIniFile;
+  ComboBoxInit;
+  LangMenuInit;
+  ReopenMenuInit;
+
+  if Shelf.Count > 0 then
   begin
-    ComboBox.Items.Add(Shelf[i].Name);
-    {$ifndef darwin} if i = Shelf.Current then ComboBox.ItemIndex := i; {$endif}
+    MakeBookList;
+    if ActiveVerse.book = 0 then ActiveVerse := Bible.FirstVerse;
+    UpdateStatus(Bible.Info);
+    // LoadChapter; // RichMemo doesn't load from Stream,
+                    // so we call LoadChapter from FormActivate
+  end;
+
+  if Shelf.Count = 0 then
+  begin
+    ActionSearch .Enabled := False;
+    ActionOptions.Enabled := False;
+    ActionCompare.Enabled := False;
+    ActionCopyAs .Enabled := False; // ??
+  end;
+
+  NoteFileName := sUntitled;
+  MemoNotes.Lines.Clear;
+  MemoNotes.Font.Size := CurrFont.Size;
+  ToolButtonFB.Visible := not FBPageVisited;
+
+  {$ifdef unix}
+  ActionLeft    .Visible := False;
+  ActionCenter  .Visible := False;
+  ActionRight   .Visible := False;
+  ActionBullets .Visible := False;
+  ToolSeparator1.Visible := False;
+  ToolSeparator2.Visible := False;
+  ToolSeparator3.Visible := False;
+  ToolSeparator4.Visible := False;
+  ToolSeparator5.Visible := False;
+  {$endif}
+
+  {$ifdef darwin}
+  bag01 := False;
+  bag02 := False;
+
+  ChapterBox.Width := ChapterBox.Width + 5;
+
+  N4.Visible            := False;
+  miExit.Visible        := False;
+  ActionExit.Enabled    := False;
+
+  UpdateMenuImage;
+  UpdateShortCut;
+  {$endif}
+
+  {$ifdef linux}
+  IdleMessage := '';
+  IdleTimer.Enabled := true;
+  {$endif}
+
+  UpdateActionImage;
+end;
+
+procedure TMainForm.FormActivate(Sender: TObject);
+begin
+  if ChapterBox.Items.Count = 0 then LoadChapter; // first time
+end;
+
+procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  SaveIniFile;
+  ReopenList.Free;
+  Shelf.Free;
+end;
+
+procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+begin
+  try
+    CanClose := CheckFileSave;
+  except
+    CanClose := False;
   end;
 end;
 
-{$ifdef darwin}
-procedure TMainForm.ComboBoxSetIndex;
-var
-  i : integer;
+procedure TMainForm.FormPaint(Sender: TObject);
+{$ifdef darwin} var o : integer; {$endif}
+const
+  Streak = 3;
 begin
-  for i := 0 to Shelf.Count - 1 do
-    if i = Shelf.Current then ComboBox.ItemIndex := i;
-end;
-{$endif}
+  ComboBox.Width := PanelLeft.Width - ComboBox.Left - Streak;
 
-procedure TMainForm.UpdateCaption(s: string);
-begin
-  Caption := AppName + ' ' + VersionInfo + ' - ' + s;
-end;
+  BookBox.Top := ComboBox.Top + ComboBox.Height + Streak;
+  ChapterBox.Top := BookBox.Top;
 
-procedure TMainForm.UpdateStatus(s: string);
-begin
-  StatusBar.SimpleText := '  ' + s;
-end;
+  BookBox.Height := PanelLeft.Height - BookBox.Top - BookBox.Left;
+  ChapterBox.Height := BookBox.Height;
 
-procedure TMainForm.ShowPopup;
-var
-  CursorPos: TPoint;
-begin
-  GetCursorPos(CursorPos);
-  PopupMenu.Popup(CursorPos.X, CursorPos.Y);
-end;
+  ChapterBox.Width := WidthInPixels('150') + 30;
+  BookBox.Width := PanelLeft.Width - BookBox.Left - BookBox.Left - ChapterBox.Width - Streak;
+  ChapterBox.Left := PanelLeft.Width - ChapterBox.Width - Streak;
 
-//----------------------------------------------------------------------------------------
-//                                   memo's events
-//----------------------------------------------------------------------------------------
+  {$ifdef darwin}
+  bag01 := True;
 
-procedure TMainForm.MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
-begin
-  if Button = mbLeft then
-    begin
-      ActiveVerse.Number := MemoBible.ParagraphStart;
-      ActiveVerse.Count  := MemoBible.ParagraphCount;
-      if FormTranslate.Visible then LoadTranslate(ActiveVerse);
-    end;
+  o := BookBox.ItemIndex;
+  if BookBox.Items.Count > 0 then BookBox.ItemIndex := 1;
+  BookBox.ItemIndex := o;
 
-  if Button = mbRight then
-    begin
-      {$ifdef darwin} MemoBible.RestoreSelection; {$endif}
-      ShowPopup;
-    end;
+  o := ChapterBox.ItemIndex;
+  if ChapterBox.Items.Count > 0 then ChapterBox.ItemIndex := 1;
+  ChapterBox.ItemIndex := o;
 
-  {$ifdef darwin} if Button = mbLeft then MemoBible.SaveSelection; {$endif}
-end;
-
-procedure TMainForm.MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
-var
-  Verse : TVerse;
-  s : string;
-begin
-  if Button = mbRight then ShowPopup;
-
-  if Button <> mbLeft then Exit;
-  if Shelf.Count = 0  then Exit;
-
-  s := (Sender as TUnboundMemo).hyperlink;
-  Verse := Bible.SrtToVerse(s);
-  if Verse.Book = 0 then Exit;
-
-  if FormTranslate.Visible then LoadTranslate(Verse);
-
-  if (Sender = MemoSearch) or (not FormTranslate.Visible) or (ssCtrl in Shift)
-    then GoToVerse(Verse, True);
-end;
-
-procedure TMainForm.MemoNotesAttrChange;
-begin
-  UpDownButtons;
-end;
-
-procedure TMainForm.MemoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
-begin
-  Handled := True; // disable system popup menu
-end;
-
-//----------------------------------------------------------------------------------------
-
-procedure TMainForm.SelectBook(title: string);
-var
-  i, index : integer;
-begin
-  index := -1;
-  for i:=0 to BookBox.Items.Count-1 do
-    if BookBox.Items[i] = title then index := i;
-
-  if index < 0 then Exit;
-
-  BookBox.ItemIndex := index;
-  ChapterBox.ItemIndex := ActiveVerse.Chapter - 1;
-  {$ifdef darwin} ScrollBoxes; {$endif}
-end;
-
-procedure TMainForm.GoToVerse(Verse: TVerse; select: boolean);
-var
-  Book : TBook;
-begin
-  {$ifdef darwin} bag02 := True; {$endif}
-  Book := Bible.BookByNum(Verse.Book);
-  if Book = nil then Exit;
-
-  ActiveVerse := Verse;
-  LoadChapter;
-  SelectBook(Book.title);
-  ChapterBox.ItemIndex := Verse.Chapter - 1;
-
-  if select then MemoBible.SelectParagraph(Verse.Number);
-  {$ifdef darwin} bag02 := False; {$endif}
-  Repaint;
+  bag01 := False;
+  {$endif}
 end;
 
 procedure TMainForm.Translate;
@@ -465,6 +468,416 @@ begin
   ms_loading := T('Message.Loading') + '...';
   ms_found := T('Message.Found');
   ms_Confirm := T('Message.Confirm');
+end;
+
+procedure TMainForm.TranslateAll;
+begin
+  Lang := TLang.Create;
+
+                Translate;
+  SearchForm   .Translate;
+  CompareForm  .Translate;
+  AboutBox     .Translate;
+  FormCopy     .Translate;
+  FormTranslate.Translate;
+
+  Lang.Free;
+end;
+
+//-------------------------------------------------------------------------------------------------
+//                                       Actions
+//-------------------------------------------------------------------------------------------------
+
+procedure TMainForm.CmdAbout(Sender: TObject);
+begin
+  AboutBox.ShowModal;
+end;
+
+procedure TMainForm.CmdStyle(Sender: TObject);
+var
+  fp: TFontParams;
+  tempStart, tempLength: integer;
+begin
+  fp := MemoNotes.SelAttributes;
+
+  tempStart  := MemoNotes.SelStart;
+  tempLength := MemoNotes.SelLength;
+
+  if MemoNotes.SelLength = 0 then MemoNotes.SelectWord;
+
+  if Sender = ActionBold then
+    if fsBold in fp.Style then fp.Style := fp.Style - [fsBold]
+                          else fp.Style := fp.Style + [fsBold];
+
+  if Sender = ActionItalic then
+    if fsItalic in fp.Style then fp.Style := fp.Style - [fsItalic]
+                            else fp.Style := fp.Style + [fsItalic];
+
+  if Sender = ActionUnderline then
+    if fsUnderline in fp.Style then fp.Style := fp.Style - [fsUnderline]
+                               else fp.Style := fp.Style + [fsUnderline];
+
+  if Sender = ActionLink then
+    if fp.Color = clNavy then fp.Color := clBlack
+                         else fp.Color := clNavy;
+
+  if Sender = ActionFont then
+  begin
+    FontDialogNotes.Font.Name  := fp.Name;
+    FontDialogNotes.Font.Size  := fp.Size;
+    FontDialogNotes.Font.Style := fp.Style;
+    FontDialogNotes.Font.Color := fp.Color;
+
+    if FontDialogNotes.Execute then
+    begin
+      fp.Name  := FontDialogNotes.Font.Name;
+      fp.Size  := FontDialogNotes.Font.Size;
+      fp.Style := FontDialogNotes.Font.Style;
+      fp.Color := FontDialogNotes.Font.Color;
+    end;
+  end;
+
+  MemoNotes.SelAttributes := fp;
+
+  MemoNotes.SelStart := tempStart; // unselect word
+  MemoNotes.SelLength := tempLength;
+
+  MemoNotes.Repaint;
+end;
+
+procedure TMainForm.CmdStyle2(Sender: TObject);
+{$ifdef windows} var ParaNumbering : TParaNumbering; {$endif}
+begin
+  {$ifdef windows}
+  with MemoNotes do
+    begin
+      if Sender = ActionLeft    then SetParaAlignment(SelStart, SelLength, paLeft   );
+      if Sender = ActionCenter  then SetParaAlignment(SelStart, SelLength, paCenter );
+      if Sender = ActionRight   then SetParaAlignment(SelStart, SelLength, paRight  );
+
+      if Sender = ActionBullets then
+        begin
+          GetParaNumbering(SelStart, ParaNumbering );
+          if ToolButtonBullets.Down
+            then ParaNumbering.Style := pnBullet
+            else ParaNumbering.Style := pnNone;
+          SetParaNumbering(SelStart, SelLength, ParaNumbering );
+        end;
+    end;
+
+  MemoNotes.Repaint;
+  {$endif}
+end;
+
+procedure TMainForm.ComboBoxChange(Sender: TObject);
+var
+  select : boolean;
+begin
+  Shelf.SetCurrent(ComboBox.ItemIndex);
+  UpdateStatus(Bible.Info);
+  MakeBookList;
+
+  select := MemoBible.Selected;
+  if Bible.BookByNum(ActiveVerse.Book) = nil then select := false;
+  if not select then ActiveVerse := Bible.FirstVerse;
+
+  {$ifdef linux}
+    if select then IdleMessage := 'GotoVerse(ActiveVerse,true)'
+              else IdleMessage := 'GotoVerse(ActiveVerse,false)';
+  {$else}
+    GotoVerse(ActiveVerse,select);
+  {$endif}
+end;
+
+procedure TMainForm.ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
+begin
+  ComboBox.canvas.fillrect(ARect);
+  Canvas.TextOut(ARect.Left + 5, ARect.Top, ComboBox.Items[Index]);
+  Canvas.TextOut(ARect.Left + 220, ARect.Top, '[ru]');
+end;
+
+procedure TMainForm.CmdCompare(Sender: TObject);
+begin
+  if CompareForm.ShowModal = mrOk then LoadCompare;
+end;
+
+procedure TMainForm.CmdInterline(Sender: TObject);
+var s : string;
+begin
+  if not (ActiveVerse.book in [1..66]) then Exit;
+  s := BibleHubArray[ActiveVerse.book];
+  s := s + '/' +  IntToStr(ActiveVerse.chapter) + '-' + IntToStr(ActiveVerse.number) + '.htm';
+  OpenURL('http://biblehub.com/interlinear/' + s);
+end;
+
+procedure TMainForm.CmdEdit(Sender: TObject);
+begin
+  if Sender = ActionEditCut then
+    begin
+      UnboundMemo.CopyToClipboard;
+      UnboundMemo.ClearSelection;
+    end;
+
+  if Sender = ActionEditCopy   then UnboundMemo.CopyToClipboard;
+  if Sender = ActionEditPaste  then UnboundMemo.PasteFromClipboard;
+  if Sender = ActionEditDel    then UnboundMemo.ClearSelection;
+  if Sender = ActionEditSelAll then UnboundMemo.SelectAll;
+  if Sender = ActionEditUndo   then UnboundMemo.Undo;
+end;
+
+procedure TMainForm.CmdCopyAs(Sender: TObject);
+begin
+  FormCopy.ShowModal;
+  {$ifdef darwin} MemoBible.RestoreSelection; {$endif}
+end;
+
+procedure TMainForm.CmdCopyVerses(Sender: TObject);
+begin
+  VersesToClipboard;
+end;
+
+procedure TMainForm.CmdSearch(Sender: TObject);
+begin
+  SearchForm.Edit.Font.Name := CurrFont.Name;
+  if SearchForm.ShowModal = mrOk then SearchText(SearchForm.Edit.Text);
+end;
+
+procedure TMainForm.CmdTrans(Sender: TObject);
+begin
+  FormTranslate.Show;
+  LoadTranslate(ActiveVerse);
+end;
+
+procedure TMainForm.CmdFileNew(Sender: TObject);
+begin
+  SelectPage(apNotes);
+  if not CheckFileSave then Exit;
+  NoteFileName := sUntitled;
+  MemoNotes.Lines.Clear;
+  MemoNotes.Modified := False;
+  UpdateCaption(NoteFileName);
+end;
+
+procedure TMainForm.CmdFileOpen(Sender: TObject);
+begin
+  if not CheckFileSave then Exit;
+  if OpenDialog.Execute then
+  begin
+    PerformFileOpen(OpenDialog.FileName);
+    MemoNotes.ReadOnly := ofReadOnly in OpenDialog.Options;
+  end;
+end;
+
+procedure TMainForm.CmdFileSave(Sender: TObject);
+begin
+  SelectPage(apNotes);
+  if not MemoNotes.Modified then Exit;
+  if NoteFileName = sUntitled then
+    CmdFileSaveAs(Sender)
+  else
+  begin
+    MemoNotes.SaveToFile(NoteFileName);
+    MemoNotes.Modified := False;
+  end;
+end;
+
+procedure TMainForm.CmdFileSaveAs(Sender: TObject);
+begin
+  SelectPage(apNotes);
+
+  if NoteFileName = sUntitled then SaveDialog.InitialDir := UserDocumentsPath
+                              else SaveDialog.InitialDir := ExtractFilePath(NoteFileName);
+
+  if SaveDialog.Execute then
+  begin
+    if Pos('.rtf', SaveDialog.FileName) = 0 then
+      SaveDialog.FileName := SaveDialog.FileName + '.rtf';
+
+    if FileExists(SaveDialog.FileName) then
+      if MessageDlg(Format(ms_OverWrite, [SaveDialog.FileName]),
+        mtConfirmation, mbYesNoCancel, 0) <> idYes then Exit;
+
+    MemoNotes.SaveToFile(SaveDialog.FileName);
+    NoteFileName := SaveDialog.FileName;
+
+    RebuildReopenList;
+
+    MemoNotes.Modified := False;
+    UpdateCaption(ExtractOnlyName(NoteFileName));
+  end;
+end;
+
+procedure TMainForm.CmdFilePrint(Sender: TObject);
+var
+  prm : TPrintParams;
+begin
+  InitPrintParams(prm{%H-});
+  if PrintDialog.Execute then UnboundMemo.Print(prm);
+end;
+
+procedure TMainForm.CmdExit(Sender: TObject);
+begin
+  Close
+end;
+
+//-------------------------------------------------------------------------------------------------
+//                                        memo's events
+//-------------------------------------------------------------------------------------------------
+
+procedure TMainForm.MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+begin
+  if Button = mbLeft then
+    begin
+      ActiveVerse.Number := MemoBible.ParagraphStart;
+      ActiveVerse.Count  := MemoBible.ParagraphCount;
+      if FormTranslate.Visible then LoadTranslate(ActiveVerse);
+    end;
+
+  if Button = mbRight then
+    begin
+      {$ifdef darwin} MemoBible.RestoreSelection; {$endif}
+      ShowPopup;
+    end;
+
+  {$ifdef darwin} if Button = mbLeft then MemoBible.SaveSelection; {$endif}
+end;
+
+procedure TMainForm.MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+var
+  Verse : TVerse;
+  s : string;
+begin
+  if Button = mbRight then ShowPopup;
+
+  if Button <> mbLeft then Exit;
+  if Shelf.Count = 0  then Exit;
+
+  s := (Sender as TUnboundMemo).hyperlink;
+  Verse := Bible.SrtToVerse(s);
+  if Verse.Book = 0 then Exit;
+
+  if FormTranslate.Visible then LoadTranslate(Verse);
+
+  if (Sender = MemoSearch) or (not FormTranslate.Visible) or (ssCtrl in Shift)
+    then GoToVerse(Verse, True);
+end;
+
+procedure TMainForm.MemoNotesAttrChange;
+begin
+  UpDownButtons;
+end;
+
+procedure TMainForm.MemoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+begin
+  Handled := True; // disable system popup menu
+end;
+
+//-------------------------------------------------------------------------------------------------
+//                                       Interface
+//-------------------------------------------------------------------------------------------------
+
+procedure TMainForm.BookBoxClick(Sender: TObject);
+var
+  Book : TBook;
+  s : string;
+begin
+  {$ifdef darwin} if bag01 or bag02 then Exit; {$endif}
+  if BookBox.Count = 0 then Exit;
+  s := BookBox.Items[BookBox.ItemIndex];
+
+  Book := Bible.BookByName(s);
+  if Book = nil then Exit;
+
+  ActiveVerse.Book := Book.Number;
+  ActiveVerse.Chapter := 1;
+  ActiveVerse.Number := 1;
+  ActiveVerse.Count := 1;
+
+  ChapterBox.ItemIndex := 0;
+  LoadChapter;
+end;
+
+procedure TMainForm.ChapterBoxClick(Sender: TObject);
+begin
+  {$ifdef darwin} if bag01 or bag02 then Exit; {$endif}
+  ActiveVerse.Chapter := ChapterBox.ItemIndex + 1;
+  ActiveVerse.Number := 1;
+  ActiveVerse.Count := 1;
+  LoadChapter;
+end;
+
+procedure TMainForm.ComboBoxInit;
+var
+  i : integer;
+begin
+  ComboBox.Items.Clear;
+
+  for i := 0 to Shelf.Count - 1 do
+  begin
+    ComboBox.Items.Add(Shelf[i].Name);
+    {$ifndef darwin} if i = Shelf.Current then ComboBox.ItemIndex := i; {$endif}
+  end;
+end;
+
+{$ifdef darwin}
+procedure TMainForm.ComboBoxSetIndex;
+var
+  i : integer;
+begin
+  for i := 0 to Shelf.Count - 1 do
+    if i = Shelf.Current then ComboBox.ItemIndex := i;
+end;
+{$endif}
+
+procedure TMainForm.UpdateCaption(s: string);
+begin
+  Caption := AppName + ' ' + VersionInfo + ' - ' + s;
+end;
+
+procedure TMainForm.UpdateStatus(s: string);
+begin
+  StatusBar.SimpleText := '  ' + s;
+end;
+
+procedure TMainForm.ShowPopup;
+var
+  CursorPos: TPoint;
+begin
+  GetCursorPos(CursorPos);
+  PopupMenu.Popup(CursorPos.X, CursorPos.Y);
+end;
+
+procedure TMainForm.SelectBook(title: string);
+var
+  i, index : integer;
+begin
+  index := -1;
+  for i:=0 to BookBox.Items.Count-1 do
+    if BookBox.Items[i] = title then index := i;
+
+  if index < 0 then Exit;
+
+  BookBox.ItemIndex := index;
+  ChapterBox.ItemIndex := ActiveVerse.Chapter - 1;
+  {$ifdef darwin} ScrollBoxes; {$endif}
+end;
+
+procedure TMainForm.GoToVerse(Verse: TVerse; select: boolean);
+var
+  Book : TBook;
+begin
+  {$ifdef darwin} bag02 := True; {$endif}
+  Book := Bible.BookByNum(Verse.Book);
+  if Book = nil then Exit;
+
+  ActiveVerse := Verse;
+  LoadChapter;
+  SelectBook(Book.title);
+  ChapterBox.ItemIndex := Verse.Chapter - 1;
+
+  if select then MemoBible.SelectParagraph(Verse.Number);
+  {$ifdef darwin} bag02 := False; {$endif}
+  Repaint;
 end;
 
 function TMainForm.CheckFileSave: boolean;
@@ -712,515 +1125,9 @@ begin
   if page <> apNotes then UnboundMemo.HideCursor;
 end;
 
-//=================================================================================================
-//                                       Actions
-//=================================================================================================
-
-procedure TMainForm.CmdAbout(Sender: TObject);
-begin
-  AboutBox.ShowModal;
-end;
-
-procedure TMainForm.CmdStyle(Sender: TObject);
-var
-  fp: TFontParams;
-  tempStart, tempLength: integer;
-begin
-  fp := MemoNotes.SelAttributes;
-
-  tempStart  := MemoNotes.SelStart;
-  tempLength := MemoNotes.SelLength;
-
-  if MemoNotes.SelLength = 0 then MemoNotes.SelectWord;
-
-  if Sender = ActionBold then
-    if fsBold in fp.Style then fp.Style := fp.Style - [fsBold]
-                          else fp.Style := fp.Style + [fsBold];
-
-  if Sender = ActionItalic then
-    if fsItalic in fp.Style then fp.Style := fp.Style - [fsItalic]
-                            else fp.Style := fp.Style + [fsItalic];
-
-  if Sender = ActionUnderline then
-    if fsUnderline in fp.Style then fp.Style := fp.Style - [fsUnderline]
-                               else fp.Style := fp.Style + [fsUnderline];
-
-  if Sender = ActionLink then
-    if fp.Color = clNavy then fp.Color := clBlack
-                         else fp.Color := clNavy;
-
-  if Sender = ActionFont then
-  begin
-    FontDialogNotes.Font.Name  := fp.Name;
-    FontDialogNotes.Font.Size  := fp.Size;
-    FontDialogNotes.Font.Style := fp.Style;
-    FontDialogNotes.Font.Color := fp.Color;
-
-    if FontDialogNotes.Execute then
-    begin
-      fp.Name  := FontDialogNotes.Font.Name;
-      fp.Size  := FontDialogNotes.Font.Size;
-      fp.Style := FontDialogNotes.Font.Style;
-      fp.Color := FontDialogNotes.Font.Color;
-    end;
-  end;
-
-  MemoNotes.SelAttributes := fp;
-
-  MemoNotes.SelStart := tempStart; // unselect word
-  MemoNotes.SelLength := tempLength;
-
-  MemoNotes.Repaint;
-end;
-
-procedure TMainForm.CmdStyle2(Sender: TObject);
-{$ifdef windows} var ParaNumbering : TParaNumbering; {$endif}
-begin
-  {$ifdef windows}
-  with MemoNotes do
-    begin
-      if Sender = ActionLeft    then SetParaAlignment(SelStart, SelLength, paLeft   );
-      if Sender = ActionCenter  then SetParaAlignment(SelStart, SelLength, paCenter );
-      if Sender = ActionRight   then SetParaAlignment(SelStart, SelLength, paRight  );
-
-      if Sender = ActionBullets then
-        begin
-          GetParaNumbering(SelStart, ParaNumbering );
-          if ToolButtonBullets.Down
-            then ParaNumbering.Style := pnBullet
-            else ParaNumbering.Style := pnNone;
-          SetParaNumbering(SelStart, SelLength, ParaNumbering );
-        end;
-    end;
-
-  MemoNotes.Repaint;
-  {$endif}
-end;
-
-procedure TMainForm.ComboBoxChange(Sender: TObject);
-var
-  select : boolean;
-begin
-  Shelf.SetCurrent(ComboBox.ItemIndex);
-  UpdateStatus(Bible.Info);
-  MakeBookList;
-
-  select := MemoBible.Selected;
-  if Bible.BookByNum(ActiveVerse.Book) = nil then select := false;
-  if not select then ActiveVerse := Bible.FirstVerse;
-
-  {$ifdef linux}
-    if select then IdleMessage := 'GotoVerse(ActiveVerse,true)'
-              else IdleMessage := 'GotoVerse(ActiveVerse,false)';
-  {$else}
-    GotoVerse(ActiveVerse,select);
-  {$endif}
-end;
-
-procedure TMainForm.ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
-begin
-  ComboBox.canvas.fillrect(ARect);
-  Canvas.TextOut(ARect.Left + 5, ARect.Top, ComboBox.Items[Index]);
-  Canvas.TextOut(ARect.Left + 220, ARect.Top, '[ru]');
-end;
-
-procedure TMainForm.CmdCompare(Sender: TObject);
-begin
-  if CompareForm.ShowModal = mrOk then LoadCompare;
-end;
-
-procedure TMainForm.CmdInterline(Sender: TObject);
-var s : string;
-begin
-  if not (ActiveVerse.book in [1..66]) then Exit;
-  s := BibleHubArray[ActiveVerse.book];
-  s := s + '/' +  IntToStr(ActiveVerse.chapter) + '-' + IntToStr(ActiveVerse.number) + '.htm';
-  OpenURL('http://biblehub.com/interlinear/' + s);
-end;
-
-procedure TMainForm.CmdEdit(Sender: TObject);
-begin
-  if Sender = ActionEditCut then
-    begin
-      UnboundMemo.CopyToClipboard;
-      UnboundMemo.ClearSelection;
-    end;
-
-  if Sender = ActionEditCopy   then UnboundMemo.CopyToClipboard;
-  if Sender = ActionEditPaste  then UnboundMemo.PasteFromClipboard;
-  if Sender = ActionEditDel    then UnboundMemo.ClearSelection;
-  if Sender = ActionEditSelAll then UnboundMemo.SelectAll;
-  if Sender = ActionEditUndo   then UnboundMemo.Undo;
-end;
-
-procedure TMainForm.CmdCopyAs(Sender: TObject);
-begin
-  FormCopy.ShowModal;
-  {$ifdef darwin} MemoBible.RestoreSelection; {$endif}
-end;
-
-procedure TMainForm.CmdCopyVerses(Sender: TObject);
-begin
-  VersesToClipboard;
-end;
-
-procedure TMainForm.CmdSearch(Sender: TObject);
-begin
-  SearchForm.Edit.Font.Name := CurrFont.Name;
-  if SearchForm.ShowModal = mrOk then SearchText(SearchForm.Edit.Text);
-end;
-
-procedure TMainForm.CmdTrans(Sender: TObject);
-begin
-  FormTranslate.Show;
-  LoadTranslate(ActiveVerse);
-end;
-
-procedure TMainForm.CmdFileNew(Sender: TObject);
-begin
-  SelectPage(apNotes);
-  if not CheckFileSave then Exit;
-  NoteFileName := sUntitled;
-  MemoNotes.Lines.Clear;
-  MemoNotes.Modified := False;
-  UpdateCaption(NoteFileName);
-end;
-
-procedure TMainForm.CmdFileOpen(Sender: TObject);
-begin
-  if not CheckFileSave then Exit;
-  if OpenDialog.Execute then
-  begin
-    PerformFileOpen(OpenDialog.FileName);
-    MemoNotes.ReadOnly := ofReadOnly in OpenDialog.Options;
-  end;
-end;
-
-procedure TMainForm.CmdFileSave(Sender: TObject);
-begin
-  SelectPage(apNotes);
-  if not MemoNotes.Modified then Exit;
-  if NoteFileName = sUntitled then
-    CmdFileSaveAs(Sender)
-  else
-  begin
-    MemoNotes.SaveToFile(NoteFileName);
-    MemoNotes.Modified := False;
-  end;
-end;
-
-procedure TMainForm.CmdFileSaveAs(Sender: TObject);
-begin
-  SelectPage(apNotes);
-
-  if NoteFileName = sUntitled then SaveDialog.InitialDir := UserDocumentsPath
-                              else SaveDialog.InitialDir := ExtractFilePath(NoteFileName);
-
-  if SaveDialog.Execute then
-  begin
-    if Pos('.rtf', SaveDialog.FileName) = 0 then
-      SaveDialog.FileName := SaveDialog.FileName + '.rtf';
-
-    if FileExists(SaveDialog.FileName) then
-      if MessageDlg(Format(ms_OverWrite, [SaveDialog.FileName]),
-        mtConfirmation, mbYesNoCancel, 0) <> idYes then Exit;
-
-    MemoNotes.SaveToFile(SaveDialog.FileName);
-    NoteFileName := SaveDialog.FileName;
-
-    RebuildReopenList;
-
-    MemoNotes.Modified := False;
-    UpdateCaption(ExtractOnlyName(NoteFileName));
-  end;
-end;
-
-procedure TMainForm.CmdFilePrint(Sender: TObject);
-var
-  prm : TPrintParams;
-begin
-  InitPrintParams(prm{%H-});
-  if PrintDialog.Execute then UnboundMemo.Print(prm);
-end;
-
-procedure TMainForm.CmdExit(Sender: TObject);
-begin
-  Close
-end;
-
-//=================================================================================================
-//                                     Create Main Form
-//=================================================================================================
-
-procedure TMainForm.FormCreate(Sender: TObject);
-begin
-  Caption := AppName + ' ' + VersionInfo + ' - Open Source Application';
-
-  CreateDirectories;
-
-  Shelf := TShelf.Create;
-  ReopenList := TStringList.Create;
-  Shelf.Sort(Comparison);
-
-  SaveDialog.InitialDir := UserDocumentsPath;
-
-  NoteFileName := sUntitled;
-
-  ReadIniFile;
-  ComboBoxInit;
-  LangMenuInit;
-  ReopenMenuInit;
-
-  if Shelf.Count > 0 then
-  begin
-    MakeBookList;
-    if ActiveVerse.book = 0 then ActiveVerse := Bible.FirstVerse;
-    UpdateStatus(Bible.Info);
-    // LoadChapter; // RichMemo doesn't load from Stream,
-                    // so we call LoadChapter from FormActivate
-  end;
-
-  if Shelf.Count = 0 then
-  begin
-    ActionSearch .Enabled := False;
-    ActionOptions.Enabled := False;
-    ActionCompare.Enabled := False;
-    ActionCopyAs .Enabled := False; // ??
-  end;
-
-  NoteFileName := sUntitled;
-  MemoNotes.Lines.Clear;
-  MemoNotes.Font.Size := CurrFont.Size;
-  ToolButtonFB.Visible := not FBPageVisited;
-
-  {$ifdef unix}
-  ActionLeft    .Visible := False;
-  ActionCenter  .Visible := False;
-  ActionRight   .Visible := False;
-  ActionBullets .Visible := False;
-  ToolSeparator1.Visible := False;
-  ToolSeparator2.Visible := False;
-  ToolSeparator3.Visible := False;
-  ToolSeparator4.Visible := False;
-  ToolSeparator5.Visible := False;
-  {$endif}
-
-  {$ifdef darwin}
-  bag01 := False;
-  bag02 := False;
-
-  ChapterBox.Width := ChapterBox.Width + 5;
-
-  N4.Visible            := False;
-  miExit.Visible        := False;
-  ActionExit.Enabled    := False;
-
-  UpdateMenuImage;
-  UpdateShortCut;
-  {$endif}
-
-  {$ifdef linux}
-  IdleMessage := '';
-  IdleTimer.Enabled := true;
-  {$endif}
-
-  UpdateActionImage;
-end;
-
-procedure TMainForm.FormActivate(Sender: TObject);
-begin
-  if ChapterBox.Items.Count = 0 then LoadChapter; // first time
-end;
-
-procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-  SaveIniFile;
-  ReopenList.Free;
-  Shelf.Free;
-end;
-
-procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
-begin
-  try
-    CanClose := CheckFileSave;
-  except
-    CanClose := False;
-  end;
-end;
-
-procedure TMainForm.TranslateAll;
-begin
-  Lang := TLang.Create;
-
-                Translate;
-  SearchForm   .Translate;
-  CompareForm  .Translate;
-  AboutBox     .Translate;
-  FormCopy     .Translate;
-  FormTranslate.Translate;
-
-  Lang.Free;
-end;
-
-procedure TMainForm.FormPaint(Sender: TObject);
-{$ifdef darwin} var o : integer; {$endif}
-const
-  Streak = 3;
-begin
-  ComboBox.Width := PanelLeft.Width - ComboBox.Left - Streak;
-
-  BookBox.Top := ComboBox.Top + ComboBox.Height + Streak;
-  ChapterBox.Top := BookBox.Top;
-
-  BookBox.Height := PanelLeft.Height - BookBox.Top - BookBox.Left;
-  ChapterBox.Height := BookBox.Height;
-
-  ChapterBox.Width := WidthInPixels('150') + 30;
-  BookBox.Width := PanelLeft.Width - BookBox.Left - BookBox.Left - ChapterBox.Width - Streak;
-  ChapterBox.Left := PanelLeft.Width - ChapterBox.Width - Streak;
-
-  {$ifdef darwin}
-  bag01 := True;
-
-  o := BookBox.ItemIndex;
-  if BookBox.Items.Count > 0 then BookBox.ItemIndex := 1;
-  BookBox.ItemIndex := o;
-
-  o := ChapterBox.ItemIndex;
-  if ChapterBox.Items.Count > 0 then ChapterBox.ItemIndex := 1;
-  ChapterBox.ItemIndex := o;
-
-  bag01 := False;
-  {$endif}
-end;
-
-procedure TMainForm.BookBoxClick(Sender: TObject);
-var
-  Book : TBook;
-  s : string;
-begin
-  {$ifdef darwin} if bag01 or bag02 then Exit; {$endif}
-  if BookBox.Count = 0 then Exit;
-  s := BookBox.Items[BookBox.ItemIndex];
-
-  Book := Bible.BookByName(s);
-  if Book = nil then Exit;
-
-  ActiveVerse.Book := Book.Number;
-  ActiveVerse.Chapter := 1;
-  ActiveVerse.Number := 1;
-  ActiveVerse.Count := 1;
-
-  ChapterBox.ItemIndex := 0;
-  LoadChapter;
-end;
-
-procedure TMainForm.ChapterBoxClick(Sender: TObject);
-begin
-  {$ifdef darwin} if bag01 or bag02 then Exit; {$endif}
-  ActiveVerse.Chapter := ChapterBox.ItemIndex + 1;
-  ActiveVerse.Number := 1;
-  ActiveVerse.Count := 1;
-  LoadChapter;
-end;
-
 procedure TMainForm.miBibleFolderClick(Sender: TObject);
 begin
   OpenFolder(AppDataPath);
-end;
-
-procedure TMainForm.SaveIniFile;
-var
-  IniFile: TIniFile;
-  i: integer;
-begin
-  if Shelf.Count = 0 then Exit;
-
-  IniFile := TIniFile.Create(ConfigFile);
-
-  if WindowState = wsNormal then
-  begin
-    IniFile.WriteInteger('Application', 'Left',   Left);
-    IniFile.WriteInteger('Application', 'Top',    Top);
-    IniFile.WriteInteger('Application', 'Width',  Width);
-    IniFile.WriteInteger('Application', 'Height', Height);
-  end;
-
-  if WindowState = wsMaximized then IniFile.WriteString('Application', 'State', 'Maximized')
-                               else IniFile.WriteString('Application', 'State', 'Normal');
-
-  IniFile.WriteString('Application', 'FileName', Bible.FileName);
-  IniFile.WriteString('Application', 'FontName', CurrFont.Name);
-  IniFile.WriteInteger('Application', 'FontSize', CurrFont.Size);
-  IniFile.WriteInteger('Application', 'Splitter', PanelLeft.Width);
-  IniFile.WriteString('Application', 'Interface', FaceLang);
-  IniFile.WriteBool('Application', 'ShortLink', ShortLink);
-  IniFile.WriteBool('Application', 'ShortLink', ShortLink);
-  IniFile.WriteBool('Application', 'FBPage', FBPageVisited);
-  IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
-  IniFile.WriteBool('Options', 'Enumerated', Options.cvEnumerated);
-  IniFile.WriteBool('Options', 'Guillemets', Options.cvGuillemets);
-  IniFile.WriteBool('Options', 'Parentheses', Options.cvParentheses);
-  IniFile.WriteBool('Options', 'End', Options.cvEnd);
-  IniFile.WriteInteger('Verse', 'Book', ActiveVerse.book);
-  IniFile.WriteInteger('Verse', 'Chapter', ActiveVerse.chapter);
-  IniFile.WriteInteger('Verse', 'Number', ActiveVerse.number);
-  IniFile.WriteInteger('Verse', 'Count', ActiveVerse.count);
-  IniFile.WriteInteger('Reopen', 'Count', ReopenList.Count);
-
-  for i := 0 to ReopenList.Count - 1 do
-    IniFile.WriteString('Reopen', 'File_' + IntToStr(i), ReopenList[i]);
-
-  IniFile.Free;
-end;
-
-function GetDefaultBible: string;
-begin
-  if GetDefaultLanguage = 'russian' then Result := 'russian.txt'
-                                    else Result := 'english-kjv.txt';
-end;
-
-procedure TMainForm.ReadIniFile;
-var
-  IniFile: TIniFile;
-  BibleFile: string;
-  i, max: integer;
-begin
-  IniFile := TIniFile.Create(ConfigFile);
-  {
-  if IniFile.ReadString('Application', 'State', 'Normal') = 'Maximized'  // not working
-    then WindowState := wsMaximized else WindowState := wsNormal;
-  }
-  BibleFile := IniFile.ReadString('Application', 'FileName', GetDefaultBible);
-
-  Height := IniFile.ReadInteger('Application', 'Height', Screen.Height - 200);
-  Width := IniFile.ReadInteger('Application', 'Width', Screen.Width - 400);
-  Left := IniFile.ReadInteger('Application', 'Left', 200);
-  Top := IniFile.ReadInteger('Application', 'Top', 70);
-
-  CurrFont.Name := IniFile.ReadString('Application', 'FontName', CurrFont.Name);
-  CurrFont.Size := IniFile.ReadInteger('Application', 'FontSize', CurrFont.Size);
-  PanelLeft.Width := IniFile.ReadInteger('Application', 'Splitter', 250);
-  FaceLang := IniFile.ReadString('Application', 'Interface', GetDefaultLanguage);
-  ShortLink := IniFile.ReadBool('Application', 'ShortLink', True);
-  FBPageVisited := IniFile.ReadBool('Application', 'FBPage', False);
-  Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
-  Options.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);
-  Options.cvGuillemets := IniFile.ReadBool('Options', 'Guillemets', False);
-  Options.cvParentheses := IniFile.ReadBool('Options', 'Parentheses', False);
-  Options.cvEnd := IniFile.ReadBool('Options', 'End', False);
-  ActiveVerse.book := IniFile.ReadInteger('Verse', 'Book', 0);
-  ActiveVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);
-  ActiveVerse.number := IniFile.ReadInteger('Verse', 'Number', 0);
-  ActiveVerse.count := IniFile.ReadInteger('Verse', 'Count', 0);
-  Max := IniFile.ReadInteger('Reopen', 'Count', ReopenList.Count);
-
-  for i := 0 to Max - 1 do
-    ReopenList.Add(IniFile.ReadString('Reopen', 'File_' + IntToStr(i), ''));
-
-  Shelf.SetCurrent(BibleFile);
-
-  IniFile.Free;
 end;
 
 procedure TMainForm.miHomeClick(Sender: TObject);
@@ -1470,6 +1377,102 @@ begin
   MemoPreview.Free;
 end;
 {$endif}
+
+//-------------------------------------------------------------------------------------------------
+
+procedure TMainForm.SaveIniFile;
+var
+  IniFile: TIniFile;
+  i: integer;
+begin
+  if Shelf.Count = 0 then Exit;
+
+  IniFile := TIniFile.Create(ConfigFile);
+
+  if WindowState = wsNormal then
+  begin
+    IniFile.WriteInteger('Application', 'Left',   Left);
+    IniFile.WriteInteger('Application', 'Top',    Top);
+    IniFile.WriteInteger('Application', 'Width',  Width);
+    IniFile.WriteInteger('Application', 'Height', Height);
+  end;
+
+  if WindowState = wsMaximized then IniFile.WriteString('Application', 'State', 'Maximized')
+                               else IniFile.WriteString('Application', 'State', 'Normal');
+
+  IniFile.WriteString('Application', 'FileName', Bible.FileName);
+  IniFile.WriteString('Application', 'FontName', CurrFont.Name);
+  IniFile.WriteInteger('Application', 'FontSize', CurrFont.Size);
+  IniFile.WriteInteger('Application', 'Splitter', PanelLeft.Width);
+  IniFile.WriteString('Application', 'Interface', FaceLang);
+  IniFile.WriteBool('Application', 'ShortLink', ShortLink);
+  IniFile.WriteBool('Application', 'ShortLink', ShortLink);
+  IniFile.WriteBool('Application', 'FBPage', FBPageVisited);
+  IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
+  IniFile.WriteBool('Options', 'Enumerated', Options.cvEnumerated);
+  IniFile.WriteBool('Options', 'Guillemets', Options.cvGuillemets);
+  IniFile.WriteBool('Options', 'Parentheses', Options.cvParentheses);
+  IniFile.WriteBool('Options', 'End', Options.cvEnd);
+  IniFile.WriteInteger('Verse', 'Book', ActiveVerse.book);
+  IniFile.WriteInteger('Verse', 'Chapter', ActiveVerse.chapter);
+  IniFile.WriteInteger('Verse', 'Number', ActiveVerse.number);
+  IniFile.WriteInteger('Verse', 'Count', ActiveVerse.count);
+  IniFile.WriteInteger('Reopen', 'Count', ReopenList.Count);
+
+  for i := 0 to ReopenList.Count - 1 do
+    IniFile.WriteString('Reopen', 'File_' + IntToStr(i), ReopenList[i]);
+
+  IniFile.Free;
+end;
+
+function GetDefaultBible: string;
+begin
+  if GetDefaultLanguage = 'russian' then Result := 'russian.txt'
+                                    else Result := 'english-kjv.txt';
+end;
+
+procedure TMainForm.ReadIniFile;
+var
+  IniFile: TIniFile;
+  BibleFile: string;
+  i, max: integer;
+begin
+  IniFile := TIniFile.Create(ConfigFile);
+  {
+  if IniFile.ReadString('Application', 'State', 'Normal') = 'Maximized'  // not working
+    then WindowState := wsMaximized else WindowState := wsNormal;
+  }
+  BibleFile := IniFile.ReadString('Application', 'FileName', GetDefaultBible);
+
+  Height := IniFile.ReadInteger('Application', 'Height', Screen.Height - 200);
+  Width := IniFile.ReadInteger('Application', 'Width', Screen.Width - 400);
+  Left := IniFile.ReadInteger('Application', 'Left', 200);
+  Top := IniFile.ReadInteger('Application', 'Top', 70);
+
+  CurrFont.Name := IniFile.ReadString('Application', 'FontName', CurrFont.Name);
+  CurrFont.Size := IniFile.ReadInteger('Application', 'FontSize', CurrFont.Size);
+  PanelLeft.Width := IniFile.ReadInteger('Application', 'Splitter', 250);
+  FaceLang := IniFile.ReadString('Application', 'Interface', GetDefaultLanguage);
+  ShortLink := IniFile.ReadBool('Application', 'ShortLink', True);
+  FBPageVisited := IniFile.ReadBool('Application', 'FBPage', False);
+  Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
+  Options.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);
+  Options.cvGuillemets := IniFile.ReadBool('Options', 'Guillemets', False);
+  Options.cvParentheses := IniFile.ReadBool('Options', 'Parentheses', False);
+  Options.cvEnd := IniFile.ReadBool('Options', 'End', False);
+  ActiveVerse.book := IniFile.ReadInteger('Verse', 'Book', 0);
+  ActiveVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);
+  ActiveVerse.number := IniFile.ReadInteger('Verse', 'Number', 0);
+  ActiveVerse.count := IniFile.ReadInteger('Verse', 'Count', 0);
+  Max := IniFile.ReadInteger('Reopen', 'Count', ReopenList.Count);
+
+  for i := 0 to Max - 1 do
+    ReopenList.Add(IniFile.ReadString('Reopen', 'File_' + IntToStr(i), ''));
+
+  Shelf.SetCurrent(BibleFile);
+
+  IniFile.Free;
+end;
 
 end.
 
