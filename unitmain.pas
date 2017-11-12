@@ -3,7 +3,6 @@ unit UnitMain;
 interface
 
 uses
-  {$ifdef windows} Windows, {$endif}
   {$ifdef darwin} RichMemoEx, {$endif}
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
@@ -112,13 +111,6 @@ type
     miTools: TMenuItem;
     miUndo: TMenuItem;
     miVerses: TMenuItem;
-    N1: TMenuItem;
-    N2: TMenuItem;
-    N3: TMenuItem;
-    N4: TMenuItem;
-    N5: TMenuItem;
-    N6: TMenuItem;
-    N9: TMenuItem;
 
     PopupMenu: TPopupMenu;
     pmCut: TMenuItem;
@@ -868,6 +860,7 @@ var
   Book : TBook;
 begin
   {$ifdef darwin} bag02 := True; {$endif}
+  if Shelf.Count = 0 then Exit;
   if not Bible.GoodLink(Verse) then Exit;
 
   Book := Bible.BookByNum(Verse.Book);
@@ -1431,8 +1424,8 @@ end;
 
 function GetDefaultBible: string;
 begin
-  if GetDefaultLanguage = 'russian' then Result := 'russian.txt'
-                                    else Result := 'english-kjv.txt';
+  if GetDefaultLanguage = 'russian' then Result := 'rstw.unbound'
+                                    else Result := 'kjv.unbound';
 end;
 
 procedure TMainForm.ReadIniFile;
@@ -1455,7 +1448,7 @@ begin
 
   CurrFont.Name := IniFile.ReadString('Application', 'FontName', CurrFont.Name);
   CurrFont.Size := IniFile.ReadInteger('Application', 'FontSize', CurrFont.Size);
-  PanelLeft.Width := IniFile.ReadInteger('Application', 'Splitter', 250);
+  PanelLeft.Width := IniFile.ReadInteger('Application', 'Splitter', 270);
   FaceLang := IniFile.ReadString('Application', 'Interface', GetDefaultLanguage);
   ShortLink := IniFile.ReadBool('Application', 'ShortLink', True);
   FBPageVisited := IniFile.ReadBool('Application', 'FBPage', False);
