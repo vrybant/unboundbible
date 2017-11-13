@@ -1300,14 +1300,12 @@ procedure TMainForm.LoadCompare;
 var
   Stream : TRichStream;
 begin
-  if not Shelf.IsLoaded then
-    begin
+      {
       Stream := TRichStream.Create;
       Show_Message(Stream, ms_loading);
       MemoCompare.LoadRichText(Stream);
       Stream.Free;
-    end;
-
+      }
   Stream := TRichStream.Create;
   SelectPage(apCompare);
   Load_Compare(Stream);

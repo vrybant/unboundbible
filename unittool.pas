@@ -126,29 +126,24 @@ procedure Load_Compare(Stream: TRichStream);
 var
   List : TStringList;
   text, s : string;
-  i, j, old : integer;
+  i, j : integer;
 begin
   if Shelf.Count = 0 then Exit;
-
-  Shelf.LoadComparedBibles;
   Stream.Open;
 
   s := '\cf1 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
   Stream.Writeln(s);
 
-  old := Shelf.Current;
-
   for i:=0 to Shelf.Count-1 do
     begin
-      Shelf.SetCurrent(i);
-      if not Bible.Compare then Continue;
+      if not Shelf[i].Compare then Continue;
 
       List := TStringList.Create;
-      Bible.GetRange(ActiveVerse, List);
+      Shelf[i].GetRange(ActiveVerse, List);
 
       if List.Count > 0 then
         begin
-          s:= '\par\cf3 ' + Bible.Name + '\par\cf1 ';
+          s:= '\par\cf3 ' + Shelf[i].Name + '\par\cf1 ';
           Stream.Writeln(s);
         end;
 
@@ -163,8 +158,6 @@ begin
 
       List.free;
     end;
-
-  Shelf.SetCurrent(old);
 
   Stream.Close;
 end;
@@ -225,29 +218,25 @@ procedure Load_Translate(Stream: TRichStream; Verse: TVerse);
 var
   List : TStringList;
   text, s : string;
-  i, j, old : integer;
+  i, j : integer;
 begin
   if Shelf.Count = 0 then Exit;
-
-  Shelf.LoadComparedBibles;
   Stream.Open;
 
   s := '\cf3 ' + Bible.VerseToStr(Verse, true) + '\par ';
   Stream.Writeln(s);
 
-  old := Shelf.Current;
-
   for i:=0 to Shelf.Count-1 do
     begin
       Shelf.SetCurrent(i);
-      if not Bible.Compare then Continue;
+      if not Shelf[i].Compare then Continue;
 
       List := TStringList.Create;
-      Bible.GetRange(Verse, List);
+      Shelf[i].GetRange(Verse, List);
 
       if List.Count > 0 then
         begin
-          s:= '\par\cf4 ' + Bible.Name + '\par\par\cf1 ';
+          s:= '\par\cf4 ' + Shelf[i].Name + '\par\par\cf1 ';
           Stream.Writeln(s);
         end;
 
@@ -262,8 +251,6 @@ begin
 
       List.free;
     end;
-
-  Shelf.SetCurrent(old);
 
   Stream.Close;
 end;

@@ -86,11 +86,9 @@ type
     constructor Create;
     procedure AddBibles(path: string);
     function Add(TheBible: TBible): Integer;
-    function IsLoaded: boolean;
     property Items[Index: Integer]: TBible read GetItem write SetItem; default;
     destructor Destroy; override;
     {-}
-    procedure LoadComparedBibles;
     procedure SetCurrent(FileName: string); overload;
     procedure SetCurrent(index: integer); overload;
     procedure SavePrivates;
@@ -272,6 +270,7 @@ begin
     //
   end;
 
+  Output(self.fileName + ' loaded');
 end;
 
 procedure TBible.SetTitles;
@@ -684,28 +683,13 @@ begin
   if Count = 0 then Exit;
   for i:= Count-1 downto 0 do
     if Items[i].FileName = FileName then Current := i;
-  Self[Current].LoadDatabase; ;
+  Self[Current].LoadDatabase;
 end;
 
 procedure TShelf.SetCurrent(index: integer);
 begin
   Current := index;
   Self[Current].LoadDatabase; ;
-end;
-
-function TShelf.IsLoaded: boolean;
-var i : integer;
-begin
-  Result := True;
-  for i:= 0 to Count-1 do
-    if Items[i].Compare and not Items[i].Loaded then Result := False;
-end;
-
-procedure TShelf.LoadComparedBibles;
-var i : integer;
-begin
-  for i:= 0 to Count-1 do
-    if Items[i].Compare then Items[i].LoadDatabase;
 end;
 
 procedure TShelf.SavePrivates;
