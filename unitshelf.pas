@@ -632,7 +632,7 @@ constructor TShelf.Create;
 begin
   inherited;
 
-  AddBibles(AppLocation + Slash + 'bibles');
+//AddBibles(AppLocation + Slash + 'bibles');
   AddBibles(AppDataPath);
 
   ReadPrivates;

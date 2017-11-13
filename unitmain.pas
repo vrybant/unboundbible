@@ -96,7 +96,6 @@ type
     miHelpAbout: TMenuItem;
     miHome: TMenuItem;
     miLocalization: TMenuItem;
-    miManual: TMenuItem;
     miNoteNew: TMenuItem;
     miNoteOpen: TMenuItem;
     miNotes: TMenuItem;
@@ -182,7 +181,6 @@ type
     procedure miBibleFolderClick(Sender: TObject);
     procedure miDownloadClick(Sender: TObject);
     procedure miHomeClick(Sender: TObject);
-    procedure miManualClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
     procedure RadioButtonClick(Sender: TObject);
     procedure ToolButtonFBClick(Sender: TObject);
@@ -414,7 +412,7 @@ begin
   miNoteSaveAs.Caption := T('Menu.SaveAs') + '...';
   miReopen.Caption := T('Menu.Reopen');
 
-  miManual.Caption := T('Menu.Manual');
+//miManual.Caption := T('Menu.Manual');
   miHome.Caption := T('Menu.HomePage');
 //miUBPage.Caption := T('Menu.UBPage');
   miDownload.Caption := T('Menu.Download');
@@ -1133,16 +1131,10 @@ begin
                           else OpenURL('http://vladimirrybant.org');
 end;
 
-procedure TMainForm.miManualClick(Sender: TObject);
-begin
-  if facelang = 'russian' then OpenURL('http://vladimirrybant.org/ru/index.php?page=bible-help')
-                          else OpenURL('http://vladimirrybant.org/index.php?page=bible-help');
-end;
-
 procedure TMainForm.miDownloadClick(Sender: TObject);
 begin
-  if facelang = 'russian' then OpenURL('http://ph4.ru/b4_index.php')
-                          else OpenURL('http://ph4.org/b4_index.php');
+  if facelang = 'russian' then OpenURL('http://vladimirrybant.org/goto/ubdownloadru.php')
+                          else OpenURL('http://vladimirrybant.org/goto/ubdownload.php');
 end;
 
 procedure TMainForm.CmdOptions(Sender: TObject);
@@ -1424,8 +1416,9 @@ end;
 
 function GetDefaultBible: string;
 begin
-  if GetDefaultLanguage = 'russian' then Result := 'rstw.unbound'
-                                    else Result := 'kjv.unbound';
+  Result := 'kjv.unbound';
+  if GetDefaultLanguage = 'russian'   then Result := 'rstw.unbound';
+  if GetDefaultLanguage = 'ukrainian' then Result := 'ubio.unbound';
 end;
 
 procedure TMainForm.ReadIniFile;

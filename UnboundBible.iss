@@ -43,8 +43,6 @@
  Source: "{#MyAppExeName}"              ; DestDir: "{app}"
  Source: "sqlite3.dll"                  ; DestDir: "{app}"
 
-; We have to set ReadOnly attributes for *.sqlite files in the Application Directory !
-
 [Icons]
 ;Name: "{commondesktop}\{#MyAppName}"                         ; Filename: "{app}\{#MyAppExeName}" ; WorkingDir: "{app}"; Tasks: desktopicon
  Name: "{commondesktop}\{#MyAppName}"                         ; Filename: "{app}\{#MyAppExeName}" ; WorkingDir: "{app}" 

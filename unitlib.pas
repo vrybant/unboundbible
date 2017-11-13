@@ -363,7 +363,7 @@ begin
 //  LANG_POLISH    : Result := 'polish';
 //  LANG_FRENCH    : Result := 'french';
 //  LANG_GERMAN    : Result := 'german';
-//  LANG_UKRAINIAN : Result := 'ukrainian';
+    LANG_UKRAINIAN : Result := 'ukrainian';
   end;
   {$endif}
 
