@@ -228,7 +228,6 @@ begin
 
   for i:=0 to Shelf.Count-1 do
     begin
-      Shelf.SetCurrent(i);
       if not Shelf[i].Compare then Continue;
 
       List := TStringList.Create;

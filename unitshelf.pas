@@ -270,7 +270,7 @@ begin
     //
   end;
 
-  Output(self.fileName + ' loaded');
+//Output(self.fileName + ' loaded');
 end;
 
 procedure TBible.SetTitles;
