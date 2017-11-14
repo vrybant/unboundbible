@@ -7,11 +7,10 @@ uses
   Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo;
 
 type
-  TAttrChangeEvent = procedure of object;
 
   TRichMemoEx = class(TRichMemo)
   private
-    FOnAttrChange: TAttrChangeEvent;
+    FOnAttrChange: TNotifyEvent;
     function  GetAttributes: TFontParams;
     procedure SetAttributes(const value: TFontParams);
     procedure DoAttributesChange;
@@ -30,6 +29,7 @@ type
     destructor Destroy; override;
     function LoadRichText(Source: TStream): Boolean; override;
     function CanUndo: boolean;
+    function CanPaste: boolean;
     procedure HideCursor;
     function Selected: boolean;
     procedure SelectAll;
@@ -38,7 +38,7 @@ type
     property SelAttributes: TFontParams read GetAttributes write SetAttributes;
     {$ifdef windows} property Modified: boolean read GetModified write SetModified; {$endif}
   published
-    property OnAttrChange: TAttrChangeEvent read FOnAttrChange write FOnAttrChange;
+    property OnAttrChange: TNotifyEvent read FOnAttrChange write FOnAttrChange;
   end;
 
 
@@ -105,9 +105,18 @@ begin
   {$endif}
 end;
 
+function TRichMemoEx.CanPaste: boolean;
+begin
+  {$ifdef windows}
+  Result := SendMessage(Handle, EM_CANPASTE,  0, 0) <> 0;
+  {$else}
+  Result := True;
+  {$endif}
+end;
+
 procedure TRichMemoEx.DoAttributesChange;
 begin
-  if Assigned(OnAttrChange) then OnAttrChange;
+  if Assigned(OnAttrChange) then OnAttrChange(self);
 end;
 
 procedure TRichMemoEx.SelectAll;
