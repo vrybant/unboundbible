@@ -272,12 +272,12 @@ object MainForm: TMainForm
     Height = 309
     Top = 32
     Width = 595
-    ActivePage = TabSheetBible
+    ActivePage = TabSheetNotes
     Align = alClient
     Font.Color = clWindowText
     Font.Height = -13
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 2
     OnChange = PageControlChange
     object TabSheetBible: TTabSheet
@@ -301,6 +301,7 @@ object MainForm: TMainForm
         ScrollBars = ssBoth
         TabOrder = 0
         ZoomFactor = 1
+        OnAttrChange = MemoAttrChange
         Paragraphic = True
       end
     end
@@ -323,6 +324,7 @@ object MainForm: TMainForm
         ScrollBars = ssBoth
         TabOrder = 0
         ZoomFactor = 1
+        OnAttrChange = MemoAttrChange
         Linkable = True
       end
     end
@@ -348,6 +350,7 @@ object MainForm: TMainForm
         ScrollBars = ssBoth
         TabOrder = 0
         ZoomFactor = 1
+        OnAttrChange = MemoAttrChange
       end
     end
     object TabSheetNotes: TTabSheet
@@ -368,7 +371,7 @@ object MainForm: TMainForm
         ScrollBars = ssBoth
         TabOrder = 0
         ZoomFactor = 1
-        OnAttrChange = MemoNotesAttrChange
+        OnAttrChange = MemoAttrChange
         Linkable = True
       end
     end
@@ -1005,6 +1008,7 @@ object MainForm: TMainForm
           FFFFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
         }
         ImageIndex = 33
+        Visible = False
         OnClick = miDownloadClick
       end
       object miBibleFolder: TMenuItem

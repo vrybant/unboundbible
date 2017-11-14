@@ -6,7 +6,7 @@ uses
   {$ifdef darwin} RichMemoEx, {$endif}
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
-  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitType;
+  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitType, RichMemoEx;
 
 type
 
@@ -177,7 +177,7 @@ type
     procedure MemoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
-    procedure MemoNotesAttrChange;
+    procedure MemoAttrChange(Sender: TObject);
     procedure miBibleFolderClick(Sender: TObject);
     procedure miDownloadClick(Sender: TObject);
     procedure miHomeClick(Sender: TObject);
@@ -603,17 +603,19 @@ end;
 
 procedure TMainForm.CmdEdit(Sender: TObject);
 begin
+  if Sender = ActionEditCopy   then UnboundMemo.CopyToClipboard;
+  if Sender = ActionEditPaste  then UnboundMemo.PasteFromClipboard;
+  if Sender = ActionEditDel    then UnboundMemo.ClearSelection;
+  if Sender = ActionEditSelAll then UnboundMemo.SelectAll;
+  if Sender = ActionEditUndo   then UnboundMemo.Undo;
+
   if Sender = ActionEditCut then
     begin
       UnboundMemo.CopyToClipboard;
       UnboundMemo.ClearSelection;
     end;
 
-  if Sender = ActionEditCopy   then UnboundMemo.CopyToClipboard;
-  if Sender = ActionEditPaste  then UnboundMemo.PasteFromClipboard;
-  if Sender = ActionEditDel    then UnboundMemo.ClearSelection;
-  if Sender = ActionEditSelAll then UnboundMemo.SelectAll;
-  if Sender = ActionEditUndo   then UnboundMemo.Undo;
+  EnableButtons;
 end;
 
 procedure TMainForm.CmdCopyAs(Sender: TObject);
@@ -753,9 +755,10 @@ begin
     then GoToVerse(Verse, True);
 end;
 
-procedure TMainForm.MemoNotesAttrChange;
+procedure TMainForm.MemoAttrChange(Sender: TObject);
 begin
-  UpDownButtons;
+  EnableButtons;
+  if Sender = MemoNotes then UpDownButtons;
 end;
 
 procedure TMainForm.MemoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
@@ -979,29 +982,33 @@ end;
 
 procedure TMainForm.EnableButtons;
 var
-  B, L: boolean;
+  B, L : boolean;
+  x : integer;
 begin
   B := PageControl.ActivePageIndex = apBible;
   L := PageControl.ActivePageIndex = apNotes;
 
-  ActionEditCut.Enabled := L;
-  ActionEditPaste.Enabled := L;
-  ActionEditDel.Enabled := L;
-  ActionEditUndo.Enabled := L;
+  if B then x := 1 else x:= 0;
 
-  ActionFont.Enabled := L;
-  ActionBold.Enabled := L;
-  ActionItalic.Enabled := L;
-  ActionUnderline.Enabled := L;
-  ActionLink.Enabled := L;
-  ActionLeft.Enabled := L;
-  ActionCenter.Enabled := L;
-  ActionRight.Enabled := L;
-  ActionBullets.Enabled := L;
+  ActionEditCopy.Enabled   := UnboundMemo.SelLength > x;
+  ActionEditCut.Enabled    := L and (UnboundMemo.SelLength > 0);
+  ActionEditDel.Enabled    := L and (UnboundMemo.SelLength > 0);;
+  ActionEditPaste.Enabled  := L and UnboundMemo.CanPaste;
+  ActionEditUndo.Enabled   := L and UnboundMemo.CanUndo;
 
-  ActionCopyAs.Enabled := B;
+  ActionCopyAs.Enabled     := B;
   ActionCopyVerses.Enabled := B;
-  ActionInterline.Enabled := B;
+  ActionInterline.Enabled  := B;
+
+  ActionFont.Enabled       := L;
+  ActionBold.Enabled       := L;
+  ActionItalic.Enabled     := L;
+  ActionUnderline.Enabled  := L;
+  ActionLink.Enabled       := L;
+  ActionLeft.Enabled       := L;
+  ActionCenter.Enabled     := L;
+  ActionRight.Enabled      := L;
+  ActionBullets.Enabled    := L;
 
   UpdateActionImage;
 end;
@@ -1030,8 +1037,6 @@ begin
       ToolButtonBullets.Down := ParaNumbering.Style = pnBullet;
 
       {$endif}
-
-      ActionEditUndo.Enabled := CanUndo;
     except
       //
     end;
