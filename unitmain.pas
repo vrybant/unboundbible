@@ -262,7 +262,6 @@ begin
 
   Shelf := TShelf.Create;
   ReopenList := TStringList.Create;
-  Shelf.Sort(Comparison);
 
   SaveDialog.InitialDir := UserDocumentsPath;
 
@@ -463,7 +462,7 @@ end;
 
 procedure TMainForm.TranslateAll;
 begin
-  Lang := TLang.Create;
+  Language := TLanguage.Create;
 
                 Translate;
   SearchForm   .Translate;
@@ -472,7 +471,7 @@ begin
   FormCopy     .Translate;
   FormTranslate.Translate;
 
-  Lang.Free;
+  Language.Free;
 end;
 
 //-------------------------------------------------------------------------------------------------
@@ -931,29 +930,20 @@ end;
 
 procedure TMainForm.LangMenuInit;
 var
-  List: TStringList;
   MenuItem : TMenuItem;
   i : integer;
 begin
-  List := TStringList.Create;
-  GetFileList(AppLocation + Slash + LangDirectory + Slash + '*.lng', List, False);
-
-  for i := 0 to List.Count-1 do List[i] := NativeLanguage(List[i]) + '#' + List[i]; List.Sort;
-  for i := 0 to List.Count-1 do List[i] := Copy(List[i], Pos('#',List[i]) + 1, 256);
-
-  for i := 0 to List.Count-1 do
+  for i := 0 to Localization.Count-1 do
   begin
     MenuItem := TMenuItem.Create(MainMenu);
 
-    MenuItem.Caption := NativeLanguage(List[i]);
-    MenuItem.Hint    := List[i];
-    MenuItem.Checked := (List[i] = FaceLang);
+    MenuItem.Caption := Localization.Native(i);
+    MenuItem.Hint    := Localization[i];
+    MenuItem.Checked := (Localization[i] = FaceLang);
     MenuItem.OnClick := OnLangClick;
 
     miLocalization.Insert(i, MenuItem);
   end;
-
-  List.Free;
 end;
 
 procedure TMainForm.ReopenMenuInit;

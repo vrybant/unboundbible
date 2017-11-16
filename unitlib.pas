@@ -59,13 +59,14 @@ procedure OpenFolder(path : string);
 // language functions
 
 function GetDefaultLanguage: string;
-function NativeLanguage(s: string): string;
 function GetRightToLeft(language: string): boolean;
+
+// system's functions
+
 function WidthInPixels(s: string): integer;
 procedure Output(s: string); overload;
 procedure Output(n: integer); overload;
 
-// system's functions
 
 var
   CurrFont: TFont;
@@ -373,18 +374,6 @@ begin
   {$ifdef unix}
     {$ifdef RussianEdition} Result := 'russian'; {$endif}
   {$endif}
-end;
-
-function NativeLanguage(s: string): string;
-begin
-  s := LowerCase(s);
-  Result := OneUpCase(s);
-
-  if s = 'russian'   then Result := 'Русский';
-  if s = 'spanish'   then Result := 'Español';
-  if s = 'italian'   then Result := 'Italiano';
-  if s = 'finnish'   then Result := 'Suomi';
-  if s = 'ukrainian' then Result := 'Українська ';
 end;
 
 function GetRightToLeft(language: string): boolean;

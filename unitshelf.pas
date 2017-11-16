@@ -106,7 +106,6 @@ const
   apNotes   = 3;
 
 function Bible: TBible;
-function Comparison(Item1, Item2: Pointer): integer; // for TShelf
 
 function IsNewTestament(n: integer): boolean;
 function IsOldTestament(n: integer): boolean;
@@ -623,9 +622,15 @@ begin
   inherited Destroy;
 end;
 
-//========================================================================================
-//                                     TShelf
-//========================================================================================
+//=================================================================================================
+//                                         TShelf
+//=================================================================================================
+
+function Comparison(Item1, Item2: Pointer): integer;
+begin
+  Result := CompareText(TBible(Item1).Name,
+                        TBible(Item2).Name) ;
+end;
 
 constructor TShelf.Create;
 begin
@@ -633,6 +638,7 @@ begin
 
 //AddBibles(AppLocation + Slash + 'bibles');
   AddBibles(AppDataPath);
+  Sort(Comparison);
 
   ReadPrivates;
 end;
@@ -668,12 +674,6 @@ end;
 procedure TShelf.SetItem(Index: Integer; TheBible: TBible);
 begin
   inherited Items[Index] := TheBible;
-end;
-
-function Comparison(Item1, Item2: Pointer): integer; // for TShelf
-begin
-  Result := CompareText(TBible(Item1).Name,
-                        TBible(Item2).Name) ;
 end;
 
 procedure TShelf.SetCurrent(FileName: string);
