@@ -8,7 +8,7 @@
 #define MyAppPublisher "Vladimir Rybant"
 #define MyAppURL "http://vladimirrybant.org"
 #define MyAppExeName "UnboundBible.exe"
-#define MyAppOutput "UnboundBibleInstaller"
+#define MyAppOutput "Unbound_Bible_Installer"
 
 [Setup]
  AppName={#MyAppName}
@@ -22,7 +22,7 @@
 
  DefaultDirName={pf}\{#MyAppName}
  DefaultGroupName={#MyAppName}
-;DisableWelcomePage=no
+ DisableWelcomePage=no
  DisableStartupPrompt=yes
  DisableProgramGroupPage=yes
  OutputBaseFilename={#MyAppOutput}
