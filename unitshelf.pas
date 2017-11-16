@@ -720,4 +720,10 @@ begin
   inherited Destroy;
 end;
 
+initialization
+  Shelf := TShelf.Create;
+
+finalization
+  Shelf.Free;
+
 end.

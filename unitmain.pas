@@ -260,7 +260,6 @@ begin
 
   CreateDirectories;
 
-  Shelf := TShelf.Create;
   ReopenList := TStringList.Create;
 
   SaveDialog.InitialDir := UserDocumentsPath;
@@ -337,7 +336,6 @@ procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   SaveIniFile;
   ReopenList.Free;
-  Shelf.Free;
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);

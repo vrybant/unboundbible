@@ -1,6 +1,6 @@
 unit UnitLib;
 
-{$define debugmode}
+{-define debugmode}
 {$ifdef unix} {$undef RussianEdition} {$endif}
 
 interface
