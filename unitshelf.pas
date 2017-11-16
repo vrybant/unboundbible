@@ -59,7 +59,7 @@ type
     constructor Create(filePath, fileName: string);
     procedure OpenDatabase;
     procedure LoadDatabase;
-    function BookByNum(n: integer): TBook;  // перенестив private ?
+    function BookByNum(n: integer): TBook;
     function BookByName(s: string): TBook;
     function FirstVerse: TVerse;
     function VerseToStr(Verse: TVerse; full: boolean): string;
@@ -427,7 +427,7 @@ begin
     while not Query.Eof do
       begin
         try line := Query.FieldByName(z.text).AsString; except end;
-    //  line = line.replace("\n", "")                   ////////////////  ESWORD  /////////////////////////
+    //  line = line.replace("\n", "") // ESWORD ?
         List.Add(line);
         Query.Next;
       end;
