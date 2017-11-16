@@ -6,6 +6,9 @@ uses Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, SysUtils,
      LCLIntf;
 
 type
+
+  { TAboutBox }
+
   TAboutBox = class(TForm)
     LabelFB: TLabel;
     LabelGPL: TLabel;
@@ -37,16 +40,17 @@ begin
 end;
 
 procedure TAboutBox.Translate;
+var
+  Developer : string;
 begin
+  Developer := ' ' + 'Vladimir Rybant';
+
+  if facelang = 'russian'   then Developer := 'Владимир Рыбант';
+  if facelang = 'ukrainian' then Developer := 'Володимир Рiбант';
+
   Caption := ' ' + T('Menu.About');
-
-  LabelVersion.Caption := 'Version' + ' ' + VersionInfo;
-  LabelTeam.Caption := '  Developer: Vladimir Rybant';
-
-  if FaceLang <> 'russian' then Exit;
-
-  LabelVersion.Caption := 'Версия'  + ' ' + VersionInfo;
-  LabelTeam.Caption := 'Разработка: Владимир Рыбант';
+  LabelVersion.Caption := T('About.Version') + ' ' + VersionInfo;
+  LabelTeam.Caption := T('About.Developer') + ': ' + Developer;
 end;
 
 procedure TAboutBox.ImageFacebookClick(Sender: TObject);

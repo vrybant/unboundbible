@@ -24,7 +24,7 @@ object AboutBox: TAboutBox
     ParentFont = False
   end
   object LabelTeam: TLabel
-    Left = 189
+    Left = 188
     Height = 13
     Top = 113
     Width = 136
