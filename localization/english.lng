@@ -109,3 +109,6 @@ Message.Found     = verses found
 Message.Link      = Press CTRL and click a link
 Message.Confirm   = Confirmation
 
+About.Version   = Version
+About.Developer = Developer
+

@@ -108,3 +108,6 @@ Message.Loading   = Loading
 Message.Found     = verses found
 Message.Link      = Paina CTRL ja klikkaa linkkiä
 Message.Confirm   = Confirmation
+
+About.Version   = Versio
+About.Developer = Kehittäjä

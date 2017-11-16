@@ -109,3 +109,5 @@ Message.Found     = versi trovati
 Message.Link      = Premere CTRL e fare clic su un link
 Message.Confirm   = Confirmation
 
+About.Version   = Versione
+About.Developer = Programmatore

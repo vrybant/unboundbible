@@ -110,4 +110,6 @@ Message.Found     = Versiculo encontrado
 Message.Link      = Presione CTRL y haga clic en un vinculo
 Message.Confirm   = Confirmation
 
+About.Version   = Versión
+About.Developer = Programador
 

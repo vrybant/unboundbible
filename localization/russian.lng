@@ -108,3 +108,6 @@ Message.Loading   = Загружаю
 Message.Found     = найдено стихов
 Message.Link      = Нажмите CTRL и щелкните ссылку
 Message.Confirm   = Подтверждение
+
+About.Version   = Версия
+About.Developer = Разработка 
