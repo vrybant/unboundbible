@@ -759,6 +759,7 @@ procedure TMainForm.MemoAttrChange(Sender: TObject);
 begin
   EnableButtons;
   if Sender = MemoNotes then UpDownButtons;
+  // Calling UpDownButtons on SelectionChange event works with bugs.
 end;
 
 procedure TMainForm.MemoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
@@ -830,7 +831,7 @@ end;
 
 procedure TMainForm.UpdateStatus(s: string);
 begin
-  StatusBar.SimpleText := '  ' + s;
+  StatusBar.SimpleText := ' ' + s;
 end;
 
 procedure TMainForm.ShowPopup;
@@ -910,7 +911,7 @@ procedure TMainForm.OnLangClick(Sender: TObject);
 var
   i: integer;
 begin
-  facelang := LowerCase((Sender as TMenuItem).Caption);
+  facelang := LowerCase((Sender as TMenuItem).Hint);
 
   for i := 0 to miLocalization.Count - 1 do
     miLocalization.Items[i].Checked := False;
@@ -931,20 +932,25 @@ end;
 procedure TMainForm.LangMenuInit;
 var
   List: TStringList;
-  Checked: boolean;
-  s: string;
-  i: integer;
+  MenuItem : TMenuItem;
+  i : integer;
 begin
   List := TStringList.Create;
-
   GetFileList(AppLocation + Slash + LangDirectory + Slash + '*.lng', List, False);
-  List.Sort;
 
-  for i := 0 to List.Count - 1 do
+  for i := 0 to List.Count-1 do List[i] := NativeLanguage(List[i]) + '#' + List[i]; List.Sort;
+  for i := 0 to List.Count-1 do List[i] := Copy(List[i], Pos('#',List[i]) + 1, 256);
+
+  for i := 0 to List.Count-1 do
   begin
-    s := OneUpCase(List[i]);
-    Checked := (List[i] = FaceLang);
-    miLocalization.Insert(i, NewItem(s, 0, Checked, True, OnLangClick, 0, ''));
+    MenuItem := TMenuItem.Create(MainMenu);
+
+    MenuItem.Caption := NativeLanguage(List[i]);
+    MenuItem.Hint    := List[i];
+    MenuItem.Checked := (List[i] = FaceLang);
+    MenuItem.OnClick := OnLangClick;
+
+    miLocalization.Insert(i, MenuItem);
   end;
 
   List.Free;
@@ -1132,14 +1138,16 @@ end;
 
 procedure TMainForm.miHomeClick(Sender: TObject);
 begin
-  if facelang = 'russian' then OpenURL('http://vladimirrybant.org/ru')
-                          else OpenURL('http://vladimirrybant.org');
+  if (facelang = 'russian') or (facelang = 'ukrainian')
+    then OpenURL('http://vladimirrybant.org/ru')
+    else OpenURL('http://vladimirrybant.org');
 end;
 
 procedure TMainForm.miDownloadClick(Sender: TObject);
 begin
-  if facelang = 'russian' then OpenURL('http://vladimirrybant.org/goto/ubdownloadru.php')
-                          else OpenURL('http://vladimirrybant.org/goto/ubdownload.php');
+  if (facelang = 'russian') or (facelang = 'ukrainian')
+    then OpenURL('http://vladimirrybant.org/goto/ubdownloadru.php')
+    else OpenURL('http://vladimirrybant.org/goto/ubdownload.php');
 end;
 
 procedure TMainForm.CmdOptions(Sender: TObject);

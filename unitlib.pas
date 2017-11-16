@@ -56,13 +56,16 @@ procedure CreateDirectories;
 procedure OpenFolder(path : string);
 {$ifdef darwin} procedure PrintFile(FileName : string); {$endif}
 
-// system's functions
+// language functions
 
 function GetDefaultLanguage: string;
+function NativeLanguage(s: string): string;
 function GetRightToLeft(language: string): boolean;
 function WidthInPixels(s: string): integer;
 procedure Output(s: string); overload;
 procedure Output(n: integer); overload;
+
+// system's functions
 
 var
   CurrFont: TFont;
@@ -348,14 +351,14 @@ begin
 end;
 {$endif}
 
- // system's functions
+// language functions
 
 function GetDefaultLanguage: string;
 begin
   Result := 'english';
 
   {$ifdef windows}
-  case Lo(GetSystemDefaultLangID) of
+  case Lo(GetUserDefaultLangID) of
     LANG_RUSSIAN   : Result := 'russian';
     LANG_SPANISH   : Result := 'spanish';
     LANG_ITALIAN   : Result := 'italian';
@@ -372,6 +375,18 @@ begin
   {$endif}
 end;
 
+function NativeLanguage(s: string): string;
+begin
+  s := LowerCase(s);
+  Result := OneUpCase(s);
+
+  if s = 'russian'   then Result := 'Русский';
+  if s = 'spanish'   then Result := 'Español';
+  if s = 'italian'   then Result := 'Italiano';
+  if s = 'finnish'   then Result := 'Suomi';
+  if s = 'ukrainian' then Result := 'Українська ';
+end;
+
 function GetRightToLeft(language: string): boolean;
 begin
    Result := false;
@@ -379,6 +394,8 @@ begin
       Prefix('ara',language) or
       Prefix('fa' ,language) then Result := true;
 end;
+
+// system's functions
 
 function WidthInPixels(s: string): integer;
 var
