@@ -32,28 +32,26 @@ end;
 
 procedure Load_Chapter(Stream: TRichStream);
 var
-   List : TStringList;
-   text : string;
-      i : integer;
+  Strings : TStringArray;
+  text : string;
+  i : integer;
 begin
   if Shelf.Count = 0 then Exit;
 
   Stream.RightToLeft := Bible.RightToLeft;
   Stream.Open;
 
-  List := TStringList.Create;
-  Bible.GetChapter(ActiveVerse,List);
+  Strings := Bible.GetChapter(ActiveVerse);
 
-  for i:=0 to List.Count-1 do
+  for i:=Low(Strings) to High(Strings) do
     begin
-      text := List[i];
+      text := Strings[i];
       Replacement(text,true);
       DeleteTags(text);
       text := '\cf3 ' + ' ' + IntToStr(i+1) + '\cf1 ' + ' ' + text + '\i0\par';
       Stream.Writeln(text);
     end;
 
-  List.free;
   Stream.Close;
 end;
 
@@ -124,7 +122,7 @@ procedure Search_Text(Stream: TRichStream; st: string; var count: integer);
 
 procedure Load_Compare(Stream: TRichStream);
 var
-  List : TStringList;
+  Strings : TStringArray;
   text, s : string;
   i, j : integer;
 begin
@@ -138,25 +136,22 @@ begin
     begin
       if not Shelf[i].Compare then Continue;
 
-      List := TStringList.Create;
-      Shelf[i].GetRange(ActiveVerse, List);
+      Strings := Shelf[i].GetRange(ActiveVerse);
 
-      if List.Count > 0 then
+      if Length(Strings) > 0 then
         begin
           s:= '\par\cf3 ' + Shelf[i].Name + '\par\cf1 ';
           Stream.Writeln(s);
         end;
 
-      for j:=0 to List.Count-1 do
+      for j:=Low(Strings) to High(Strings) do
         begin
-          text := List[j];
+          text := Strings[j];
           Replacement(text,false);
           DeleteTags(text);
           s := text + '\i0\par';
           Stream.Writeln(s);
         end;
-
-      List.free;
     end;
 
   Stream.Close;
@@ -165,7 +160,7 @@ end;
 procedure Load_Verses(Stream: TRichStream);
 var
   Book : TBook;
-  List : TStringList;
+  Strings : TStringArray;
   s, q, t : string;
   i : integer;
 
@@ -182,18 +177,17 @@ begin
   Book := Bible.BookByNum(ActiveVerse.Book);
   if Book = nil then Exit;
 
-  List := TStringList.Create;
-  Bible.GetRange(ActiveVerse,List);
+  Strings := Bible.GetRange(ActiveVerse);
 
   q := '';
-  for i:=0 to List.Count-1 do
+  for i:=Low(Strings) to High(Strings) do
     begin
       if Options.cvEnumerated then
         if ActiveVerse.Count > 1 then
           if (i>0) or ((i=0) and Options.cvEnd) then
             q := q + '(' + IntToStr(ActiveVerse.Number + i) + ') ';
 
-      t := List[i];
+      t := Strings[i];
       Replacement(t,false);
       DeleteTags(t);
       q := q + t + ' ';
@@ -210,13 +204,11 @@ begin
   Stream.Writeln(s);
   Stream.Writeln('\par ');
   Stream.Close;
-
-  List.free;
 end;
 
 procedure Load_Translate(Stream: TRichStream; Verse: TVerse);
 var
-  List : TStringList;
+  Strings : TStringArray;
   text, s : string;
   i, j : integer;
 begin
@@ -230,25 +222,22 @@ begin
     begin
       if not Shelf[i].Compare then Continue;
 
-      List := TStringList.Create;
-      Shelf[i].GetRange(Verse, List);
+      Strings := Shelf[i].GetRange(Verse);
 
-      if List.Count > 0 then
+      if Length(Strings) > 0 then
         begin
           s:= '\par\cf4 ' + Shelf[i].Name + '\par\par\cf1 ';
           Stream.Writeln(s);
         end;
 
-      for j:=0 to List.Count-1 do
+      for j:=Low(Strings) to High(Strings) do
         begin
-          text := List[j];
+          text := Strings[j];
           Replacement(text,false);
           DeleteTags(text);
           s := text + '\i0\par';
           Stream.Writeln(s);
         end;
-
-      List.free;
     end;
 
   Stream.Close;

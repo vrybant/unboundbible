@@ -65,10 +65,11 @@ type
     function VerseToStr(Verse: TVerse; full: boolean): string;
     function SrtToVerse(link : string): TVerse;
     procedure SetTitles;
-    procedure GetChapter(Verse: TVerse; List: TStringList);
-    procedure GetRange(Verse: TVerse; List: TStringList);
+    function GetChapter(Verse: TVerse): TStringArray;
+    function GetRange(Verse: TVerse): TStringArray;
     function GoodLink(Verse: TVerse): boolean;
     function  Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
+    function GetAll: TContentArray;
     procedure GetTitles(var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
     procedure SavePrivate(const IniFile: TIniFile);
@@ -408,12 +409,14 @@ begin
     end;
 end;
 
-procedure TBible.GetChapter(Verse: TVerse; List: TStringList);
+function TBible.GetChapter(Verse: TVerse): TStringArray;
 var
-  index : integer;
+  index, i : integer;
   id, chapter : string;
   line : string;
 begin
+  SetLength(Result,0);
+
   index := EncodeIndex(Verse.book);
   id := IntToStr(index);
   chapter := IntToStr(Verse.chapter);
@@ -423,11 +426,15 @@ begin
     Query.Clear;
     Query.Open;
 
-    while not Query.Eof do
+    Query.Last;
+    SetLength(Result, Query.RecordCount);
+    Query.First;
+
+    for i:=0 to Query.RecordCount-1 do
       begin
-        try line := Query.FieldByName(z.text).AsString; except end;
+        try line := Query.FieldByName(z.text).AsString; except line := '' end;
     //  line = line.replace("\n", "") // ESWORD ?
-        List.Add(line);
+        Result[i] := line;
         Query.Next;
       end;
   except
@@ -435,13 +442,15 @@ begin
   end;
 end;
 
-procedure TBible.GetRange(Verse: TVerse; List: TStringList);
+function TBible.GetRange(Verse: TVerse): TStringArray;
 var
-  index : integer;
+  index, i : integer;
   id, chapter : string;
   verseNumber, toVerse : string;
   line : string;
 begin
+  SetLength(Result,0);
+
   index := EncodeIndex(Verse.book);
   id := IntToStr(index);
   chapter := IntToStr(Verse.chapter);
@@ -455,10 +464,15 @@ begin
                       ' AND ' + z.verse + ' < ' + toVerse;
     Query.Clear;
     Query.Open;
-    while not Query.Eof do
+
+    Query.Last;
+    SetLength(Result, Query.RecordCount);
+    Query.First;
+
+    for i:=0 to Query.RecordCount-1 do
       begin
-        try line := Query.FieldByName(z.text).AsString; except end;
-        List.Add(line);
+        try line := Query.FieldByName(z.text).AsString; except line := '' end;
+        Result[i] := line;
         Query.Next;
       end;
   except
@@ -467,13 +481,8 @@ begin
 end;
 
 function TBible.GoodLink(Verse: TVerse): boolean;
-var
-  List: TStringList;
 begin
-  List := TStringList.Create;
-  GetRange(Verse, List);
-  Result := List.Count > 0;
-  List.Free;
+  Result := Length(GetRange(Verse)) > 0;
 end;
 
 function TBible.RankContents(const Contents: TContentArray): TContentArray;
@@ -541,6 +550,40 @@ begin
 
   if (fileFormat = unbound) and apocrypha then Result := RankContents(Contents)
     else Result := Contents;
+end;
+
+function TBible.GetAll: TContentArray;
+var
+  Contents : TContentArray;
+  i : integer;
+begin
+  SetLength(Result,0);
+
+  try
+    Query.SQL.Text := 'SELECT * FROM ' + z.bible;
+    Query.Clear;
+    Query.Open;
+
+    Query.Last; // must be called before RecordCount
+    SetLength(Contents,Query.RecordCount);
+    Query.First;
+
+    for i:=0 to Query.RecordCount-1 do
+      begin
+        Contents[i].verse := noneVerse;
+        try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
+        try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
+        try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
+        try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
+        Contents[i].verse.book := DecodeIndex(Contents[i].verse.book);
+        Query.Next;
+      end;
+  except
+    Exit;
+  end;
+
+  //if (fileFormat = unbound) and apocrypha then Result := RankContents(Contents)
+  //  else Result := Contents;
 end;
 
 procedure TBible.GetTitles(var List: TStringList);
