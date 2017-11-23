@@ -1,12 +1,12 @@
 unit UnitLib;
 
-{$undef debugmode}
+{-define debugmode}
 {$ifdef unix} {$undef RussianEdition} {$endif}
 
 interface
 
 uses
-  {$ifdef windows} Windows, ShFolder, {$endif}
+  {$ifdef windows} Windows, Windirs, {$endif}
   {$ifdef linux} LazLogger, {$endif}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, Buttons,
   { FileUtil depreciated } LazFileUtils, LazUtf8, LCLProc,
@@ -265,32 +265,16 @@ begin
   {$endif}
 end;
 
-{$ifdef windows}
-function GetSpecialFolderPath(FolderID: Cardinal): string;
-var
-  s : PChar;
-begin
- Result := '';
- GetMem(s, Max_Path);
- try
-   SHGetFolderPath(0, FolderID, 0, 0, s);
-   Result := s;
- finally
-   FreeMem(s, Max_Path);
- end;
-end;
-{$endif}
-
 function UserDocumentsPath : string;
 begin
-{$ifdef windows} Result := GetSpecialFolderPath(CSIDL_PERSONAL); {$endif}
-{$ifdef linux  } Result := GetEnvironmentVariableUTF8('HOME'); {$endif}
-{$ifdef darwin } Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library'; {$endif} // ?
+  {$ifdef windows} Result := GetWindowsSpecialDir(CSIDL_PERSONAL); {$endif}
+  {$ifdef linux  } Result := GetEnvironmentVariableUTF8('HOME') + Slash; {$endif}
+  {$ifdef darwin } Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library'; {$endif}
 end;
 
 function AppDataPath : string;
 begin
- Result := UserDocumentsPath + Slash + AppName;
+ Result := UserDocumentsPath + AppName;
 end;
 
 function ConfigFile: string;
