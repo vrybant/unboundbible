@@ -1,6 +1,6 @@
 unit UnitLib;
 
-{-define debugmode}
+{$undef debugmode}
 {$ifdef unix} {$undef RussianEdition} {$endif}
 
 interface
@@ -9,7 +9,8 @@ uses
   {$ifdef windows} Windows, ShFolder, {$endif}
   {$ifdef linux} LazLogger, {$endif}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, Buttons,
-  ExtCtrls, ClipBrd, FileUtil, LCLProc, Process, LazUtf8;
+  { FileUtil depreciated } LazFileUtils, LazUtf8, LCLProc,
+  ExtCtrls, ClipBrd, Process;
 
 type
   TStringArray  = array of string;

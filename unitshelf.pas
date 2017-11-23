@@ -20,9 +20,9 @@ type
   end;
 
   TBible = class(TList)
-    Connection : TSQLite3Connection;
-    Transaction: TSQLTransaction;
-    Query      : TSQLQuery;
+    Connection  : TSQLite3Connection;
+    Transaction : TSQLTransaction;
+    Query       : TSQLQuery;
     {-}
     info         : string;
     filePath     : string;
@@ -679,8 +679,8 @@ constructor TShelf.Create;
 begin
   inherited;
 
-//AddBibles(AppLocation + Slash + 'bibles');
   AddBibles(AppDataPath);
+  if Self.Count = 0 then AddBibles(AppLocation + 'bibles');
   Sort(Comparison);
 
   ReadPrivates;

@@ -3,7 +3,7 @@ unit UnitTrans;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, IniFiles, UnboundMemo;
+  Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, IniFiles, UnboundMemo;
 
 type
   TFormTranslate = class(TForm)

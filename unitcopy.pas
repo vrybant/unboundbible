@@ -3,7 +3,7 @@ unit UnitCopy;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
+  Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs,
   StdCtrls, ExtCtrls, UnboundMemo, UnitLib, UnitType, UnitStream;
 
 type

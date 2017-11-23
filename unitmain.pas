@@ -4,7 +4,7 @@ interface
 
 uses
   {$ifdef darwin} RichMemoEx, {$endif}
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
   ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitType, RichMemoEx;
 

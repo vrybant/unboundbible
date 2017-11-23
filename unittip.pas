@@ -5,7 +5,7 @@ unit UnitTip;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs;
 
 type
   TFormTip = class(TForm)
