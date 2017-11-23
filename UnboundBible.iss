@@ -20,6 +20,7 @@
  AppSupportURL={#MyAppURL}
  AppUpdatesURL={#MyAppURL}
 
+
  DefaultDirName={pf}\{#MyAppName}
  DefaultGroupName={#MyAppName}
  DisableWelcomePage=no
@@ -36,12 +37,13 @@
  Name: "{userdocs}\{#MyAppName}";
 
 [Files]
- Source: "bibles\*"                     ; DestDir: "{userdocs}\{#MyAppName}"
- Source: "localization\*"               ; DestDir: "{app}\localization"
-;Source: "titles\*"                     ; DestDir: "{app}\titles" ; Attribs: readonly ; Flags: uninsremovereadonly
- Source: "titles\*"                     ; DestDir: "{app}\titles" 
- Source: "{#MyAppExeName}"              ; DestDir: "{app}"
- Source: "sqlite3.dll"                  ; DestDir: "{app}"
+ Source: "bibles\*"           ; DestDir: "{userdocs}\{#MyAppName}"
+ Source: "bibles\kjv.unbound" ; DestDir: "{app}\bibles"
+ Source: "localization\*"     ; DestDir: "{app}\localization"
+;Source: "titles\*"           ; DestDir: "{app}\titles" ; Attribs: readonly ; Flags: uninsremovereadonly
+ Source: "titles\*"           ; DestDir: "{app}\titles" 
+ Source: "{#MyAppExeName}"    ; DestDir: "{app}"
+ Source: "sqlite3.dll"        ; DestDir: "{app}"
 
 [Icons]
 ;Name: "{commondesktop}\{#MyAppName}"                         ; Filename: "{app}\{#MyAppExeName}" ; WorkingDir: "{app}"; Tasks: desktopicon
