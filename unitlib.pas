@@ -49,12 +49,12 @@ procedure DeleteTags(var s: string);
 function ExtractOnlyName(s: string): string;
 procedure GetFileList(const Path: string; const List: TStrings; Ext: boolean);
 function AppLocation: string;
-function UserDocumentsPath : string;
+function UserDocumentsPath: string;
 function AppDataPath: string;
 function ConfigFile: string;
 function TempFileName: string;
 procedure CreateDirectories;
-procedure OpenFolder(path : string);
+procedure OpenFolder(path: string);
 {$ifdef darwin} procedure PrintFile(FileName : string); {$endif}
 
 // language functions
@@ -265,14 +265,14 @@ begin
   {$endif}
 end;
 
-function UserDocumentsPath : string;
+function UserDocumentsPath: string;
 begin
   {$ifdef windows} Result := GetWindowsSpecialDir(CSIDL_PERSONAL); {$endif}
   {$ifdef linux  } Result := GetEnvironmentVariableUTF8('HOME') + Slash; {$endif}
   {$ifdef darwin } Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library'; {$endif}
 end;
 
-function AppDataPath : string;
+function AppDataPath: string;
 begin
  Result := UserDocumentsPath + AppName;
 end;
