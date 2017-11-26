@@ -36,6 +36,8 @@ begin
   FileName := GetFileName(language);
   FilePath := AppLocation + TitleDirectory + Slash + FileName + '.sqlite';
 
+  output(FilePath);
+
   Connection  := TSQLite3Connection.Create(nil);
   Transaction := TSQLTransaction.Create(nil);
   Query       := TSQLQuery.Create(nil);
@@ -81,13 +83,17 @@ begin
   abbr := '';
 
   try
-    Query.SQL.Text := 'SELECT * FROM Books WHERE Number=' + IntToStr(n);
-    Query.Clear;
-    Query.Open;
+    try
+      Query.SQL.Text := 'SELECT * FROM Books WHERE Number=' + IntToStr(n);
+      Query.Open;
 
-    try name := Query.FieldByName('Name').AsString; except end;
-    try abbr := Query.FieldByName('Abbreviation').AsString; except end;
+      try name := Query.FieldByName('Name').AsString; except end;
+      try abbr := Query.FieldByName('Abbreviation').AsString; except end;
+    except
+      //
+    end;
   finally
+    Query.Close;
     if name = '' then name := IntToStr(n);
     if abbr = '' then abbr := name;
   end;

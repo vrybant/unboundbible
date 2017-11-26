@@ -190,43 +190,49 @@ begin
   end;
 
   try
-    Query.SQL.Text := 'SELECT * FROM Details';
-    Query.Clear;
-    Query.Open;
+    try
+      Query.SQL.Text := 'SELECT * FROM Details';
+      Query.Open;
 
-    try name      := Query.FieldByName('Title'      ).AsString; except end;
-    try info      := Query.FieldByName('Information').AsString; except end;
-    try info      := Query.FieldByName('Description').AsString; except end;
-    try copyright := Query.FieldByName('Copyright'  ).AsString; except end;
-    try language  := Query.FieldByName('Language'   ).AsString; except end;
+      try name      := Query.FieldByName('Title'      ).AsString; except end;
+      try info      := Query.FieldByName('Information').AsString; except end;
+      try info      := Query.FieldByName('Description').AsString; except end;
+      try copyright := Query.FieldByName('Copyright'  ).AsString; except end;
+      try language  := Query.FieldByName('Language'   ).AsString; except end;
 
-    connected := true;
-  except
-    //
+      connected := true;
+    except
+      //
+    end;
+  finally
+    Query.Close;
   end;
 
   try
-    Query.SQL.Text := 'SELECT * FROM info';
-    Query.Clear;
-    Query.Open;
+    try
+      Query.SQL.Text := 'SELECT * FROM info';
+      Query.Open;
 
-    while not Query.Eof do
-      begin
-        try key   := Query.FieldByName('name' ).AsString; except end;
-        try value := Query.FieldByName('value').AsString; except end;
+      while not Query.Eof do
+        begin
+          try key   := Query.FieldByName('name' ).AsString; except end;
+          try value := Query.FieldByName('value').AsString; except end;
 
-        if key = 'description'   then name     := value;
-        if key = 'detailed_info' then info     := value;
-        if key = 'language'      then language := value;
+          if key = 'description'   then name     := value;
+          if key = 'detailed_info' then info     := value;
+          if key = 'language'      then language := value;
 
-        Query.Next;
-      end;
+          Query.Next;
+        end;
 
-    fileFormat := mybible;
-    z := mybibleStringAlias;
-    connected := true;
-  except
-    //
+      fileFormat := mybible;
+      z := mybibleStringAlias;
+      connected := true;
+    except
+      //
+    end;
+  finally
+    Query.Close;
   end;
 
   RightToLeft := GetRightToLeft(language);
@@ -241,33 +247,36 @@ begin
   if loaded then exit;
 
   try
-    Query.SQL.Text := 'SELECT DISTINCT ' + z.book + ' FROM ' + z.bible;
-    Query.Clear;
-    Query.Open;
+    try
+      Query.SQL.Text := 'SELECT DISTINCT ' + z.book + ' FROM ' + z.bible;
+      Query.Open;
 
-    while not Query.Eof do
-      begin
-        try n := Query.FieldByName(z.book).AsInteger; except n := 0 end;
+      while not Query.Eof do
+        begin
+          try n := Query.FieldByName(z.book).AsInteger; except n := 0 end;
 
-        if n > 0 then
-          begin
-            Book := TBook.Create;
-            Book.number := DecodeIndex(n);
-            Book.title := IntToStr(n);
-            Book.id := n;
-            Add(Book);
-            if IsOldTestament(n) then oldTestament := true;
-            if IsNewTestament(n) then newTestament := true;
-            if IsApocrypha(n)    then apocrypha    := true;
-          end;
+          if n > 0 then
+            begin
+              Book := TBook.Create;
+              Book.number := DecodeIndex(n);
+              Book.title := IntToStr(n);
+              Book.id := n;
+              Add(Book);
+              if IsOldTestament(n) then oldTestament := true;
+              if IsNewTestament(n) then newTestament := true;
+              if IsApocrypha(n)    then apocrypha    := true;
+            end;
 
-        Query.Next;
-      end;
+          Query.Next;
+        end;
 
-    SetTitles;
-    loaded := true;
-  except
-    //
+      SetTitles;
+      loaded := true;
+    except
+      //
+    end;
+  finally
+    Query.Close;
   end;
 
 //Output(self.fileName + ' loaded');
@@ -422,23 +431,26 @@ begin
   chapter := IntToStr(Verse.chapter);
 
   try
-    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id + ' AND ' + z.chapter + '=' + chapter;
-    Query.Clear;
-    Query.Open;
+    try
+      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id + ' AND ' + z.chapter + '=' + chapter;
+      Query.Open;
 
-    Query.Last;
-    SetLength(Result, Query.RecordCount);
-    Query.First;
+      Query.Last;
+      SetLength(Result, Query.RecordCount);
+      Query.First;
 
-    for i:=0 to Query.RecordCount-1 do
-      begin
-        try line := Query.FieldByName(z.text).AsString; except line := '' end;
-    //  line = line.replace("\n", "") // ESWORD ?
-        Result[i] := line;
-        Query.Next;
-      end;
-  except
-    //
+      for i:=0 to Query.RecordCount-1 do
+        begin
+          try line := Query.FieldByName(z.text).AsString; except line := '' end;
+      //  line = line.replace("\n", "") // ESWORD ?
+          Result[i] := line;
+          Query.Next;
+        end;
+    except
+      //
+    end;
+  finally
+    Query.Close;
   end;
 end;
 
@@ -458,25 +470,28 @@ begin
   toVerse := IntToStr(verse.number + verse.count);
 
   try
-    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id +
-                      ' AND ' + z.chapter + '=' + chapter +
-                      ' AND ' + z.verse + ' >= ' + verseNumber +
-                      ' AND ' + z.verse + ' < ' + toVerse;
-    Query.Clear;
-    Query.Open;
+    try
+      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id +
+                        ' AND ' + z.chapter + '=' + chapter +
+                        ' AND ' + z.verse + ' >= ' + verseNumber +
+                        ' AND ' + z.verse + ' < ' + toVerse;
+      Query.Open;
 
-    Query.Last;
-    SetLength(Result, Query.RecordCount);
-    Query.First;
+      Query.Last;
+      SetLength(Result, Query.RecordCount);
+      Query.First;
 
-    for i:=0 to Query.RecordCount-1 do
-      begin
-        try line := Query.FieldByName(z.text).AsString; except line := '' end;
-        Result[i] := line;
-        Query.Next;
-      end;
-  except
-    //
+      for i:=0 to Query.RecordCount-1 do
+        begin
+          try line := Query.FieldByName(z.text).AsString; except line := '' end;
+          Result[i] := line;
+          Query.Next;
+        end;
+    except
+      //
+    end;
+  finally
+    Query.Close;
   end;
 end;
 
@@ -526,24 +541,27 @@ begin
     end;
 
   try
-    Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE super(' + z.text + ')=''1''' + queryRange;  ;
-    Query.Clear;
-    Query.Open;
+    try
+      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE super(' + z.text + ')=''1''' + queryRange;  ;
+      Query.Open;
 
-    Query.Last; // must be called before RecordCount
-    SetLength(Contents,Query.RecordCount);
-    Query.First;
+      Query.Last; // must be called before RecordCount
+      SetLength(Contents,Query.RecordCount);
+      Query.First;
 
-    for i:=0 to Query.RecordCount-1 do
-      begin
-        Contents[i].verse := noneVerse;
-        try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
-        try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
-        try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
-        try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
-        Contents[i].verse.book := DecodeIndex(Contents[i].verse.book);
-        Query.Next;
-      end;
+      for i:=0 to Query.RecordCount-1 do
+        begin
+          Contents[i].verse := noneVerse;
+          try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
+          try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
+          try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
+          try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
+          Contents[i].verse.book := DecodeIndex(Contents[i].verse.book);
+          Query.Next;
+        end;
+    finally
+      Query.Close;
+    end;
   except
     Exit;
   end;
@@ -560,30 +578,30 @@ begin
   SetLength(Result,0);
 
   try
-    Query.SQL.Text := 'SELECT * FROM ' + z.bible;
-    Query.Clear;
-    Query.Open;
+    try
+      Query.SQL.Text := 'SELECT * FROM ' + z.bible;
+      Query.Open;
 
-    Query.Last; // must be called before RecordCount
-    SetLength(Contents,Query.RecordCount);
-    Query.First;
+      Query.Last; // must be called before RecordCount
+      SetLength(Contents,Query.RecordCount);
+      Query.First;
 
-    for i:=0 to Query.RecordCount-1 do
-      begin
-        Contents[i].verse := noneVerse;
-        try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
-        try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
-        try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
-        try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
-        Contents[i].verse.book := DecodeIndex(Contents[i].verse.book);
-        Query.Next;
-      end;
-  except
-    Exit;
+      for i:=0 to Query.RecordCount-1 do
+        begin
+          Contents[i].verse := noneVerse;
+          try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
+          try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
+          try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
+          try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
+          Contents[i].verse.book := DecodeIndex(Contents[i].verse.book);
+          Query.Next;
+        end;
+    except
+      //
+    end;
+  finally
+    Query.Close;
   end;
-
-  //if (fileFormat = unbound) and apocrypha then Result := RankContents(Contents)
-  //  else Result := Contents;
 end;
 
 procedure TBible.GetTitles(var List: TStringList);
@@ -617,13 +635,16 @@ begin
   id := IntToStr(index);
 
   try
-    Query.SQL.Text := 'SELECT MAX(' + z.chapter + ') AS Count FROM ' + z.bible + ' WHERE ' + z.book + '=' + id;
-    Query.Clear;
-    Query.Open;
+    try
+      Query.SQL.Text := 'SELECT MAX(' + z.chapter + ') AS Count FROM ' + z.bible + ' WHERE ' + z.book + '=' + id;
+      Query.Open;
 
-    try Result := Query.FieldByName('Count').AsInteger; except end;
-  except
-    //
+      try Result := Query.FieldByName('Count').AsInteger; except end;
+    except
+      //
+    end;
+  finally
+    Query.Close;
   end;
 end;
 
