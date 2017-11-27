@@ -320,6 +320,7 @@ begin
   {$endif}
 
   {$ifdef linux}
+  StandardToolBar.ParentColor := True;
   IdleMessage := '';
   IdleTimer.Enabled := true;
   {$endif}
