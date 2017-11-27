@@ -24,7 +24,6 @@ object MainForm: TMainForm
     BorderWidth = 2
     ButtonHeight = 28
     ButtonWidth = 28
-    Color = clMenu
     EdgeBorders = [ebBottom]
     Images = Images
     Indent = 4
