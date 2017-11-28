@@ -53,10 +53,8 @@ end;
 
 procedure SQLite3CreateFunctions(const Handle: pointer);
 begin
-  {$ifdef windows}
   if Assigned(Handle) then
-      sqlite3_create_function(Handle,'super',0,SQLITE_UTF8 or SQLITE_DETERMINISTIC,nil,@xSuper,nil,nil);
-  {$endif}
+      sqlite3_create_function(Handle,'super',1,SQLITE_UTF8 or SQLITE_DETERMINISTIC,nil,@xSuper,nil,nil);
 end;
 
 end.

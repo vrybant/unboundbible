@@ -1,10 +1,14 @@
 unit UnitShelf;
 
+{$ifdef linux}
+  {$define zeos}
+{$endif}
+
 interface
 
 uses
-  Classes, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8,
-  DB, SQLdb, SQLite3conn, IBConnection,
+  Classes, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
+  {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
   UnitLib, UnitTitle, UnitType;
 
 const
@@ -20,9 +24,14 @@ type
   end;
 
   TBible = class(TList)
-    Connection  : TSQLite3Connection;
-    Transaction : TSQLTransaction;
-    Query       : TSQLQuery;
+    {$ifdef zeos}
+      Connection : TZConnection;
+      Query : TZReadOnlyQuery;
+    {$else}
+      Connection : TSQLite3Connection;
+      Transaction : TSQLTransaction;
+      Query : TSQLQuery;
+    {$endif}
     {-}
     info         : string;
     filePath     : string;
@@ -144,14 +153,21 @@ constructor TBible.Create(filePath, fileName: string);
 begin
   inherited Create;
 
-  Connection  := TSQLite3Connection.Create(nil);
-  Transaction := TSQLTransaction.Create(Connection);
-  Query       := TSQLQuery.Create(nil);
-
-  Connection.DatabaseName := filePath + slash +  fileName;
-  Connection.CharSet := 'UTF8';
-  Connection.Transaction := Transaction;
-  Query.DataBase := Connection;
+  {$ifdef zeos}
+    Connection := TZConnection.Create(nil);
+    Query := TZReadOnlyQuery.Create(nil);
+    Connection.Database := filePath + slash + fileName;
+    Connection.Protocol := 'sqlite-3';
+    Query.Connection := Connection;
+  {$else}
+    Connection := TSQLite3Connection.Create(nil);
+    Connection.CharSet := 'UTF8';
+    Connection.DatabaseName := filePath + slash + fileName;
+    Transaction := TSQLTransaction.Create(Connection);
+    Connection.Transaction := Transaction;
+    Query := TSQLQuery.Create(nil);
+    Query.DataBase := Connection;
+  {$endif}
 
   self.filePath := filePath;
   self.fileName := fileName;
@@ -178,14 +194,23 @@ end;
 procedure TBible.OpenDatabase;
 var
   key, value : string;
+  dbhandle : Pointer;
 begin
   try
-    Connection.Open;
-    Transaction.Active := True;
+    {$ifdef zeos}
+      Connection.Connect;
+      dbhandle := (Connection.DbcConnection as TZSQLiteConnection).GetConnectionHandle();
+    {$else}
+      Connection.Open;
+      Transaction.Active := True;
+      dbhandle := Connection.Handle;
+    {$endif}
+
     if  not Connection.Connected then Exit;
-    SQLite3CreateFunctions(Connection.Handle);
-    Connection.ExecuteDirect('PRAGMA case_sensitive_like = 1');
+    SQLite3CreateFunctions(dbhandle);
+ // Connection.ExecuteDirect('PRAGMA case_sensitive_like = 1');
   except
+    output('connection failed ' + self.fileName);
     Exit;
   end;
 
@@ -542,7 +567,7 @@ begin
 
   try
     try
-      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE super(' + z.text + ')=''1''' + queryRange;  ;
+      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE super(' + z.text + ')=''1''' + queryRange;
       Query.Open;
 
       Query.Last; // must be called before RecordCount
@@ -680,7 +705,7 @@ begin
   for i:=0 to Count-1 do Items[i].Free;
 
   Query.Free;
-  Transaction.Free;
+  {$ifndef zeos} Transaction.Free; {$endif}
   Connection.Free;
 
   inherited Destroy;

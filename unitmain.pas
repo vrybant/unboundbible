@@ -15,7 +15,15 @@ type
   TMainForm = class(TForm)
     ActionInterline: TAction;
     IdleTimer: TIdleTimer;
+    MenuItem4: TMenuItem;
     miInterlinear: TMenuItem;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    N6: TMenuItem;
+    N9: TMenuItem;
     pmInterlinear: TMenuItem;
     miTranslate: TMenuItem;
     PrintDialog: TPrintDialog;
