@@ -145,7 +145,7 @@ begin
   inherited Create;
 
   Connection  := TSQLite3Connection.Create(nil);
-  Transaction := TSQLTransaction.Create(nil);
+  Transaction := TSQLTransaction.Create(Connection);
   Query       := TSQLQuery.Create(nil);
 
   Connection.DatabaseName := filePath + slash +  fileName;

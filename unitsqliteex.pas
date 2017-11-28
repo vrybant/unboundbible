@@ -3,8 +3,7 @@ unit UnitSQLiteEx;
 interface
 
 uses
-  {$ifdef windows} SQLite3, {$endif} // error linking in linux
-  Classes, SysUtils, LazUtf8, CTypes, UnitLib, UnitType;
+  Classes, SysUtils, LazUtf8, SQLite3, CTypes, UnitLib, UnitType;
 
 procedure SetSearchOptions(s: string; SearchOptions: TSearchOptions);
 procedure SQLite3CreateFunctions(const Handle: pointer);
@@ -12,8 +11,8 @@ procedure SQLite3CreateFunctions(const Handle: pointer);
 implementation
 
 const
-  SQLITE_UTF8= $01;
-  SQLITE_DETERMINISTIC =$800;
+  {%H-}SQLITE_UTF8= $01;
+  {%H-}SQLITE_DETERMINISTIC =$800;
 
 var
   SearchList : TStringArray;
@@ -44,7 +43,6 @@ begin
     if Pos(SearchList[i],s) = 0 then Result := false;
 end;
 
-{$ifdef windows}
 procedure xSuper(ctx: psqlite3_context; {%H-}N: cint; V: ppsqlite3_value); cdecl;
 var s : string;
 begin
@@ -52,15 +50,12 @@ begin
   if Super(s) then s := '1' else s := '0';
   sqlite3_result_text(ctx, PAnsiChar(s), Length(s), sqlite3_destructor_type(SQLITE_TRANSIENT));
 end;
-{$endif}
 
 procedure SQLite3CreateFunctions(const Handle: pointer);
 begin
   {$ifdef windows}
   if Assigned(Handle) then
-    sqlite3_create_function(Handle,'super',1,SQLITE_UTF8 or SQLITE_DETERMINISTIC,nil,@xSuper,nil,nil)
-  else
-    Output('Unassigned handle in UnitSQLiteEx');
+      sqlite3_create_function(Handle,'super',0,SQLITE_UTF8 or SQLITE_DETERMINISTIC,nil,@xSuper,nil,nil);
   {$endif}
 end;
 
