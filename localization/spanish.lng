@@ -103,13 +103,13 @@ Verses.Default     = Set default
 
 Compare.Caption   = Módulos
 
+About.Version   = Versión
+About.Developer = Programador
+
 Message.Save      = Save changes?
 Message.OverWrite = OK to overwrite %s?
 Message.Loading   = Ejecutando
 Message.Found     = Versiculo encontrado
 Message.Link      = Presione CTRL y haga clic en un vinculo
 Message.Confirm   = Confirmation
-
-About.Version   = Versión
-About.Developer = Programador
-
+Message.Results   = This search returned too many results. Please narrow your search.

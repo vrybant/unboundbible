@@ -102,13 +102,13 @@ Verses.Default     = Set default
 
 Compare.Caption   = Modules
 
+About.Version   = Version
+About.Developer = Developer
+
 Message.Save      = Save changes?
 Message.OverWrite = OK to overwrite %s?
 Message.Loading   = Loading
 Message.Found     = verses found
 Message.Link      = Press CTRL and click a link
 Message.Confirm   = Confirmation
-
-About.Version   = Version
-About.Developer = Developer
-
+Message.Results   = This search returned too many results. Please narrow your search.

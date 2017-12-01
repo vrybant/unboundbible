@@ -16,16 +16,6 @@ type
     ActionInterline: TAction;
     IdleTimer: TIdleTimer;
     MenuItem4: TMenuItem;
-    miInterlinear: TMenuItem;
-    N1: TMenuItem;
-    N2: TMenuItem;
-    N3: TMenuItem;
-    N4: TMenuItem;
-    N5: TMenuItem;
-    N6: TMenuItem;
-    N9: TMenuItem;
-    pmInterlinear: TMenuItem;
-    miTranslate: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
     FontDialogNotes: TFontDialog;
@@ -118,6 +108,16 @@ type
     miTools: TMenuItem;
     miUndo: TMenuItem;
     miVerses: TMenuItem;
+    miInterlinear: TMenuItem;
+    miTranslate: TMenuItem;
+
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    N6: TMenuItem;
+    N9: TMenuItem;
 
     PopupMenu: TPopupMenu;
     pmCut: TMenuItem;
@@ -125,6 +125,7 @@ type
     pmPaste: TMenuItem;
     pmCopyAs: TMenuItem;
     pmVerses: TMenuItem;
+    pmInterlinear: TMenuItem;
 
     StandardToolBar: TToolBar;
     ToolButtonBold: TToolButton;
@@ -250,11 +251,12 @@ const
   ReopenMax = 10;
 
 const
-  ms_Save : string = '';
+  ms_Save      : string = '';
   ms_OverWrite : string = '';
-  ms_found : string = '';
-  ms_loading : string = '';
-  ms_Confirm : string = '';
+  ms_found     : string = '';
+  ms_loading   : string = '';
+  ms_Confirm   : string = '';
+  ms_Message   : string = '';
 
 {$R *.lfm}
 
@@ -465,6 +467,7 @@ begin
   ms_loading := T('Message.Loading') + '...';
   ms_found := T('Message.Found');
   ms_Confirm := T('Message.Confirm');
+  ms_Message := T('Message.Results');
 end;
 
 procedure TMainForm.TranslateAll;
@@ -1295,12 +1298,25 @@ procedure TMainForm.SearchText(s: string);
 var
   Stream : TRichStream;
   Count: integer;
+{$ifdef linux}
+const
+  max = 200;
+{$endif}
 begin
   Stream := TRichStream.Create;
-  MemoSearch.Cursor := crHourGlass;
+  Cursor := crHourGlass;
   Search_Text(Stream, s, Count);
+
+  {$ifdef linux}
+  if Count > max then
+    begin
+      Stream.Clear;
+      Show_Message(Stream, '\i\par  ' + ms_Message);
+    end;
+  {$endif}
+
   MemoSearch.LoadRichText(Stream);
-  MemoSearch.Cursor := crArrow;
+  Cursor := crArrow;
   SelectPage(apSearch);
   UpdateStatus(IntToStr(Count) + ' ' + ms_found);
   Stream.Free;

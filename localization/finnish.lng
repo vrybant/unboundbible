@@ -102,12 +102,13 @@ Verses.Default     = Set default
 
 Compare.Caption   = Vertailuvalinnat
 
+About.Version   = Versio
+About.Developer = Kehittäjä
+
 Message.Save      = Save changes?
 Message.OverWrite = OK to overwrite %s?
 Message.Loading   = Loading
 Message.Found     = verses found
 Message.Link      = Paina CTRL ja klikkaa linkkiä
 Message.Confirm   = Confirmation
-
-About.Version   = Versio
-About.Developer = Kehittäjä
+Message.Results   = This search returned too many results. Please narrow your search.

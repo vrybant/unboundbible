@@ -102,12 +102,13 @@ Verses.Default     = Запомнить
 
 Compare.Caption   = Модули
 
+About.Version   = Версия
+About.Developer = Разработка 
+
 Message.Save      = Сохранить изменения?
 Message.OverWrite = Перезаписать файл %s?
 Message.Loading   = Загружаю
 Message.Found     = найдено стихов
 Message.Link      = Нажмите CTRL и щелкните ссылку
 Message.Confirm   = Подтверждение
-
-About.Version   = Версия
-About.Developer = Разработка 
+Message.Results   = Ваш поиск дал слишком большое количество результатов. Попробуйте сузить запрос.

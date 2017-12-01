@@ -102,12 +102,14 @@ Verses.Default     = Set default
 
 Compare.Caption   = Modulos
 
+About.Version   = Versione
+About.Developer = Programmatore
+
 Message.Save      = Save changes?
 Message.OverWrite = OK to overwrite %s?
 Message.Loading   = Sto caricando
 Message.Found     = versi trovati
 Message.Link      = Premere CTRL e fare clic su un link
 Message.Confirm   = Confirmation
+Message.Results   = This search returned too many results. Please narrow your search.
 
-About.Version   = Versione
-About.Developer = Programmatore

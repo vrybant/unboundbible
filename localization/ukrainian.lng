@@ -102,12 +102,13 @@ Verses.Default     = Запам'ятати
 
 Compare.Caption   = Модулі
 
+About.Version   = Версiя
+About.Developer = Розробник 
+
 Message.Save      = Зберегти зміни?
 Message.OverWrite = Перезаписати файл %s? 
 Message.Loading   = Завантажую
 Message.Found     = Знайдено віршів
 Message.Link      = Нажміть CTRL і клацніть посилання
 Message.Confirm   = Підтвердження
-
-About.Version   = Версiя
-About.Developer = Розробник 
+Message.Results   = This search returned too many results. Please narrow your search.
