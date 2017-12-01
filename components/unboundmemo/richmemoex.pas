@@ -4,6 +4,13 @@ interface
 
 uses
   {$ifdef windows} Windows, Printers, OSPrinters, {$endif}
+
+  {$ifdef linux}
+    LCLType,
+    Gtk2, Glib2, Gdk2, //pango,
+    Gtk2Def, Gtk2WinApiWindow, Gtk2Globals, Gtk2Proc, InterfaceBase, //Gtk2WSControls, gdk2pixbuf
+  {$endif}
+
   Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo;
 
 type
@@ -37,6 +44,11 @@ type
     procedure SaveToFile(const FileName : string);
     property SelAttributes: TFontParams read GetAttributes write SetAttributes;
     {$ifdef windows} property Modified: boolean read GetModified write SetModified; {$endif}
+    {$ifdef linux}
+    procedure CopyToClipboard; override;
+    procedure CutToClipboard; override;
+    procedure PasteFromClipboard; override;
+    {$endif}
   published
     property OnAttrChange: TNotifyEvent read FOnAttrChange write FOnAttrChange;
   end;
@@ -93,7 +105,7 @@ end;
 
 function TRichMemoEx.GetAttributes: TFontParams;
 begin
-  GetTextAttributes(SelStart, Result);
+  GetTextAttributes(SelStart, Result{%H-});
 end;
 
 function TRichMemoEx.CanUndo: boolean;
@@ -170,6 +182,61 @@ procedure TRichMemoEx.HideCursor;
 begin
   {$ifdef windows} HideCaret(Handle); {$endif}
 end;
+
+{$ifdef linux}
+
+procedure TRichMemoEx.CopyToClipboard;
+var
+  Widget, TextWidget: PGtkWidget;
+  Clipboard: PGtkClipboard;
+  Buffer: PGtkTextBuffer;
+  List: PGList;
+begin
+  Widget := {%H-}PGtkWidget(Handle);
+  List := gtk_container_get_children(PGtkContainer(Widget));
+  if not Assigned(List) then Exit;
+  TextWidget := PGtkWidget(List^.Data);
+  if not Assigned(TextWidget) then Exit;
+  Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+  Buffer := gtk_text_view_get_buffer(PGtkTextView(TextWidget));
+  gtk_text_buffer_copy_clipboard(Buffer, Clipboard);
+end;
+
+procedure TRichMemoEx.CutToClipboard;
+var
+  Widget, TextWidget: PGtkWidget;
+  Clipboard: PGtkClipboard;
+  Buffer: PGtkTextBuffer;
+  List: PGList;
+begin
+  Widget := {%H-}PGtkWidget(Handle);
+  List := gtk_container_get_children(PGtkContainer(Widget));
+  if not Assigned(List) then Exit;
+  TextWidget := PGtkWidget(List^.Data);
+  if not Assigned(TextWidget) then Exit;
+  Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+  Buffer := gtk_text_view_get_buffer(PGtkTextView(TextWidget));
+  gtk_text_buffer_cut_clipboard(Buffer, Clipboard, True);
+end;
+
+procedure TRichMemoEx.PasteFromClipboard;
+var
+  Widget, TextWidget: PGtkWidget;
+  Clipboard: PGtkClipboard;
+  Buffer: PGtkTextBuffer;
+  List: PGList;
+begin
+  Widget := {%H-}PGtkWidget(Handle);
+  List := gtk_container_get_children(PGtkContainer(Widget));
+  if not Assigned(List) then Exit;
+  TextWidget := PGtkWidget(List^.Data);
+  if not Assigned(TextWidget) then Exit;
+  Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+  Buffer := gtk_text_view_get_buffer(PGtkTextView(TextWidget));
+  gtk_text_buffer_paste_clipboard(Buffer, Clipboard, NULL, True);
+end;
+
+{$endif}
 
 procedure TRichMemoEx.LoadFromFile(const FileName : string);
 var
