@@ -108,21 +108,21 @@ end;
 procedure TUnboundMemo.MouseMove(Shift: TShiftState; X, Y: Integer);
 begin
   inherited;
-  if ReadOnly or (ssCtrl in Shift) then HideCursor;
+  {$ifdef windows} if ReadOnly or (ssCtrl in Shift) then HideCursor; {$endif}
 end;
 
 procedure TUnboundMemo.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if Linkable then Hyperlink := GetLink else Hyperlink := '';
   if Paragraphic and (Button = mbLeft) then GetParagraphRange;
-  if ReadOnly or (ssCtrl in Shift) then HideCursor;
+  {$ifdef windows} if ReadOnly or (ssCtrl in Shift) then HideCursor; {$endif}
   inherited;
 end;
 
 procedure TUnboundMemo.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   inherited;
-  if ReadOnly or (ssCtrl in Shift) then HideCursor;
+  {$ifdef windows} if ReadOnly or (ssCtrl in Shift) then HideCursor; {$endif}
 end;
 
 procedure TUnboundMemo.KeyUp(var Key: Word; Shift: TShiftState);

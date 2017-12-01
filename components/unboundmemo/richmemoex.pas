@@ -4,13 +4,7 @@ interface
 
 uses
   {$ifdef windows} Windows, Printers, OSPrinters, {$endif}
-
-  {$ifdef linux}
-    LCLType,
-    Gtk2, Glib2, Gdk2, //pango,
-    Gtk2Def, Gtk2WinApiWindow, Gtk2Globals, Gtk2Proc, InterfaceBase, //Gtk2WSControls, gdk2pixbuf
-  {$endif}
-
+  {$ifdef linux} Gtk2, Glib2, Gdk2, {$endif}
   Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo;
 
 type
@@ -21,6 +15,7 @@ type
     function  GetAttributes: TFontParams;
     procedure SetAttributes(const value: TFontParams);
     procedure DoAttributesChange;
+    {$ifdef linux} function GetTextView: PGtkTextView; {$endif}
     {$ifdef windows} function  GetModified: boolean; {$endif}
     {$ifdef windows} procedure SetModified(value: boolean); {$endif}
   protected
@@ -36,7 +31,7 @@ type
     destructor Destroy; override;
     function LoadRichText(Source: TStream): Boolean; override;
     function CanUndo: boolean;
-    function CanPaste: boolean;
+    function CanPaste: boolean; override;
     procedure HideCursor;
     function Selected: boolean;
     procedure SelectAll;
@@ -44,11 +39,9 @@ type
     procedure SaveToFile(const FileName : string);
     property SelAttributes: TFontParams read GetAttributes write SetAttributes;
     {$ifdef windows} property Modified: boolean read GetModified write SetModified; {$endif}
-    {$ifdef linux}
-    procedure CopyToClipboard; override;
-    procedure CutToClipboard; override;
-    procedure PasteFromClipboard; override;
-    {$endif}
+    {$ifdef linux} procedure CopyToClipboard; override; {$endif}
+    {$ifdef linux} procedure CutToClipboard; override; {$endif}
+    {$ifdef linux} procedure PasteFromClipboard; override; {$endif}
   published
     property OnAttrChange: TNotifyEvent read FOnAttrChange write FOnAttrChange;
   end;
@@ -59,7 +52,7 @@ implementation
 constructor TRichMemoEx.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  {$ifdef darwin} Modified := False; {$endif}
+  {$ifdef unix} Modified := False; {$endif}
 end;
 
 destructor TRichMemoEx.Destroy;
@@ -87,6 +80,11 @@ end;
 procedure TRichMemoEx.SetModified(value: boolean);
 begin
   SendMessage(Handle, EM_SETMODIFY, Byte(value), 0);
+end;
+
+procedure TRichMemoEx.HideCursor;
+begin
+   HideCaret(Handle);
 end;
 
 {$endif}
@@ -136,7 +134,7 @@ begin
   {$ifdef windows}
   SendMessage(Handle, EM_SETSEL, 0, -1);
   {$else}
-  SetSel(0,100000);
+  SetSel(0,High(Int16));
   {$endif}
 end;
 
@@ -144,7 +142,7 @@ procedure TRichMemoEx.KeyUp(var Key: Word; Shift: TShiftState);
 begin
   inherited KeyUp(Key, Shift);
   DoAttributesChange;
-  {$ifdef darwin} Modified := True; {$endif}
+  {$ifdef unix} Modified := True; {$endif}
 end;
 
 procedure TRichMemoEx.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -178,62 +176,55 @@ begin
   Result := SelLength > 0;
 end;
 
-procedure TRichMemoEx.HideCursor;
-begin
-  {$ifdef windows} HideCaret(Handle); {$endif}
-end;
-
 {$ifdef linux}
 
-procedure TRichMemoEx.CopyToClipboard;
+function TRichMemoEx.GetTextView: PGtkTextView;
 var
   Widget, TextWidget: PGtkWidget;
-  Clipboard: PGtkClipboard;
-  Buffer: PGtkTextBuffer;
   List: PGList;
 begin
+  Result := nil;
   Widget := {%H-}PGtkWidget(Handle);
   List := gtk_container_get_children(PGtkContainer(Widget));
   if not Assigned(List) then Exit;
   TextWidget := PGtkWidget(List^.Data);
   if not Assigned(TextWidget) then Exit;
+  Result := PGtkTextView(TextWidget);
+end;
+
+procedure TRichMemoEx.CopyToClipboard;
+var
+  Clipboard: PGtkClipboard;
+  Buffer: PGtkTextBuffer;
+begin
   Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-  Buffer := gtk_text_view_get_buffer(PGtkTextView(TextWidget));
+  Buffer := gtk_text_view_get_buffer(GetTextView);
   gtk_text_buffer_copy_clipboard(Buffer, Clipboard);
 end;
 
 procedure TRichMemoEx.CutToClipboard;
 var
-  Widget, TextWidget: PGtkWidget;
   Clipboard: PGtkClipboard;
   Buffer: PGtkTextBuffer;
-  List: PGList;
 begin
-  Widget := {%H-}PGtkWidget(Handle);
-  List := gtk_container_get_children(PGtkContainer(Widget));
-  if not Assigned(List) then Exit;
-  TextWidget := PGtkWidget(List^.Data);
-  if not Assigned(TextWidget) then Exit;
   Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-  Buffer := gtk_text_view_get_buffer(PGtkTextView(TextWidget));
+  Buffer := gtk_text_view_get_buffer(GetTextView);
   gtk_text_buffer_cut_clipboard(Buffer, Clipboard, True);
 end;
 
 procedure TRichMemoEx.PasteFromClipboard;
 var
-  Widget, TextWidget: PGtkWidget;
   Clipboard: PGtkClipboard;
   Buffer: PGtkTextBuffer;
-  List: PGList;
 begin
-  Widget := {%H-}PGtkWidget(Handle);
-  List := gtk_container_get_children(PGtkContainer(Widget));
-  if not Assigned(List) then Exit;
-  TextWidget := PGtkWidget(List^.Data);
-  if not Assigned(TextWidget) then Exit;
   Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-  Buffer := gtk_text_view_get_buffer(PGtkTextView(TextWidget));
+  Buffer := gtk_text_view_get_buffer(GetTextView);
   gtk_text_buffer_paste_clipboard(Buffer, Clipboard, NULL, True);
+end;
+
+procedure TRichMemoEx.HideCursor;
+begin
+  //gtk_text_view_set_cursor_visible(GetTextView, False);
 end;
 
 {$endif}
