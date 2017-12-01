@@ -175,7 +175,7 @@ begin
   if Shelf.Count = 0 then Exit;
 
   Book := Bible.BookByNum(ActiveVerse.Book);
-  if Book = nil then Exit;
+  if not Assigned(Book) then Exit;
 
   Strings := Bible.GetRange(ActiveVerse);
 

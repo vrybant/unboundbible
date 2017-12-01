@@ -379,7 +379,7 @@ begin
   Result := 'error';
 
   Book := Bible.BookByNum(verse.book);
-  if Book = nil then Exit;
+  if not Assigned(Book) then Exit;
 
   if full then title := Book.title else title := Book.abbr;
   if Pos('.', title) = 0 then title := title + ' ';

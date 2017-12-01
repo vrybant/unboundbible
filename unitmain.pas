@@ -304,6 +304,7 @@ begin
   ToolButtonFB.Visible := not FBPageVisited;
 
   {$ifdef unix}
+  ActionEditUndo.Visible := False;
   ActionLeft    .Visible := False;
   ActionCenter  .Visible := False;
   ActionRight   .Visible := False;
@@ -790,7 +791,7 @@ begin
   s := BookBox.Items[BookBox.ItemIndex];
 
   Book := Bible.BookByName(s);
-  if Book = nil then Exit;
+  if not Assigned(Book) then Exit;
 
   ActiveVerse.Book := Book.Number;
   ActiveVerse.Chapter := 1;
@@ -875,7 +876,7 @@ begin
   if not Bible.GoodLink(Verse) then Exit;
 
   Book := Bible.BookByNum(Verse.Book);
-  if Book = nil then Exit;
+  if not Assigned(Book) then Exit;
 
   ActiveVerse := Verse;
   LoadChapter;
