@@ -65,6 +65,12 @@ end;
 
 procedure TFormCopy.FormActivate(Sender: TObject);
 begin
+  {$ifdef linux}
+  ButtonCancel.Top := 255;
+  CheckBox.Top := 290;
+  CheckBox.Left := 290;
+  {$endif}
+
   TempOptions := Options;
 
   CheckGroup.Checked[cgAbbreviate]  := Options.cvAbbreviate;
