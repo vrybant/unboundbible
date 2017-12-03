@@ -630,8 +630,9 @@ end;
 
 procedure TMainForm.CmdCopyAs(Sender: TObject);
 begin
+  {$ifdef linux} MemoBible.SaveSelection; {$endif}
   FormCopy.ShowModal;
-  {$ifdef darwin} MemoBible.RestoreSelection; {$endif}
+  {$ifdef unix} MemoBible.RestoreSelection; {$endif}
 end;
 
 procedure TMainForm.CmdCopyVerses(Sender: TObject);
@@ -1383,9 +1384,14 @@ begin
 
   Load_Verses(Stream);
 
+  {$ifdef linux} MemoBible.SaveSelection; {$endif}
+  // saving selection because of strange bug in the gtk2's richmemo
+
   MemoPreview.LoadRichText(Stream);
   MemoPreview.SelectAll;
   MemoPreview.CopyToClipboard;
+
+  {$ifdef linux} MemoBible.RestoreSelection; {$endif}
 
   Stream.Free;
   MemoPreview.Free;
