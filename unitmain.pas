@@ -713,10 +713,10 @@ end;
 
 procedure TMainForm.CmdFilePrint(Sender: TObject);
 var
-  prm : TPrintParams;
+  Params : TPrintParams;
 begin
-  InitPrintParams(prm{%H-});
-  if PrintDialog.Execute then UnboundMemo.Print(prm);
+  InitPrintParams(Params{%H-});
+  if PrintDialog.Execute then UnboundMemo.Print(Params);
 end;
 
 procedure TMainForm.CmdExit(Sender: TObject);

@@ -91,6 +91,7 @@ begin
     SetSel(x1, x1);
   until not Colored or (x1 < 0);
 
+  {$ifdef linux} inc(x1); {$endif}
   if x1 < 0 then inc(x1);
 
   x2 := x0;

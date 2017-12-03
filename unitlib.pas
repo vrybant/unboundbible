@@ -7,7 +7,7 @@ interface
 
 uses
   {$ifdef windows} Windows, Windirs, {$endif}
-  {$ifdef linux} LazLogger, {$endif}
+  {$ifdef debugmode and linux} LazLogger, {$endif}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, Buttons,
   { FileUtil depreciated } LazFileUtils, LazUtf8, LCLProc,
   ExtCtrls, ClipBrd, Process;
