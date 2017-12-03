@@ -34,9 +34,7 @@ uses UnitLib, UnitLang;
 
 procedure TAboutBox.FormCreate(Sender: TObject);
 begin
-  {$ifdef darwin}
-  Height := 210;
-  {$endif}
+  {$ifdef linux} Width := 390; {$endif}
 end;
 
 procedure TAboutBox.Translate;
