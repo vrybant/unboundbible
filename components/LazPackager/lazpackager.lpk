@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="4">
+    <Name Value="LazPackager"/>
+    <Author Value="Bernd Kreuss"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Other>
+        <CompilerMessages>
+          <MsgFileName Value=""/>
+        </CompilerMessages>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="Build a binary Debian (.deb) package from the current project or create a Debian source package and sign and upload to a Launchpad PPA automatically."/>
+    <License Value="This source is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+This code is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+A copy of the GNU General Public License is available on the World Wide
+Web at &lt;http://www.gnu.org/copyleft/gpl.html>. You can also obtain it by
+writing to the Free Software Foundation, Inc., 59 Temple Place - Suite
+330, Boston, MA 02111-1307, USA."/>
+    <Version Major="1"/>
+    <Files Count="6">
+      <Item1>
+        <Filename Value="frmlazpackageroptionsdeb.pas"/>
+        <UnitName Value="frmlazpackageroptionsdeb"/>
+      </Item1>
+      <Item2>
+        <Filename Value="lazpackagermain.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="LazPackagerMain"/>
+      </Item2>
+      <Item3>
+        <Filename Value="lazpackagerbase.pas"/>
+        <UnitName Value="LazPackagerBase"/>
+      </Item3>
+      <Item4>
+        <Filename Value="frmlazpackagerpreview.pas"/>
+        <UnitName Value="frmLazPackagerPreview"/>
+      </Item4>
+      <Item5>
+        <Filename Value="frmlazpackagermakedeb.pas"/>
+        <UnitName Value="frmLazPackagerMakeDeb"/>
+      </Item5>
+      <Item6>
+        <Filename Value="lazpackagerdebian.pas"/>
+        <UnitName Value="LazPackagerDebian"/>
+      </Item6>
+    </Files>
+    <Type Value="DesignTime"/>
+    <RequiredPkgs Count="4">
+      <Item1>
+        <PackageName Value="SynEdit"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="IDEIntf"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="LCL"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="FCL"/>
+      </Item4>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
