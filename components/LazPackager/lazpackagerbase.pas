@@ -87,7 +87,7 @@ uses
   sysutils,
   Forms,
   LCLProc,
-  FileUtil,
+  { FileUtil depreciated } LazFileUtils,
   LazIDEIntf,
   ProjectResourcesIntf,
   MacroIntf,
@@ -269,7 +269,8 @@ begin
   Tool.Filename := GetBuildScriptInterpreter;
   Tool.CmdLineParams := GetBuildScriptName;
   Tool.WorkingDirectory := GetProjectPathAbsolute;
-  Tool.ShowAllOutput := True;
+  //Tool.ShowAllOutput := True; // depreciated
+    Tool.Quiet := False;
   RunExternalTool(Tool);
   Tool.Free;
   Self.Free;
