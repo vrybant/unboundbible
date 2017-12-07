@@ -324,7 +324,7 @@ procedure PrintFile(filename : string);
 begin
   with TProcess.Create(nil) do
   try
-    CommandLine {%H-}:=    'lp ' + marks(filename);
+    CommandLine {%H-}:='lp "' + filename + '"';
     Options := [poUsePipes]; // poWaitOnExit
     try
       Execute;

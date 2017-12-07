@@ -303,6 +303,13 @@ begin
   MemoNotes.Font.Size := CurrFont.Size;
   ToolButtonFB.Visible := not FBPageVisited;
 
+  {$ifdef linux}
+  StandardToolBar.ParentColor := True;
+  ActionFilePrint.Visible := False;
+  IdleMessage := '';
+  IdleTimer.Enabled := true;
+  {$endif}
+
   {$ifdef unix}
   ActionEditUndo.Visible := False;
   ActionLeft    .Visible := False;
@@ -322,18 +329,12 @@ begin
 
   ChapterBox.Width := ChapterBox.Width + 5;
 
-  N4.Visible            := False;
-  miExit.Visible        := False;
-  ActionExit.Enabled    := False;
+  N4.Visible         := False;
+  miExit.Visible     := False;
+  ActionExit.Enabled := False;
 
   UpdateMenuImage;
   UpdateShortCut;
-  {$endif}
-
-  {$ifdef linux}
-  StandardToolBar.ParentColor := True;
-  IdleMessage := '';
-  IdleTimer.Enabled := true;
   {$endif}
 
   UpdateActionImage;
