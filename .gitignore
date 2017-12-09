@@ -9,6 +9,7 @@ __history
 *.dll
 bin/*
 *.sh
+*.backup
 titles/text/*
 components/zeosdbo/*
 components/richmemo/*
