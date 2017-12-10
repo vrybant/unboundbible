@@ -1,10 +1,9 @@
 <project>
-    <shortName>demo</shortName>
-    <fullName>Demo Project</fullName>
-    <version>1.0</version>
+    <shortName>unboundbible</shortName>
+    <fullName>Unbound Bible</fullName>
+    <version>2.0</version>
     <installerFilename>${project.shortName}-${project.version}-${platform_name}-installer.${platform_exec_suffix}</installerFilename>
-    <readmeFile>/home/vladimir/installbuilder/demo/docs/readme.txt</readmeFile>
-    <licenseFile>/home/vladimir/installbuilder/demo/docs/license.txt</licenseFile>
+    <defaultLanguage>auto</defaultLanguage>
     <allowLanguageSelection>1</allowLanguageSelection>
     <componentList>
         <component>
@@ -15,103 +14,65 @@
             <show>1</show>
             <desktopShortcutList>
                 <shortcut>
-                    <comment>Demo Application</comment>
-                    <exec>${installdir}/bin/demo.sh</exec>
+                    <comment>Unbound BibleDemo Application</comment>
+                    <exec>${installdir}/UnboundBible</exec>
                     <icon>${installdir}/bin/logo.png</icon>
-                    <name>Demo Project</name>
+                    <name>Unbound Bible</name>
                     <path></path>
-                    <platforms>all</platforms>
+                    <platforms>linux</platforms>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
-                    <windowsExec>${installdir}/bin/demo.bat</windowsExec>
+                    <windowsExec></windowsExec>
                     <windowsExecArgs></windowsExecArgs>
-                    <windowsIcon>${installdir}/bin/logo.ico</windowsIcon>
+                    <windowsIcon></windowsIcon>
+                    <windowsIconIndex></windowsIconIndex>
                     <windowsPath></windowsPath>
                 </shortcut>
             </desktopShortcutList>
             <folderList>
                 <folder>
                     <description>Program Files</description>
-                    <destination>${installdir}</destination>
-                    <name>programfiles</name>
-                    <platforms>all</platforms>
-                    <distributionFileList>
-                        <distributionDirectory>
-                            <origin>/home/vladimir/installbuilder/demo/docs</origin>
-                        </distributionDirectory>
-                        <distributionDirectory>
-                            <origin>/home/vladimir/installbuilder/demo/lib</origin>
-                        </distributionDirectory>
-                    </distributionFileList>
-                </folder>
-                <folder>
-                    <description>Program Files</description>
-                    <destination>${installdir}/bin</destination>
-                    <name>programfileswin</name>
-                    <platforms>windows</platforms>
-                    <distributionFileList>
-                        <distributionFile>
-                            <origin>/home/vladimir/installbuilder/demo/bin/demo.txt</origin>
-                        </distributionFile>
-                        <distributionFile>
-                            <origin>/home/vladimir/installbuilder/demo/bin/postinstallation.bat</origin>
-                        </distributionFile>
-                        <distributionFile>
-                            <origin>/home/vladimir/installbuilder/demo/bin/logo.ico</origin>
-                        </distributionFile>
-                        <distributionFile>
-                            <origin>/home/vladimir/installbuilder/demo/bin/SED.EXE</origin>
-                        </distributionFile>
-                    </distributionFileList>
-                </folder>
-                <folder>
-                    <description>Program Files</description>
                     <destination>${installdir}/bin</destination>
                     <name>programfilesunix</name>
                     <platforms>linux linux-x64 linux-ia64 osx solaris-sparc solaris-intel linux-ppc linux-s390 freebsd freebsd4 freebsd6 freebsd6-x64 openbsd3 hpux aix irix-n32</platforms>
                     <distributionFileList>
+                        <distributionDirectory>
+                            <origin>/home/vladimir/Dropbox/Unbound-Bible/bibles</origin>
+                        </distributionDirectory>
+                        <distributionDirectory>
+                            <origin>/home/vladimir/Dropbox/Unbound-Bible/titles</origin>
+                        </distributionDirectory>
+                        <distributionDirectory>
+                            <origin>/home/vladimir/Dropbox/Unbound-Bible/localization</origin>
+                        </distributionDirectory>
                         <distributionFile>
-                            <origin>/home/vladimir/installbuilder/demo/bin/postinstallation.sh</origin>
+                            <origin>/home/vladimir/Dropbox/Unbound-Bible/UnboundBible</origin>
                         </distributionFile>
                         <distributionFile>
                             <origin>/home/vladimir/installbuilder/demo/bin/logo.png</origin>
-                        </distributionFile>
-                        <distributionFile>
-                            <origin>/home/vladimir/installbuilder/demo/bin/demo.sh.inc</origin>
                         </distributionFile>
                     </distributionFileList>
                 </folder>
             </folderList>
             <startMenuShortcutList>
                 <startMenuShortcut>
-                    <comment>Demo Application</comment>
-                    <name>Demo Application</name>
+                    <comment>Unbound Bible</comment>
+                    <name>Unbound Bible</name>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
-                    <windowsExec>${installdir}/bin/demo.bat</windowsExec>
+                    <windowsExec>${installdir}/UnboundBible</windowsExec>
                     <windowsExecArgs></windowsExecArgs>
                     <windowsIcon>${installdir}/bin/logo.ico</windowsIcon>
-                    <windowsPath></windowsPath>
-                </startMenuShortcut>
-                <startMenuShortcut>
-                    <comment>Uninstall Demo Project</comment>
-                    <name>Uninstall Demo Project</name>
-                    <runAsAdmin>0</runAsAdmin>
-                    <runInTerminal>0</runInTerminal>
-                    <windowsExec>${installdir}/uninstall.exe</windowsExec>
-                    <windowsExecArgs></windowsExecArgs>
-                    <windowsIcon>${installdir}/uninstall.exe</windowsIcon>
                     <windowsPath></windowsPath>
                 </startMenuShortcut>
             </startMenuShortcutList>
         </component>
     </componentList>
-    <postInstallationScript>${installdir}/bin/postinstallation.sh</postInstallationScript>
-    <postInstallationScriptArguments>${installdir}</postInstallationScriptArguments>
     <enableRollback>1</enableRollback>
     <enableTimestamp>1</enableTimestamp>
     <projectSchemaVersion>1.0</projectSchemaVersion>
     <startMenuGroupName>${project.fullName}</startMenuGroupName>
+    <vendor>Vladimir Rybant</vendor>
     <parameterList>
         <directoryParameter>
             <name>installdir</name>
