@@ -10,6 +10,7 @@ __history
 bin/*
 *.sh
 *.backup
+*.lintian
 titles/text/*
 components/zeosdbo/*
 components/richmemo/*
