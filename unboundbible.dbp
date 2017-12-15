@@ -1,0 +1,65 @@
+[DEBREATE-0.7.13]
+<<CTRL>>
+Package: unbound-bible
+Version: 2.0
+Maintainer: Vladimir Rybant <vrybant@gmail.com>
+Section: text
+Architecture: i386
+Priority: standard
+Description: Unbound Bible is an open source and free, multilingual Bible-reader program for Mac and Windows.
+ Unbound Bible is an open source and free, multilingual Bible-reader program for Mac and Windows.
+
+<</CTRL>>
+<<FILES>>
+1
+/home/vladimir/Dropbox/Unbound-Bible/unboundbible* -> unboundbible -> /opt/unboundbible
+/home/vladimir/Dropbox/Unbound-Bible/bibles -> bibles -> /opt/unboundbible
+/home/vladimir/Dropbox/Unbound-Bible/titles -> titles -> /opt/unboundbible
+/home/vladimir/Dropbox/Unbound-Bible/localization -> localization -> /opt/unboundbible
+/home/vladimir/Dropbox/Unbound-Bible/unboundbible.png -> unboundbible.png -> /usr/share/pixmaps
+<</FILES>>
+<<SCRIPTS>>
+<<PREINST>>
+0
+<</PREINST>>
+<<POSTINST>>
+0
+<</POSTINST>>
+<<PRERM>>
+1
+#! /bin/bash -e
+
+rm -f "//UnboundBible"
+<</PRERM>>
+<<POSTRM>>
+0
+<</POSTRM>>
+<</SCRIPTS>>
+<<CHANGELOG>>
+<<DEST>>DEFAULT<</DEST>>
+
+<</CHANGELOG>>
+<<COPYRIGHT>>
+Copyright © 2017 <copyright holder(s)> [<email>]
+
+/usr/share/common-licenses/GPL
+<</COPYRIGHT>>
+<<MENU>>
+1
+Name=Unbound Bible
+Version=1.0
+Exec=/opt/unboundbible/unboundbible
+Comment=Unbound Bible Comment
+Icon=unboundbible.png
+Type=Application
+Terminal=false
+StartupNotify=false
+Encoding=UTF-8
+Categories=Office;
+<</MENU>>
+<<BUILD>>
+1
+1
+1
+strip
+<</BUILD>>
