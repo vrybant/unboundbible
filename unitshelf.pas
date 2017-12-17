@@ -726,7 +726,7 @@ begin
   inherited;
 
   AddBibles(AppDataPath);
-  if Self.Count = 0 then AddBibles(AppLocation + 'bibles');
+  {$ifdef windows} if Self.Count = 0 then {$endif} AddBibles(AppLocation + 'bibles');
   Sort(Comparison);
 
   ReadPrivates;

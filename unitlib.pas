@@ -23,6 +23,7 @@ type
 
 const
   AppName = 'Unbound Bible';
+  {$ifdef linux} AppDirectory = 'unboundbible'; {$endif}
   TitleDirectory = 'titles';
   VersionInfo = '2.0';
 
@@ -258,10 +259,13 @@ function AppLocation: string;
 begin
   Result := Application.Location;
 
+  {$ifdef linux}
+    {$ifndef debugmode} Result := '/usr/share/' + AppDirectory + '/'; {$endif}
+  {$endif}
+
   {$ifdef darwin}
   n := Pos('MacOS',Result);
-  if n > 0 then
-    Result := Copy(Result,1,n-1) + 'Resources';
+  if n > 0 then Result := Copy(Result,1,n-1) + 'Resources';
   {$endif}
 end;
 
