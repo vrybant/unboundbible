@@ -1,4 +1,4 @@
-﻿
+
 ****************************************************************************
 *                                                                          *
 *                Unbound Bible - International Support File                *
@@ -111,4 +111,4 @@ Message.Loading   = Завантажую
 Message.Found     = Знайдено віршів
 Message.Link      = Нажміть CTRL і клацніть посилання
 Message.Confirm   = Підтвердження
-Message.Results   = This search returned too many results. Please narrow your search.
+Message.Results   = Цей пошук дав забагато результатів. Будь ласка, звузіть пошук.
