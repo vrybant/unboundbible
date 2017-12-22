@@ -1,9 +1,15 @@
 unit UnitTitle;
 
+{$ifdef linux}
+  {$define zeos}
+{$endif}
+
 interface
 
 uses
-  Classes, SysUtils, DB, SQLdb, SQLite3conn, IBConnection;
+  Classes, SysUtils, DB, SQLdb,
+  {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn,  IBConnection, {$endif}
+  UnitLib;
 
 type
   TTitle = class
@@ -13,18 +19,20 @@ type
     function GetAbbr(n: integer): string;
     destructor Destroy; override;
   private
-    Connection : TSQLite3Connection;
-    Transaction: TSQLTransaction;
-    Query      : TSQLQuery;
+    {$ifdef zeos}
+      Connection : TZConnection;
+      Query : TZReadOnlyQuery;
+    {$else}
+      Connection : TSQLite3Connection;
+      Transaction : TSQLTransaction;
+      Query : TSQLQuery;
+    {$endif}
     function GetFileName(language: string): string;
     function GetTitleEx(n: integer; abbreviation: boolean): string;
   end;
 
 
 implementation
-
-uses
-  UnitLib;
 
 constructor TTitle.Create(language: string);
 var
@@ -36,20 +44,29 @@ begin
   FileName := GetFileName(language);
   FilePath := AppLocation + TitleDirectory + Slash + FileName + '.sqlite';
 
-  output(FilePath);
-
-  Connection  := TSQLite3Connection.Create(nil);
-  Transaction := TSQLTransaction.Create(Connection);
-  Query       := TSQLQuery.Create(nil);
-
-  Connection.DatabaseName := FilePath;
-  Connection.CharSet := 'UTF8';
-  Connection.Transaction := Transaction;
-  Query.DataBase := Connection;
+  {$ifdef zeos}
+    Connection := TZConnection.Create(nil);
+    Query := TZReadOnlyQuery.Create(nil);
+    Connection.Database := FilePath;
+    Connection.Protocol := 'sqlite-3';
+    Query.Connection := Connection;
+  {$else}
+    Connection := TSQLite3Connection.Create(nil);
+    Connection.CharSet := 'UTF8';
+    Connection.DatabaseName := FilePath;
+    Transaction := TSQLTransaction.Create(Connection);
+    Connection.Transaction := Transaction;
+    Query := TSQLQuery.Create(nil);
+    Query.DataBase := Connection;
+  {$endif}
 
   try
-    Connection.Open;
-    Transaction.Active := True;
+    {$ifdef zeos}
+      Connection.Connect;
+    {$else}
+      Connection.Open;
+      Transaction.Active := True;
+    {$endif}
   except
     Output('Failed connection to title database');
   end;
@@ -114,7 +131,7 @@ end;
 destructor TTitle.Destroy;
 begin
   Query.Free;
-  Transaction.Free;
+  {$ifndef zeos} Transaction.Free; {$endif}
   Connection.Free;
 
   inherited Destroy;
