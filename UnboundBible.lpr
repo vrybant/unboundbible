@@ -10,7 +10,7 @@ uses
 {$R *.res}
 
 begin
-  Application.Title:='Unbound Bible';
+  Application.Title := {$ifdef windows} 'Unbound Bible'; {$else} 'unboundbible'; {$endif}
   Application.Initialize;
   Application.CreateForm(TMainForm,      MainForm);
   Application.CreateForm(TAboutBox,      AboutBox);

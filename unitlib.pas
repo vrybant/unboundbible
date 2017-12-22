@@ -1,6 +1,6 @@
 unit UnitLib;
 
-{$define debugmode}
+{-define debugmode}
 {$ifdef unix} {$undef RussianEdition} {$endif}
 
 interface
@@ -23,9 +23,8 @@ type
 
 const
   AppName = 'Unbound Bible';
-  {$ifdef linux} AppDirectory = 'unboundbible'; {$endif}
   TitleDirectory = 'titles';
-  VersionInfo = '2.0';
+  VersionInfo = '2.01';
 
 // string's functions
 
@@ -260,7 +259,7 @@ begin
   Result := Application.Location;
 
   {$ifdef linux}
-    {$ifndef debugmode} Result := '/usr/share/' + AppDirectory + '/'; {$endif}
+    if Prefix('/usr',Result) then Result := '/usr/share/' + Application.Title + '/';
   {$endif}
 
   {$ifdef darwin}
