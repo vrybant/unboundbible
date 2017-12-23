@@ -74,7 +74,7 @@ var
   facelang : string;
 
 const
-  Slash = DirectorySeparator;
+  Slash = DirectorySeparator; // or AppendPathDelim()
   CRLF = #13 + #10;
 
 implementation
@@ -268,23 +268,15 @@ begin
   {$endif}
 end;
 
-function HomePath: string;
-begin
-  {$ifdef windows} Result := GetWindowsSpecialDir(CSIDL_PROFILE); {$endif}
-  {$ifdef linux  } Result := GetEnvironmentVariableUTF8('HOME') + Slash; {$endif}
-  {$ifdef darwin } Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library'; {$endif}
-end;
-
 function DocumentsPath: string;
 begin
   {$ifdef windows} Result := GetWindowsSpecialDir(CSIDL_PERSONAL); {$endif}
-  {$ifdef linux  } Result := GetEnvironmentVariableUTF8('HOME') + Slash; {$endif}
-  {$ifdef darwin } Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library'; {$endif}
+  {$ifdef unix} Result := GetUserDir + 'Documents'; {$endif}
 end;
 
 function DataPath: string;
 begin
- Result := HomePath + AppName;
+ Result := GetUserDir + AppName;
 end;
 
 function ConfigFile: string;
@@ -294,7 +286,7 @@ end;
 
 function TempFileName: string; // for printing
 begin
-  Result := DataPath + Slash + 'temp.rtf';
+  Result := GetTempDir + 'temp.rtf';
 end;
 
 procedure CreateDirectories;
@@ -411,9 +403,6 @@ initialization
   CurrFont := TFont.Create;
   CurrFont.Name := {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
   CurrFont.Size := {$ifdef darwin} 14 {$else} 12 {$endif};
-
-  output('home = ' + HomePath);
-  output('documents = ' + DocumentsPath);
 
 finalization
   CurrFont.Free;
