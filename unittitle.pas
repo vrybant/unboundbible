@@ -42,7 +42,7 @@ begin
   inherited Create;
 
   FileName := GetFileName(language);
-  FilePath := AppLocation + TitleDirectory + Slash + FileName + '.sqlite';
+  FilePath := SharePath + TitleDirectory + Slash + FileName + '.sqlite';
 
   {$ifdef zeos}
     Connection := TZConnection.Create(nil);
@@ -83,7 +83,7 @@ begin
 
   List := TStringList.Create;
 
-  Path := AppLocation + titleDirectory + slash + '*.sqlite';
+  Path := SharePath + titleDirectory + slash + '*.sqlite';
   GetFileList(Path, List, False);
 
   for i:= 0 to List.Count-1 do

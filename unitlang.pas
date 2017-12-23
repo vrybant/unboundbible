@@ -36,7 +36,7 @@ implementation
 
 constructor TLanguage.Create;
 begin
-  inherited Create(AppLocation + Slash + LangDirectory + Slash + LowerCase(facelang) + '.lng');
+  inherited Create(SharePath + Slash + LangDirectory + Slash + LowerCase(facelang) + '.lng');
 end;
 
 function T(const id : string): string;
@@ -77,7 +77,7 @@ end;
 constructor TLocalization.Create;
 begin
   inherited;
-  GetFileList(AppLocation + Slash + LangDirectory + Slash + '*.lng', Self, False);
+  GetFileList(SharePath + Slash + LangDirectory + Slash + '*.lng', Self, False);
   Self.CustomSort(Comparison);
 end;
 

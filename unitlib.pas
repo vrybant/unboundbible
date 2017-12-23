@@ -48,9 +48,8 @@ procedure DeleteTags(var s: string);
 
 function ExtractOnlyName(s: string): string;
 procedure GetFileList(const Path: string; const List: TStrings; Ext: boolean);
-function AppLocation: string;
+function SharePath: string;
 function DocumentsPath: string;
-function DataPath: string;
 function ConfigFile: string;
 function TempFileName: string;
 procedure CreateDirectories;
@@ -253,7 +252,7 @@ begin
   SysUtils.FindClose(SearchRec);
 end;
 
-function AppLocation: string;
+function SharePath: string;
 {$ifdef darwin} var n : integer; {$endif}
 begin
   Result := Application.Location;
@@ -274,11 +273,6 @@ begin
   {$ifdef unix} Result := GetUserDir + 'Documents'; {$endif}
 end;
 
-function DataPath: string;
-begin
- Result := GetUserDir + AppName;
-end;
-
 function ConfigFile: string;
 begin
   Result := GetAppConfigDir(False) + 'config.ini';
@@ -293,7 +287,7 @@ procedure CreateDirectories;
 var
   dir : string;
 begin
-  dir := DataPath;
+  dir := GetUserDir + AppName;
   if not DirectoryExists(dir) then ForceDirectories(dir);
 
   {$ifdef darwin}

@@ -725,8 +725,8 @@ constructor TShelf.Create;
 begin
   inherited;
 
-  AddBibles(DataPath);
-  {$ifdef windows} if Self.Count = 0 then {$endif} AddBibles(AppLocation + 'bibles');
+  AddBibles(GetUserDir + AppName);
+  {$ifdef windows} if Self.Count = 0 then {$endif} AddBibles(SharePath + 'bibles');
   Sort(Comparison);
 
   ReadPrivates;

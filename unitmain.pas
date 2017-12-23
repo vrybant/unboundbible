@@ -1136,7 +1136,7 @@ end;
 
 procedure TMainForm.miBibleFolderClick(Sender: TObject);
 begin
-  OpenFolder(DataPath);
+  OpenFolder(GetUserDir + AppName);
 end;
 
 procedure TMainForm.miHomeClick(Sender: TObject);
