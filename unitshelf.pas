@@ -725,7 +725,7 @@ constructor TShelf.Create;
 begin
   inherited;
 
-  AddBibles(AppDataPath);
+  AddBibles(DataPath);
   {$ifdef windows} if Self.Count = 0 then {$endif} AddBibles(AppLocation + 'bibles');
   Sort(Comparison);
 

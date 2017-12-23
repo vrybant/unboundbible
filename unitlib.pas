@@ -1,6 +1,6 @@
 unit UnitLib;
 
-{-define debugmode}
+{$define debugmode}
 {$ifdef unix} {$undef RussianEdition} {$endif}
 
 interface
@@ -49,8 +49,8 @@ procedure DeleteTags(var s: string);
 function ExtractOnlyName(s: string): string;
 procedure GetFileList(const Path: string; const List: TStrings; Ext: boolean);
 function AppLocation: string;
-function UserDocumentsPath: string;
-function AppDataPath: string;
+function DocumentsPath: string;
+function DataPath: string;
 function ConfigFile: string;
 function TempFileName: string;
 procedure CreateDirectories;
@@ -268,16 +268,23 @@ begin
   {$endif}
 end;
 
-function UserDocumentsPath: string;
+function HomePath: string;
+begin
+  {$ifdef windows} Result := GetWindowsSpecialDir(CSIDL_PROFILE); {$endif}
+  {$ifdef linux  } Result := GetEnvironmentVariableUTF8('HOME') + Slash; {$endif}
+  {$ifdef darwin } Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library'; {$endif}
+end;
+
+function DocumentsPath: string;
 begin
   {$ifdef windows} Result := GetWindowsSpecialDir(CSIDL_PERSONAL); {$endif}
   {$ifdef linux  } Result := GetEnvironmentVariableUTF8('HOME') + Slash; {$endif}
   {$ifdef darwin } Result := GetEnvironmentVariableUTF8('HOME') + Slash + 'Library'; {$endif}
 end;
 
-function AppDataPath: string;
+function DataPath: string;
 begin
- Result := UserDocumentsPath + AppName;
+ Result := HomePath + AppName;
 end;
 
 function ConfigFile: string;
@@ -287,14 +294,14 @@ end;
 
 function TempFileName: string; // for printing
 begin
-  Result := AppDataPath + Slash + 'temp.rtf';
+  Result := DataPath + Slash + 'temp.rtf';
 end;
 
 procedure CreateDirectories;
 var
   dir : string;
 begin
-  dir := AppDataPath;
+  dir := DataPath;
   if not DirectoryExists(dir) then ForceDirectories(dir);
 
   {$ifdef darwin}
@@ -404,6 +411,9 @@ initialization
   CurrFont := TFont.Create;
   CurrFont.Name := {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
   CurrFont.Size := {$ifdef darwin} 14 {$else} 12 {$endif};
+
+  output('home = ' + HomePath);
+  output('documents = ' + DocumentsPath);
 
 finalization
   CurrFont.Free;

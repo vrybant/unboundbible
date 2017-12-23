@@ -272,7 +272,7 @@ begin
 
   ReopenList := TStringList.Create;
 
-  SaveDialog.InitialDir := UserDocumentsPath;
+  SaveDialog.InitialDir := DocumentsPath;
 
   NoteFileName := sUntitled;
 
@@ -690,7 +690,7 @@ procedure TMainForm.CmdFileSaveAs(Sender: TObject);
 begin
   SelectPage(apNotes);
 
-  if NoteFileName = sUntitled then SaveDialog.InitialDir := UserDocumentsPath
+  if NoteFileName = sUntitled then SaveDialog.InitialDir := DocumentsPath
                               else SaveDialog.InitialDir := ExtractFilePath(NoteFileName);
 
   if SaveDialog.Execute then
@@ -1136,7 +1136,7 @@ end;
 
 procedure TMainForm.miBibleFolderClick(Sender: TObject);
 begin
-  OpenFolder(AppDataPath);
+  OpenFolder(DataPath);
 end;
 
 procedure TMainForm.miHomeClick(Sender: TObject);

@@ -1,8 +1,0 @@
-object FormTip: TFormTip
-  Left = 292
-  Height = 240
-  Top = 186
-  Width = 320
-  Caption = 'FormTip'
-  LCLVersion = '1.6.4.0'
-end
