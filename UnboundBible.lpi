@@ -10,7 +10,6 @@
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -50,7 +49,7 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="16">
+    <Units Count="15">
       <Unit0>
         <Filename Value="unboundbible.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -139,17 +138,10 @@
         <UnitName Value="UnitSQLiteEx"/>
       </Unit13>
       <Unit14>
-        <Filename Value="unittip.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormTip"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UnitTip"/>
-      </Unit14>
-      <Unit15>
         <Filename Value="unitstream.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitStream"/>
-      </Unit15>
+      </Unit14>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
