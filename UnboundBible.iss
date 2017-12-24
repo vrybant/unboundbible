@@ -34,7 +34,7 @@
  SolidCompression=yes
 
 [Dirs]
- Name: "{userdocs}\{#MyAppName}";
+;Name: "{%USERPROFILE}\{#MyAppName}";
 
 [Files]
  Source: "bibles\*"           ; DestDir: "{%USERPROFILE}\{#MyAppName}"
