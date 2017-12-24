@@ -2,8 +2,8 @@
 ; -- UnboundBible.iss --
 
 #define MyAppName "Unbound Bible"
-#define MyAppVerName "Unbound Bible 2.0"
-#define MyAppVersion "2.0"
+#define MyAppVerName "Unbound Bible 2.01"
+#define MyAppVersion "2.01"
 #define MyAppCopyright "GNU GPL"
 #define MyAppPublisher "Vladimir Rybant"
 #define MyAppURL "http://vladimirrybant.org"
@@ -37,7 +37,7 @@
  Name: "{userdocs}\{#MyAppName}";
 
 [Files]
- Source: "bibles\*"           ; DestDir: "{userdocs}\{#MyAppName}"
+ Source: "bibles\*"           ; DestDir: "{%USERPROFILE}\{#MyAppName}"
  Source: "bibles\kjv.unbound" ; DestDir: "{app}\bibles"
  Source: "localization\*"     ; DestDir: "{app}\localization"
 ;Source: "titles\*"           ; DestDir: "{app}\titles" ; Attribs: readonly ; Flags: uninsremovereadonly
