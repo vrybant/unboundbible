@@ -1,4 +1,4 @@
-unit UnitTitle;
+unit UnitTitles;
 
 {$ifdef linux}
   {$define zeos}
@@ -12,7 +12,7 @@ uses
   UnitLib;
 
 type
-  TTitle = class
+  TTitles = class
   public
     constructor Create(language: string);
     function GetTitle(n: integer): string;
@@ -34,7 +34,7 @@ type
 
 implementation
 
-constructor TTitle.Create(language: string);
+constructor TTitles.Create(language: string);
 var
   FileName : string;
   FilePath : string;
@@ -72,7 +72,7 @@ begin
   end;
 end;
 
-function TTitle.GetFileName(language: string): string;
+function TTitles.GetFileName(language: string): string;
 var
   List : TStringList;
   Path : string;
@@ -92,7 +92,7 @@ begin
   List.Free;
 end;
 
-function TTitle.GetTitleEx(n: integer; abbreviation: boolean): string;
+function TTitles.GetTitleEx(n: integer; abbreviation: boolean): string;
 var
   name, abbr : string;
 begin
@@ -118,17 +118,17 @@ begin
   if abbreviation then Result := abbr else Result := name;
 end;
 
-function TTitle.GetTitle(n : integer): string;
+function TTitles.GetTitle(n : integer): string;
 begin
   Result := GetTitleEx(n, false);
 end;
 
-function TTitle.GetAbbr(n : integer): string;
+function TTitles.GetAbbr(n : integer): string;
 begin
   Result := GetTitleEx(n, true);
 end;
 
-destructor TTitle.Destroy;
+destructor TTitles.Destroy;
 begin
   Query.Free;
   {$ifndef zeos} Transaction.Free; {$endif}

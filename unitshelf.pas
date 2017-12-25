@@ -309,18 +309,18 @@ end;
 
 procedure TBible.SetTitles;
 var
-  Title : TTitle;
+  Titles : TTitles;
   i : integer;
 begin
-  Title := TTitle.Create(Language);
+  Titles := TTitles.Create(Language);
 
   for i:=0 to Count-1 do
     begin
-      self[i].title := Title.getTitle(self[i].number);
-      self[i].abbr  := Title.getAbbr(self[i].number);
+      self[i].title := Titles.getTitle(self[i].number);
+      self[i].abbr  := Titles.getAbbr(self[i].number);
     end;
 
-  Title.Free;
+  Titles.Free;
 end;
 
 function TBible.EncodeIndex(index: integer): integer;

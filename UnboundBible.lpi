@@ -129,9 +129,9 @@
         <UnitName Value="UnitType"/>
       </Unit11>
       <Unit12>
-        <Filename Value="unittitle.pas"/>
+        <Filename Value="unittitles.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitTitle"/>
+        <UnitName Value="UnitTitles"/>
       </Unit12>
       <Unit13>
         <Filename Value="unitsqliteex.pas"/>
