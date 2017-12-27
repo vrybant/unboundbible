@@ -15,7 +15,7 @@ implementation
 
 uses UnitShelf, UnitSearch, UnitLib;
 
-procedure Replacement(var s: string; J: boolean);
+procedure Replacement(var s: string; jtag: boolean);
 begin
   Replace(s, '<S>','\super '     );
   Replace(s,'</S>','\nosupersub ');
@@ -23,7 +23,7 @@ begin
   Replace(s,'</i>','\i0 ');
   Replace(s,'<FI>','\i ' );
   Replace(s,'<Fi>','\i0 ');
-  if not J then Exit;
+  if not jtag then Exit;
   Replace(s, '<J>','\cf2 ');
   Replace(s,'</J>','\cf1 ');
   Replace(s,'<FR>','\cf2 ' );

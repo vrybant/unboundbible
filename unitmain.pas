@@ -580,14 +580,18 @@ begin
   MakeBookList;
 
   select := MemoBible.Selected;
-  if Bible.BookByNum(ActiveVerse.Book) = nil then select := false;
-  if not select then ActiveVerse := Bible.FirstVerse;
+
+  if not Bible.GoodLink(ActiveVerse) then
+    begin
+      ActiveVerse := Bible.FirstVerse;
+      select := false;
+    end;
 
   {$ifdef linux}
     if select then IdleMessage := 'GotoVerse(ActiveVerse,true)'
               else IdleMessage := 'GotoVerse(ActiveVerse,false)';
   {$else}
-    GotoVerse(ActiveVerse,select);
+    GotoVerse(ActiveVerse, select);
   {$endif}
 end;
 
