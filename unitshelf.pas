@@ -117,10 +117,6 @@ const
 
 function Bible: TBible;
 
-function IsNewTestament(n: integer): boolean;
-function IsOldTestament(n: integer): boolean;
-function IsApocrypha(n: integer): boolean;
-
 implementation
 
 uses UnitSQLiteEx;
@@ -128,21 +124,6 @@ uses UnitSQLiteEx;
 function Bible: TBible;
 begin
   Result := Shelf[Shelf.Current];
-end;
-
-function IsNewTestament(n: integer): boolean;
-begin
-  Result := (n >= 40) and (n <= 66);
-end;
-
-function IsOldTestament(n: integer): boolean;
-begin
-  Result := n < 40;
-end;
-
-function IsApocrypha(n: integer): boolean;
-begin
-  Result := n > 66;
 end;
 
 //========================================================================================

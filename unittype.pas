@@ -88,7 +88,26 @@ var
     'james','1_peter','2_peter','1_john','2_john','3_john','jude','revelation'
     );
 
+function IsNewTestament(n: integer): boolean;
+function IsOldTestament(n: integer): boolean;
+function IsApocrypha(n: integer): boolean;
+
 implementation
+
+function IsNewTestament(n: integer): boolean;
+begin
+  Result := (n >= 40) and (n <= 66);
+end;
+
+function IsOldTestament(n: integer): boolean;
+begin
+  Result := n < 40;
+end;
+
+function IsApocrypha(n: integer): boolean;
+begin
+  Result := n > 66;
+end;
 
 end.
 
