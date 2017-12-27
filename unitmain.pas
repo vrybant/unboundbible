@@ -578,15 +578,7 @@ begin
   Shelf.SetCurrent(ComboBox.ItemIndex);
   UpdateStatus(Bible.Info);
   MakeBookList;
-
-  select := MemoBible.Selected;
-
-  if not Bible.GoodLink(ActiveVerse) then
-    begin
-      ActiveVerse := Bible.FirstVerse;
-      select := false;
-    end;
-
+  select := ActiveVerse.number > 1;
   {$ifdef linux}
     if select then IdleMessage := 'GotoVerse(ActiveVerse,true)'
               else IdleMessage := 'GotoVerse(ActiveVerse,false)';

@@ -267,7 +267,7 @@ end;
 procedure TBible.LoadDatabase;
 var
   Book : TBook;
-  n : integer;
+  x, n : integer;
 begin
   if loaded then exit;
 
@@ -278,14 +278,15 @@ begin
 
       while not Query.Eof do
         begin
-          try n := Query.FieldByName(z.book).AsInteger; except n := 0 end;
+          try x := Query.FieldByName(z.book).AsInteger; except x := 0 end;
 
-          if n > 0 then
+          if  x > 0 then
             begin
+              n := DecodeIndex(x);
               Book := TBook.Create;
-              Book.number := DecodeIndex(n);
-              Book.title := IntToStr(n);
-              Book.id := n;
+              Book.number := n;
+              Book.title := IntToStr(x);
+              Book.id := x;
               Add(Book);
               if IsOldTestament(n) then oldTestament := true;
               if IsNewTestament(n) then newTestament := true;
@@ -765,6 +766,13 @@ begin
   inherited Items[Index] := TheBible;
 end;
 
+procedure TShelf.SetCurrent(index: integer);
+begin
+  Current := index;
+  Self[Current].LoadDatabase;
+  if not Self[Current].GoodLink(ActiveVerse) then ActiveVerse := Self[Current].FirstVerse;
+end;
+
 procedure TShelf.SetCurrent(FileName: string);
 var i : integer;
 begin
@@ -772,13 +780,7 @@ begin
   if Count = 0 then Exit;
   for i:= Count-1 downto 0 do
     if Items[i].FileName = FileName then Current := i;
-  Self[Current].LoadDatabase;
-end;
-
-procedure TShelf.SetCurrent(index: integer);
-begin
-  Current := index;
-  Self[Current].LoadDatabase; ;
+  SetCurrent(Current);
 end;
 
 procedure TShelf.SavePrivates;
