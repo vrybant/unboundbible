@@ -47,6 +47,7 @@ type
     fileType     : string;
     note         : string;
     {-}
+    FirstVerse   : TVerse;
     RightToLeft  : boolean;
     compare      : boolean;
     fontName     : TFontName;
@@ -70,7 +71,6 @@ type
     procedure LoadDatabase;
     function BookByNum(n: integer): TBook;
     function BookByName(s: string): TBook;
-    function FirstVerse: TVerse;
     function VerseToStr(Verse: TVerse; full: boolean): string;
     function SrtToVerse(link : string): TVerse;
     procedure SetTitles;
@@ -248,7 +248,7 @@ end;
 procedure TBible.LoadDatabase;
 var
   Book : TBook;
-  x, n : integer;
+  x, n, min : integer;
 begin
   if loaded then exit;
 
@@ -257,27 +257,31 @@ begin
       Query.SQL.Text := 'SELECT DISTINCT ' + z.book + ' FROM ' + z.bible;
       Query.Open;
 
+      min := 0;
       while not Query.Eof do
         begin
           try x := Query.FieldByName(z.book).AsInteger; except x := 0 end;
+          if  x <= 0 then Continue;
 
-          if  x > 0 then
-            begin
-              n := DecodeIndex(x);
-              Book := TBook.Create;
-              Book.number := n;
-              Book.title := IntToStr(x);
-              Book.id := x;
-              Add(Book);
-              if IsOldTestament(n) then oldTestament := true;
-              if IsNewTestament(n) then newTestament := true;
-              if IsApocrypha(n)    then apocrypha    := true;
-            end;
+          Book := TBook.Create;
+          n := DecodeIndex(x);
+          Book.number := n;
+          Book.title := IntToStr(x);
+          Book.id := x;
+          Add(Book);
 
+          if IsOldTestament(n) then oldTestament := true;
+          if IsNewTestament(n) then newTestament := true;
+          if IsApocrypha(n)    then apocrypha    := true;
+
+          if (n < min) or (min = 0) then min := n;
           Query.Next;
         end;
 
       SetTitles;
+      firstVerse := minVerse;
+      firstVerse.book := min;
+
       loaded := true;
     except
       //
@@ -342,15 +346,6 @@ begin
   Result := nil;
   for i:=0 to Count-1 do
     if Items[i].Title = s then Result := Items[i];
-end;
-
-function TBible.FirstVerse: TVerse;
-begin
-  Result.Book    := 1;
-  Result.Chapter := 1;
-  Result.Number  := 1;
-  Result.Count   := 1;
-  if not OldTestament then Result.Book := 40;
 end;
 
 function TBible.VerseToStr(verse: TVerse; full: boolean): string;

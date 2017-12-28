@@ -67,6 +67,13 @@ const
     count   : 0;
     );
 
+  minVerse : TVerse = (
+    book    : 1;
+    chapter : 1;
+    number  : 1;
+    count   : 1;
+    );
+
 var
   Options : TCopyOptions;
 
