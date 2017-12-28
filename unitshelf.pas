@@ -53,9 +53,9 @@ type
     fontName     : TFontName;
     fontSize     : integer;
     {-}
-    oldTestament : boolean;
-    newTestament : boolean;
-    apocrypha    : boolean;
+//  oldTestament : boolean;
+//  newTestament : boolean;
+//  apocrypha    : boolean;
     connected    : boolean;
     loaded       : boolean;
   private
@@ -165,9 +165,9 @@ begin
   connected    := false;
   loaded       := false;
   RightToLeft  := false;
-  oldTestament := false;
-  newTestament := false;
-  apocrypha    := false;
+//oldTestament := false;
+//newTestament := false;
+//apocrypha    := false;
 
   OpenDatabase;
 end;
@@ -270,9 +270,9 @@ begin
           Book.id := x;
           Add(Book);
 
-          if IsOldTestament(n) then oldTestament := true;
-          if IsNewTestament(n) then newTestament := true;
-          if IsApocrypha(n)    then apocrypha    := true;
+//        if IsOldTestament(n) then oldTestament := true;
+//        if IsNewTestament(n) then newTestament := true;
+//        if IsApocrypha(n)    then apocrypha    := true;
 
           if (n < min) or (min = 0) then min := n;
           Query.Next;
@@ -528,9 +528,11 @@ function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Rang
 var
   Contents : TContentArray;
   queryRange, from, till : string;
+  apocrypha : boolean;
   i : integer;
 begin
   SetLength(Result,0);
+  apocrypha := false;
   queryRange := '';
 
   SetSearchOptions(searchString, SearchOptions);
@@ -559,6 +561,7 @@ begin
           try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
           Contents[i].verse.book := DecodeIndex(Contents[i].verse.book);
+          if isApocrypha(Contents[i].verse.book) then apocrypha := true;
           Query.Next;
         end;
     finally
