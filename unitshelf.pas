@@ -9,7 +9,7 @@ interface
 uses
   Classes, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
-  UnitLib, UnitTitle, UnitType;
+  UnitLib, UnitTitles, UnitType;
 
 const
   BookMax = 86;
@@ -242,7 +242,7 @@ begin
   end;
 
   RightToLeft := GetRightToLeft(language);
-  DeleteTags(info);
+  RemoveTags(info);
 end;
 
 procedure TBible.LoadDatabase;

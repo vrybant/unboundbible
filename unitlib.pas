@@ -38,7 +38,7 @@ function StringPos(subst: string; s: string): TIntegerArray;
 procedure Replace(var s: string; const oldPattern, newPattern: String);
 function StringToList(ch: Char; st: string): TStringArray;
 function CleanTags(s: string): string;
-procedure DeleteTags(var s: string);
+procedure RemoveTags(var s: string);
 
 // сlipboard's function
 
@@ -193,7 +193,7 @@ begin
   Result := s;
 end;
 
-procedure DeleteTags(var s: string);
+procedure RemoveTags(var s: string);
 var
   result : string;
   i : integer;

@@ -47,7 +47,7 @@ begin
     begin
       text := Strings[i];
       Replacement(text,true);
-      DeleteTags(text);
+      RemoveTags(text);
       text := '\cf3 ' + ' ' + IntToStr(i+1) + '\cf1 ' + ' ' + text + '\i0\par';
       Stream.Writeln(text);
     end;
@@ -111,7 +111,7 @@ procedure Search_Text(Stream: TRichStream; st: string; var count: integer);
         link := Bible.VerseToStr(v,true);
         text := ContentArray[i].text;
         Replacement(text,false);
-        DeleteTags(text);
+        RemoveTags(text);
         Highlights(text,st,CurrentSearchOptions);
         text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + text + '\i0\par\par';
         Stream.Writeln(text);
@@ -148,7 +148,7 @@ begin
         begin
           text := Strings[j];
           Replacement(text,false);
-          DeleteTags(text);
+          RemoveTags(text);
           s := text + '\i0\par';
           Stream.Writeln(s);
         end;
@@ -189,7 +189,7 @@ begin
 
       t := Strings[i];
       Replacement(t,false);
-      DeleteTags(t);
+      RemoveTags(t);
       q := q + t + ' ';
     end;
 
@@ -234,7 +234,7 @@ begin
         begin
           text := Strings[j];
           Replacement(text,false);
-          DeleteTags(text);
+          RemoveTags(text);
           s := text + '\i0\par';
           Stream.Writeln(s);
         end;
