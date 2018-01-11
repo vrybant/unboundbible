@@ -436,10 +436,10 @@ begin
   pmVerses.Caption := T('Menu.Verses');
   pmInterlinear.Caption := T('Menu.Interlinear') + ' (biblehub.com)';
 
-  TabSheetBible.Caption := TT('Menu.Bible');
-  TabSheetSearch.Caption := TT('Menu.Search');
-  TabSheetCompare.Caption := TT('Menu.Compare');
-  TabSheetNotes.Caption := TT('Menu.Notes');
+  TabSheetBible.Caption := T('Menu.Bible');
+  TabSheetSearch.Caption := T('Menu.Search');
+  TabSheetCompare.Caption := T('Menu.Compare');
+  TabSheetNotes.Caption := T('Menu.Notes');
 
 //ToolButtonInfo.Hint := T('Menu.Info');
   ToolButtonNew.Hint := T('Menu.New');

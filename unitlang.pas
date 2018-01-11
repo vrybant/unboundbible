@@ -3,7 +3,7 @@ unit UnitLang;
 interface
 
 uses
-  SysUtils, Classes, Graphics, IniFiles,  ClipBrd, StrUtils, UnitLib, LCLProc;
+  SysUtils, Classes, Graphics, IniFiles,  ClipBrd, UnitLib, LCLProc;
 
 type
   TCharset = record
@@ -30,7 +30,6 @@ var
   Language : TLanguage;
 
 function  T(const id : string): string;
-function TT(const id : string): string;
 
 implementation
 
@@ -42,13 +41,6 @@ end;
 function T(const id : string): string;
 begin
   Result := Language.ReadString('Interface',id,id);
-end;
-
-function TT(const id : string): string;
-var s : string;
-begin
-  s := Language.ReadString('Interface',id,id) ;
-  Result := AnsiReplaceStr(s,'.','');
 end;
 
 //-------------------------------------------------------------------------------------------------
