@@ -254,7 +254,7 @@ const
   ms_Save      : string = '';
   ms_OverWrite : string = '';
   ms_found     : string = '';
-  ms_loading   : string = '';
+//ms_loading   : string = '';
   ms_Confirm   : string = '';
   ms_Message   : string = '';
 
@@ -399,12 +399,12 @@ begin
 //miBible.Caption := T('Menu.Bible');
   miNotes.Caption := T('Menu.Notes');
   miHelp.Caption := T('Menu.Help');
-  miSearch.Caption := T('Menu.Search') + '...';
-  miCompare.Caption := T('Compare.Caption') + '...';
+  miSearch.Caption := T('Menu.Search');
+  miCompare.Caption := T('Compare.Caption');
   miTranslate.Caption := T('Menu.Translate');
   miInterlinear.Caption := T('Menu.Interlinear');
   miPrint.Caption := T('Menu.Print');
-  miOptions.Caption := T('Menu.Font') + '...';
+  miOptions.Caption := T('Menu.Font');
   miLocalization.Caption := T('Menu.Localization');
 //miLangEdit.Caption := T('Menu.LangEdit');
   miExit.Caption := T('Menu.Exit');
@@ -414,12 +414,12 @@ begin
   miPaste.Caption := T('Menu.Paste');
   miClear.Caption := T('Menu.Clear');
   miSelectAll.Caption := T('Menu.SelectAll');
-  miCopyAs.Caption := T('Menu.CopyAs') + '...';
+  miCopyAs.Caption := T('Menu.CopyAs');
   miVerses.Caption := T('Menu.Verses');
   miNoteNew.Caption := T('Menu.New');
-  miNoteOpen.Caption := T('Menu.Open') + '...';
+  miNoteOpen.Caption := T('Menu.Open');
   miNoteSave.Caption := T('Menu.Save');
-  miNoteSaveAs.Caption := T('Menu.SaveAs') + '...';
+  miNoteSaveAs.Caption := T('Menu.SaveAs');
   miReopen.Caption := T('Menu.Reopen');
 
 //miManual.Caption := T('Menu.Manual');
@@ -432,12 +432,12 @@ begin
   pmCut.Caption := T('Menu.Cut');
   pmCopy.Caption := T('Menu.Copy');
   pmPaste.Caption := T('Menu.Paste');
-  pmCopyAs.Caption := T('Menu.CopyAs') + '...';
+  pmCopyAs.Caption := T('Menu.CopyAs');
   pmVerses.Caption := T('Menu.Verses');
   pmInterlinear.Caption := T('Menu.Interlinear') + ' (biblehub.com)';
 
   TabSheetBible.Caption := T('Menu.Bible');
-  TabSheetSearch.Caption := T('Menu.Search');
+  TabSheetSearch.Caption := T('Main.Search');
   TabSheetCompare.Caption := T('Menu.Compare');
   TabSheetNotes.Caption := T('Menu.Notes');
 
@@ -466,7 +466,7 @@ begin
 
   ms_Save := T('Message.Save');
   ms_OverWrite := T('Message.OverWrite');
-  ms_loading := T('Message.Loading') + '...';
+//ms_loading := T('Message.Loading');
   ms_found := T('Message.Found');
   ms_Confirm := T('Message.Confirm');
   ms_Message := T('Message.Results');
