@@ -93,12 +93,12 @@ Options.Abbreviate  = Accorcia i nomi dei libri
 Verses.Caption     = Copia Versetti
 Verses.Options     = Options
 Verses.Format      = Format
-Verses.Abbreviate  = Abbreviate book names
-Verses.Enumerated  = Enumerated
-Verses.Guillemets  = Guillemets
-Verses.Parentheses = Parentheses
+Verses.Abbreviate  = Abbreviazione
+Verses.Enumerated  = Enumerazione
+Verses.Guillemets  = Virgolette
+Verses.Parentheses = Parentesi
 Verses.End         = Link in the end
-Verses.Default     = Set default
+Verses.Default     = Default
 
 Compare.Caption   = Modulos
 

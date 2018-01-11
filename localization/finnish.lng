@@ -93,12 +93,12 @@ Options.Abbreviate  = Lyhennä kirjan nimet
 Verses.Caption     = Kopioi jakeet
 Verses.Options     = Options
 Verses.Format      = Format
-Verses.Abbreviate  = Abbreviate book names
-Verses.Enumerated  = Enumerated
-Verses.Guillemets  = Guillemets
-Verses.Parentheses = Parentheses
+Verses.Abbreviate  = Lyhenne
+Verses.Enumerated  = Luettelointi
+Verses.Guillemets  = Lainausmerkki
+Verses.Parentheses = Sulkeet
 Verses.End         = Link in the end
-Verses.Default     = Set default
+Verses.Default     = Aseta oletus
 
 Compare.Caption   = Vertailuvalinnat
 
