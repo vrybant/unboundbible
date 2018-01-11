@@ -1,4 +1,4 @@
-﻿
+
 ****************************************************************************
 *                                                                          *
 *                Unbound Bible - International Support File                *
@@ -80,7 +80,7 @@ Search.Old        = Old Testament
 Search.New        = New Testament
 Search.Gospels    = Gospels
 Search.Epistles   = Epistles
-Search.Current    = Current book
+Search.Current    = Opened book
 Search.Whole      = Whole words
 Search.Case       = Case sensitive
 Search.Button     = Search
