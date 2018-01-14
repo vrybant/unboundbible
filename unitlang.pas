@@ -6,11 +6,6 @@ uses
   SysUtils, Classes, Graphics, IniFiles,  ClipBrd, UnitLib, LCLProc;
 
 type
-  TCharset = record
-    n : string[20];   // Name
-    v : TFontCharset; // Value
-  end;
-
   TLanguage = class(TIniFile)
   public
     constructor {%H-}Create;
@@ -21,9 +16,6 @@ type
     constructor Create;
     function Native(index: integer): string;
   end;
-
-const
-  LangDirectory = 'localization';
 
 var
   Localization : TLocalization;
