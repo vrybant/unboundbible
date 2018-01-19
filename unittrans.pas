@@ -28,7 +28,7 @@ uses UnitLang, UnitLib;
 
 procedure TFormTranslate.Translate;
 begin
-  Caption := ' ' + T('Menu.Translate');
+  Caption := ' ' + T('Translation');
  end;
 
 procedure TFormTranslate.FormCreate(Sender: TObject);

@@ -46,9 +46,9 @@ begin
   if facelang = 'russian'   then Developer := 'Владимир Рыбант';
   if facelang = 'ukrainian' then Developer := 'Володимир Рiбант';
 
-  Caption := ' ' + T('Menu.About');
-  LabelVersion.Caption := T('About.Version') + ' ' + VersionInfo;
-  LabelTeam.Caption := T('About.Developer') + ': ' + Developer;
+  Caption := ' ' + T('About');
+  LabelVersion.Caption := T('Version') + ' ' + VersionInfo;
+  LabelTeam.Caption := T('Developer') + ': ' + Developer;
 end;
 
 procedure TAboutBox.ImageFacebookClick(Sender: TObject);

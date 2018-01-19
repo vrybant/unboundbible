@@ -48,19 +48,19 @@ const
 
 procedure TFormCopy.Translate;
 begin
-  Caption := ' ' + T('Verses.Caption');
+  Caption := ' ' + T('Copy Verses');
 
-  CheckGroup  .Caption := T('Verses.Options' );
-  ButtonCopy  .Caption := T('Menu.Copy'      );
-  ButtonCancel.Caption := T('Button.Cancel'  );
+  CheckGroup  .Caption := T('Options' );
+  ButtonCopy  .Caption := T('Copy'    );
+  ButtonCancel.Caption := T('Cancel'  );
 
-  CheckGroup.Items[cgAbbreviate]  := T('Verses.Abbreviate'  );
-  CheckGroup.Items[cgEnumerated]  := T('Verses.Enumerated'  );
-  CheckGroup.Items[cgGuillemets]  := T('Verses.Guillemets'  );
-  CheckGroup.Items[cgParentheses] := T('Verses.Parentheses' );
-  CheckGroup.Items[cgEnd]         := T('Verses.End'         );
+  CheckGroup.Items[cgAbbreviate]  := T('Abbreviation'    );
+  CheckGroup.Items[cgEnumerated]  := T('Enumerated'      );
+  CheckGroup.Items[cgGuillemets]  := T('Guillemets'      );
+  CheckGroup.Items[cgParentheses] := T('Parentheses'     );
+  CheckGroup.Items[cgEnd]         := T('Link in the end' );
 
-  CheckBox.Caption := T('Verses.Default');
+  CheckBox.Caption := T('Set Default');
 end;
 
 procedure TFormCopy.FormActivate(Sender: TObject);

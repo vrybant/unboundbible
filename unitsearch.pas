@@ -74,22 +74,22 @@ end;
 
 procedure TSearchForm.Translate;
 begin
-  Caption := ' ' + T('Search.Caption');
+  Caption := ' ' + T('Search');
 
-  RadioGroupRange.Caption := T('Search.Range'  ) + ' ';
-  GroupBoxOption .Caption := T('Search.Options') + ' ';
+  RadioGroupRange.Caption := T('Range'  ) + ' ';
+  GroupBoxOption .Caption := T('Options') + ' ';
 
-  RadioGroupRange.Items[0] := T('Search.Entire'  );
-  RadioGroupRange.Items[1] := T('Search.Old'     );
-  RadioGroupRange.Items[2] := T('Search.New'     );
-  RadioGroupRange.Items[3] := T('Search.Gospels' );
-  RadioGroupRange.Items[4] := T('Search.Epistles');
-  RadioGroupRange.Items[5] := T('Search.Current' );
+  RadioGroupRange.Items[0] := T('Entire Bible'  );
+  RadioGroupRange.Items[1] := T('Old Testament'     );
+  RadioGroupRange.Items[2] := T('New Testament'     );
+  RadioGroupRange.Items[3] := T('Gospels' );
+  RadioGroupRange.Items[4] := T('Epistles');
+  RadioGroupRange.Items[5] := T('Opened Book' );
 
-  CheckBoxWhole.Caption := T('Search.Whole');
-  CheckBoxCase .Caption := T('Search.Case' );
+  CheckBoxWhole.Caption := T('Whole Words');
+  CheckBoxCase .Caption := T('Case Sensitive' );
 
-  OKButton     .Caption := T('Search.Button');
+  OKButton     .Caption := T('Find');
 end;
 
 procedure TSearchForm.FormCreate(Sender: TObject);

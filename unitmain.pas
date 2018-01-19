@@ -252,7 +252,7 @@ const
 
 const
   ms_Save      : string = '';
-  ms_OverWrite : string = '';
+  ms_Overwrite : string = '';
   ms_found     : string = '';
 //ms_loading   : string = '';
   ms_Confirm   : string = '';
@@ -394,82 +394,76 @@ end;
 
 procedure TMainForm.Translate;
 begin
-  miTools.Caption := T('Menu.Tools');
-  miEdit.Caption := T('Menu.Edit');
-//miBible.Caption := T('Menu.Bible');
-  miNotes.Caption := T('Menu.Notes');
-  miHelp.Caption := T('Menu.Help');
-  miSearch.Caption := T('Menu.Search');
-  miCompare.Caption := T('Compare.Caption');
-  miTranslate.Caption := T('Menu.Translate');
-  miInterlinear.Caption := T('Menu.Interlinear');
-  miPrint.Caption := T('Menu.Print');
-  miOptions.Caption := T('Menu.Font');
-  miLocalization.Caption := T('Menu.Localization');
-//miLangEdit.Caption := T('Menu.LangEdit');
-  miExit.Caption := T('Menu.Exit');
-  miUndo.Caption := T('Menu.Undo');
-  miCut.Caption := T('Menu.Cut');
-  miCopy.Caption := T('Menu.Copy');
-  miPaste.Caption := T('Menu.Paste');
-  miClear.Caption := T('Menu.Clear');
-  miSelectAll.Caption := T('Menu.SelectAll');
-  miCopyAs.Caption := T('Menu.CopyAs');
-  miVerses.Caption := T('Menu.Verses');
-  miNoteNew.Caption := T('Menu.New');
-  miNoteOpen.Caption := T('Menu.Open');
-  miNoteSave.Caption := T('Menu.Save');
-  miNoteSaveAs.Caption := T('Menu.SaveAs');
-  miReopen.Caption := T('Menu.Reopen');
+  miTools.Caption := T('Tools');
+  miEdit.Caption := T('Edit');
+  miNotes.Caption := T('Notes');
+  miHelp.Caption := T('Help');
+  miSearch.Caption := T('Search');
+  miCompare.Caption := T('Modules');
+  miTranslate.Caption := T('Translation');
+  miInterlinear.Caption := T('Interlinear');
+  miPrint.Caption := T('Print');
+  miOptions.Caption := T('Font...');
+  miLocalization.Caption := T('Localization');
+  miExit.Caption := T('Exit');
+  miUndo.Caption := T('Undo');
+  miCut.Caption := T('Cut');
+  miCopy.Caption := T('Copy');
+  miPaste.Caption := T('Paste');
+  miClear.Caption := T('Delete');
+  miSelectAll.Caption := T('Select All');
+  miCopyAs.Caption := T('Copy As...');
+  miVerses.Caption := T('Copy Verses');
+  miNoteNew.Caption := T('New');
+  miNoteOpen.Caption := T('Open');
+  miNoteSave.Caption := T('Save');
+  miNoteSaveAs.Caption := T('Save As...');
+  miReopen.Caption := T('Reopen');
 
-//miManual.Caption := T('Menu.Manual');
-  miHome.Caption := T('Menu.HomePage');
-//miUBPage.Caption := T('Menu.UBPage');
-  miDownload.Caption := T('Menu.Download');
-  miBibleFolder.Caption := T('Menu.BibleFolder');
-  miHelpAbout.Caption := T('Menu.About');
+  miHome.Caption := T('Home Page');
+  miDownload.Caption := T('Bible Downloads');
+  miBibleFolder.Caption := T('Bible Folder');
+  miHelpAbout.Caption := T('About');
 
-  pmCut.Caption := T('Menu.Cut');
-  pmCopy.Caption := T('Menu.Copy');
-  pmPaste.Caption := T('Menu.Paste');
-  pmCopyAs.Caption := T('Menu.CopyAs');
-  pmVerses.Caption := T('Menu.Verses');
-  pmInterlinear.Caption := T('Menu.Interlinear') + ' (biblehub.com)';
+  pmCut.Caption := T('Cut');
+  pmCopy.Caption := T('Copy');
+  pmPaste.Caption := T('Paste');
+  pmCopyAs.Caption := T('Copy As...');
+  pmVerses.Caption := T('Copy Verses');
+  pmInterlinear.Caption := T('Interlinear') + ' (biblehub.com)';
 
-  TabSheetBible.Caption := T('Menu.Bible');
-  TabSheetSearch.Caption := T('Main.Search');
-  TabSheetCompare.Caption := T('Menu.Compare');
-  TabSheetNotes.Caption := T('Menu.Notes');
+  TabSheetBible.Caption := T('Bible');
+  TabSheetSearch.Caption := T('Search');
+  TabSheetCompare.Caption := T('Compare');
+  TabSheetNotes.Caption := T('Notes');
 
-//ToolButtonInfo.Hint := T('Menu.Info');
-  ToolButtonNew.Hint := T('Menu.New');
-  ToolButtonOpen.Hint := T('Menu.Open');
-  ToolButtonSave.Hint := T('Menu.Save');
-  ToolButtonPrint.Hint := T('Menu.Print');
-  ToolButtonSearch.Hint := T('Menu.Search');
-  ToolButtonCut.Hint := T('Menu.Cut');
-  ToolButtonCopy.Hint := T('Menu.Copy');
-  ToolButtonVerses.Hint := T('Menu.Verses');
-  ToolButtonPaste.Hint := T('Menu.Paste');
-  ToolButtonUndo.Hint := T('Menu.Undo');
-  ToolButtonCompare.Hint := T('Compare.Caption');
+  ToolButtonNew.Hint := T('New');
+  ToolButtonOpen.Hint := T('Open');
+  ToolButtonSave.Hint := T('Save');
+  ToolButtonPrint.Hint := T('Print');
+  ToolButtonSearch.Hint := T('Search');
+  ToolButtonCut.Hint := T('Cut');
+  ToolButtonCopy.Hint := T('Copy');
+  ToolButtonVerses.Hint := T('Copy Verses');
+  ToolButtonPaste.Hint := T('Paste');
+  ToolButtonUndo.Hint := T('Undo');
+  ToolButtonCompare.Hint := T('Modules');
 
-  ToolButtonFont.Hint := T('Main.FontName');
-  ToolButtonBold.Hint := T('Main.Bold');
-  ToolButtonItalic.Hint := T('Main.Italic');
-  ToolButtonUnderline.Hint := T('Main.Underline');
-  ToolButtonLink.Hint := T('Main.Link');
-  ToolButtonLeft.Hint := T('Main.Left');
-  ToolButtonCenter.Hint := T('Main.Center');
-  ToolButtonRight.Hint := T('Main.Right');
-  ToolButtonBullets.Hint := T('Main.Bullets');
+  ToolButtonFont.Hint := T('Font Name');
+  ToolButtonBold.Hint := T('Bold');
+  ToolButtonItalic.Hint := T('Italic');
+  ToolButtonUnderline.Hint := T('Underline');
+  ToolButtonLink.Hint := T('Link');
+  ToolButtonLeft.Hint := T('Align Left');
+  ToolButtonCenter.Hint := T('Center');
+  ToolButtonRight.Hint := T('Align Right');
+  ToolButtonBullets.Hint := T('Bullets');
 
-  ms_Save := T('Message.Save');
-  ms_OverWrite := T('Message.OverWrite');
-//ms_loading := T('Message.Loading');
-  ms_found := T('Message.Found');
-  ms_Confirm := T('Message.Confirm');
-  ms_Message := T('Message.Results');
+  ms_Save := T('Save changes?');
+  ms_Overwrite := T('OK to overwrite %s?');
+  ms_found := T('verses found');
+  ms_Confirm := T('Confirmation');
+  ms_Message := T('This search returned too many results. Please narrow your search.');
 end;
 
 procedure TMainForm.TranslateAll;
@@ -695,7 +689,7 @@ begin
       SaveDialog.FileName := SaveDialog.FileName + '.rtf';
 
     if FileExists(SaveDialog.FileName) then
-      if MessageDlg(Format(ms_OverWrite, [SaveDialog.FileName]),
+      if MessageDlg(Format(ms_Overwrite, [SaveDialog.FileName]),
         mtConfirmation, mbYesNoCancel, 0) <> idYes then Exit;
 
     MemoNotes.SaveToFile(SaveDialog.FileName);

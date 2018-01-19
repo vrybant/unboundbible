@@ -34,8 +34,8 @@ uses UnitShelf, UnitLang;
 
 procedure TCompareForm.Translate;
 begin
-  Caption := ' ' + T('Compare.Caption');
-  ButtonOK.Caption := T('Button.OK');
+  Caption := ' ' + T('Modules');
+  ButtonOK.Caption := T('OK');
 end;
 
 procedure TCompareForm.FormCreate(Sender: TObject);

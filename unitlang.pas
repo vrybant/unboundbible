@@ -32,7 +32,7 @@ end;
 
 function T(const id : string): string;
 begin
-  Result := Language.ReadString('Interface',id,id);
+  Result := Language.ReadString('Localization',id,id);
 end;
 
 //-------------------------------------------------------------------------------------------------
