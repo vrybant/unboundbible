@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="10"/>
+    <BuildModes Active="Default"/>
+    <Units Count="5">
+      <Unit0>
+        <Filename Value="xliff.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="31"/>
+        <CursorPos X="59" Y="51"/>
+        <UsageCount Value="33"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="..\unitlib.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitLib"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="287"/>
+        <CursorPos X="57" Y="292"/>
+        <UsageCount Value="33"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\unitlang.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitLang"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="24" Y="22"/>
+        <UsageCount Value="33"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="unit.pas"/>
+        <ComponentName Value="Form1"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="19"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="C:\lazarus\lcl\forms.pp"/>
+        <UnitName Value="Forms"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1738"/>
+        <CursorPos X="3" Y="1763"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+    </Units>
+    <JumpHistory Count="1">
+      <Position1>
+        <Filename Value="..\unitlib.pas"/>
+        <Caret Line="258" Column="24" TopLine="253"/>
+      </Position1>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

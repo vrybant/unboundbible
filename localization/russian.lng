@@ -101,3 +101,25 @@ verses found = найдено стихов
 Version = Версия
 Whole Words = Слова целиком
 
+// macOS
+
+$(PRODUCT_NAME) = Unbound Bible
+About Unbound Bible = О Unbound Bible
+Bring All to Front = Переместить все на передний план
+Clear Menu = Очистить меню
+Close = Закрыть
+Hide Others = Скрыть остальные
+Hide Unbound Bible = Скрыть Unbound Bible
+Minimize = Свернуть
+Open Recent = Открыть недавние
+Page Setup… = Параметры страницы…
+Paste and Match Style = Вставить в текущем стиле
+Preferences… = Настройки…
+Quit Unbound Bible = Завершить Unbound Bible
+Redo = Повторить
+Search Options = Настройки поиска
+Services = Службы
+Show All = Показать все
+Unbound-Bible-macOS Help = Справка Unbound Bible
+Window = Окно
+Zoom = Масштаб 
