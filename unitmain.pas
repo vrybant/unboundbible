@@ -403,7 +403,7 @@ begin
   miTranslate.Caption := T('Translation');
   miInterlinear.Caption := T('Interlinear');
   miPrint.Caption := T('Print');
-  miOptions.Caption := T('Font...');
+  miOptions.Caption := T('Font…');
   miLocalization.Caption := T('Localization');
   miExit.Caption := T('Exit');
   miUndo.Caption := T('Undo');
@@ -412,12 +412,12 @@ begin
   miPaste.Caption := T('Paste');
   miClear.Caption := T('Delete');
   miSelectAll.Caption := T('Select All');
-  miCopyAs.Caption := T('Copy As...');
+  miCopyAs.Caption := T('Copy As…');
   miVerses.Caption := T('Copy Verses');
   miNoteNew.Caption := T('New');
   miNoteOpen.Caption := T('Open');
   miNoteSave.Caption := T('Save');
-  miNoteSaveAs.Caption := T('Save As...');
+  miNoteSaveAs.Caption := T('Save As…');
   miReopen.Caption := T('Reopen');
 
   miHome.Caption := T('Home Page');
@@ -428,7 +428,7 @@ begin
   pmCut.Caption := T('Cut');
   pmCopy.Caption := T('Copy');
   pmPaste.Caption := T('Paste');
-  pmCopyAs.Caption := T('Copy As...');
+  pmCopyAs.Caption := T('Copy As…');
   pmVerses.Caption := T('Copy Verses');
   pmInterlinear.Caption := T('Interlinear') + ' (biblehub.com)';
 
@@ -463,7 +463,7 @@ begin
   ms_Overwrite := T('OK to overwrite %s?');
   ms_found := T('verses found');
   ms_Confirm := T('Confirmation');
-  ms_Message := T('This search returned too many results. Please narrow your search.');
+  ms_Message := T('This search returned too many results. ') + T('Please narrow your search.');
 end;
 
 procedure TMainForm.TranslateAll;
