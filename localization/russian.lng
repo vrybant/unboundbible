@@ -84,6 +84,7 @@ Print… = Печать…
 Range = Область поиска
 Reopen = История
 Save = Сохранить
+Save… = Сохранить…
 Save As… = Сохранить как…
 Save changes? = Сохранить изменения?
 Search = Поиск
@@ -103,7 +104,6 @@ Whole Words = Слова целиком
 
 // macOS
 
-$(PRODUCT_NAME) = Unbound Bible
 About Unbound Bible = О Unbound Bible
 Bring All to Front = Переместить все на передний план
 Clear Menu = Очистить меню
@@ -123,3 +123,15 @@ Show All = Показать все
 Unbound-Bible-macOS Help = Справка Unbound Bible
 Window = Окно
 Zoom = Масштаб 
+
+// Localizable strings
+
+Do you want to save the changes? = Вы хотите сохранить изменения?
+Don't Save = Не сохранять
+Failed to save document = Не удалось сохранить документ
+Permission denied = Доступ запрещен
+You search for % produced no results. = По запросу % ничего не найдено.
+Your changes will be lost if you don't save them. = Ваши изменения будут потеряны, если вы не сохраните их.
+verses was found = найденно стихов
+
+
