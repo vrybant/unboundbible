@@ -463,7 +463,8 @@ begin
   ms_Overwrite := T('OK to overwrite %s?');
   ms_found := T('verses found');
   ms_Confirm := T('Confirmation');
-  ms_Message := T('This search returned too many results. ') + T('Please narrow your search.');
+  ms_Message := T('This search returned too many results.') + ' ' +
+                T('Please narrow your search.');
 end;
 
 procedure TMainForm.TranslateAll;
