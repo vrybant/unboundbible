@@ -46,7 +46,7 @@ Epistles = Послания
 Every Word =  Каждое слово
 Exit = Выход
 Find = Искать
-Font Name = Шрифт
+Font = Шрифт
 Font Size = Размер
 Font… =  Шрифт…
 Format = Формат
@@ -54,12 +54,12 @@ Gospels = Евангелия
 Guillemets = Кавычки
 Help = Справка
 Home Page = Сайт программы
+Hyperlink = Гиперссылка
 Information = Информация
 Interlinear = Подстрочник
 Italic = Курсив
 Language = Язык
 Language Editor = Редактор языков
-Link = Ссылка
 Link in the end =  Ссылка в конце
 Loading… = Загружаю…
 Localization = Интерфейс
@@ -114,6 +114,7 @@ Minimize = Свернуть
 Open Recent = Открыть недавние
 Page Setup… = Параметры страницы…
 Paste and Match Style = Вставить в текущем стиле
+Preferences = Настройки
 Preferences… = Настройки…
 Quit Unbound Bible = Завершить Unbound Bible
 Redo = Повторить
@@ -126,12 +127,14 @@ Zoom = Масштаб
 
 // Localizable strings
 
+Change Font = Изменить шрифт
 Do you want to save the changes? = Вы хотите сохранить изменения?
 Don't Save = Не сохранять
-Failed to save document = Не удалось сохранить документ
-Permission denied = Доступ запрещен
+Failed to save document. = Не удалось сохранить документ.
+Permission denied. = Доступ запрещен.
+The document % could not be opened. = Не удается открыть документ %.
+verses was found = найденно стихов
 You search for % produced no results. = По запросу % ничего не найдено.
 Your changes will be lost if you don't save them. = Ваши изменения будут потеряны, если вы не сохраните их.
-verses was found = найденно стихов
 
 
