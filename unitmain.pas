@@ -449,11 +449,11 @@ begin
   ToolButtonUndo.Hint := T('Undo');
   ToolButtonCompare.Hint := T('Modules');
 
-  ToolButtonFont.Hint := T('Font Name');
+  ToolButtonFont.Hint := T('Font');
   ToolButtonBold.Hint := T('Bold');
   ToolButtonItalic.Hint := T('Italic');
   ToolButtonUnderline.Hint := T('Underline');
-  ToolButtonLink.Hint := T('Link');
+  ToolButtonLink.Hint := T('Hyperlink');
   ToolButtonLeft.Hint := T('Align Left');
   ToolButtonCenter.Hint := T('Center');
   ToolButtonRight.Hint := T('Align Right');
