@@ -40,7 +40,7 @@ var
 begin
   IniFile := TIniFile.Create(LangPath + Item);
   XliffList := TStringList.Create;
-  XliffList.LoadFromFile('xliff.xliff');
+  XliffList.LoadFromFile('ru.xliff');
 
   for i:=0 to XliffList.Count-1 do
     begin
