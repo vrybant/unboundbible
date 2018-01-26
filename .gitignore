@@ -8,6 +8,7 @@ __history
 *.exe
 *.dll
 bin/*
+lib/*
 *.sh
 *.backup
 *.lintian
