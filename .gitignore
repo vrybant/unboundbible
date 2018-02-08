@@ -12,6 +12,7 @@ lib/*
 *.sh
 *.backup
 *.lintian
+backup/*
 titles/text/*
 components/zeosdbo/*
 components/richmemo/*

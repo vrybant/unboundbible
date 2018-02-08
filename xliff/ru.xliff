@@ -422,6 +422,11 @@
                 <note>No comment provided by engineer.</note>
                 <target>Do you want to save the changes?</target>
             </trans-unit>
+            <trans-unit id="Document Name">
+                <source>Document Name</source>
+                <note>No comment provided by engineer.</note>
+                <target>Document Name</target>
+            </trans-unit>
             <trans-unit id="Don't Save">
                 <source>Don't Save</source>
                 <note>No comment provided by engineer.</note>

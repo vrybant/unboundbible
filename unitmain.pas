@@ -102,7 +102,7 @@ type
     miOptions: TMenuItem;
     miPaste: TMenuItem;
     miPrint: TMenuItem;
-    miReopen: TMenuItem;
+    miRecent: TMenuItem;
     miSearch: TMenuItem;
     miSelectAll: TMenuItem;
     miTools: TMenuItem;
@@ -195,7 +195,7 @@ type
     procedure ToolButtonFBClick(Sender: TObject);
   private
     NoteFileName: string;
-    ReopenList: TStringList;
+    RecentList: TStringList;
     {$ifdef darwin} bag01 : boolean; {$endif}
     {$ifdef darwin} bag02 : boolean; {$endif}
     {$ifdef linux } IdleMessage : string; {$endif}
@@ -215,11 +215,11 @@ type
     procedure MakeChapterList(n: integer);
     {$ifdef darwin} procedure ScrollBoxes; {$endif}
     procedure OnLangClick(Sender: TObject);
-    procedure OnReopenClick(Sender: TObject);
+    procedure OnRecentClick(Sender: TObject);
     procedure PerformFileOpen(const FileName: string);
     procedure ReadIniFile;
-    procedure RebuildReopenList;
-    procedure ReopenMenuInit;
+    procedure RebuildRecentList;
+    procedure RecentMenuInit;
     procedure SaveIniFile;
     procedure SearchText(s: string);
     procedure SelectPage(page: integer);
@@ -248,7 +248,7 @@ uses
 
 const
   sUntitled = 'Untitled';
-  ReopenMax = 10;
+  RecentMax = 10;
 
 const
   ms_Save      : string = '';
@@ -270,7 +270,7 @@ begin
 
   CreateDirectories;
 
-  ReopenList := TStringList.Create;
+  RecentList := TStringList.Create;
 
   SaveDialog.InitialDir := DocumentsPath;
 
@@ -279,7 +279,7 @@ begin
   ReadIniFile;
   ComboBoxInit;
   LangMenuInit;
-  ReopenMenuInit;
+  RecentMenuInit;
 
   if Shelf.Count > 0 then
   begin
@@ -348,7 +348,7 @@ end;
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   SaveIniFile;
-  ReopenList.Free;
+  RecentList.Free;
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -415,10 +415,10 @@ begin
   miCopyAs.Caption := T('Copy As…');
   miVerses.Caption := T('Copy Verses');
   miNoteNew.Caption := T('New');
-  miNoteOpen.Caption := T('Open');
+  miNoteOpen.Caption := T('Open…');
   miNoteSave.Caption := T('Save');
   miNoteSaveAs.Caption := T('Save As…');
-  miReopen.Caption := T('Reopen');
+  miRecent.Caption := T('Open Recent');
 
   miHome.Caption := T('Home Page');
   miDownload.Caption := T('Bible Downloads');
@@ -696,7 +696,7 @@ begin
     MemoNotes.SaveToFile(SaveDialog.FileName);
     NoteFileName := SaveDialog.FileName;
 
-    RebuildReopenList;
+    RebuildRecentList;
 
     MemoNotes.Modified := False;
     UpdateCaption(ExtractOnlyName(NoteFileName));
@@ -923,13 +923,13 @@ begin
   TranslateAll;
 end;
 
-procedure TMainForm.OnReopenClick(Sender: TObject);
+procedure TMainForm.OnRecentClick(Sender: TObject);
 var i: integer;
 begin
-  for i := 0 to miReopen.Count - 1 do
+  for i := 0 to miRecent.Count - 1 do
     if (Sender as TMenuItem).tag = i then
       if CheckFileSave then
-        PerformFileOpen(ReopenList[i]);
+        PerformFileOpen(RecentList[i]);
 end;
 
 procedure TMainForm.LangMenuInit;
@@ -950,21 +950,21 @@ begin
   end;
 end;
 
-procedure TMainForm.ReopenMenuInit;
+procedure TMainForm.RecentMenuInit;
 var
   Item : TMenuItem;
   s : string;
   i : integer;
 begin
-  miReopen.Enabled := ReopenList.Count > 0;
-  miReopen.Clear;
+  miRecent.Enabled := RecentList.Count > 0;
+  miRecent.Clear;
 
-  for i := ReopenList.Count - 1 downto 0 do
+  for i := RecentList.Count - 1 downto 0 do
     begin
-      s := ExtractOnlyName(ReopenList[i]);
-      Item := NewItem(s, 0, False, True, OnReopenClick, 0, '');
+      s := ExtractOnlyName(RecentList[i]);
+      Item := NewItem(s, 0, False, True, OnRecentClick, 0, '');
       Item.Tag := i;
-      miReopen.Add(Item);
+      miRecent.Add(Item);
     end;
 end;
 
@@ -1089,20 +1089,20 @@ begin
 end;
 {$endif}
 
-procedure TMainForm.RebuildReopenList;
+procedure TMainForm.RebuildRecentList;
 var
   i: integer;
 begin
-  for i := 0 to ReopenList.Count - 1 do
-    if ReopenList[i] = NoteFileName then
+  for i := 0 to RecentList.Count - 1 do
+    if RecentList[i] = NoteFileName then
     begin
-      ReopenList.Delete(i);
+      RecentList.Delete(i);
       Break;
     end;
 
-  ReopenList.Add(NoteFileName);
-  if ReopenList.Count > ReopenMax then ReopenList.Delete(0);
-  ReopenMenuInit;
+  RecentList.Add(NoteFileName);
+  if RecentList.Count > RecentMax then RecentList.Delete(0);
+  RecentMenuInit;
 end;
 
 procedure TMainForm.PerformFileOpen(const FileName: string);
@@ -1110,7 +1110,7 @@ begin
   if not FileExists(FileName) then Exit;
   MemoNotes.LoadFromFile(FileName);
   NoteFileName := FileName;
-  RebuildReopenList;
+  RebuildRecentList;
   SelectPage(apNotes);
   MemoNotes.SetFocus;
   MemoNotes.Modified := False;
@@ -1429,10 +1429,10 @@ begin
   IniFile.WriteInteger('Verse', 'Chapter', ActiveVerse.chapter);
   IniFile.WriteInteger('Verse', 'Number', ActiveVerse.number);
   IniFile.WriteInteger('Verse', 'Count', ActiveVerse.count);
-  IniFile.WriteInteger('Reopen', 'Count', ReopenList.Count);
+  IniFile.WriteInteger('Recent', 'Count', RecentList.Count);
 
-  for i := 0 to ReopenList.Count - 1 do
-    IniFile.WriteString('Reopen', 'File_' + IntToStr(i), ReopenList[i]);
+  for i := 0 to RecentList.Count - 1 do
+    IniFile.WriteString('Recent', 'File_' + IntToStr(i), RecentList[i]);
 
   IniFile.Free;
 end;
@@ -1477,10 +1477,10 @@ begin
   ActiveVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);
   ActiveVerse.number := IniFile.ReadInteger('Verse', 'Number', 0);
   ActiveVerse.count := IniFile.ReadInteger('Verse', 'Count', 0);
-  Max := IniFile.ReadInteger('Reopen', 'Count', ReopenList.Count);
+  Max := IniFile.ReadInteger('Recent', 'Count', RecentList.Count);
 
   for i := 0 to Max - 1 do
-    ReopenList.Add(IniFile.ReadString('Reopen', 'File_' + IntToStr(i), ''));
+    RecentList.Add(IniFile.ReadString('Recent', 'File_' + IntToStr(i), ''));
 
   Shelf.SetCurrent(BibleFile);
 

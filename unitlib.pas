@@ -68,7 +68,6 @@ function WidthInPixels(s: string): integer;
 procedure Output(s: string); overload;
 procedure Output(n: integer); overload;
 
-
 var
   CurrFont: TFont;
   facelang : string;
