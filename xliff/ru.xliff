@@ -10,6 +10,11 @@
                 <target>Unbound Bible</target>
                 <note>Class = "NSMenuItem"; title = "Unbound Bible"; ObjectID = "1Xt-HY-uBw";</note>
             </trans-unit>
+            <trans-unit id="1lY-6G-oEC.title">
+                <source>Alignment</source>
+                <note>Class = "NSMenu"; title = "Alignment"; ObjectID = "1lY-6G-oEC";</note>
+                <target>Alignment</target>
+            </trans-unit>
             <trans-unit id="1zZ-nN-0oB.title">
                 <source>Interlinear</source>
                 <target>Подстрочник</target>
@@ -40,6 +45,11 @@
                 <target>Правка</target>
                 <note>Class = "NSMenuItem"; title = "Edit"; ObjectID = "5QF-Oa-p0T";</note>
             </trans-unit>
+            <trans-unit id="5ac-FK-eYE.title">
+                <source>Underline</source>
+                <note>Class = "NSMenuItem"; title = "Underline"; ObjectID = "5ac-FK-eYE";</note>
+                <target>Underline</target>
+            </trans-unit>
             <trans-unit id="5kV-Vb-QxS.title">
                 <source>About Unbound Bible</source>
                 <target>О Unbound Bible</target>
@@ -55,25 +65,55 @@
                 <target>Модули</target>
                 <note>Class = "NSButton"; ibShadowedToolTip = "Modules"; ObjectID = "7BN-JD-2QK";</note>
             </trans-unit>
+            <trans-unit id="7Dg-dp-qIm.title">
+                <source>Baseline</source>
+                <note>Class = "NSMenu"; title = "Baseline"; ObjectID = "7Dg-dp-qIm";</note>
+                <target>Baseline</target>
+            </trans-unit>
             <trans-unit id="7b2-p7-I0H.title">
                 <source>Copy</source>
                 <target>Копировать</target>
                 <note>Class = "NSButtonCell"; title = "Copy"; ObjectID = "7b2-p7-I0H";</note>
+            </trans-unit>
+            <trans-unit id="8AO-9O-fNc.title">
+                <source>Align Left</source>
+                <note>Class = "NSMenuItem"; title = "Align Left"; ObjectID = "8AO-9O-fNc";</note>
+                <target>Align Left</target>
             </trans-unit>
             <trans-unit id="8NH-bp-5sR.title">
                 <source>Close</source>
                 <target>Закрыть</target>
                 <note>Class = "NSButtonCell"; title = "Close"; ObjectID = "8NH-bp-5sR";</note>
             </trans-unit>
+            <trans-unit id="A4I-nP-3lF.title">
+                <source>Format</source>
+                <note>Class = "NSMenuItem"; title = "Format"; ObjectID = "A4I-nP-3lF";</note>
+                <target>Format</target>
+            </trans-unit>
             <trans-unit id="BOF-NM-1cW.title">
                 <source>Preferences…</source>
                 <target>Настройки…</target>
                 <note>Class = "NSMenuItem"; title = "Preferences…"; ObjectID = "BOF-NM-1cW";</note>
             </trans-unit>
+            <trans-unit id="Cpm-5L-FdG.title">
+                <source>Alignment</source>
+                <note>Class = "NSMenuItem"; title = "Alignment"; ObjectID = "Cpm-5L-FdG";</note>
+                <target>Alignment</target>
+            </trans-unit>
+            <trans-unit id="Cz5-qR-NMX.title">
+                <source>Writing Direction</source>
+                <note>Class = "NSMenu"; title = "Writing Direction"; ObjectID = "Cz5-qR-NMX";</note>
+                <target>Writing Direction</target>
+            </trans-unit>
             <trans-unit id="DMf-m0-n8l.title">
                 <source>Close</source>
                 <target>Закрыть</target>
                 <note>Class = "NSButtonCell"; title = "Close"; ObjectID = "DMf-m0-n8l";</note>
+            </trans-unit>
+            <trans-unit id="EK0-GI-FIr.title">
+                <source>Fonts…</source>
+                <note>Class = "NSMenuItem"; title = "Fonts…"; ObjectID = "EK0-GI-FIr";</note>
+                <target>Fonts…</target>
             </trans-unit>
             <trans-unit id="F2S-fz-NVQ.title">
                 <source>Help</source>
@@ -84,6 +124,11 @@
                 <source>Unbound Bible Help</source>
                 <target>Unbound Bible Help</target>
                 <note>Class = "NSMenuItem"; title = "Unbound Bible Help"; ObjectID = "FKE-Sm-Kum";</note>
+            </trans-unit>
+            <trans-unit id="G6s-Zc-dGe.title">
+                <source>Bold</source>
+                <note>Class = "NSMenuItem"; title = "Bold"; ObjectID = "G6s-Zc-dGe";</note>
+                <target>Bold</target>
             </trans-unit>
             <trans-unit id="IAo-SY-fd9.title">
                 <source>Open…</source>
@@ -135,10 +180,25 @@
                 <target>Масштаб</target>
                 <note>Class = "NSMenuItem"; title = "Zoom"; ObjectID = "R4o-n2-Eq4";</note>
             </trans-unit>
+            <trans-unit id="RNu-K3-Zwd.title">
+                <source>Bigger</source>
+                <note>Class = "NSMenuItem"; title = "Bigger"; ObjectID = "RNu-K3-Zwd";</note>
+                <target>Bigger</target>
+            </trans-unit>
+            <trans-unit id="RpF-m3-l2Q.title">
+                <source>Colors…</source>
+                <note>Class = "NSMenuItem"; title = "Colors…"; ObjectID = "RpF-m3-l2Q";</note>
+                <target>Colors…</target>
+            </trans-unit>
             <trans-unit id="Ruw-6m-B2m.title">
                 <source>Select All</source>
                 <target>Выделить все</target>
                 <note>Class = "NSMenuItem"; title = "Select All"; ObjectID = "Ruw-6m-B2m";</note>
+            </trans-unit>
+            <trans-unit id="SKr-E1-Dlm.title">
+                <source>Superscript</source>
+                <note>Class = "NSMenuItem"; title = "Superscript"; ObjectID = "SKr-E1-Dlm";</note>
+                <target>Superscript</target>
             </trans-unit>
             <trans-unit id="Tb2-Vk-PEr.title">
                 <source>Copy Verses</source>
@@ -185,6 +245,16 @@
                 <target>Вставить в текущем стиле</target>
                 <note>Class = "NSMenuItem"; title = "Paste and Match Style"; ObjectID = "WeT-3V-zwk";</note>
             </trans-unit>
+            <trans-unit id="Wjv-fn-3si.title">
+                <source>Italic</source>
+                <note>Class = "NSMenuItem"; title = "Italic"; ObjectID = "Wjv-fn-3si";</note>
+                <target>Italic</target>
+            </trans-unit>
+            <trans-unit id="XH3-bn-YZa.title">
+                <source>Left to Right</source>
+                <note>Class = "NSMenuItem"; title = "Left to Right"; ObjectID = "XH3-bn-YZa";</note>
+                <target>Left to Right</target>
+            </trans-unit>
             <trans-unit id="XOO-wQ-JkF.ibShadowedToolTip">
                 <source>Search Options</source>
                 <target>Настройки поиска</target>
@@ -210,10 +280,20 @@
                 <target>Блокнот</target>
                 <note>Class = "NSMenu"; title = "Notes"; ObjectID = "bib-Uj-vzu";</note>
             </trans-unit>
+            <trans-unit id="c6b-1l-Y1E.title">
+                <source>Default</source>
+                <note>Class = "NSMenuItem"; title = "Default"; ObjectID = "c6b-1l-Y1E";</note>
+                <target>Default</target>
+            </trans-unit>
             <trans-unit id="cB7-aj-bfZ.title">
                 <source>New Testament</source>
                 <target>Новый Завет</target>
                 <note>Class = "NSButtonCell"; title = "New Testament"; ObjectID = "cB7-aj-bfZ";</note>
+            </trans-unit>
+            <trans-unit id="cOg-7C-4En.title">
+                <source>Justify</source>
+                <note>Class = "NSMenuItem"; title = "Justify"; ObjectID = "cOg-7C-4En";</note>
+                <target>Justify</target>
             </trans-unit>
             <trans-unit id="cf8-0C-v73.title">
                 <source>Copy As…</source>
@@ -224,6 +304,11 @@
                 <source>Notes</source>
                 <target>Блокнот</target>
                 <note>Class = "NSMenuItem"; title = "Notes"; ObjectID = "dMs-cI-mzQ";</note>
+            </trans-unit>
+            <trans-unit id="dMv-Gg-LcY.title">
+                <source>Subscript</source>
+                <note>Class = "NSMenuItem"; title = "Subscript"; ObjectID = "dMv-Gg-LcY";</note>
+                <target>Subscript</target>
             </trans-unit>
             <trans-unit id="dRJ-4n-Yzg.title">
                 <source>Undo</source>
@@ -239,6 +324,11 @@
                 <source>Bible</source>
                 <target>Библия</target>
                 <note>Class = "NSTabViewItem"; label = "Bible"; ObjectID = "eAl-NP-4ch";</note>
+            </trans-unit>
+            <trans-unit id="eLn-5R-Lbk.title">
+                <source>Default</source>
+                <note>Class = "NSMenuItem"; title = "Default"; ObjectID = "eLn-5R-Lbk";</note>
+                <target>Default</target>
             </trans-unit>
             <trans-unit id="gCS-F5-sao.title">
                 <source>Abbreviation</source>
@@ -270,6 +360,11 @@
                 <target>Службы</target>
                 <note>Class = "NSMenu"; title = "Services"; ObjectID = "hz9-B4-Xy5";</note>
             </trans-unit>
+            <trans-unit id="iEQ-RP-d98.title">
+                <source>Right to Left</source>
+                <note>Class = "NSMenuItem"; title = "Right to Left"; ObjectID = "iEQ-RP-d98";</note>
+                <target>Right to Left</target>
+            </trans-unit>
             <trans-unit id="iSQ-oH-JzE.title">
                 <source>Whole Words</source>
                 <target>Слова целиком</target>
@@ -300,6 +395,11 @@
                 <target>Гиперссылка</target>
                 <note>Class = "NSMenuItem"; title = "Hyperlink"; ObjectID = "mHR-fU-Ejx";</note>
             </trans-unit>
+            <trans-unit id="nlh-97-s7c.title">
+                <source>Center</source>
+                <note>Class = "NSMenuItem"; title = "Center"; ObjectID = "nlh-97-s7c";</note>
+                <target>Center</target>
+            </trans-unit>
             <trans-unit id="oas-Oc-fiZ.title">
                 <source>Open Recent</source>
                 <target>Открыть недавние</target>
@@ -324,6 +424,26 @@
                 <source>Save…</source>
                 <target>Сохранить…</target>
                 <note>Class = "NSMenuItem"; title = "Save…"; ObjectID = "pxx-59-PXV";</note>
+            </trans-unit>
+            <trans-unit id="q9e-HX-PiS.title">
+                <source>Strikethrough</source>
+                <note>Class = "NSMenuItem"; title = "Strikethrough"; ObjectID = "q9e-HX-PiS";</note>
+                <target>Strikethrough</target>
+            </trans-unit>
+            <trans-unit id="qAw-Ah-khi.title">
+                <source>Writing Direction</source>
+                <note>Class = "NSMenuItem"; title = "Writing Direction"; ObjectID = "qAw-Ah-khi";</note>
+                <target>Writing Direction</target>
+            </trans-unit>
+            <trans-unit id="rDI-iQ-9a2.title">
+                <source>Paste Style</source>
+                <note>Class = "NSMenuItem"; title = "Paste Style"; ObjectID = "rDI-iQ-9a2";</note>
+                <target>Paste Style</target>
+            </trans-unit>
+            <trans-unit id="rTh-d2-1br.title">
+                <source>Baseline</source>
+                <note>Class = "NSMenuItem"; title = "Baseline"; ObjectID = "rTh-d2-1br";</note>
+                <target>Baseline</target>
             </trans-unit>
             <trans-unit id="s7i-b7-2cd.title">
                 <source>Case Sensitive</source>
@@ -355,6 +475,16 @@
                 <target>Очистить меню</target>
                 <note>Class = "NSMenuItem"; title = "Clear Menu"; ObjectID = "vNY-rz-j42";</note>
             </trans-unit>
+            <trans-unit id="vmd-Wk-tjI.title">
+                <source>Smaller</source>
+                <note>Class = "NSMenuItem"; title = "Smaller"; ObjectID = "vmd-Wk-tjI";</note>
+                <target>Smaller</target>
+            </trans-unit>
+            <trans-unit id="wEk-Qd-O2W.title">
+                <source>Copy Style</source>
+                <note>Class = "NSMenuItem"; title = "Copy Style"; ObjectID = "wEk-Qd-O2W";</note>
+                <target>Copy Style</target>
+            </trans-unit>
             <trans-unit id="whQ-9R-kwb.ibShadowedDisplayPattern">
                 <source>%{value1}@</source>
                 <target>%{value1}@</target>
@@ -379,6 +509,16 @@
                 <source>Enumerated</source>
                 <target>Нумерация стихов</target>
                 <note>Class = "NSButtonCell"; title = "Enumerated"; ObjectID = "xQD-7b-MDh";</note>
+            </trans-unit>
+            <trans-unit id="xQu-Vd-JCd.title">
+                <source>Format</source>
+                <note>Class = "NSMenu"; title = "Format"; ObjectID = "xQu-Vd-JCd";</note>
+                <target>Format</target>
+            </trans-unit>
+            <trans-unit id="yPb-lB-VA8.title">
+                <source>Align Right</source>
+                <note>Class = "NSMenuItem"; title = "Align Right"; ObjectID = "yPb-lB-VA8";</note>
+                <target>Align Right</target>
             </trans-unit>
         </body>
     </file>
@@ -419,8 +559,8 @@
             </trans-unit>
             <trans-unit id="Clear Menu">
                 <source>Clear Menu</source>
+                <target>Очистить меню</target>
                 <note>No comment provided by engineer.</note>
-                <target>Clear Menu</target>
             </trans-unit>
             <trans-unit id="Do you want to save the changes?">
                 <source>Do you want to save the changes?</source>

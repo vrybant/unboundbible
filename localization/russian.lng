@@ -105,23 +105,42 @@ Whole Words = Слова целиком
 // macOS
 
 About Unbound Bible = О Unbound Bible
+Align Left = Влево
+Align Right = Вправо
+Alignment = Выравнивание
+Baseline = Базовая линия
+Bigger = Увеличить
 Bring All to Front = Переместить все на передний план
 Clear Menu = Очистить меню
 Close = Закрыть
+Colors… = Цвета…
+Copy Style = Скопировать стиль
+Default = По умолчанию
+Fonts… = Шрифты…
+Format = Формат
 Hide Others = Скрыть остальные
 Hide Unbound Bible = Скрыть Unbound Bible
+Justify = По ширине
+Left to Right = Слева на право
 Minimize = Свернуть
 Page Setup… = Параметры страницы…
 Paste and Match Style = Вставить в текущем стиле
+Paste Style = Вставить стиль 
 Preferences = Настройки
 Preferences… = Настройки…
 Quit Unbound Bible = Завершить Unbound Bible
 Redo = Повторить
+Right to Left = Справа на лево
 Search Options = Настройки поиска
 Services = Службы
 Show All = Показать все
+Smaller = Уменьшить
+Strikethrough = Зачеркнутый
+Subscript = Подстрочная
+Superscript = Надстрочная
 Unbound-Bible-macOS Help = Справка Unbound Bible
 Window = Окно
+Writing Direction = Направление письма
 Zoom = Масштаб 
 
 // Localizable strings
