@@ -101,3 +101,58 @@ Undo = Відмінити
 verses found = Знайдено віршів
 Version = Версiя
 Whole Words = Слова цілком
+
+// macOS
+
+About Unbound Bible = Про Unbound Bible
+Align Left = Злiва
+Align Right = Справа
+Alignment = Вирівнювання
+Baseline = Базова лiнiя
+Bigger = Бiльший
+Bring All to Front = Переместить все на передний план
+Clear Menu = Очистити меню
+Close = Завершити
+Colors… = Кольори…
+Copy Style = Копiювати стиль
+Default = Стандартна
+Facebook Page = Сторінка у Фейсбуку
+Fonts… = Шрифти…
+Format = Формат
+Hide Others = Сховати решту
+Hide Unbound Bible = Сховати Unbound Bible
+Justify = За шириною
+Left to Right = Слева на право
+Minimize = Свернуть
+Page Setup… = Параметры страницы…
+Paste and Match Style = Вставить в текущем стиле
+Paste Style = Вставити стиль 
+Preferences = Параметри
+Preferences… = Параметри…
+Quit Unbound Bible = Завершить Unbound Bible
+Redo = Повторить
+Right to Left = Справа на лево
+Search Options = Настройки поиска
+Services = Сервiси
+Show All = Показати всi
+Smaller = Менший
+Strikethrough = Зачеркнутый
+Subscript = Пiдрядковий
+Superscript = Надрядковий
+Unbound Bible Help = Довiдка Unbound Bible
+Window = Вiкно
+Writing Direction = Напрям письма
+Zoom = Масштаб 
+
+// Localizable strings
+
+Change Font = Змінити шрифт
+Do you want to save the changes? = Ви хочете зберегти зміни?
+Document Name = Ім'я документа
+Don't Save = Не зберігати
+Failed to save document. = Неможливо зберегти документ.
+Permission denied. = Доступ заборонено.
+The document % could not be opened. = Неможливо відкрити документ %.
+verses was found = знайдено віршів
+You search for % produced no results. = За запитом % нічого не знайдено.
+Your changes will be lost if you don't save them. = Ваші зміни будуть втрачені, якщо ви не збережете їх.

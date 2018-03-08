@@ -102,3 +102,57 @@ verses found = verses found
 Version = Version
 Whole Words = Whole Words
 
+// macOS
+
+About Unbound Bible = About Unbound Bible 
+Align Left = Align Left 
+Align Right = Align Right 
+Alignment = Alignment 
+Baseline = Baseline 
+Bigger = Bigger 
+Bring All to Front = Bring All to Front 
+Clear Menu = Clear Menu 
+Close = Close 
+Colors… = Colors… 
+Copy Style = Copy Style 
+Default = Default 
+Facebook Page = Facebook Page
+Fonts… = Fonts… 
+Format = Format 
+Hide Others = Hide Others 
+Hide Unbound Bible = Hide Unbound Bible 
+Justify = Justify 
+Left to Right = Left to Right 
+Minimize = Minimize 
+Page Setup… = Page Setup… 
+Paste and Match Style = Paste and Match Style 
+Paste Style = Paste Style 
+Preferences = Preferences 
+Preferences… = Preferences… 
+Quit Unbound Bible = Quit Unbound Bible 
+Redo = Redo 
+Right to Left = Right to Left 
+Search Options = Search Options 
+Services = Services 
+Show All = Show All 
+Smaller = Smaller 
+Strikethrough = Strikethrough 
+Subscript = Subscript 
+Superscript = Superscript 
+Unbound Bible Help = Unbound Bible Help 
+Window = Window 
+Writing Direction = Writing Direction 
+Zoom = Zoom 
+
+// Localizable strings
+
+Change Font = Change Font 
+Do you want to save the changes? = Do you want to save the changes? 
+Document Name = Document Name 
+Don't Save = Don't Save 
+Failed to save document. = Failed to save document. 
+Permission denied. = Permission denied. 
+The document % could not be opened. = The document % could not be opened. 
+verses was found = verses was found 
+You search for % produced no results. = You search for % produced no results. 
+Your changes will be lost if you don't save them. = Your changes will be lost if you don't save them. 
