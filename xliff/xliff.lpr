@@ -6,11 +6,17 @@ uses
 const
   LangPath = '..\localization\';
 
-//function ChangeTargetLanguage(line: string): string;
-//begin
-//  Replace(line,'target-language="en"','target-language="ru"');
-//  Result := line;
-//end;
+procedure TargetLanguage(id: string; var line: string);
+var
+  source, target : string;
+begin
+  source := 'source-language="en"';
+  target := 'target-language="&&"';
+  if Pos(source, line) = 0 then Exit;
+  if id = '' then Exit;
+  Replace(target, '&&', id);
+  Replace(line, source, source + ' ' + target);
+end;
 
 function GetSource(line: string): string;
 var
@@ -40,19 +46,21 @@ var
   IniFile: TIniFile;
   Xliff, Outlist : TStringList;
   Source, Target : string;
-  Line, Outfile : string;
+  Line, Outfile, id : string;
   i : integer;
 begin
   IniFile := TIniFile.Create(LangPath + Item);
   Xliff := TStringList.Create;
   Outlist := TStringList.Create;
+  id := IniFile.ReadString('Localization', 'LanguageID', '');
 
   Xliff.LoadFromFile('en.xliff');
 
   for i:=0 to Xliff.Count-1 do
     begin
       Line := Xliff[i];
-      if Pos('<target>',Line) > 0 then Continue;
+      TargetLanguage(id, Line);
+      if Pos('<target>', Line) > 0 then Continue;
       Outlist.Add(Line);
       Source := GetSource(Line);
       if Source = '' then Continue;
