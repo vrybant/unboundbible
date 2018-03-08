@@ -3,63 +3,71 @@ program xliff;
 uses
   Interfaces, SysUtils, Classes, Graphics, IniFiles,  ClipBrd, UnitLib, LCLProc;
 
-type
-  TTarget = record
-    value : string;
-    from : integer;
-    till : integer;
-  end;
-
-function GetTarget(s: string): TTarget;
-begin
-  Result.from := Pos('<target>',s);
-  Result.till := Pos('</target>',s);
-
-  if Result.from > 0 then
-    begin
-      Result.from := Result.from + Length('<target>');
-      Result.value := Copy(s, Result.from, Result.till-Result.from);
-    end;
-end;
-
 const
   LangPath = '..\localization\';
 
-function ChangeString(s: string; Target: TTarget): string;
+//function ChangeTargetLanguage(line: string): string;
+//begin
+//  Replace(line,'target-language="en"','target-language="ru"');
+//  Result := line;
+//end;
+
+function GetSource(line: string): string;
+var
+  from, till, len : integer;
 begin
-  Result := Copy(s, 1, Target.from - 1) + Target.value + Copy(s, Target.till, 256);
+  Result := '';
+  from := Pos('<source>', line);
+  till := Pos('</source>', line);
+  len := Length('<source>');
+
+  if from > 0 then
+     Result := Copy(line, from+len, till-from-len);
+end;
+
+function GetTab(line: string): string;
+var
+  from : integer;
+begin
+  Result := '';
+  from := Pos('<source>', line);
+  if from > 0 then
+     Result := Copy(line, 1, from-1);
 end;
 
 procedure Localizate(Item: string);
 var
-  XliffList : TStringList;
   IniFile: TIniFile;
-  Target : TTarget;
-  outfile : string;
+  Xliff, Outlist : TStringList;
+  Source, Target : string;
+  Line, Outfile : string;
   i : integer;
 begin
   IniFile := TIniFile.Create(LangPath + Item);
-  XliffList := TStringList.Create;
-  XliffList.LoadFromFile('ru.xliff');
+  Xliff := TStringList.Create;
+  Outlist := TStringList.Create;
 
-  for i:=0 to XliffList.Count-1 do
+  Xliff.LoadFromFile('en.xliff');
+
+  for i:=0 to Xliff.Count-1 do
     begin
-      Target := GetTarget(XliffList[i]);
-
-      if Target.from > 0 then
-        begin
-          Target.value := IniFile.ReadString('Localization', Target.value, Target.value);
-          XliffList[i] := ChangeString(XliffList[i], Target);
-        end;
-
+      Line := Xliff[i];
+      if Pos('<target>',Line) > 0 then Continue;
+      Outlist.Add(Line);
+      Source := GetSource(Line);
+      if Source = '' then Continue;
+      Target := IniFile.ReadString('Localization', Source, Source);
+      Target := GetTab(Line) + '<target>' + Target + '</target>';
+      Outlist.Add(Target);
     end;
 
   ForceDirectories('out');
-  outfile := 'out\' + ChangeFileExt(item,'.xliff');
-  XliffList.SaveToFile(outfile);
+  Outfile := 'out\' + ChangeFileExt(item,'.xliff');
+  Outlist.SaveToFile(Outfile);
 
   IniFile.Free;
-  XliffList.Free;
+  Outlist.Free;
+  Xliff.Free;
 end;
 
 procedure Execute;
