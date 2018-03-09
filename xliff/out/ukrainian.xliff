@@ -42,7 +42,7 @@
       </trans-unit>
       <trans-unit id="4sb-4s-VLi.title">
         <source>Quit Unbound Bible</source>
-        <target>Завершить Unbound Bible</target>
+        <target>Завершити Unbound Bible</target>
         <note>Class = "NSMenuItem"; title = "Quit Unbound Bible"; ObjectID = "4sb-4s-VLi";</note>
       </trans-unit>
       <trans-unit id="5QF-Oa-p0T.title">
@@ -62,7 +62,7 @@
       </trans-unit>
       <trans-unit id="6dh-zS-Vam.title">
         <source>Redo</source>
-        <target>Повторить</target>
+        <target>Повторити</target>
         <note>Class = "NSMenuItem"; title = "Redo"; ObjectID = "6dh-zS-Vam";</note>
       </trans-unit>
       <trans-unit id="7BN-JD-2QK.ibShadowedToolTip">
@@ -162,7 +162,7 @@
       </trans-unit>
       <trans-unit id="LE2-aR-0XJ.title">
         <source>Bring All to Front</source>
-        <target>Переместить все на передний план</target>
+        <target>Усi наперед</target>
         <note>Class = "NSMenuItem"; title = "Bring All to Front"; ObjectID = "LE2-aR-0XJ";</note>
       </trans-unit>
       <trans-unit id="NMo-om-nkz.title">
@@ -182,7 +182,7 @@
       </trans-unit>
       <trans-unit id="OY7-WF-poV.title">
         <source>Minimize</source>
-        <target>Свернуть</target>
+        <target>Згорнути</target>
         <note>Class = "NSMenuItem"; title = "Minimize"; ObjectID = "OY7-WF-poV";</note>
       </trans-unit>
       <trans-unit id="Olw-nP-bQN.title">
@@ -257,7 +257,7 @@
       </trans-unit>
       <trans-unit id="WeT-3V-zwk.title">
         <source>Paste and Match Style</source>
-        <target>Вставить в текущем стиле</target>
+        <target>Вставити i допасувати стиль</target>
         <note>Class = "NSMenuItem"; title = "Paste and Match Style"; ObjectID = "WeT-3V-zwk";</note>
       </trans-unit>
       <trans-unit id="Wjv-fn-3si.title">
@@ -267,12 +267,12 @@
       </trans-unit>
       <trans-unit id="XH3-bn-YZa.title">
         <source>Left to Right</source>
-        <target>Слева на право</target>
+        <target>Злiва направо</target>
         <note>Class = "NSMenuItem"; title = "Left to Right"; ObjectID = "XH3-bn-YZa";</note>
       </trans-unit>
       <trans-unit id="XOO-wQ-JkF.ibShadowedToolTip">
         <source>Search Options</source>
-        <target>Настройки поиска</target>
+        <target>Параметри пошуку</target>
         <note>Class = "NSButton"; ibShadowedToolTip = "Search Options"; ObjectID = "XOO-wQ-JkF";</note>
       </trans-unit>
       <trans-unit id="YXJ-jc-chq.title">
@@ -297,7 +297,7 @@
       </trans-unit>
       <trans-unit id="c6b-1l-Y1E.title">
         <source>Default</source>
-        <target>Стандартна</target>
+        <target>За замовчуванням</target>
         <note>Class = "NSMenuItem"; title = "Default"; ObjectID = "c6b-1l-Y1E";</note>
       </trans-unit>
       <trans-unit id="cB7-aj-bfZ.title">
@@ -342,7 +342,7 @@
       </trans-unit>
       <trans-unit id="eLn-5R-Lbk.title">
         <source>Default</source>
-        <target>Стандартна</target>
+        <target>За замовчуванням</target>
         <note>Class = "NSMenuItem"; title = "Default"; ObjectID = "eLn-5R-Lbk";</note>
       </trans-unit>
       <trans-unit id="gCS-F5-sao.title">
@@ -377,7 +377,7 @@
       </trans-unit>
       <trans-unit id="iEQ-RP-d98.title">
         <source>Right to Left</source>
-        <target>Справа на лево</target>
+        <target>Справа налiво</target>
         <note>Class = "NSMenuItem"; title = "Right to Left"; ObjectID = "iEQ-RP-d98";</note>
       </trans-unit>
       <trans-unit id="iSQ-oH-JzE.title">
@@ -442,7 +442,7 @@
       </trans-unit>
       <trans-unit id="q9e-HX-PiS.title">
         <source>Strikethrough</source>
-        <target>Зачеркнутый</target>
+        <target>Закреслення</target>
         <note>Class = "NSMenuItem"; title = "Strikethrough"; ObjectID = "q9e-HX-PiS";</note>
       </trans-unit>
       <trans-unit id="qAw-Ah-khi.title">
@@ -482,7 +482,7 @@
       </trans-unit>
       <trans-unit id="vJi-4M-UiB.title">
         <source>Page Setup…</source>
-        <target>Параметры страницы…</target>
+        <target>Параметри сторiнки…</target>
         <note>Class = "NSMenuItem"; title = "Page Setup…"; ObjectID = "vJi-4M-UiB";</note>
       </trans-unit>
       <trans-unit id="vNY-rz-j42.title">
