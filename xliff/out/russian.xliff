@@ -607,6 +607,11 @@
         <target>Подстрочник</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="Later">
+        <source>Later</source>
+        <target>Позже</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="OK">
         <source>OK</source>
         <target>OK</target>
@@ -637,9 +642,24 @@
         <target>Сохранить…</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="The beta version has expired.">
+        <source>The beta version has expired.</source>
+        <target>Срок действия BETA версии закончился.</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="The document % could not be opened.">
         <source>The document % could not be opened.</source>
         <target>Не удается открыть документ %.</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Update">
+        <source>Update</source>
+        <target>Обновить</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Update to the stable version.">
+        <source>Update to the stable version.</source>
+        <target>Обновите программу до стабильной версии.</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="You search for % produced no results.">

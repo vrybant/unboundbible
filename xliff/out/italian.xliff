@@ -607,6 +607,11 @@
         <target>Interlinear</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="Later">
+        <source>Later</source>
+        <target>Later</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="OK">
         <source>OK</source>
         <target>OK</target>
@@ -637,9 +642,24 @@
         <target>Salva…</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="The beta version has expired.">
+        <source>The beta version has expired.</source>
+        <target>The beta version has expired.</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="The document % could not be opened.">
         <source>The document % could not be opened.</source>
         <target>The document % could not be opened.</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Update">
+        <source>Update</source>
+        <target>Update</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Update to the stable version.">
+        <source>Update to the stable version.</source>
+        <target>Update to the stable version.</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="You search for % produced no results.">

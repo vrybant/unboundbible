@@ -607,6 +607,11 @@
         <target>Підрядковий</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="Later">
+        <source>Later</source>
+        <target>Пізніше</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="OK">
         <source>OK</source>
         <target>OK</target>
@@ -637,9 +642,24 @@
         <target>Зберегти…</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="The beta version has expired.">
+        <source>The beta version has expired.</source>
+        <target>Термін дії BETA версії закінчився.</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="The document % could not be opened.">
         <source>The document % could not be opened.</source>
         <target>Неможливо відкрити документ %.</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Update">
+        <source>Update</source>
+        <target>Оновити</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Update to the stable version.">
+        <source>Update to the stable version.</source>
+        <target>Обновіть програму до стабільної версії.</target>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="You search for % produced no results.">

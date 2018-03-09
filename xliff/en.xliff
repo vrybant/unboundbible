@@ -489,6 +489,10 @@
         <source>Interlinear</source>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="Later">
+        <source>Later</source>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="OK">
         <source>OK</source>
         <note>No comment provided by engineer.</note>
@@ -513,8 +517,20 @@
         <source>Save…</source>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="The beta version has expired.">
+        <source>The beta version has expired.</source>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
       <trans-unit id="The document % could not be opened.">
         <source>The document % could not be opened.</source>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Update">
+        <source>Update</source>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Update to the stable version.">
+        <source>Update to the stable version.</source>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="You search for % produced no results.">
