@@ -66,7 +66,7 @@ type
     function DecodeIndex(index: integer): integer;
     function RankContents(const Contents: TContentArray): TContentArray;
   public
-    constructor Create(filePath, fileName: string);
+    constructor Create(filePath: string);
     procedure OpenDatabase;
     procedure LoadDatabase;
     function BookByNum(n: integer): TBook;
@@ -130,20 +130,20 @@ end;
 //                                     TBible
 //========================================================================================
 
-constructor TBible.Create(filePath, fileName: string);
+constructor TBible.Create(filePath: string);
 begin
   inherited Create;
 
   {$ifdef zeos}
     Connection := TZConnection.Create(nil);
     Query := TZReadOnlyQuery.Create(nil);
-    Connection.Database := filePath + slash + fileName;
+    Connection.Database := filePath;
     Connection.Protocol := 'sqlite-3';
     Query.Connection := Connection;
   {$else}
     Connection := TSQLite3Connection.Create(nil);
     Connection.CharSet := 'UTF8';
-    Connection.DatabaseName := filePath + slash + fileName;
+    Connection.DatabaseName := filePath;
     Transaction := TSQLTransaction.Create(Connection);
     Connection.Transaction := Transaction;
     Query := TSQLQuery.Create(nil);
@@ -151,7 +151,7 @@ begin
   {$endif}
 
   self.filePath := filePath;
-  self.fileName := fileName;
+  self.fileName := ExtractFileName(filePath);
 
   fileFormat   := unbound;
   z            := unboundStringAlias;
@@ -719,11 +719,11 @@ var
      i : integer;
 begin
   List := TStringList.Create;
-  GetFileList(path + Slash + '*.*', List, True);
+  GetFileList(path, '*.*', List);
 
   for i:= 0 to List.Count-1 do
     begin
-      Item := TBible.Create(path, List[i]);
+      Item := TBible.Create(List[i]);
       if Item.connected then Add(Item) else Item.Free;
     end;
 

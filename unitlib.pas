@@ -48,7 +48,7 @@ procedure RemoveTags(var s: string);
 // file's functions
 
 function ExtractOnlyName(s: string): string;
-procedure GetFileList(const Path: string; const List: TStrings; Ext: boolean);
+procedure GetFileList(const Path, Mask : string; const List: TStrings);
 function SharePath: string;
 function DocumentsPath: string;
 function ConfigFile: string;
@@ -232,19 +232,17 @@ begin
   Result := ExtractFileName(ChangeFileExt(s,''));
 end;
 
-procedure GetFileList(const Path: string; const List: TStrings; Ext: boolean);
+procedure GetFileList(const Path, Mask: string; const List: TStrings);
 var
   SearchRec : TSearchRec;
   Res : integer;
   s : string;
 begin
-  Res  := SysUtils.FindFirst(Path, faAnyFile, SearchRec);
+  Res  := SysUtils.FindFirst(Path + slash + Mask, faAnyFile, SearchRec);
 
   while Res=0 do
     begin
-      if Ext then s := SearchRec.Name
-             else s := ExtractOnlyName(SearchRec.Name);
-
+      s := Path + slash + SearchRec.Name;
       if (SearchRec.Attr and faDirectory) = 0 then List.Add(s);
       Res := FindNext(SearchRec);
     end;
