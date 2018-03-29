@@ -69,6 +69,7 @@ type
     constructor Create(filePath: string);
     procedure OpenDatabase;
     procedure LoadDatabase;
+    function MinBook: integer;
     function BookByNum(n: integer): TBook;
     function BookByName(s: string): TBook;
     function VerseToStr(Verse: TVerse; full: boolean): string;
@@ -248,7 +249,7 @@ end;
 procedure TBible.LoadDatabase;
 var
   Book : TBook;
-  x, n, min : integer;
+  x, n : integer;
 begin
   if loaded then exit;
 
@@ -257,7 +258,6 @@ begin
       Query.SQL.Text := 'SELECT DISTINCT ' + z.book + ' FROM ' + z.bible;
       Query.Open;
 
-      min := 0;
       while not Query.Eof do
         begin
           try x := Query.FieldByName(z.book).AsInteger; except x := 0 end;
@@ -269,18 +269,12 @@ begin
           Book.title := IntToStr(x);
           Book.id := x;
           Add(Book);
-
-//        if IsOldTestament(n) then oldTestament := true;
-//        if IsNewTestament(n) then newTestament := true;
-//        if IsApocrypha(n)    then apocrypha    := true;
-
-          if (n < min) or (min = 0) then min := n;
           Query.Next;
         end;
 
       SetTitles;
       firstVerse := minVerse;
-      firstVerse.book := min;
+      firstVerse.book := MinBook;
 
       loaded := true;
     except
@@ -330,6 +324,15 @@ begin
             Result := i;
             Exit;
           end;
+end;
+
+function TBible.MinBook: integer;
+var i, min : integer;
+begin
+  min := 0;
+  for i:=0 to Count-1 do
+    if (Items[i].Number < min) or (min = 0) then min := Items[i].Number;
+  Result := min;
 end;
 
 function TBible.BookByNum(n: integer): TBook;
