@@ -62,8 +62,8 @@ type
     function  GetItem(index: integer): TBook;
     procedure SetItem(index: integer; lst: TBook);
     function Add(lst: TBook): integer;
-    function EncodeIndex(index: integer): integer;
-    function DecodeIndex(index: integer): integer;
+    function EncodeID(id: integer): integer;
+    function DecodeID(id: integer): integer;
     function RankContents(const Contents: TContentArray): TContentArray;
   public
     constructor Create(filePath: string);
@@ -264,7 +264,7 @@ begin
           if  x <= 0 then Continue;
 
           Book := TBook.Create;
-          n := DecodeIndex(x);
+          n := DecodeID(x);
           Book.number := n;
           Book.title := IntToStr(x);
           Book.id := x;
@@ -309,23 +309,23 @@ begin
   Titles.Free;
 end;
 
-function TBible.EncodeIndex(index: integer): integer;
+function TBible.EncodeID(id: integer): integer;
 begin
-  Result := index;
+  Result := id;
   if fileFormat = mybible then
-    if index > 0 then
-      if index <= Length(myBibleArray) then
-        Result := myBibleArray[index];
+    if id > 0 then
+      if id <= Length(myBibleArray) then
+        Result := myBibleArray[id];
 end;
 
-function TBible.DecodeIndex(index: integer): integer;
+function TBible.DecodeID(id: integer): integer;
 var i : integer;
 begin
-  Result := index;
+  Result := id;
   if fileFormat = mybible then
-    if index > 0 then
+    if id > 0 then
       for i:=1 to Length(myBibleArray) do
-        if index = myBibleArray[i] then
+        if id = myBibleArray[i] then
           begin
             Result := i;
             Exit;
@@ -428,7 +428,7 @@ var
 begin
   SetLength(Result,0);
 
-  index := EncodeIndex(Verse.book);
+  index := EncodeID(Verse.book);
   id := IntToStr(index);
   chapter := IntToStr(Verse.chapter);
 
@@ -465,7 +465,7 @@ var
 begin
   SetLength(Result,0);
 
-  index := EncodeIndex(Verse.book);
+  index := EncodeID(Verse.book);
   id := IntToStr(index);
   chapter := IntToStr(Verse.chapter);
   verseNumber := IntToStr(Verse.number);
@@ -539,8 +539,8 @@ begin
 
   if Range.from > 0 then
     begin
-      from := IntToStr(EncodeIndex(Range.from));
-      till := IntToStr(EncodeIndex(Range.till));
+      from := IntToStr(EncodeID(Range.from));
+      till := IntToStr(EncodeID(Range.till));
       queryRange := ' AND ' + z.book + ' >= ' + from + ' AND ' + z.book + ' <= ' + till;
     end;
 
@@ -560,7 +560,7 @@ begin
           try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
-          Contents[i].verse.book := DecodeIndex(Contents[i].verse.book);
+          Contents[i].verse.book := DecodeID(Contents[i].verse.book);
           if isApocrypha(Contents[i].verse.book) then apocrypha := true;
           Query.Next;
         end;
@@ -598,7 +598,7 @@ begin
           try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
-          Contents[i].verse.book := DecodeIndex(Contents[i].verse.book);
+          Contents[i].verse.book := DecodeID(Contents[i].verse.book);
           Query.Next;
         end;
     except
@@ -636,7 +636,7 @@ var
 begin
   Result := 1;
 
-  index := EncodeIndex(Verse.book);
+  index := EncodeID(Verse.book);
   id := IntToStr(index);
 
   try
