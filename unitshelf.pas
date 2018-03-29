@@ -535,35 +535,26 @@ end;
 
 function TBible.RankContents(const Contents: TContentArray): TContentArray;
 var
-  i,j : integer;
+  i,j,k : integer;
 begin
   SetLength(Result,Length(Contents));
-
-  j:=0;
-  for i:=0 to Length(Contents)-1 do
-    if not IsNewTestament(Contents[i].verse.book) then
-      begin
-        Result[j] := Contents[i];
-        Inc(j);
-      end;
-
-  for i:=0 to Length(Contents)-1 do
-    if IsNewTestament(Contents[i].verse.book) then
-      begin
-        Result[j] := Contents[i];
-        Inc(j);
-      end;
+  k:=0;
+  for i:=0 to Count-1 do
+    for j:=0 to Length(Contents)-1 do
+      if Contents[j].verse.book = Items[i].Number then
+        begin
+          Result[k] := Contents[j];
+          Inc(k);
+        end;
 end;
 
 function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
 var
   Contents : TContentArray;
   queryRange, from, till : string;
-  apocrypha : boolean;
   i : integer;
 begin
   SetLength(Result,0);
-  apocrypha := false;
   queryRange := '';
 
   SetSearchOptions(searchString, SearchOptions);
@@ -592,7 +583,6 @@ begin
           try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
           Contents[i].verse.book := DecodeID(Contents[i].verse.book);
-          if isApocrypha(Contents[i].verse.book) then apocrypha := true;
           Query.Next;
         end;
     finally
@@ -602,8 +592,7 @@ begin
     Exit;
   end;
 
-  if (fileFormat = unbound) and apocrypha then Result := RankContents(Contents)
-    else Result := Contents;
+  Result := RankContents(Contents);
 end;
 
 function TBible.GetAll: TContentArray;
