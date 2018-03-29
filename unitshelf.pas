@@ -17,10 +17,11 @@ const
 type
   TBook = class
   public
-    title  : string;
-    abbr   : string;
-    number : integer;
-    id     : integer;
+    title   : string;
+    abbr    : string;
+    number  : integer;
+    id      : integer;
+    sorting : integer;
   end;
 
   TBible = class(TList)
@@ -64,6 +65,7 @@ type
     function Add(lst: TBook): integer;
     function EncodeID(id: integer): integer;
     function DecodeID(id: integer): integer;
+    function SortingIndex(number: integer): integer;
     function RankContents(const Contents: TContentArray): TContentArray;
   public
     constructor Create(filePath: string);
@@ -173,6 +175,11 @@ begin
   OpenDatabase;
 end;
 
+function BookComparison(Item1, Item2: Pointer): integer;
+begin
+  Result := TBook(Item1).sorting - TBook(Item2).sorting;
+end;
+
 procedure TBible.OpenDatabase;
 var
   key, value : string;
@@ -242,6 +249,7 @@ begin
     Query.Close;
   end;
 
+  language := LowerCase(language);
   RightToLeft := GetRightToLeft(language);
   RemoveTags(info);
 end;
@@ -268,6 +276,7 @@ begin
           Book.number := n;
           Book.title := IntToStr(x);
           Book.id := x;
+          Book.sorting := SortingIndex(n);
           Add(Book);
           Query.Next;
         end;
@@ -275,6 +284,7 @@ begin
       SetTitles;
       firstVerse := minVerse;
       firstVerse.book := MinBook;
+      Sort(BookComparison);
 
       loaded := true;
     except
@@ -324,6 +334,24 @@ begin
             Result := i;
             Exit;
           end;
+end;
+
+function TBible.SortingIndex(number: integer): integer;
+var
+  i : integer;
+  r : boolean;
+begin
+  Result := 100;
+  if number <= 0 then Exit;
+  r := Prefix('ru', language);
+
+  for i:=1 to Length(sortArrayEN) do
+    if (not r and (number = sortArrayEN[i])) or
+           (r and (number = sortArrayRU[i])) then
+      begin
+        Result := i;
+        Exit;
+      end;
 end;
 
 function TBible.MinBook: integer;
@@ -613,23 +641,10 @@ begin
 end;
 
 procedure TBible.GetTitles(var List: TStringList);
-var
-  i : integer;
+var i : integer;
 begin
-  if self.Filetype <> 'text' then
-    begin
-      // put apocrypha before NT
-      for i := 0 to Count-1 do
-        if not IsNewTestament(self[i].Number) then List.Add(self[i].Title);
-
-      for i := 0 to self.Count - 1 do
-        if IsNewTestament(self[i].Number) then List.Add(self[i].Title);
-    end;
-
-  if self.Filetype = 'text' then
-    for i := 0 to self.Count - 1 do
-      List.Add(self[i].Title);
-
+  for i := 0 to self.Count - 1 do
+    List.Add(self[i].Title);
 end;
 
 function TBible.ChaptersCount(Verse: TVerse): integer;
