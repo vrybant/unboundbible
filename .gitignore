@@ -15,7 +15,6 @@ lib/*
 backup/*
 titles/text/*
 components/zeosdbo/*
-components/richmemo/*
 components/unboundmemo/lib/*
 components/unboundmemo/backup/*
 UnboundBibleTools
