@@ -339,15 +339,15 @@ end;
 function TBible.SortingIndex(number: integer): integer;
 var
   i : integer;
-  r : boolean;
+  l : boolean;
 begin
   Result := 100;
   if number <= 0 then Exit;
-  r := Prefix('ru', language);
+  l := Orthodox(language);
 
   for i:=1 to Length(sortArrayEN) do
-    if (not r and (number = sortArrayEN[i])) or
-           (r and (number = sortArrayRU[i])) then
+    if (not l and (number = sortArrayEN[i])) or
+           (l and (number = sortArrayRU[i])) then
       begin
         Result := i;
         Exit;

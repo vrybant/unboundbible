@@ -61,6 +61,7 @@ procedure OpenFolder(path: string);
 
 function GetDefaultLanguage: string;
 function GetRightToLeft(language: string): boolean;
+function Orthodox(language: string): boolean;
 
 // system's functions
 
@@ -361,6 +362,14 @@ begin
    if Prefix('he' ,language) or
       Prefix('ara',language) or
       Prefix('fa' ,language) then Result := true;
+end;
+
+function Orthodox(language: string): boolean;
+begin
+   Result := false;
+   if Prefix('ru'  ,language) or
+      Prefix('uk'  ,language) or
+      Prefix('bulg',language) then Result := true;
 end;
 
 // system's functions
