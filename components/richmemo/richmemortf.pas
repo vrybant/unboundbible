@@ -32,6 +32,7 @@ function SaveStream(ARich: TCustomRichMemo; Dst: TStream): Boolean;
 procedure RegisterRTFSaver;
 
 implementation
+uses LazUTF8;
 
 var
   LangConvTable : array of record lang: integer; proc: TEncConvProc end;
@@ -489,7 +490,7 @@ begin
   if txtlen=0 then Exit;
 
   b:=Copy(txtbuf, 1, txtlen);
-  len:={UTF8}Length(b);
+  len:=UTF8Length(b);
 
   txtlen:=0;
   txtbuf:='';

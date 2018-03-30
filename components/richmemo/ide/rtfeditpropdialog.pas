@@ -5,8 +5,7 @@ unit RtfEditPropDialog;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Buttons, RichMemo, RichMemoUtils;
+  SysUtils, Forms, Graphics, Dialogs, StdCtrls, Buttons, RichMemo, RichMemoUtils;
 
 type
 
@@ -21,6 +20,7 @@ type
     btnClear: TButton;
     btnOk: TButton;
     btnCancel: TButton;
+    btnSave: TButton;
     ColorDialog1: TColorDialog;
     FontDialog1: TFontDialog;
     RtfOpenDialog: TOpenDialog;
@@ -30,6 +30,7 @@ type
     btnUnderline: TSpeedButton;
     btnFont: TSpeedButton;
     btnColor: TSpeedButton;
+    RtfSaveDialog: TSaveDialog;
     procedure btnCAClick(Sender: TObject);
     procedure btnClearClick(Sender: TObject);
     procedure btnItalicClick(Sender: TObject);
@@ -37,22 +38,18 @@ type
     procedure btnLAClick(Sender: TObject);
     procedure btnLoadClick(Sender: TObject);
     procedure btnRAClick(Sender: TObject);
-    procedure FormResize(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
     procedure btnBoldClick(Sender: TObject);
     procedure btnUnderlineClick(Sender: TObject);
     procedure btnFontClick(Sender: TObject);
     procedure btnColorClick(Sender: TObject);
+    procedure RichMemo1Change(Sender: TObject);
   private
-    { private declarations }
     procedure FontStyleModify(fs: TFontStyle);
-  public
-    { public declarations }
-
   end;
 
 var
   RTFEditDialog: TRTFEditDialog = nil;
-
 
 implementation
 
@@ -75,6 +72,7 @@ end;
 procedure TRTFEditDialog.btnClearClick(Sender: TObject);
 begin
   RichMemo1.Clear;
+  RichMemo1Change(Sender);
 end;
 
 procedure TRTFEditDialog.btnItalicClick(Sender: TObject);
@@ -100,20 +98,12 @@ begin
     RichMemo1.SelLength, paRight);
 end;
 
-procedure TRTFEditDialog.FormResize(Sender: TObject);
-const
-  SpaceOffset = 4;
-var
-  w2 : integer;
+procedure TRTFEditDialog.btnSaveClick(Sender: TObject);
 begin
-  w2:=RichMemo1.ClientWidth div 2;
-  {$ifdef darwin}
-  btnCancel.Left:=w2 - SpaceOffset - btnCancel.Width;
-  btnOk.Left:= w2 + SpaceOffset;
-  {$else}
-  btnOk.Left:=w2 - SpaceOffset - btnOk.Width;
-  btnCancel.Left:= w2 + SpaceOffset;
-  {$endif}
+  if RtfSaveDialog.FileName = '' then
+    RtfSaveDialog.FileName := 'New document.rtf';
+  if RtfSaveDialog.Execute and (RtfSaveDialog.FileName <> '') then
+    SaveRTFFile( RichMemo1, RtfSaveDialog.FileName);
 end;
 
 procedure TRTFEditDialog.btnBoldClick(Sender: TObject);
@@ -154,6 +144,11 @@ begin
     RichMemo1.SetRangeColor( RichMemo1.SelStart, RichMemo1.SelLength,
       ColorDialog1.Color);
   end;
+end;
+
+procedure TRTFEditDialog.RichMemo1Change(Sender: TObject);
+begin
+  btnSave.Enabled := RichMemo1.Lines.Count > 0;
 end;
 
 procedure TRTFEditDialog.FontStyleModify(fs: TFontStyle);

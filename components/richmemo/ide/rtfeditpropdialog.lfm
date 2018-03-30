@@ -6,27 +6,26 @@ object RTFEditDialog: TRTFEditDialog
   Caption = 'Rich Text Edit Dialog'
   ClientHeight = 275
   ClientWidth = 538
-  OnResize = FormResize
-  LCLVersion = '1.3'
+  LCLVersion = '1.7'
   object btnLoad: TButton
-    Left = 455
+    Left = 8
     Height = 25
-    Top = 8
+    Top = 243
     Width = 75
-    Anchors = [akTop, akRight]
+    Anchors = [akLeft, akBottom]
     Caption = 'Load'
     OnClick = btnLoadClick
-    TabOrder = 0
+    TabOrder = 1
   end
   object btnClear: TButton
-    Left = 376
+    Left = 168
     Height = 25
-    Top = 8
+    Top = 243
     Width = 75
-    Anchors = [akTop, akRight]
+    Anchors = [akLeft, akBottom]
     Caption = 'Clear'
     OnClick = btnClearClick
-    TabOrder = 1
+    TabOrder = 3
   end
   object RichMemo1: TRichMemo
     Left = 8
@@ -38,28 +37,30 @@ object RTFEditDialog: TRTFEditDialog
     Lines.Strings = (
       'RichMemo1'
     )
+    OnChange = RichMemo1Change
     ScrollBars = ssAutoBoth
-    TabOrder = 2
+    TabOrder = 0
+    ZoomFactor = 1
   end
   object btnOk: TButton
-    Left = 8
+    Left = 376
     Height = 25
     Top = 243
     Width = 75
-    Anchors = [akLeft, akBottom]
+    Anchors = [akRight, akBottom]
     Caption = 'OK'
     ModalResult = 1
-    TabOrder = 3
+    TabOrder = 4
   end
   object btnCancel: TButton
-    Left = 88
+    Left = 455
     Height = 25
     Top = 243
     Width = 75
-    Anchors = [akLeft, akBottom]
+    Anchors = [akRight, akBottom]
     Caption = 'Cancel'
     ModalResult = 2
-    TabOrder = 4
+    TabOrder = 5
   end
   object btnJA: TSpeedButton
     Left = 288
@@ -246,6 +247,17 @@ object RTFEditDialog: TRTFEditDialog
     Caption = 'Color'
     OnClick = btnColorClick
   end
+  object btnSave: TButton
+    AnchorSideRight.Side = asrBottom
+    Left = 88
+    Height = 25
+    Top = 243
+    Width = 75
+    Anchors = [akLeft, akBottom]
+    Caption = 'Save'
+    OnClick = btnSaveClick
+    TabOrder = 2
+  end
   object RtfOpenDialog: TOpenDialog
     Filter = 'Rich-text file (*.rtf)|*.rtf|Any file (*.*)|*.*'
     left = 32
@@ -283,5 +295,11 @@ object RTFEditDialog: TRTFEditDialog
     MaxFontSize = 0
     left = 32
     top = 64
+  end
+  object RtfSaveDialog: TSaveDialog
+    Filter = 'Rich-text file (*.rtf)|*.rtf'
+    Options = [ofOverwritePrompt, ofEnableSizing, ofViewDetail]
+    left = 120
+    top = 168
   end
 end

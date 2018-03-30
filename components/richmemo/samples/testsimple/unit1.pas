@@ -16,7 +16,6 @@ type
   TForm1 = class(TForm)
     Button1: TButton;
     Button10: TButton;
-    Button11: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
@@ -58,8 +57,7 @@ type
     procedure ParaMetricRead;
   public
     { public declarations }
-    procedure OnLinkAction(Sender: TObject; AAction: TLinkAction; const AMouseInfo: TLinkMouseInfo; StartChar, LenChars: Integer);
-  end;
+  end; 
   
 var
   Form1: TForm1; 
@@ -86,7 +84,6 @@ end;
 
 procedure TForm1.Button11Click(Sender: TObject);
 begin
-  RichMemo1.SetLink(RichMemo1.SelStart, RichMemo1.SelLength, true);
 end;
 
 procedure TForm1.Button12Click(Sender: TObject);
@@ -195,7 +192,6 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   RegisterRTFLoader;
-  RichMemo1.OnLinkAction:=@OnLinkAction;
 end;
 
 procedure TForm1.RichMemo1Change(Sender: TObject);
@@ -224,12 +220,6 @@ begin
 
   StartIdent.OnChange:=@StartIdentChange;
   OffsetIdent.OnChange:=@StartIdentChange;
-end;
-
-procedure TForm1.OnLinkAction(Sender: TObject; AAction: TLinkAction;
-  const AMouseInfo: TLinkMouseInfo; StartChar, LenChars: Integer);
-begin
-
 end;
 
 initialization

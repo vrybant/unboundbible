@@ -1,14 +1,14 @@
 object Form1: TForm1
-  Left = 808
+  Left = 290
   Height = 338
-  Top = 293
+  Top = 137
   Width = 615
   Caption = 'Ready to Search!'
   ClientHeight = 338
   ClientWidth = 615
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.4.4.0'
+  LCLVersion = '1.3'
   object Button1: TButton
     Left = 532
     Height = 25

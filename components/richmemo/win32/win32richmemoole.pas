@@ -21,7 +21,7 @@ unit Win32RichMemoOle;
 interface
 
 uses
-  Windows, ActiveX, ComObj;
+  Windows, ActiveX, ComObj, Win32RichMemoProc;
 
 {.$define oledebug}
 

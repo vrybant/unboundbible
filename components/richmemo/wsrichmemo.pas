@@ -101,8 +101,12 @@ type
     class function SaveRichText(const AWinControl: TWinControl; Dest: TStream): Boolean; virtual;
 
     class function Search(const AWinControl: TWinControl; const ANiddle: string; const SearchOpts: TIntSearchOpt): Integer; virtual;
+    // this is a temproray solution and will be removed eventually leaving a variant of SearchEx only
+    class function isSearchEx: Boolean; virtual;
+    class function SearchEx(const AWinControl: TWinControl; const ANiddle: string; const SearchOpts: TIntSearchOpt; var TextStart, TextLength: Integer): Boolean; virtual;
 
     class procedure SetZoomFactor(const AWinControl: TWinControl; AZoomFactor: Double); virtual;
+    class function GetZoomFactor(const AWinControl: TWinControl; var AZoomFactor:Double): Boolean; virtual;
 
     //inline handler
     class function InlineInsert(const AWinControl: TWinControl; ATextStart, ATextLength: Integer;
@@ -111,6 +115,9 @@ type
        AHandler: TRichMemoInline; wsObj: TRichMemoInlineWSObject); virtual;
 
     class function Print(const AWinControl: TWinControl; APrinter: TPrinter; const AParams: TPrintParams; DoPrint: Boolean): Integer; virtual;
+
+    class procedure Redo(const AWinControl: TWinControl); virtual;
+    class function GetCanRedo(const AWinControl: TWinControl): Boolean; virtual;
   end;
   TWSCustomRichMemoClass = class of TWSCustomRichMemo;
 
@@ -358,10 +365,27 @@ begin
   Result:=-1;
 end;
 
+class function TWSCustomRichMemo.isSearchEx: Boolean;
+begin
+  Result:=false;
+end;
+
+class function TWSCustomRichMemo.SearchEx(const AWinControl: TWinControl;
+  const ANiddle: string; const SearchOpts: TIntSearchOpt; var TextStart,
+  TextLength: Integer): Boolean;
+begin
+  Result:=false;
+end;
+
 class procedure TWSCustomRichMemo.SetZoomFactor(const AWinControl: TWinControl;
   AZoomFactor: Double);
 begin
 
+end;
+
+class function TWSCustomRichMemo.GetZoomFactor(const AWinControl: TWinControl; var AZoomFactor: Double): Boolean;
+begin
+  Result:=false;
 end;
 
 class function TWSCustomRichMemo.InlineInsert(const AWinControl: TWinControl;
@@ -383,6 +407,17 @@ class function TWSCustomRichMemo.Print(const AWinControl: TWinControl;
   APrinter: TPrinter; const AParams: TPrintParams; DoPrint: Boolean): Integer;
 begin
   Result:=0;
+end;
+
+class procedure TWSCustomRichMemo.Redo(const AWinControl: TWinControl);
+begin
+
+end;
+
+class function TWSCustomRichMemo.GetCanRedo(const AWinControl: TWinControl
+  ): Boolean;
+begin
+  Result:=false;
 end;
 
 end.

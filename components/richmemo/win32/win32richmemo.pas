@@ -30,7 +30,7 @@ uses
   // RTL headers
   Classes, SysUtils, 
   // LCL headers
-  LCLType, LCLIntf, LCLProc, WSLCLClasses,
+  LCLType, LCLIntf, LCLProc, WSLCLClasses, LMessages, LCLMessageGlue,
   Graphics, Controls, StdCtrls, Printers, Themes,
   // Win32WidgetSet
   Win32WSControls, Win32Int, Win32WSStdCtrls, win32proc,
@@ -122,8 +122,12 @@ type
 
     class function Search(const AWinControl: TWinControl; const ANiddle: string;
       const SearchOpts: TIntSearchOpt): Integer; override;
+    class function isSearchEx: Boolean; override;
+    class function SearchEx(const AWinControl: TWinControl; const ANiddle: string;
+      const SearchOpts: TIntSearchOpt; var ATextStart, ATextLength: Integer ): Boolean; override;
 
     class procedure SetZoomFactor(const AWinControl: TWinControl; AZoomFactor: Double); override;
+    class function GetZoomFactor(const AWinControl: TWinControl; var AZoomFactor: Double): Boolean; override;
 
     class function InlineInsert(const AWinControl: TWinControl; ATextStart, ATextLength: Integer;
       const ASize: TSize; AHandler: TRichMemoInline; var wsObj: TRichMemoInlineWSObject): Boolean; override;
@@ -132,6 +136,11 @@ type
 
     class function Print(const AWinControl: TWinControl; APrinter: TPrinter;
       const AParams: TPrintParams; DoPrint: Boolean): Integer; override;
+
+    class procedure Redo(const AWinControl: TWinControl); override;
+    class function GetCanRedo(const AWinControl: TWinControl): Boolean; override;
+
+    class procedure ScrollBy(const AWinControl: TWinControl;  DeltaX, DeltaY: integer); override;
   end;
 
   { TWin32Inline }
@@ -164,8 +173,40 @@ var
   // the value can be set to nil to use system-native drawing only.
   // or set it to whatever function desired
   NCPaint : TNCPaintProc = nil;
-  
+  AllocOLEObject : procedure (ARichMemo: TCustomRichMemo; AHandle: Windows.THandle; out OleCallback: IRichEditOleCallback);
+  InsertInlineFlags : Integer = REO_OWNERDRAWSELECT;
+  RichEditClass   : String = ''; // manually assigned by RichMemo user
+
+function GetSelRTF(amemo: TCustomRichMemo): string;
+function GetRichEditOLE(amemo: TCustomRichMemo): IRichEditOle; overload;
+function GetRichEditOLE(AHandle: THandle): IRichEditOle; overload;
+function GetOleObject(ole: IRichEditOle; SelStart: Integer; out res: TREOBJECT): Boolean;
+function SetOleObjectSize(ARichMemo: TCustomRichMemo; SelStart: Integer; const ASize: TSize): Boolean;
+function GetOleObjectSize(ARichMemo: TCustomRichMemo; SelStart: Integer; var ASize: TSize): Boolean;
+
+(*type
+  TWinLangOptions = set of (
+     wloAutokeyboard             // IMF_AUTOKEYBOARD        = $0001
+     , wloAutoFont               // IMF_AUTOFONT            = $0002
+     , wloImeCancelComplete      // IMF_IMECANCELCOMPLETE   = $0004	// High completes comp string when aborting, low cancels
+     , wloAlwaysSendNotify       // IMF_IMEALWAYSSENDNOTIFY = $0008
+     , wloAutoFontSizeAdjust     // IMF_AUTOFONTSIZEADJUST  = $0010
+     , wloUOFonts                // IMF_UIFONTS             = $0020
+     , wloDualFont               // IMF_DUALFONT	          = $0080
+  );
+
+function GetLangOptions(hnd: THandle):  TWinLangOptions; overload;
+function GetLangOptions(rm: TCustomRichMemo):  TWinLangOptions; overload;
+procedure SetLangOptions(hnd: THandle; const opts: TWinLangOptions); overload;
+procedure SetLangOptions(rm: TCustomRichMemo; const opts: TWinLangOptions); overload;
+*)
 implementation
+
+const
+  PointSize     = 72.0;
+  RtfSizeToInch = 2.54 * 1000.0;
+  SizeFactor    = 1 / PointSize * RtfSizeToInch; // pt to 0.01 mlmete
+  RevSizeFactor = 1 / SizeFactor;
 
 type
   TIntCustomRichMemo = class(TCustomRichMemo);
@@ -177,6 +218,18 @@ const
 { taRightJustify } ES_RIGHT,
 { taCenter       } ES_CENTER
   );
+
+const
+  ScrollStyleToEditFlags : array [TScrollStyle] of LongWord = (
+      {ssNone}           0
+    , {ssHorizontal}     WS_HSCROLL or ES_DISABLENOSCROLL
+    , {ssVertical}       WS_VSCROLL or ES_DISABLENOSCROLL
+    , {ssBoth}           WS_HSCROLL or WS_HSCROLL or ES_DISABLENOSCROLL
+    , {ssAutoHorizontal} WS_HSCROLL
+    , {ssAutoVertical}   WS_VSCROLL
+    , {ssAutoBoth}       WS_HSCROLL or WS_HSCROLL
+  );
+
 
 const
   TAB_OFFSET_MASK = $7FFFFF;
@@ -233,9 +286,25 @@ begin
   Result:=false; // we need to catch just notifications,
     // any other message should be handled in a "Default" manner
     // So, default result is false;
-  hdr:=PNMHDR(LParam);
   case Msg of
+    WM_COMMAND: begin
+      case HIWORD(WParam) of
+        EN_UPDATE: begin
+          // https://msdn.microsoft.com/en-us/library/windows/desktop/bb761687(v=vs.85).aspx
+          // EN_UPDATE is just a notification, that the edit is to be redrawn
+          Result:=true;
+        end;
+        EN_CHANGE: begin
+          // https://msdn.microsoft.com/en-us/library/windows/desktop/hh768384(v=vs.85).aspx
+          // Despite of what documentation claims (WM_NOTIFY), EN_CHANGE is notified by WM_COMMAND
+          if Assigned(AWinControl) and (AWinControl is TCustomRichMemo) then
+            TIntCustomRichMemo(AWinControl).Change;
+          Result:=true;
+        end;
+      end;
+    end;
     WM_NOTIFY: begin
+      hdr:=PNMHDR(LParam);
       case hdr^.code of
         EN_SELCHANGE:
           begin
@@ -412,10 +481,15 @@ begin
 end;
 
 class procedure TWin32WSCustomRichMemo.SetColor(const AWinControl: TWinControl);  
+var
+  Color: TColor;
 begin
-  // this methos is implemented, because Win32RichMemo doesn't use 
+  // this methos is implemented, because Win32RichMemo doesn't use
   // default LCL WM_PAINT message!
-  SendMessage(AWinControl.Handle, EM_SETBKGNDCOLOR, 0, ColorToRGB(AWinControl.Color));
+  Color := AWinControl.Color;
+  if Color = clDefault then
+    Color := AWinControl.GetDefaultColor(dctBrush);
+  SendMessage(AWinControl.Handle, EM_SETBKGNDCOLOR, 0, ColorToRGB(Color));
 end;
 
 class procedure TWin32WSCustomRichMemo.SetFont(const AWinControl: TWinControl;
@@ -462,9 +536,19 @@ begin
 end;
 
 class function TWin32WSCustomRichMemo.CanPasteFromClipboard(
-  const AWinControl: TWinControl): Boolean;
+  const AWinControl: TWinControl): boolean;
 begin
   Result:=Assigned(AWinControl) and (SendMessage(AWinControl.Handle, EM_CANPASTE, 0, 0)<>0);
+end;
+
+procedure AssignOLECallback(ARichMemo: TCustomRichMemo; ahandle: Windows.THandle);
+var
+  cb : IRichEditOleCallback;
+begin
+  if not Assigned(AllocOLEObject) then Exit;
+  AllocOLEObject(ARichMemo, ahandle, cb);
+  if Assigned(cb) then
+    Windows.SendMessage(ahandle, EM_SETOLECALLBACK, 0, LPARAM(cb));
 end;
 
 class function TWin32WSCustomRichMemo.CreateHandle(const AWinControl: TWinControl;  
@@ -475,8 +559,12 @@ var
   ACustomMemo : TCustomMemo;
   eventmask   : LPARAM;
 begin
-  InitRichEdit;
-  RichClass := GetRichEditClass;
+  if RichEditClass='' then begin
+    InitRichEdit;
+    RichClass := GetRichEditClass;
+  end else
+    RichClass := RichEditClass;
+
   if RichClass = '' then begin
     Result := 0;
     Exit;
@@ -500,14 +588,8 @@ begin
     if ACustomMemo.ReadOnly then
       Flags := Flags or ES_READONLY;
     Flags := Flags or AlignmentToEditFlags[ACustomMemo.Alignment];
-    case ACustomMemo.ScrollBars of
-      ssHorizontal, ssAutoHorizontal:
-        Flags := Flags or WS_HSCROLL;
-      ssVertical, ssAutoVertical:
-        Flags := Flags or WS_VSCROLL;
-      ssBoth, ssAutoBoth:
-        Flags := Flags or WS_HSCROLL or WS_VSCROLL;
-    end;
+    Flags := Flags or ScrollStyleToEditFlags[ACustomMemo.ScrollBars];
+
     if ACustomMemo.WordWrap then
       Flags := Flags and not WS_HSCROLL
     else
@@ -523,12 +605,17 @@ begin
   FinishCreateWindow(AWinControl, Params, false);
 
   eventmask := SendMessage(AWinControl.Handle, EM_GETEVENTMASK, 0, 0);
-  eventmask := eventmask or ENM_SELCHANGE or ENM_LINK;
+  eventmask := eventmask or ENM_SELCHANGE or ENM_LINK or ENM_CHANGE;
   SendMessage(AWinControl.Handle, EM_SETEVENTMASK, 0, eventmask);
 
   // Limitless text. However, the value would be overwritten by a consequent
   // SetMaxLength call, see above.
   SendMessage(AWincontrol.Handle, EM_EXLIMITTEXT, 0, LParam(-1));
+
+  // Setting OLE callback.
+  if AWinControl is TCustomRichMemo then // sanity checl
+    AssignOLECallback(TCustomRichMemo(AWincontrol), AWincontrol.Handle);
+
 
   // memo is not a transparent control -> no need for parentpainting
   Params.WindowInfo^.ParentMsgHandler := @RichEditNotifyProc;
@@ -543,9 +630,11 @@ var
   OrigLen   : Integer;
   NeedLock  : Boolean;
   eventmask : Integer;
+  pt        : TPoint;
 begin
   if not Assigned(RichEditManager) or not Assigned(AWinControl) then Exit;
 
+  RichEditManager.GetScroll(AWinControl.Handle, pt);
   eventmask := RichEditManager.SetEventMask(AWinControl.Handle, 0);
   RichEditManager.GetSelection(AWinControl.Handle, OrigStart, OrigLen);
   
@@ -559,38 +648,36 @@ begin
   end else 
     RichEditManager.SetSelectedTextStyle(AWinControl.Handle, Params);
 
+  RichEditManager.SetScroll(AWinControl.Handle, pt);
   RichEditManager.SetEventMask(AWinControl.Handle, eventmask);
 end;
 
 class function TWin32WSCustomRichMemo.GetTextAttributes(const AWinControl: TWinControl; 
   TextStart: Integer; var Params: TIntFontParams): Boolean;  
 var
-  OrigStart : Integer;
-  OrigLen   : Integer;
-  NeedLock  : Boolean;  
+  Orig      : TCHARRANGE;
   eventmask : LongWord;
+  pt        : TPoint;
 begin
   if not Assigned(RichEditManager) or not Assigned(AWinControl) then begin
     Result := false;
     Exit;
   end;
+  InitFontParams(Params);
 
+  RichEditManager.GetScroll(AWinControl.Handle, pt);
   eventmask := RichEditManager.SetEventMask(AWinControl.Handle, 0);
-  
-  RichEditManager.GetSelection(AWinControl.Handle, OrigStart, OrigLen);
-  
-  NeedLock := (OrigStart <> TextStart);
-  if NeedLock then begin
-    LockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle);
-    RichEditManager.SetSelection(AWinControl.Handle, TextStart, 1);
-    Result := RichEditManager.GetSelectedTextStyle(AWinControl.Handle, Params );
-    RichEditManager.SetSelection(AWinControl.Handle, OrigStart, OrigLen);
-    UnlockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle, false);
-  end else begin
-    LockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle);
-    Result := RichEditManager.GetSelectedTextStyle(AWinControl.Handle, Params);
-    UnlockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle, false);
-  end;
+
+  LockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle);
+
+  RichEditManager.GetSelRange(AWinControl.Handle, Orig);
+
+  RichEditManager.SetSelection(AWinControl.Handle, TextStart, 1);
+  Result := RichEditManager.GetSelectedTextStyle(AWinControl.Handle, Params );
+
+  RichEditManager.SetSelRange(AWinControl.Handle, Orig);
+  RichEditManager.SetScroll(AWinControl.Handle, pt);
+  UnlockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle, false);
 
   RichEditManager.SetEventMask(AWinControl.Handle,eventmask);
 end;
@@ -609,8 +696,10 @@ var
   OrigLen   : Integer;
   eventmask : longword;
   NeedLock  : Boolean;
+  pt        : TPoint;
 begin
   eventmask := RichEditManager.SetEventMask(AWinControl.Handle, 0);
+  RichEditManager.GetScroll(AWinControl.Handle, pt);
   RichEditManager.GetSelection(AWinControl.Handle, OrigStart, OrigLen);
 
   NeedLock := (OrigStart <> TextStart) or (OrigLen <> TextLen);
@@ -623,6 +712,7 @@ begin
   end else
     RichEditManager.SetSelectedTextStyle(AWinControl.Handle, Params, True, AModifyMask);
 
+  RichEditManager.SetScroll(AWinControl.Handle, pt);
   RichEditManager.SetEventMask(AWinControl.Handle, eventmask);
 end;
 
@@ -661,19 +751,21 @@ class function TWin32WSCustomRichMemo.GetStyleRange(
   const AWinControl: TWinControl; TextStart: Integer; var RangeStart, 
   RangeLen: Integer): Boolean;  
 var
-  OrigStart : Integer;
-  OrigLen   : Integer;
+  Orig      : TCharRange;
   eventmask : longword;
+  pt  : TPoint;
 begin
   if not Assigned(RichEditManager) or not Assigned(AWinControl) then begin
     Result := false;
     Exit;
   end;
 
-  eventmask := RichEditManager.SetEventMask(AWinControl.Handle, 0);
+  RichEditManager.GetScroll(AWinControl.Handle, pt);
 
-  RichEditManager.GetSelection(AWinControl.Handle, OrigStart, OrigLen);
+  eventmask := RichEditManager.SetEventMask(AWinControl.Handle, 0);
   LockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle);
+
+  RichEditManager.GetSelRange(AWinControl.Handle, Orig);
 
   RichEditManager.SetSelection(AWinControl.Handle, TextStart, 1);
   try
@@ -681,7 +773,8 @@ begin
   except
   end;
   
-  RichEditManager.SetSelection(AWinControl.Handle, OrigStart, OrigLen);
+  RichEditManager.SetSelRange(AWinControl.Handle, Orig);
+  RichEditManager.SetScroll(AWinControl.Handle, pt);
   UnlockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle, false);
   
   RichEditManager.SetEventMask(AWinControl.Handle, eventmask);
@@ -716,9 +809,7 @@ end;
 class function TWin32WSCustomRichMemo.GetTextUIParams(const AWinControl: TWinControl; TextStart: Integer;
   var ui: TTextUIParam): Boolean;
 var
-  OrigStart : Integer;
-  OrigLen   : Integer;
-  NeedLock  : Boolean;
+  Orig      : TCHARRANGE;
   eventmask : Integer;
 begin
   if not Assigned(RichEditManager) or not Assigned(AWinControl) then begin
@@ -727,17 +818,15 @@ begin
   end;
 
   eventmask := RichEditManager.SetEventMask(AWinControl.Handle, 0);
-  RichEditManager.GetSelection(AWinControl.Handle, OrigStart, OrigLen);
+  LockRedraw( TCustomRichMemo(AWinControl), AWinControl.Handle);
 
-  NeedLock := (OrigStart <> TextStart);
-  if NeedLock then begin
-    LockRedraw( TCustomRichMemo(AWinControl), AWinControl.Handle);
-    RichEditManager.SetSelection(AWinControl.Handle, TextStart, 1);
-    RichEditManager.GetTextUIStyle(AWinControl.Handle, ui);
-    RichEditManager.SetSelection(AWinControl.Handle, OrigStart, OrigLen);
-    UnlockRedraw( TCustomRichMemo(AWinControl), AWinControl.Handle);
-  end else
-    RichEditManager.GetTextUIStyle(AWinControl.Handle, ui);
+  RichEditManager.GetSelRange(AWinControl.Handle, Orig);
+
+  RichEditManager.SetSelection(AWinControl.Handle, TextStart, 1);
+  RichEditManager.GetTextUIStyle(AWinControl.Handle, ui);
+
+  RichEditManager.SetSelRange(AWinControl.Handle, Orig);
+  UnlockRedraw( TCustomRichMemo(AWinControl), AWinControl.Handle);
 
   RichEditManager.SetEventMask(AWinControl.Handle, eventmask);
   Result:=true;
@@ -771,6 +860,8 @@ begin
 
   eventmask:=RichEditManager.SetEventMask(AWinControl.Handle, 0);
 
+  LockRedraw( TCustomRichMemo(AWinControl), AWinControl.Handle);
+
   RichEditManager.GetPara2(AWinControl.Handle, TextStart, para);
   case para.wAlignment of
     PFA_CENTER:  AAlign:=paCenter;
@@ -779,6 +870,7 @@ begin
   else
     AAlign:=paLeft;
   end;
+  UnlockRedraw( TCustomRichMemo(AWinControl), AWinControl.Handle );
   RichEditManager.SetEventMask(AWinControl.Handle, eventmask);
 
   Result:=true;
@@ -1060,6 +1152,7 @@ class function TWin32WSCustomRichMemo.GetSubText(
   var utxt: UnicodeString): Boolean;
 var
   eventmask : Integer;
+  Orig      : TCharRange;
   OrigStart : Integer;
   OrigLen   : Integer;
   NeedLock  : Boolean;
@@ -1075,9 +1168,10 @@ begin
   NeedLock := (OrigStart <> TextStart) or (OrigLen <> TextLen);
   if NeedLock then begin
     LockRedraw( TCustomRichMemo(AWinControl), Hnd);
-    RichEditManager.SetSelection(Hnd, TextStart, TextLen);
+    RichEditManager.GetSelRange(Hnd, Orig);
   end;
 
+  RichEditManager.SetSelection(Hnd, TextStart, TextLen);
   isUnicode:=AsUnicode;
   if AsUnicode then
     utxt:=RichEditManager.GetTextW(Hnd, true)
@@ -1086,7 +1180,7 @@ begin
   end;
 
   if NeedLock then begin
-    RichEditManager.SetSelection(Hnd, OrigStart, OrigLen);
+    RichEditManager.SetSelRange(Hnd, Orig);
     UnlockRedraw( TCustomRichMemo(AWinControl), Hnd);
   end;
   RichEditManager.SetEventMask(Hnd, eventmask);
@@ -1113,6 +1207,19 @@ begin
   Result:=RichEditManager.Find(AWinControl.Handle, UTF8Decode(ANiddle), SearchOpts);
 end;
 
+class function TWin32WSCustomRichMemo.isSearchEx: Boolean;
+begin
+  Result:=true;
+end;
+
+class function TWin32WSCustomRichMemo.SearchEx(const AWinControl: TWinControl;
+  const ANiddle: string; const SearchOpts: TIntSearchOpt; var ATextStart,
+  ATextLength: Integer): Boolean;
+begin
+  ATextStart:=RichEditManager.Find(AWinControl.Handle, UTF8Decode(ANiddle), SearchOpts, ATextLength);
+  Result:=ATextStart>=0;
+end;
+
 class procedure TWin32WSCustomRichMemo.SetZoomFactor(
   const AWinControl: TWinControl; AZoomFactor: Double);
 var
@@ -1121,6 +1228,18 @@ begin
   if not Assigned(RichEditManager) or not Assigned(AWinControl) then Exit;
   DN := 1000;
   SendMessage( AWinControl.Handle, EM_SETZOOM, round(AZoomFactor * DN), DN);
+end;
+
+class function TWin32WSCustomRichMemo.GetZoomFactor(const AWinControl: TWinControl; var AZoomFactor: Double): Boolean;
+var
+  numerator, denominator: Integer; // todo: Are they always integers? or can they be something else in 64-bit?
+begin
+  Result:=SendMessage(AWinControl.Handle, EM_GETZOOM, WParam(@numerator), LParam(@denominator))<>0;
+  if Result then begin
+    Result:=(numerator <> 0) and (denominator <> 0);
+    if Result then
+      AZoomFactor := double(numerator)/ double(denominator);
+  end;
 end;
 
 class function TWin32WSCustomRichMemo.InlineInsert(
@@ -1139,10 +1258,6 @@ var
   Obj: TREOBJECT;
   sl, ss: Integer;
   eventmask: Integer;
-const
-  PointSize     = 72.0;
-  RtfSizeToInch = 2.54 * 1000.0;
-  SizeFactor    = 1 / PointSize * RtfSizeToInch;
 begin
   Result:=False;
   if not Assigned(RichEditManager) or not Assigned(AWinControl) then Exit;
@@ -1179,7 +1294,7 @@ begin
     Obj.pstg := Storage;
     Obj.polesite := ClientSite;
     Obj.dvaspect := DVASPECT_CONTENT;
-    Obj.dwFlags := REO_OWNERDRAWSELECT;
+    Obj.dwFlags := InsertInlineFlags;
 
     Obj.sizel.cx:=round(ASize.cx * SizeFactor);
     Obj.sizel.cy:=round(ASize.cy * SizeFactor);
@@ -1341,6 +1456,29 @@ begin
   end;
 end;
 
+class procedure TWin32WSCustomRichMemo.Redo(const AWinControl: TWinControl);
+begin
+  SendMessage( AWinControl.Handle, EM_REDO, 0, 0);
+end;
+
+class function TWin32WSCustomRichMemo.GetCanRedo(const AWinControl: TWinControl
+  ): Boolean;
+begin
+  Result:=SendMessage( AWinControl.Handle, EM_CANREDO, 0, 0)<>0;
+end;
+
+class procedure TWin32WSCustomRichMemo.ScrollBy(const AWinControl: TWinControl;
+  DeltaX, DeltaY: integer);
+var
+  pt : TPoint;
+begin
+  if not Assigned(AWinControl) or not (AWinControl.HandleAllocated) or ((DeltaX=0) and (DeltaY=0)) then Exit;
+
+  RichEditManager.GetScroll(AWinControl.Handle, pt);
+  dec(pt.x,DeltaX);
+  dec(pt.y,Deltay);
+  RichEditManager.SetScroll(AWinControl.Handle, pt);
+end;
 
 // The function doesn't use Windows 7 (Vista?) animations. And should.
 function ThemedNCPaint(AWindow: Windows.HANDLE; RichMemo: TCustomRichMemo; WParam: WParam; LParam: LParam; var Handled: Boolean): LResult;
@@ -1356,8 +1494,268 @@ begin
   end;
 end;
 
+type
+  TStreamText = record
+    buf : AnsiString;
+  end;
+  PStreamText = ^TStreamText;
+
+function Read(dwCookie:PDWORD; pbBuff:LPBYTE; cb:LONG; var pcb:LONG):DWORD; stdcall;
+var
+  //p : PStreamText;
+  b : string;
+  i : integer;
+begin
+  b:=PStreamText(dwCookie)^.buf;
+  i:=length(b);
+  SetLength(b, length(b)+cb);
+  Move(pbBuff^, b[i+1], cb);
+  pcb:=cb;
+  PStreamText(dwCookie)^.buf:=b;
+  Result:=0;
+end;
+
+type
+  _editstream = record
+     dwCookie : PTRUINT;
+     dwError : DWORD;
+     pfnCallback : EDITSTREAMCALLBACK;
+  end;
+
+function GetSelRTF(amemo: TCustomRichMemo): string;
+var
+  str : _EDITSTREAM;
+  tt  : TStreamText;
+begin
+  if not Assigned(amemo) or (not amemo.HandleAllocated) then begin
+    Result:='';
+    Exit;
+  end;
+
+  FillChar(str, sizeof(str),0);
+  str.dwCookie:=PtrUInt(@tt);
+  str.pfnCallback:=@Read;
+
+  SendMessage( amemo.Handle, EM_STREAMOUT, SF_RTFNOOBJS or SFF_PLAINRTF or SFF_SELECTION,  LParam(@str));
+  Result:=tt.buf;
+end;
+
+function GetRichEditOLE(amemo: TCustomRichMemo): IRichEditOle;
+begin
+  if Assigned(amemo) then Result:=GetRichEditOle(amemo.Handle)
+  else Result:=nil;
+end;
+
+function GetRichEditOLE(AHandle: THandle): IRichEditOle;
+begin
+  SendMessage(Ahandle, EM_GETOLEINTERFACE, 0, LPARAM(@Result));
+end;
+
+type
+  { TRichEditCallback }
+
+  TRichEditCallback = class(TInterfacedObject, IRichEditOleCallback)
+  public
+    fOwner: TWinControl;
+    function GetNewStorage(out stg: IStorage): HRESULT; stdcall;
+    function GetInPlaceContext(out Frame: IOleInPlaceFrame;
+      out Doc: IOleInPlaceUIWindow;
+      lpFrameInfo: POleInPlaceFrameInfo): HRESULT; stdcall;
+    function ShowContainerUI(fShow: BOOL): HRESULT; stdcall;
+    function QueryInsertObject(const clsid: TCLSID; const stg: IStorage;
+      cp: LongInt): HRESULT; stdcall;
+    function DeleteObject(const oleobj: IOleObject): HRESULT; stdcall;
+    function QueryAcceptData(const dataobj: IDataObject;
+      var cfFormat: TClipFormat; reco: DWORD; fReally: BOOL;
+      hMetaPict: HGLOBAL): HRESULT; stdcall;
+    function ContextSensitiveHelp(fEnterMode: BOOL): HRESULT; stdcall;
+    function GetClipboardData(const chrg: RichEdit.TCharRange; reco: DWORD;
+      out dataobj: IDataObject): HRESULT; stdcall;
+    function GetDragDropEffect(fDrag: BOOL; grfKeyState: DWORD;
+      var dwEffect: DWORD): HRESULT; stdcall;
+    function GetContextMenu(seltype: Word; oleobj: IOleObject;
+      const chrg: TCharRange; var menu: HMENU): HRESULT; stdcall;
+  end;
+
+{ TRichEditCallback }
+
+function TRichEditCallback.GetNewStorage(out stg: IStorage): HRESULT; stdcall;
+begin
+  StgCreateDocfile(nil, STGM_READWRITE or STGM_SHARE_EXCLUSIVE, 0,stg);
+  Result := S_OK;
+end;
+
+function TRichEditCallback.GetInPlaceContext(out Frame: IOleInPlaceFrame; out
+  Doc: IOleInPlaceUIWindow; lpFrameInfo: POleInPlaceFrameInfo): HRESULT;
+  stdcall;
+begin
+  Result := E_NOTIMPL;
+end;
+
+function TRichEditCallback.ShowContainerUI(fShow: BOOL): HRESULT; stdcall;
+begin
+  Result := E_NOTIMPL;
+end;
+
+function TRichEditCallback.QueryInsertObject(const clsid: TCLSID;
+  const stg: IStorage; cp: LongInt): HRESULT; stdcall;
+begin
+  Result := S_OK;
+end;
+
+function TRichEditCallback.DeleteObject(const oleobj: IOleObject): HRESULT; stdcall;
+begin
+  Result := E_NOTIMPL;
+end;
+
+function TRichEditCallback.QueryAcceptData(const dataobj: IDataObject;
+  var cfFormat: TClipFormat; reco: DWORD; fReally: BOOL; hMetaPict: HGLOBAL
+  ): HRESULT; stdcall;
+begin
+  Result := E_NOTIMPL;
+end;
+
+function TRichEditCallback.ContextSensitiveHelp(fEnterMode: BOOL): HRESULT; stdcall;
+begin
+  Result := E_NOTIMPL;
+end;
+
+function TRichEditCallback.GetClipboardData(const chrg: TCharRange; reco: DWORD; out
+  dataobj: IDataObject): HRESULT; stdcall;
+begin
+  Result := E_NOTIMPL;
+end;
+
+function TRichEditCallback.GetDragDropEffect(fDrag: BOOL; grfKeyState: DWORD;
+  var dwEffect: DWORD): HRESULT; stdcall;
+begin
+  Result := E_NOTIMPL;
+end;
+
+function TRichEditCallback.GetContextMenu(seltype: Word; oleobj: IOleObject;
+  const chrg: TCharRange; var menu: HMENU): HRESULT; stdcall;
+var
+  msg : TLMContextMenu;
+begin
+  FillChar(msg, sizeof(msg), 0);
+  msg.Msg:=LM_CONTEXTMENU;
+  msg.XPos:=Mouse.CursorPos.x;
+  msg.YPos:=Mouse.CursorPos.y;
+  msg.hWnd:=fOwner.Handle;
+  DeliverMessage(fOwner, msg);
+
+  // do not give hmenu back to RichEdit, it will destory it!
+  menu:=0;
+  Result:=S_OK;
+end;
+
+
+
+procedure DefAllocOleObject(ARichMemo: TCustomRichMemo; AHandle: Windows.THandle; out OleCallback: IRichEditOleCallback);
+var
+  cb : TRichEditCallback;
+begin
+  cb:=TRichEditCallback.Create;
+  cb.fOwner:=ARichMemo;
+  OleCallBack:=cb;
+end;
+
+function GetOleObject(ole: IRichEditOle; SelStart: Integer; out res: TREOBJECT): Boolean;
+begin
+  Result:=Assigned(ole);
+  if not Result then Exit;
+  FillChar(res{%H-}, sizeof(res), 0);
+  res.cbStruct:=sizeof(res);
+  res.cp:=SelStart;
+
+  Result:=ole.GetObject(REO_IOB_USE_CP, res, REO_GETOBJ_ALL_INTERFACES)=S_OK;
+end;
+
+function SetOleObjectSize(ARichMemo: TCustomRichMemo; SelStart: Integer; const ASize: TSize): Boolean;
+var
+  obj : TREOBJECT;
+  ole : IRichEditOle;
+  ss  : integer;
+  sl  : integer;
+begin
+  ole:=GetRichEditOLE(ARichMemo);
+  if not Assigned(ole) then begin
+    Result:=false;
+    Exit;
+  end;
+    Result:=GetOleObject(ole, SelStart, obj);
+    if Result then begin
+      ARichMemo.Lines.BeginUpdate;
+      ss:=ARichMemo.SelStart;
+      sl:=ARichMemo.SelLength;
+      try
+        obj.polesite:=nil;
+        ARichMemo.SelStart:=SelStart;
+        ARichMemo.SelLength:=1;
+        ARichMemo.SelText:='';
+        ole.GetClientSite(obj.polesite);
+        obj.sizel.cx:=round(ASize.cx * SizeFactor);
+        obj.sizel.cy:=round(ASize.cy * SizeFactor);
+        Result:=ole.InsertObject(obj)=S_OK;
+      finally
+        ARichMemo.SelStart:=ss;
+        ARichMemo.SelLength:=sl;
+        ARichMemo.Lines.EndUpdate;
+      end;
+    end;
+end;
+
+function GetOleObjectSize(ARichMemo: TCustomRichMemo; SelStart: Integer; var ASize: TSize): Boolean;
+var
+  res : TREOBJECT;
+  ole : IRichEditOle;
+begin
+  ole:=GetRichEditOLE(ARichMemo);
+  Result:=Assigned(ole) and (GetOleObject(ole, SelStart, res));
+  if not Result then Exit;
+  ASize.cx:=round(res.sizel.cx*RevSizeFactor);
+  ASize.cy:=round(res.sizel.cy*RevSizeFactor);
+end;
+(*
+function GetLangOptions(hnd: THandle): TWinLangOptions;
+var
+  r: LRESULT;
+begin
+  r:=SendMessage(hnd, EM_GETLANGOPTIONS, 0, 0);
+  Result:=TWinLangOptions(r);
+end;
+
+function GetLangOptions(rm: TCustomRichMemo): TWinLangOptions;
+begin
+  if Assigned(rm) then begin
+    if not rm.HandleAllocated then rm.HandleNeeded;
+    if rm.HandleAllocated
+      then Result:=GetLangOptions(rm.Handle)
+      else Result:=[];
+  end else
+    Result:=[];
+end;
+
+procedure SetLangOptions(hnd: THandle; const opts: TWinLangOptions); overload;
+var
+  lp : LPARAM;
+begin
+  lp:=LPARAM(opts);
+  SendMessage(hnd, EM_SETLANGOPTIONS, 0, lp);
+end;
+
+procedure SetLangOptions(rm: TCustomRichMemo; const opts: TWinLangOptions); overload;
+begin
+  if Assigned(rm) then begin
+    if not rm.HandleAllocated then rm.HandleNeeded;
+    if rm.HandleAllocated then
+      SetLangOptions(rm.Handle, opts);
+  end;
+end;
+*)
 initialization
   NCPaint := @ThemedNCPaint;
+  AllocOLEObject := @DefAllocOleObject;
  
 end.
 

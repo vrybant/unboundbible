@@ -189,7 +189,7 @@ type
   protected
     procedure DoSelectionChange;
     class procedure WSRegisterClass; override;
-    procedure CreateWnd; override;    
+    procedure CreateWnd; override;
     procedure UpdateRichMemo; virtual;
     procedure SetHideSelection(AValue: Boolean);
     function GetContStyleLength(TextStart: Integer): Integer;
@@ -203,6 +203,7 @@ type
       CurrentPage: Integer; var AbortPrint: Boolean);
     procedure DoLinkAction(ALinkAction: TLinkAction; const AMouseInfo: TLinkMouseInfo;
       LinkStart, LinkEnd: Integer);
+    function GetCanRedo: Boolean; virtual;
 
   public
     constructor Create(AOwner: TComponent); override;
@@ -250,17 +251,21 @@ type
 
     procedure SetSelLengthFor(const aselstr: string);
 
-    function Search(const ANiddle: string; Start, Len: Integer; const SearchOpt: TSearchOptions): Integer;
+    function Search(const ANiddle: string; Start, Len: Integer; const SearchOpt: TSearchOptions): Integer; overload;
+    function Search(const ANiddle: string; Start, Len: Integer; const SearchOpt: TSearchOptions; var ATextStart, ATextLength: Integer): Boolean; overload;
 
     function Print(const params: TPrintParams): Integer;
 
     function CharAtPos(x, y: Integer): Integer;
+
+    procedure Redo; virtual;
 
     property HideSelection : Boolean read fHideSelection write SetHideSelection;
     property OnSelectionChange: TNotifyEvent read fOnSelectionChange write fOnSelectionChange;
     property ZoomFactor: Double read GetZoomFactor write SetZoomFactor;
     property OnPrintAction: TPrintActionEvent read fOnPrintAction write fOnPrintAction;
     property OnLinkAction: TLinkActionEvent read fOnLinkAction write fOnLinkAction;
+    property CanRedo: Boolean read GetCanRedo;
   end;
   
   { TRichMemo }
@@ -272,6 +277,7 @@ type
     function GetRTF: string; virtual;
     procedure SetRTF(const AValue: string); virtual;
     procedure UpdateRichMemo; override;
+    procedure DestroyHandle; override;
   published
     property Align;
     property Alignment;
@@ -573,6 +579,12 @@ begin
   if fRTF<>'' then SetRTF(fRTF);
 end;
 
+procedure TRichMemo.DestroyHandle;
+begin
+  fRTF:=GetRTF;
+  inherited DestroyHandle;
+end;
+
 { TCustomRichMemo }
 
 procedure TCustomRichMemo.SetHideSelection(AValue: Boolean);
@@ -585,6 +597,10 @@ end;
 function TCustomRichMemo.GetZoomFactor: Double;
 begin
   Result:=fZoomFactor;
+  if HandleAllocated then begin
+    if TWSCustomRichMemoClass(WidgetSetClass).GetZoomFactor(Self, Result) then
+      fZoomFactor:=Result;
+  end;
 end;
 
 procedure TCustomRichMemo.SetZoomFactor(AValue: Double);
@@ -634,7 +650,7 @@ begin
   UpdateRichMemo;
 end;
 
-procedure TCustomRichMemo.UpdateRichMemo; 
+procedure TCustomRichMemo.UpdateRichMemo;
 begin
   if not HandleAllocated then Exit;
   TWSCustomRichMemoClass(WidgetSetClass).SetHideSelection(Self, fHideSelection);
@@ -867,26 +883,31 @@ begin
     Exit;
   end;
 
-  // manually looping from text ranges and re-applying
-  // all the style. changing only the ones that in the mask
-  i := TextStart;
-  j := TextStart + TextLength;
-  while i < j do begin
-    GetTextAttributes(i, p);
+  Lines.BeginUpdate;
+  try
+    // manually looping from text ranges and re-applying
+    // all the style. changing only the ones that in the mask
+    i := TextStart;
+    j := TextStart + TextLength;
+    while i < j do begin
+      GetTextAttributes(i, p);
 
-    if tmm_Name in ModifyMask   then p.Name := fnt.Name;
-    if tmm_Color in ModifyMask  then p.Color := fnt.Color;
-    if tmm_Size in ModifyMask   then p.Size := fnt.Size;
-    if tmm_Styles in ModifyMask then p.Style := p.Style + AddFontStyle - RemoveFontStyle;
-    if tmm_BackColor in ModifyMask then begin
-      p.HasBkClr:=fnt.HasBkClr;
-      p.BkColor:=fnt.BkColor;
+      if tmm_Name in ModifyMask   then p.Name := fnt.Name;
+      if tmm_Color in ModifyMask  then p.Color := fnt.Color;
+      if tmm_Size in ModifyMask   then p.Size := fnt.Size;
+      if tmm_Styles in ModifyMask then p.Style := p.Style + AddFontStyle - RemoveFontStyle;
+      if tmm_BackColor in ModifyMask then begin
+        p.HasBkClr:=fnt.HasBkClr;
+        p.BkColor:=fnt.BkColor;
+      end;
+      l := GetContStyleLength(i);
+      if i + l > j then l := j - i;
+      if l = 0 then Break;
+      SetTextAttributes(i, l, p);
+      inc(i, l);
     end;
-    l := GetContStyleLength(i);
-    if i + l > j then l := j - i;
-    if l = 0 then Break;
-    SetTextAttributes(i, l, p);
-    inc(i, l);
+  finally
+    Lines.EndUpdate;
   end;
 end;
 
@@ -1039,6 +1060,15 @@ end;
 function TCustomRichMemo.Search(const ANiddle: string; Start, Len: Integer;
   const SearchOpt: TSearchOptions): Integer;
 var
+  ln : Integer;
+begin
+  ln := 0;
+  if not Search(ANiddle, Start, Len, SearchOpt, Result, ln) then Result:=-1;
+end;
+
+function TCustomRichMemo.Search(const ANiddle: string; Start, Len: Integer; const SearchOpt: TSearchOptions;
+  var ATextStart, ATextLength: Integer): Boolean; overload;
+var
   so : TIntSearchOpt;
 begin
   if not HandleAllocated then HandleNeeded;
@@ -1046,9 +1076,17 @@ begin
     so.len:=Len;
     so.start:=Start;
     so.options:=SearchOpt;
-    Result:=TWSCustomRichMemoClass(WidgetSetClass).Search(Self, ANiddle, so);
+    if not TWSCustomRichMemoClass(WidgetSetClass).isSearchEx then begin
+      ATextStart:=TWSCustomRichMemoClass(WidgetSetClass).Search(Self, ANiddle, so);
+      // not recommended. The text found coulbe longer than Niddle
+      // depending on the language and search options (to be done)
+      // mostly for Arabi and Hebrew languages
+      ATextLength:=UTF8Length(ANiddle);
+    end else begin
+      Result:=TWSCustomRichMemoClass(WidgetSetClass).SearchEx(Self, ANiddle, so, ATextStart, ATextLength);
+    end;
   end else
-    Result:=-1;
+    Result:=false;
 end;
 
 function TCustomRichMemo.Print(const params: TPrintParams): Integer;
@@ -1068,6 +1106,14 @@ begin
     Result:=-1;
 end;
 
+function TCustomRichMemo.GetCanRedo: Boolean;
+begin
+  if HandleAllocated then
+    Result:=TWSCustomRichMemoClass(WidgetSetClass).GetCanRedo(Self)
+  else
+    Result:=false;
+end;
+
 function TCustomRichMemo.PrintMeasure(const params: TPrintParams; var est: TPrintMeasure): Boolean;
 begin
   if not Assigned(Printer) then begin
@@ -1081,6 +1127,12 @@ begin
     est.Pages:=TWSCustomRichMemoClass(WidgetSetClass).Print(Self, Printer, params, false);
   end else
     Result:=false;
+end;
+
+procedure TCustomRichMemo.Redo;
+begin
+  if HandleAllocated then
+    TWSCustomRichMemoClass(WidgetSetClass).Redo(Self);
 end;
 
 end.

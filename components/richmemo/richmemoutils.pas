@@ -50,6 +50,8 @@ function InsertImageFromFileNoResize (const ARichMemo: TCustomRichMemo; APos: In
 
 procedure LoadRTFFile(const ARichMemo: TCustomRichMemo; const FileNameUTF8: string);
 
+procedure SaveRTFFile(const ARichMemo: TCustomRichMemo; const FileNameUTF8: string);
+
 procedure InsertStyledText(const ARichMemo: TCustomRichMemo; const TextUTF8: String; AStyle: TFontStyles;
   InsPos : Integer = -1 );
 procedure InsertColorStyledText(const ARichMemo: TCustomRichMemo; const TextUTF8: String; AColor: TColor; AStyle: TFontStyles;
@@ -133,6 +135,19 @@ begin
   fs:= TFileStream.Create( UTF8Decode(FileNameUTF8), fmShareDenyNone or fmOpenRead);
   try
     ARichMemo.LoadRichText(fs);
+  finally
+    fs.Free;
+  end;
+end;
+
+procedure SaveRTFFile(const ARichMemo: TCustomRichMemo; const FileNameUTF8: string);
+var
+  fs : TFileStream;
+begin
+  if not Assigned(ARichMemo) then Exit;
+  fs:= TFileStream.Create( UTF8Decode(FileNameUTF8), fmCreate);
+  try
+    ARichMemo.SaveRichText(fs);
   finally
     fs.Free;
   end;

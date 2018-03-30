@@ -1,14 +1,14 @@
 object Form1: TForm1
-  Left = 633
+  Left = 281
   Height = 483
-  Top = 285
+  Top = 198
   Width = 634
   ActiveControl = RichMemo1
   Caption = 'Form1'
   ClientHeight = 483
   ClientWidth = 634
   OnCreate = FormCreate
-  LCLVersion = '1.4.4.0'
+  LCLVersion = '1.3'
   object RichMemo1: TRichMemo
     Left = 15
     Height = 288
@@ -133,7 +133,7 @@ object Form1: TForm1
   end
   object StartIdent: TFloatSpinEdit
     Left = 344
-    Height = 23
+    Height = 21
     Top = 18
     Width = 78
     Increment = 1
@@ -145,7 +145,7 @@ object Form1: TForm1
   end
   object Label1: TLabel
     Left = 304
-    Height = 15
+    Height = 13
     Top = 18
     Width = 27
     Caption = 'Start '
@@ -153,15 +153,15 @@ object Form1: TForm1
   end
   object Label2: TLabel
     Left = 304
-    Height = 15
+    Height = 13
     Top = 48
-    Width = 32
+    Width = 31
     Caption = 'Offset'
     ParentColor = False
   end
   object OffsetIdent: TFloatSpinEdit
     Left = 344
-    Height = 23
+    Height = 21
     Top = 46
     Width = 78
     Increment = 1
@@ -173,20 +173,11 @@ object Form1: TForm1
   end
   object Label3: TLabel
     Left = 16
-    Height = 15
+    Height = 13
     Top = 434
-    Width = 34
+    Width = 31
     Caption = 'Label3'
     ParentColor = False
-  end
-  object Button11: TButton
-    Left = 440
-    Height = 25
-    Top = 416
-    Width = 75
-    Caption = 'Set link'
-    OnClick = Button11Click
-    TabOrder = 13
   end
   object FontDialog1: TFontDialog
     MinFontSize = 0

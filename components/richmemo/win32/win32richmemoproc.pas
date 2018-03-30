@@ -172,7 +172,12 @@ type
 
     class function GetStyleRange(RichEditWnd: Handle; TextStart: Integer; var RangeStart, RangeLen: Integer): Boolean; virtual;
     class procedure GetSelection(RichEditWnd: Handle; var TextStart, TextLen: Integer); virtual;      
-    class procedure SetSelection(RichEditWnd: Handle; TextStart, TextLen: Integer); virtual;      
+    class procedure SetSelection(RichEditWnd: Handle; TextStart, TextLen: Integer); virtual;
+
+    // WARNING: GetSelRange, is causing changes in Selection!
+    class procedure GetSelRange(RichEditWnd: Handle; var sr: TCHARRANGE); virtual;
+    class procedure SetSelRange(RichEditWnd: Handle; const sr: TCHARRANGE); virtual;
+
     class procedure SetHideSelection(RichEditWnd: Handle; AValue: Boolean); virtual;
     class function LoadRichText(RichEditWnd: Handle; ASrc: TStream): Boolean; virtual;
     class function SaveRichText(RichEditWnd: Handle; ADst: TStream): Boolean; virtual;
@@ -184,8 +189,13 @@ type
 
     class procedure GetPara2(RichEditWnd: Handle; TextStart: Integer; var para: PARAFORMAT2); virtual;
     class procedure SetPara2(RichEditWnd: Handle; TextStart, TextLen: Integer; const para: PARAFORMAT2); virtual;
-    class function Find(RichEditWnd: THandle; const ANiddle: WideString; const ASearch: TIntSearchOpt): Integer; virtual;
+    // the ugly Find() overload, might go away eventually
+    class function Find(RichEditWnd: THandle; const ANiddle: WideString; const ASearch: TIntSearchOpt; var TextLen: Integer): Integer; virtual; overload;
+    class function Find(RichEditWnd: THandle; const ANiddle: WideString; const ASearch: TIntSearchOpt): Integer; overload;
     class procedure GetParaRange(RichEditWnd: Handle; TextStart: integer; var para: TParaRange); virtual;
+
+    class procedure GetScroll(RichEditWnd: Handle; out pt: TPoint); virtual;
+    class procedure SetScroll(RichEditWnd: Handle; const pt: TPoint); virtual;
   end;
   TRichManagerClass = class of TRichEditManager;
                      
@@ -265,7 +275,8 @@ begin
       RichEditManager := TRichEditManager;
       
     Result := GlobalRichClass <> '';
-  end;
+  end else
+    Result:=true;
 end;
 
 procedure CopyStringToCharArray(const s: String; var Chrs: array of Char; ChrsSize: integer);
@@ -322,7 +333,7 @@ begin
   Params.Style := EffectsToFontStyles(fmt.dwEffects);
   if fmt.cbSize > sizeof(CHARFORMAT) then begin
     Params.HasBkClr:=(fmt.dwEffects and CFE_AUTOBACKCOLOR) = 0;
-    if Params.HasBkClr then Params.Color:=Params.Color;
+    if Params.HasBkClr then Params.BkColor:=fmt.crBackColor;
     Params.VScriptPos:=EffectsToVScriptPost(fmt.dwEffects);
   end;
 end;
@@ -521,10 +532,9 @@ var
   sel     : TCHARRANGE;
   d       : Integer;
   last    : Integer;
-
+  initMask : DWORD;
 const
   ALL_MASK = CFM_RICHMEMO_ATTRS;
-
 begin
   Result := false;
   if (RichEditWnd = 0) then Exit;
@@ -538,33 +548,47 @@ begin
    
   FillChar(fmt, sizeof(fmt), 0);
   fmt.cbSize := sizeof(fmt);
+
+  sel.cpMin := TextStart;
+  sel.cpMax := TextStart;
+  SendMessage(RichEditWnd, EM_EXSETSEL, 0, LPARAM(@sel));
+  SendMessage(RichEditWnd, EM_GETCHARFORMAT, SCF_SELECTION, PtrInt(@fmt));
+  initMask := fmt.dwMask and ALL_MASK;
   
+  FillChar(fmt, sizeof(fmt), 0);
+  fmt.cbSize := sizeof(fmt);
+
   sel.cpMin := TextStart;
   sel.cpMax := len+1;
   SendMessage(RichEditWnd, EM_EXSETSEL, 0, LPARAM(@sel));
   SendMessage(RichEditWnd, EM_GETCHARFORMAT, SCF_SELECTION, PtrInt(@fmt));
-  if (fmt.dwMask and ALL_MASK) <> ALL_MASK then begin
+  fmt.dwMask:=fmt.dwMask and ALL_MASK;
+
+  if fmt.dwMask <> initMask then begin
     d := (len - sel.cpMin);
     while d > 1 do begin
       d := d div 2;
-      if (fmt.dwMask and ALL_MASK) = ALL_MASK then
+      if fmt.dwMask = initMask then
         sel.cpMax := sel.cpMax + d        
       else
         sel.cpMax := sel.cpMax - d;
       SendMessage(RichEditWnd, EM_EXSETSEL, 0, LPARAM(@sel));
       SendMessage(RichEditWnd, EM_GETCHARFORMAT, SCF_SELECTION, PtrInt(@fmt));
+      fmt.dwMask:=fmt.dwMask and ALL_MASK;
     end;
-    if (fmt.dwMask and ALL_MASK) = ALL_MASK then begin
-      while (sel.cpMax <= len) and ((fmt.dwMask and ALL_MASK) = ALL_MASK) do begin
+    if fmt.dwMask = initMask then begin
+      while (sel.cpMax <= len) and (fmt.dwMask = initMask) do begin
         inc(sel.cpMax);
         SendMessage(RichEditWnd, EM_EXSETSEL, 0, LPARAM(@sel));
         SendMessage(RichEditWnd, EM_GETCHARFORMAT, SCF_SELECTION, PtrInt(@fmt));
+        fmt.dwMask:=fmt.dwMask and ALL_MASK;
       end;
     end else begin
-      while (sel.cpMax > sel.cpMin) and ((fmt.dwMask and ALL_MASK) <> ALL_MASK) do begin
+      while (sel.cpMax > sel.cpMin) and (fmt.dwMask <> initMask) do begin
         dec(sel.cpMax);
         SendMessage(RichEditWnd, EM_EXSETSEL, 0, LPARAM(@sel));
         SendMessage(RichEditWnd, EM_GETCHARFORMAT, SCF_SELECTION, PtrInt(@fmt));
+        fmt.dwMask:=fmt.dwMask and ALL_MASK;
       end;
       inc(sel.cpMax);
     end;
@@ -575,29 +599,33 @@ begin
   sel.cpMax := TextStart+1;
   SendMessage(RichEditWnd, EM_EXSETSEL, 0, LPARAM(@sel));
   SendMessage(RichEditWnd, EM_GETCHARFORMAT, SCF_SELECTION, PtrInt(@fmt));
-  if (fmt.dwMask and ALL_MASK) <> ALL_MASK then begin
+  fmt.dwMask:=fmt.dwMask and ALL_MASK;
+  if fmt.dwMask <> initMask then begin
     d := TextStart;
     while d > 1 do begin
       d := d div 2;
-      if (fmt.dwMask and ALL_MASK) = ALL_MASK then
+      if fmt.dwMask = initMask then
         dec(sel.cpMin,d)
       else
         inc(sel.cpMin,d);
       SendMessage(RichEditWnd, EM_EXSETSEL, 0, LPARAM(@sel));
       SendMessage(RichEditWnd, EM_GETCHARFORMAT, SCF_SELECTION, PtrInt(@fmt));
+      fmt.dwMask:=fmt.dwMask and ALL_MASK;
     end;
-    if (fmt.dwMask and ALL_MASK) = ALL_MASK then begin
-      while (sel.cpMin > 0) and ((fmt.dwMask and ALL_MASK) = ALL_MASK) do begin
+    if (fmt.dwMask = initMask) then begin
+      while (sel.cpMin > 0) and (fmt.dwMask = initMask) do begin
         dec(sel.cpMin);
         SendMessage(RichEditWnd, EM_EXSETSEL, 0, LPARAM(@sel));
         SendMessage(RichEditWnd, EM_GETCHARFORMAT, SCF_SELECTION, PtrInt(@fmt));
+        fmt.dwMask:=fmt.dwMask and ALL_MASK;
       end;
-      if (fmt.dwMask and ALL_MASK) <> ALL_MASK then inc(sel.cpMin);
+      if (fmt.dwMask = initMask) then inc(sel.cpMin);
     end else begin
-      while (sel.cpMin < TextStart) and ((fmt.dwMask and ALL_MASK) <> ALL_MASK) do begin
+      while (sel.cpMin < TextStart) and (fmt.dwMask <> initMask) do begin
         inc(sel.cpMin);
         SendMessage(RichEditWnd, EM_EXSETSEL, 0, LPARAM(@sel));
         SendMessage(RichEditWnd, EM_GETCHARFORMAT, SCF_SELECTION, PtrInt(@fmt));
+        fmt.dwMask:=fmt.dwMask and ALL_MASK;
       end;
     end;
   end;  
@@ -626,6 +654,38 @@ begin
   Range.cpMin := TextStart;
   Range.cpMax := TextStart + TextLen;
   SendMessage(RichEditWnd, EM_EXSETSEL, 0, PtrInt(@Range));
+end;
+
+class procedure TRichEditManager.GetSelRange(RichEditWnd: Handle; var sr: TCHARRANGE);
+var
+  st: Integer;
+begin
+  sr.cpMax := 0;
+  sr.cpMin := 0;
+  st:=0;
+  SendMessage(RichEditWnd, EM_EXGETSEL, 0, PtrInt(@sr));
+  // EM_EXGETSEL - always returns min and max, in the math order
+  // (where math is lower, than max)
+  // This, however, doesn't match the seletion direction.
+  // Selection direction is done by either mouse (right to left) and (left to right)
+  // or by holding SHIFT key and moving left to right.
+  // EM_EXSETSEL - repsects the specified sr.cpMax and sr.cpMin order
+
+  // Resetting the selection.
+  // This is a bit hacky, BUT the selection would be reset
+  // towards the direction of the selection
+  SendMessage(RichEditWnd, EM_SETSEL, -1, 0);
+  SendMessage(RichEditWnd, EM_GETSEL, WPARAM(@st), 0);
+
+  if st=sr.cpMin then begin // right-to-left selection
+    sr.cpMin:=sr.cpMax;
+    sr.cpMax:=st;
+  end;
+end;
+
+class procedure TRichEditManager.SetSelRange(RichEditWnd: Handle; const sr: TCHARRANGE);
+begin
+  SendMessage(RichEditWnd, EM_EXSETSEL, 0, PtrInt(@sr));
 end;
 
 class procedure TRichEditManager.SetHideSelection(RichEditWnd: Handle; AValue: Boolean);
@@ -701,9 +761,9 @@ class procedure TRichEditManager.SetText(RichEditWnd:Handle;
 var
   AnsiText : AnsiString;
   txt      : PChar;
-  s, l     : Integer;
+  sr       : TCHARRANGE;
 begin
-  GetSelection(RichEditWnd, s, l);
+  GetSelRange(RichEditWnd, sr);
   SetSelection(RichEditWnd, TextStart, ReplaceLength);
 
   txt:=nil;
@@ -716,7 +776,7 @@ begin
     SendMessageA(RichEditWnd, EM_REPLACESEL, 0, LPARAM(txt));
   end;
 
-  SetSelection(RichEditWnd, s, l);
+  SetSelRange(RichEditWnd, sr);
 end;
 
 class function TRichEditManager.GetTextW(RichEditWnd: Handle;
@@ -782,9 +842,9 @@ end;
 class procedure TRichEditManager.GetPara2(RichEditWnd: Handle; TextStart: Integer;
   var para: PARAFORMAT2);
 var
-  s, l     : Integer;
+  sr : TCHARRANGE;
 begin
-  GetSelection(RichEditWnd, s, l);
+  GetSelRange(RichEditWnd, sr);
 
   SetSelection(RichEditWnd, TextStart, 0);
 
@@ -792,25 +852,34 @@ begin
   para.cbSize:=sizeof(para);
   SendMessagea(RichEditWnd, EM_GETPARAFORMAT, 0, LPARAM(@para));
 
-  SetSelection(RichEditWnd, s, l);
+  SetSelRange(RichEditWnd, sr);
 end;
 
 class procedure TRichEditManager.SetPara2(RichEditWnd: Handle;
   TextStart, TextLen: Integer; const para: PARAFORMAT2);
 var
-  s, l     : Integer;
+  sr : TCHARRANGE;
 begin
-  GetSelection(RichEditWnd, s, l);
+  GetSelRange(RichEditWnd, sr);
+
   SetSelection(RichEditWnd, TextStart, TextLen);
   SendMessagea(RichEditWnd, EM_SETPARAFORMAT, 0, LPARAM(@para));
-  SetSelection(RichEditWnd, s, l);
+
+  SetSelRange(RichEditWnd, sr);
+end;
+
+class function TRichEditManager.Find(RichEditWnd: THandle; const ANiddle: WideString; const ASearch: TIntSearchOpt): Integer; overload;
+var
+  l : integer;
+begin
+  Result:=Find(RichEDitWnd, ANiddle, ASearch, l);
 end;
 
 class function TRichEditManager.Find(RichEditWnd: THandle;
-  const ANiddle: WideString; const ASearch: TIntSearchOpt): Integer;
+  const ANiddle: WideString; const ASearch: TIntSearchOpt; var TextLen: Integer): Integer;
 var
-  fw: TFINDTEXTW;
-  fa: TFINDTEXTA;
+  fw: TFINDTEXTEXW;
+  fa: TFINDTEXTEXA;
   opt: WParam;
   txt: string;
   mn, mx : Integer;
@@ -824,6 +893,7 @@ begin
   if soMatchCase in ASearch.Options then opt := opt or FR_MATCHCASE;
   if soWholeWord in ASearch.Options then opt := opt or FR_WHOLEWORD;
   mn := ASearch.start;
+  mx := 0;
   if soBackward in ASearch.Options then begin
     if ASearch.len<0 then mx := 0
     else begin
@@ -842,13 +912,15 @@ begin
     fw.chrg.cpMin := mn;
     fw.chrg.cpMax := mx;
     fw.lpstrText := PWideChar(@ANiddle[1]);
-    Result := SendMessage(RichEditWnd, EM_FINDTEXTW, opt, LParam(@fw));
+    Result := SendMessage(RichEditWnd, EM_FINDTEXTEXW, opt, LParam(@fw));
+    if Result>=0 then TextLen:=fw.chrgText.cpMax-fw.chrgText.cpMin;
   end else begin
     fa.chrg.cpMin := mn;
     fa.chrg.cpMax := mx;
     txt:=ANiddle;
     fa.lpstrText := PAnsiChar(@txt[1]);
-    Result := SendMessage(RichEditWnd, EM_FINDTEXT, opt, LParam(@fa));
+    Result := SendMessage(RichEditWnd, EM_FINDTEXTEX, opt, LParam(@fa));
+    if Result>=0 then TextLen:=fa.chrgText.cpMax-fa.chrgText.cpMin;
   end;
 end;
 
@@ -902,6 +974,16 @@ begin
   para.lengthNoBr:=toend;
   if res>0 then inc(toend); // there's a line break character - add it to the range
   para.length:=toend;
+end;
+
+class procedure TRichEditManager.GetScroll(RichEditWnd: Handle; out pt: TPoint);
+begin
+  SendMessage(RichEditWnd, EM_GETSCROLLPOS, 0, LPARAM(@pt));
+end;
+
+class procedure TRichEditManager.SetScroll(RichEditWnd: Handle; const pt: TPoint);
+begin
+  SendMessage(RichEditWnd, EM_SETSCROLLPOS, 0, LPARAM(@pt));
 end;
 
 function WinInsertImageFromFile (const ARichMemo: TCustomRichMemo; APos: Integer;
@@ -977,6 +1059,7 @@ end;
 
 initialization
   InsertImageFromFile := @WinInsertImageFromFile;
+  RichEditManager := TRichEditManager;
 
 end.                                            
 
