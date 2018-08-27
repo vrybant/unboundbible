@@ -182,6 +182,7 @@ end;
 
 procedure TBible.OpenDatabase;
 var
+  FieldNames : TStringList;
   key, value : string;
   dbhandle : Pointer;
 begin
@@ -248,6 +249,11 @@ begin
   finally
     Query.Close;
   end;
+
+  FieldNames := TStringList.Create;
+  try Connection.GetTableNames({$ifdef zeos}'',{$endif}FieldNames) except end;
+  if FieldNames.IndexOf(z.bible) < 0 then connected := false;
+  FieldNames.Free;
 
   language := LowerCase(language);
   RightToLeft := GetRightToLeft(language);
