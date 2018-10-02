@@ -21,9 +21,6 @@ implementation
 
 uses UnitLib;
 
-const
-  CRLF = #13 + #10;
-
 function Utf8ToRTF(const s: string): string;
 var
   p: PChar;
@@ -77,7 +74,7 @@ end;
 
 procedure TRichStream.WriteLn(s: string);
 begin
-  Write(s + CRLF);
+  Write(s + LineEnding );
 end;
 
 procedure TRichStream.Close;

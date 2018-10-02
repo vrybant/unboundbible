@@ -75,7 +75,6 @@ var
 
 const
   Slash = DirectorySeparator; // or AppendPathDelim()
-  CRLF = #13 + #10;
 
 implementation
 
