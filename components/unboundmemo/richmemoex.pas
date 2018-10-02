@@ -155,6 +155,7 @@ procedure TRichMemoEx.SetSel(x1,x2: integer);
 begin
   {$ifdef windows}
   SendMessage(Handle, EM_SETSEL, x1, x2);
+  if ReadOnly then HideCursor; // ???
   {$else}
   SelStart  := x1;
   SelLength := x2-x1;
