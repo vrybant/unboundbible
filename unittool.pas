@@ -15,8 +15,22 @@ implementation
 
 uses UnitShelf, UnitSearch, UnitLib;
 
+procedure RemoveFootnotes(var s: string);
+var
+  x1,x2 : integer;
+begin
+  Replace(s,' <f>','<f>');
+  repeat
+    x1 := Pos( '<f>',s); if x1 = 0  then Exit;
+    x2 := Pos('</f>',s); if x2 < x1 then Exit;
+    Delete(s,x1,x2-x1+4);
+  until false
+end;
+
 procedure Replacement(var s: string; jtag: boolean);
 begin
+  // RemoveFootnotes(s);
+  Replace(s, '</S><S>','</S> <S>'); // footnotes
   Replace(s, '<S>','\super '     );
   Replace(s,'</S>','\nosupersub ');
   Replace(s, '<i>','\i ' );
