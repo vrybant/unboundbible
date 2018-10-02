@@ -20,6 +20,7 @@ type
     FParagraphic : boolean;
     SelStartTemp  : integer;
     SelLengthTemp : integer;
+    function Foreground: integer;
     function  Colored: boolean;
     function  GetLink: string;
     function  GetParagraphNumber: integer;
@@ -43,6 +44,12 @@ type
 procedure Register;
 
 implementation
+
+const
+  fgText     = 0;
+  fgLink     = 1;
+  fgStrong   = 2;
+  fgFootnote = 3;
 
 function MyStrToInt(st: string): integer;
 var v, r : integer;
@@ -70,9 +77,21 @@ begin
   if ReadOnly then HideCursor;
 end;
 
+function TUnboundMemo.Foreground: integer;
+begin
+  Result := fgText;
+
+  case SelAttributes.Color of
+    clNavy   : Result := fgLink;
+    clMaroon : Result := fgStrong;
+    clGray   : Result := fgFootnote;
+  end;
+
+end;
+
 function TUnboundMemo.Colored: boolean;
 begin
-  Result := SelAttributes.Color = clNavy
+  Result := Foreground = fgLink
 end;
 
 function TUnboundMemo.GetLink: string;
