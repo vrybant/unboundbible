@@ -59,6 +59,16 @@ begin
   if r=0 then Result := v else Result := 0;
 end;
 
+function RemoveCRLF(s: string): string;
+const
+  CharLF = #10; // line feed
+  CharCR = #13; // carriage return
+begin
+  s := StringReplace(s, CharLF, '', [rfReplaceAll]);
+  s := StringReplace(s, CharCR, '', [rfReplaceAll]);
+  Result := s;
+end;
+
 constructor TUnboundMemo.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -113,7 +123,7 @@ begin
     SetSel(x1, x1);
   until (Foreground <> fore) or (x1 < 0);
 
-  {$ifdef linux} inc(x1); {$endif}
+  inc(x1);
   if x1 < 0 then inc(x1);
 
   x2 := x0;
@@ -122,10 +132,11 @@ begin
     SetSel(x2, x2);
   until Foreground <> fore;
 
-  {$ifdef windows} dec(x2); {$endif}
-
-  SetSel(x1, x2); Result := SelText;
+  SetSel(x1, x2); Result := RemoveCRLF(SelText);
   SetSel(n1, n2);
+
+  OutputDebugString(PChar(IntToStr(fore)));
+  OutputDebugString(PChar(Result));
 end;
 
 procedure TUnboundMemo.MouseMove(Shift: TShiftState; X, Y: Integer);
@@ -136,7 +147,9 @@ end;
 
 procedure TUnboundMemo.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  if Linkable then Hyperlink := GetLink else Hyperlink := '';
+  //if Linkable then Hyperlink := GetLink else Hyperlink := '';
+  Hyperlink := GetLink;
+
   if Paragraphic and (Button = mbLeft) then GetParagraphRange;
   {$ifdef windows} if ReadOnly or (ssCtrl in Shift) then HideCursor; {$endif}
   inherited;
