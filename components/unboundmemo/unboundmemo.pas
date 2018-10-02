@@ -83,7 +83,7 @@ begin
 
   case SelAttributes.Color of
     clNavy   : Result := fgLink;
-    clMaroon : Result := fgStrong;
+    clPurple : Result := fgStrong;
     clGray   : Result := fgFootnote;
   end;
 

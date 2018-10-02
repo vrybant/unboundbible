@@ -19,7 +19,6 @@ procedure RemoveFootnotes(var s: string);
 var
   x1,x2 : integer;
 begin
-  Replace(s,' <f>','<f>');
   repeat
     x1 := Pos( '<f>',s); if x1 = 0  then Exit;
     x2 := Pos('</f>',s); if x2 < x1 then Exit;
@@ -29,18 +28,26 @@ end;
 
 procedure Replacement(var s: string; jtag: boolean);
 begin
-  // RemoveFootnotes(s);
-  Replace(s, '</S><S>','</S> <S>'); // footnotes
-  Replace(s, '<S>','\super '     );
-  Replace(s,'</S>','\nosupersub ');
+  Replace(s, '</S><S>','</S> <S>'    );
+  Replace(s, '<S>','\cf6\super '     ); // strong
+  Replace(s,'</S>','\cf1\nosupersub ');
+
+  Replace(s,' <f>','<f>'             );
+  Replace(s, '<f>','\cf5\super '     ); // footnotes
+  Replace(s,'</f>','\cf1\nosupersub ');
+
   Replace(s, '<i>','\i ' );
   Replace(s,'</i>','\i0 ');
+
   Replace(s,'<FI>','\i ' );
   Replace(s,'<Fi>','\i0 ');
+
   if not jtag then Exit;
+
   Replace(s, '<J>','\cf2 ');
   Replace(s,'</J>','\cf1 ');
-  Replace(s,'<FR>','\cf2 ' );
+
+  Replace(s,'<FR>','\cf2 ');
   Replace(s,'<Fr>','\cf1 ');
 end;
 

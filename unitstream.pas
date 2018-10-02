@@ -58,7 +58,9 @@ begin
   WriteLn('\red192\green0\blue0;'     ); // 2 red
   WriteLn('\red0\green0\blue128;'     ); // 3 navy
   WriteLn('\red0\green128\blue0;'     ); // 4 green
-  WriteLn('\red128\green128\blue128;}'); // 5 gray
+  WriteLn('\red128\green128\blue128;' ); // 5 gray
+  WriteLn('\red128\green0\blue128;'   ); // 6 purple
+  WriteLn('}');
 
   Write('\f0\cf1');
   Write('\fs' + IntToStr(CurrFont.Size * 2));
