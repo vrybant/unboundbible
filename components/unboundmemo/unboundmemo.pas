@@ -91,16 +91,19 @@ end;
 
 function TUnboundMemo.Colored: boolean;
 begin
-  Result := Foreground = fgLink
+  Result := Foreground = fgLink;
 end;
 
 function TUnboundMemo.GetLink: string;
 var
+  fore : integer;
   x1,x2,x0 : integer;
   n1,n2 : integer;
 begin
   Result := '';
-  if (SelLength > 0) or not Colored then Exit;
+  if SelLength > 0 then Exit;
+  fore := Foreground;
+  if fore = fgText then Exit;
   GetSel(n1{%H-},n2{%H-});
 
   x0 := SelStart;
@@ -108,7 +111,7 @@ begin
   repeat
     dec(x1);
     SetSel(x1, x1);
-  until not Colored or (x1 < 0);
+  until (Foreground <> fore) or (x1 < 0);
 
   {$ifdef linux} inc(x1); {$endif}
   if x1 < 0 then inc(x1);
@@ -117,7 +120,7 @@ begin
   repeat
     inc(x2);
     SetSel(x2, x2);
-  until not Colored;
+  until Foreground <> fore;
 
   {$ifdef windows} dec(x2); {$endif}
 
