@@ -5,7 +5,7 @@ interface
 uses
   {$ifdef windows} Windows, Printers, OSPrinters, {$endif}
   {$ifdef linux} Gtk2, Glib2, Gdk2, {$endif}
-  Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo;
+  Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichEdit, RichMemo;
 
 type
 
@@ -29,6 +29,8 @@ type
     {$ifdef darwin} Modified : boolean; {$endif}
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    {$ifdef windows} procedure Hide_Selection; {$endif}
+    {$ifdef windows} procedure Show_Selection; {$endif}
     function LoadRichText(Source: TStream): Boolean; override;
     function CanUndo: boolean;
     function CanPaste: boolean; override;
@@ -38,6 +40,7 @@ type
     procedure LoadFromFile(const FileName : string);
     procedure SaveToFile(const FileName : string);
     property SelAttributes: TFontParams read GetAttributes write SetAttributes;
+    {$ifdef windows} function GetTextRange(Pos, Length: Integer): string; {$endif}
     {$ifdef windows} property Modified: boolean read GetModified write SetModified; {$endif}
     {$ifdef linux} procedure CopyToClipboard; override; {$endif}
     {$ifdef linux} procedure CutToClipboard; override; {$endif}
@@ -45,7 +48,6 @@ type
   published
     property OnAttrChange: TNotifyEvent read FOnAttrChange write FOnAttrChange;
   end;
-
 
 implementation
 
@@ -85,6 +87,31 @@ end;
 procedure TRichMemoEx.HideCursor;
 begin
    HideCaret(Handle);
+end;
+
+procedure TRichMemoEx.Hide_Selection;
+begin
+   SendMessage(Handle, EM_HIDESELECTION, 1, 0);
+end;
+
+procedure TRichMemoEx.Show_Selection;
+begin
+   SendMessage(Handle, EM_HIDESELECTION, 0, 0);
+end;
+
+function TRichMemoEx.GetTextRange(Pos, Length: Integer): string;
+var
+  TextRange : RichEdit.TEXTRANGEW;
+  w : WideString;
+  res : LResult;
+begin
+  FillChar(TextRange{%H-}, sizeof(TextRange), 0);
+  TextRange.chrg.cpMin := Pos;
+  TextRange.chrg.cpMax := Pos + Length;
+  SetLength(w, Length);
+  TextRange.lpstrText:=@w[1];
+  res := SendMessage(Handle, EM_GETTEXTRANGE, 0, Longint(@TextRange));
+  Result := UTF8Encode( Copy(w, 1, res) );
 end;
 
 {$endif}
@@ -155,7 +182,6 @@ procedure TRichMemoEx.SetSel(x1,x2: integer);
 begin
   {$ifdef windows}
   SendMessage(Handle, EM_SETSEL, x1, x2);
-  if ReadOnly then HideCursor; // ???
   {$else}
   SelStart  := x1;
   SelLength := x2-x1;

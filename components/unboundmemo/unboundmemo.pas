@@ -109,9 +109,14 @@ var
   fore : integer;
   x1,x2,x0 : integer;
   n1,n2 : integer;
+  s : string;
 begin
   Result := '';
   if SelLength > 0 then Exit;
+
+  s := GetTextRange(SelStart, 5);
+  OutputDebugString(PChar(s));
+
   fore := Foreground;
   if fore = fgText then Exit;
   GetSel(n1{%H-},n2{%H-});
@@ -134,9 +139,6 @@ begin
 
   SetSel(x1, x2); Result := RemoveCRLF(SelText);
   SetSel(n1, n2);
-
-  OutputDebugString(PChar(IntToStr(fore)));
-  OutputDebugString(PChar(Result));
 end;
 
 procedure TUnboundMemo.MouseMove(Shift: TShiftState; X, Y: Integer);
@@ -174,6 +176,7 @@ var
   x0,x1,x2 : integer;
 begin
   Result := 0;
+  {$ifdef windows} Hide_Selection; {$endif}
 
   GetSel(x1{%H-},x0{%H-}); // must be equal
 
@@ -195,10 +198,11 @@ begin
   until not Colored; // or (x2 > x0+5)
 
   inc(x1);
-//{$ifdef windows} dec(x2); {$endif}
 
   SetSel(x1,x2); Result := MyStrToInt(SelText);
   SetSel(x1,x1+1);
+
+  {$ifdef windows} Show_Selection;{$endif}
 end;
 
 procedure TUnboundMemo.GetParagraphRange;
