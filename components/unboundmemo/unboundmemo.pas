@@ -182,7 +182,7 @@ var
   char : string;
 begin
   Result := 0;
-  {$ifdef windows} Hide_Selection; {$endif}
+  Hide_Selection;
   x1 := SelStart;
 
   {$ifdef windows}
@@ -217,7 +217,7 @@ begin
   SetSel(x1,x2); Result := MyStrToInt(SelText);
   SetSel(x1,x1+1);
 
-  {$ifdef windows} Show_Selection;{$endif}
+  Show_Selection;
 end;
 
 procedure TUnboundMemo.GetParagraphRange;

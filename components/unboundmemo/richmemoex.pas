@@ -29,12 +29,12 @@ type
     {$ifdef darwin} Modified : boolean; {$endif}
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    {$ifdef windows} procedure Hide_Selection; {$endif}
-    {$ifdef windows} procedure Show_Selection; {$endif}
     function LoadRichText(Source: TStream): Boolean; override;
     function CanUndo: boolean;
     function CanPaste: boolean; override;
     procedure HideCursor;
+    procedure Hide_Selection;
+    procedure Show_Selection;
     function Selected: boolean;
     procedure SelectAll;
     procedure LoadFromFile(const FileName : string);
@@ -84,21 +84,6 @@ begin
   SendMessage(Handle, EM_SETMODIFY, Byte(value), 0);
 end;
 
-procedure TRichMemoEx.HideCursor;
-begin
-   HideCaret(Handle);
-end;
-
-procedure TRichMemoEx.Hide_Selection;
-begin
-   SendMessage(Handle, EM_HIDESELECTION, 1, 0);
-end;
-
-procedure TRichMemoEx.Show_Selection;
-begin
-   SendMessage(Handle, EM_HIDESELECTION, 0, 0);
-end;
-
 function TRichMemoEx.GetTextRange(Pos, Length: Integer): string;
 var
   TextRange : RichEdit.TEXTRANGEW;
@@ -115,6 +100,22 @@ begin
 end;
 
 {$endif}
+
+procedure TRichMemoEx.HideCursor;
+begin
+   {$ifdef windows} HideCaret(Handle); {$endif}
+// {$ifdef linux} gtk_text_view_set_cursor_visible(GetTextView, False); {$endif}
+end;
+
+procedure TRichMemoEx.Hide_Selection;
+begin
+   {$ifdef windows} SendMessage(Handle, EM_HIDESELECTION, 1, 0); {$endif}
+end;
+
+procedure TRichMemoEx.Show_Selection;
+begin
+   {$ifdef windows} SendMessage(Handle, EM_HIDESELECTION, 0, 0); {$endif}
+end;
 
 function TRichMemoEx.LoadRichText(Source: TStream): Boolean;
 begin
@@ -247,11 +248,6 @@ begin
   Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
   Buffer := gtk_text_view_get_buffer(GetTextView);
   gtk_text_buffer_paste_clipboard(Buffer, Clipboard, NULL, True);
-end;
-
-procedure TRichMemoEx.HideCursor;
-begin
-  //gtk_text_view_set_cursor_visible(GetTextView, False);
 end;
 
 {$endif}
