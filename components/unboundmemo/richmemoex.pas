@@ -109,9 +109,9 @@ begin
   TextRange.chrg.cpMin := Pos;
   TextRange.chrg.cpMax := Pos + Length;
   SetLength(w, Length);
-  TextRange.lpstrText:=@w[1];
+  TextRange.lpstrText := @w[1];
   res := SendMessage(Handle, EM_GETTEXTRANGE, 0, Longint(@TextRange));
-  Result := UTF8Encode( Copy(w, 1, res) );
+  Result := UTF8Encode(Copy(w, 1, res));
 end;
 
 {$endif}
