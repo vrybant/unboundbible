@@ -196,8 +196,19 @@ type
 
     class procedure GetScroll(RichEditWnd: Handle; out pt: TPoint); virtual;
     class procedure SetScroll(RichEditWnd: Handle; const pt: TPoint); virtual;
+
+    class function LinkNotifyToInfo(RichEditWnd: Handle; const LinkNotify: TENLINK;
+      var LinkInfo: TLinkMouseInfo): Boolean; virtual;
   end;
   TRichManagerClass = class of TRichEditManager;
+
+  { TRichEditManagerWinXP }
+
+  TRichEditManagerWinXP = class(TRichEditManager)
+    class procedure SetTextUIStyle(RichEditWnd: Handle; const ui: TTextUIParam); override;
+    class function LinkNotifyToInfo(RichEditWnd: Handle; const LinkNotify: TENLINK;
+      var LinkInfo: TLinkMouseInfo): Boolean; override;
+  end;
                      
 var
   RichEditManager : TRichManagerClass = nil;
@@ -338,6 +349,45 @@ begin
   end;
 end;
 
+{ TRichEditManagerWinXP }
+
+class procedure TRichEditManagerWinXP.SetTextUIStyle(RichEditWnd: Handle;
+  const ui: TTextUIParam);
+var
+  st      : TSetTextEx;
+  linkrtf : String;
+  txt     : WideString;
+  txtrtf  : String;
+begin
+  if RichEditWnd = 0 then Exit;
+
+  txt := GetTextW(RichEditWnd, true);
+  st.codepage := CP_UTF8;
+  st.flags := ST_SELECTION;
+  txtrtf := UTF8Encode(txt);
+  linkrtf := Format(
+    '{\rtf1{\colortbl ;\red0\green0\blue238;}{\field \ul \cf1 {\*\fldinst{ HYPERLINK "%s"}}{\fldrslt{%s}\ul0 \cf0}}}',
+    [ui.linkref, txtrtf]
+  );
+  SendMessage(RichEditWnd, EM_SETTEXTEX, WPARAM(@st), LParam(@linkrtf[1]));
+end;
+
+class function TRichEditManagerWinXP.LinkNotifyToInfo(RichEditWnd: Handle;
+  const LinkNotify: TENLINK; var LinkInfo: TLinkMouseInfo): Boolean;
+var
+  w   : WideString;
+  tr  : RichEdit.TEXTRANGEW;
+  res : LResult;
+begin
+  FillChar(tr, sizeof(tr),0);
+  tr.chrg.cpMin:=LinkNotify.chrg.cpMin;
+  tr.chrg.cpMax:=LinkNotify.chrg.cpMax;
+  setLength(w, tr.chrg.cpMax-tr.chrg.cpMin+1);
+  tr.lpstrText:=@w[1];
+  res := Windows.SendMessage(RichEditWnd, EM_GETTEXTRANGE, 0, Windows.lParam(@tr));
+  LinkInfo.LinkRef := UTF8Encode( Copy(w, 1, res) );
+  Result:=true;
+end;
 
 { TRichEditManager }
 
@@ -984,6 +1034,12 @@ end;
 class procedure TRichEditManager.SetScroll(RichEditWnd: Handle; const pt: TPoint);
 begin
   SendMessage(RichEditWnd, EM_SETSCROLLPOS, 0, LPARAM(@pt));
+end;
+
+class function TRichEditManager.LinkNotifyToInfo(RichEditWnd: Handle;
+  const LinkNotify: TENLINK; var LinkInfo: TLinkMouseInfo): Boolean;
+begin
+  Result := false;
 end;
 
 function WinInsertImageFromFile (const ARichMemo: TCustomRichMemo; APos: Integer;

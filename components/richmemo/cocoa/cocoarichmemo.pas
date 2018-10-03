@@ -9,7 +9,7 @@ interface
 uses
   CocoaAll, Classes, SysUtils,
   LCLType, Graphics, Controls, StdCtrls,
-  CocoaPrivate, CocoaUtils, CocoaWSCommon,
+  CocoaPrivate, CocoaTextEdits, CocoaUtils, CocoaWSCommon,
   WSRichMemo, RichMemo;
 
 type
@@ -262,6 +262,7 @@ end;
 function FindFont(const FamilyName: String; astyle: TFontStyles): NSFontDescriptor;
 var
   fd  : NSFontDescriptor;
+  cfd : NSFontDescriptor;
   old : NSFontDescriptor;
   fdd : NSFontDescriptor;
   trt : NSFontSymbolicTraits;
@@ -276,18 +277,23 @@ begin
   if fsBold in aStyle then trt:=trt or NSFontBoldTrait;
 
   fd:=NSFontDescriptor(NSFontDescriptor.alloc).initWithFontAttributes(nil);
-  fd:=fd.fontDescriptorWithFamily(ns);
-  fd:=fd.fontDescriptorWithSymbolicTraits(trt);
-
-  fdd:=fd.matchingFontDescriptorWithMandatoryKeys(nil);
-  i:=0;
-  while not Assigned(fdd) and (i<length(fallback)) do begin
-    trt:=trt and (not fallback[i]);
+  cfd:=fd;
+  try
+    fd:=fd.fontDescriptorWithFamily(ns);
     fd:=fd.fontDescriptorWithSymbolicTraits(trt);
+
     fdd:=fd.matchingFontDescriptorWithMandatoryKeys(nil);
+    i:=0;
+    while not Assigned(fdd) and (i<length(fallback)) do begin
+      trt:=trt and (not fallback[i]);
+      fd:=fd.fontDescriptorWithSymbolicTraits(trt);
+      fdd:=fd.matchingFontDescriptorWithMandatoryKeys(nil);
+    end;
+    Result:=fdd;
+  finally
+    ns.release;
+    cfd.release;
   end;
-  Result:=fdd;
-  ns.release;
 end;
 
 class procedure TCocoaWSCustomRichMemo.SetTextAttributes(
@@ -314,35 +320,30 @@ begin
 
   fd:=FindFont(Params.Name, Params.Style);
   font:=NSFont.fontWithDescriptor_size(fd, Params.Size);
+
   txt.addAttribute_value_range(NSFontAttributeName, font, rng);
   // fd.release;
 
   if fsUnderline in Params.Style then begin
     num:=NSNumber.numberWithInt(NSUnderlineStyleSingle);
     txt.addAttribute_value_range(NSUnderlineStyleAttributeName, num, rng);
-    num.release;
   end else
     txt.removeAttribute_range(NSUnderlineStyleAttributeName, rng);
 
   if fsStrikeOut in Params.Style then begin
     num:=NSNumber.numberWithInt(NSUnderlineStyleSingle);
     txt.addAttribute_value_range(NSStrikethroughStyleAttributeName, num, rng);
-    num.release;
   end else
     txt.removeAttribute_range(NSStrikethroughStyleAttributeName, rng);
 
-
   clr:=ColorToNSColor(Params.Color);
   txt.addAttribute_value_range(NSForegroundColorAttributeName, clr, rng);
-  clr.release;
 
   if Params.HasBkClr then begin
     clr:=ColorToNSColor(Params.BkColor);
     txt.addAttribute_value_range(NSBackgroundColorAttributeName, clr, rng);
-    clr.release;
   end else
     txt.removeAttribute_range(NSBackgroundColorAttributeName, rng);
-
 end;
 
 class procedure TCocoaWSCustomRichMemo.SetParaAlignment(
@@ -456,7 +457,6 @@ begin
   par.setParagraphSpacingBefore(AMetric.SpaceBefore);
 
   txt.addAttribute_value_range( NSParagraphStyleAttributeName, par, ParaRange(txt, TextStart, textLen));
-  par.release;
 end;
 
 class procedure TCocoaWSCustomRichMemo.SetParaTabs(
@@ -495,7 +495,6 @@ begin
   end;
   par.setTabStops(tabs);
   txt.addAttribute_value_range( NSParagraphStyleAttributeName, par, ParaRange(txt, TextStart, textLen));
-  par.release;
 end;
 
 class function TCocoaWSCustomRichMemo.GetParaTabs(
@@ -530,7 +529,7 @@ begin
       NSRightTabStopType:  AStopList.Tabs[i].Align:= tabRight;
       NSDecimalTabStopType: AStopList.Tabs[i].Align:= tabDecimal;
     else
-      AStopList.Tabs[i].Align:=taLeft;
+      AStopList.Tabs[i].Align:=tabLeft;
     end;
   end;
 end;

@@ -329,6 +329,8 @@ begin
               if isClick then begin
                 FillChar(minfo, sizeof(minfo), 0);
                 minfo.button:=mb;
+                RichEditManager.LinkNotifyToInfo( AWinControl.Handle,
+                  lnk^, minfo );
                 TIntCustomRichMemo(AWinControl).DoLinkAction(laClick, minfo, lnk^.chrg.cpMin, lnk^.chrg.cpMax-lnk^.chrg.cpMin);
               end;
 
@@ -398,6 +400,7 @@ begin
   end else begin
     sz.cx:=0;
     sz.cy:=0;
+    pts:=Point(0,0);
   end;
 
   rminline.Draw(canvas, sz);
@@ -1192,7 +1195,7 @@ var
   p : POINTL;
 begin
   if not Assigned(AWinControl) then
-    inherited
+    Result:=0
   else begin
     p.x:=x;
     p.y:=y;
@@ -1203,7 +1206,10 @@ end;
 class function TWin32WSCustomRichMemo.Search(const AWinControl: TWinControl;
   const ANiddle: string; const SearchOpts: TIntSearchOpt): Integer;
 begin
-  if not Assigned(RichEditManager) or not Assigned(AWinControl) then Exit;
+  if not Assigned(RichEditManager) or not Assigned(AWinControl) then begin
+    Result:=-1;
+    Exit;
+  end;
   Result:=RichEditManager.Find(AWinControl.Handle, UTF8Decode(ANiddle), SearchOpts);
 end;
 
@@ -1486,11 +1492,11 @@ begin
   // When theming is enabled, and the component should have a border around it,
   // let the theme manager handle it
   Handled:=(GetWindowLong(AWindow, GWL_EXSTYLE) and WS_EX_CLIENTEDGE <> 0) and (ThemeServices.ThemesEnabled);
+  Result := 0;
   if Handled then begin
     // Paint into this DC
     WindowProc(AWindow, WM_NCPAINT, WParam, LParam);
     ThemeServices.PaintBorder(RichMemo, True);
-    Result := 0;
   end;
 end;
 

@@ -209,11 +209,13 @@ function TRichEditParaAttributes.GetTab(Index: Byte): Integer;
 var
   m  : TCustomRichMemo;
   stop : TTabStopList;
+  idx : integer;
 begin
+  idx:=Index;
   m:=TCustomRichMemo(TObject(Self));
   m.GetParaTabs(m.SelStart, stop);
-  if (Index<0) or (Index>=stop.Count) then Result:=0
-  else Result:=round(stop.Tabs[Index].Offset);
+  if (idx<0) or (idx>=stop.Count) then Result:=0
+  else Result:=round(stop.Tabs[idx].Offset);
 end;
 
 function TRichEditParaAttributes.GetTabCount: Integer;
@@ -263,13 +265,15 @@ procedure TRichEditParaAttributes.SetTab(Index: Byte; AValue: Integer);
 var
   m  : TCustomRichMemo;
   stop : TTabStopList;
+  idx : integer;
 begin
+  idx:=Index;
   m:=TCustomRichMemo(TObject(Self));
   m.GetParaTabs(m.SelStart, stop);
-  if (Index<0) or (Index>=stop.Count) then
+  if (idx<0) or (idx>=stop.Count) then
     Exit
   else begin
-    stop.Tabs[index].Offset:=AValue;
+    stop.Tabs[idx].Offset:=AValue;
     m.SetParaTabs(m.SelStart, m.SelLength, stop);
   end;
 end;

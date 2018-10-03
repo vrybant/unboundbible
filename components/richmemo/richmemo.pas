@@ -137,7 +137,8 @@ type
   TLinkAction = (laClick);
 
   TLinkMouseInfo = record
-    button : TMouseButton;
+    Button  : TMouseButton;
+    LinkRef : String;
   end;
 
   TLinkActionEvent = procedure (Sender: TObject;
@@ -339,7 +340,7 @@ type
     property ZoomFactor;
   end;
 
-procedure InitFontParams(var p: TFontParams);
+procedure InitFontParams(out p: TFontParams);
 function GetFontParams(styles: TFontStyles): TFontParams; overload;
 function GetFontParams(color: TColor; styles: TFontStyles): TFontParams; overload;
 function GetFontParams(const Name: String; color: TColor; styles: TFontStyles): TFontParams; overload;
@@ -365,7 +366,7 @@ implementation
 uses
   {%H-}RichMemoFactory, WSRichMemo;
 
-procedure InitFontParams(var p: TFontParams);
+procedure InitFontParams(out p: TFontParams);
 begin
   FillChar(p, SizeOf(p), 0);
 end;
@@ -834,7 +835,9 @@ function TCustomRichMemo.CanPaste: Boolean;
 begin
   if not HandleAllocated then HandleNeeded;
   if HandleAllocated then
-    Result:=TWSCustomRichMemoClass(WidgetSetClass).CanPasteFromClipboard(Self);
+    Result:=TWSCustomRichMemoClass(WidgetSetClass).CanPasteFromClipboard(Self)
+  else
+    Result:=false;
 end;
 
 procedure TCustomRichMemo.SetRangeColor(TextStart, TextLength: Integer; FontColor: TColor);
@@ -1034,7 +1037,7 @@ begin
   if not HandleAllocated then HandleNeeded;
   if HandleAllocated and not TWSCustomRichMemoClass(WidgetSetClass).GetSubText(Self, TextStart, TextLength, false, isu, txt, utxt) then
     Exit;
-  if isu then Result:=UTF8Decode(utxt)
+  if isu then Result:=UTF8Encode(utxt)
   else Result:=txt;
 end;
 
@@ -1049,7 +1052,7 @@ begin
   if HandleAllocated and not TWSCustomRichMemoClass(WidgetSetClass).GetSubText(Self, TextStart, TextLength, false, isu, txt, utxt) then
     Exit;
   if isu then Result:=utxt
-  else Result:=UTF8Encode(txt);
+  else Result:=UTF8Decode(txt);
 end;
 
 procedure TCustomRichMemo.SetSelLengthFor(const aselstr: string);
@@ -1071,6 +1074,7 @@ function TCustomRichMemo.Search(const ANiddle: string; Start, Len: Integer; cons
 var
   so : TIntSearchOpt;
 begin
+  Result:=false;
   if not HandleAllocated then HandleNeeded;
   if HandleAllocated then begin
     so.len:=Len;
@@ -1125,6 +1129,7 @@ begin
 
   if HandleAllocated then begin
     est.Pages:=TWSCustomRichMemoClass(WidgetSetClass).Print(Self, Printer, params, false);
+    Result:=true;
   end else
     Result:=false;
 end;
