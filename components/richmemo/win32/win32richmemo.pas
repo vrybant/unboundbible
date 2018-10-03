@@ -351,8 +351,12 @@ begin
   case Msg of
     WM_PAINT : begin
       //todo: LCL WM_PAINT handling prevents richedit from drawing correctly
-      Result := CallDefaultWindowProc(Window, Msg, WParam, LParam)
-      //Result := WindowProc(Window, Msg, WParam, LParam)
+      Result := CallDefaultWindowProc(Window, Msg, WParam, LParam);
+
+      WindowInfo := GetWin32WindowInfo(Window);
+      if WindowInfo^.WinControl is TCustomRichMemo then
+        if (WindowInfo^.WinControl as TCustomRichMemo).ReadOnly then HideCaret(Window);
+
       end;
       //When theming is enabled, and the component should have a border around it,
     WM_NCPAINT: begin
