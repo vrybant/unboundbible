@@ -11,9 +11,7 @@ type
   TUnboundMemo = class(TRichMemoEx)
   protected
     procedure CreateWnd; override;
-    procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp  (Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure KeyUp  (var Key: Word; Shift: TShiftState); override;
   private
     FLinkable : boolean;
@@ -137,26 +135,13 @@ begin
   SetSel(n1, n2);
 end;
 
-procedure TUnboundMemo.MouseMove(Shift: TShiftState; X, Y: Integer);
-begin
-  inherited;
-  {$ifdef windows} if ReadOnly or (ssCtrl in Shift) then HideCursor; {$endif}
-end;
-
 procedure TUnboundMemo.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   //if Linkable then Hyperlink := GetLink else Hyperlink := '';
   Hyperlink := GetLink;
 
   if Paragraphic and (Button = mbLeft) then GetParagraphRange;
-  {$ifdef windows} if ReadOnly or (ssCtrl in Shift) then HideCursor; {$endif}
   inherited;
-end;
-
-procedure TUnboundMemo.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  inherited;
-  {$ifdef windows} if ReadOnly or (ssCtrl in Shift) then HideCursor; {$endif}
 end;
 
 procedure TUnboundMemo.KeyUp(var Key: Word; Shift: TShiftState);

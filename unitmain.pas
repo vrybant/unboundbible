@@ -1122,7 +1122,6 @@ begin
   PageControl.ActivePageIndex := page;
   EnableButtons;
   Refresh;
-  if page <> apNotes then UnboundMemo.HideCursor;
 end;
 
 procedure TMainForm.miBibleFolderClick(Sender: TObject);
@@ -1191,7 +1190,6 @@ begin
   UnboundMemo.SetFocus;
   UnboundMemo.Repaint;
   if PageControl.ActivePageIndex = apCompare then LoadCompare;
-  if PageControl.ActivePageIndex <> apNotes then UnboundMemo.HideCursor;
 end;
 
 procedure TMainForm.RadioButtonClick(Sender: TObject);
