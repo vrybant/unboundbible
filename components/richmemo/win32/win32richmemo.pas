@@ -671,7 +671,7 @@ begin
   RichEditManager.GetScroll(AWinControl.Handle, pt);
   eventmask := RichEditManager.SetEventMask(AWinControl.Handle, 0);
 
-  LockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle);
+  // LockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle);
 
   RichEditManager.GetSelRange(AWinControl.Handle, Orig);
 
@@ -680,7 +680,7 @@ begin
 
   RichEditManager.SetSelRange(AWinControl.Handle, Orig);
   RichEditManager.SetScroll(AWinControl.Handle, pt);
-  UnlockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle, false);
+  // UnlockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle, false);
 
   RichEditManager.SetEventMask(AWinControl.Handle,eventmask);
 end;
