@@ -178,13 +178,12 @@ end;
 
 function TUnboundMemo.GetParagraphNumber: integer;
 var
-  x0,x1,x2 : integer;
+  x1, x2 : integer;
   char : string;
 begin
   Result := 0;
   {$ifdef windows} Hide_Selection; {$endif}
-
-  GetSel(x1{%H-},x0{%H-}); // must be equal
+  x1 := SelStart;
 
   {$ifdef windows}
   if not Colored then
@@ -211,7 +210,7 @@ begin
   repeat
     inc(x2);
     SetSel(x2, x2);
-  until not Colored; // or (x2 > x0+5)
+  until not Colored;
 
   inc(x1);
 
