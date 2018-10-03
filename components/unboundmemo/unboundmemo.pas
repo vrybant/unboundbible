@@ -109,13 +109,9 @@ var
   fore : integer;
   x1,x2,x0 : integer;
   n1,n2 : integer;
-  s : string;
 begin
   Result := '';
   if SelLength > 0 then Exit;
-
-  s := GetTextRange(SelStart, 5);
-  OutputDebugString(PChar(s));
 
   fore := Foreground;
   if fore = fgText then Exit;
@@ -171,14 +167,30 @@ begin
   {$endif}
 end;
 
+function IsNumeral(c: string): boolean;
+begin
+  Result :=
+    (c = '0') or (c = '1') or (c = '2') or (c = '3') or (c = '4') or
+    (c = '5') or (c = '6') or (c = '7') or (c = '8') or (c = '9') ;
+end;
+
 function TUnboundMemo.GetParagraphNumber: integer;
 var
   x0,x1,x2 : integer;
+  char : string;
 begin
   Result := 0;
   {$ifdef windows} Hide_Selection; {$endif}
 
   GetSel(x1{%H-},x0{%H-}); // must be equal
+
+  if not Colored then
+    while true and (x1 > 0) do
+      begin
+        dec(x1);
+        char := GetTextRange(x1, 1);
+        if IsNumeral(char) then break;
+      end;
 
   while not Colored and (x1 > 0) do
     begin
