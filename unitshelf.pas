@@ -704,19 +704,16 @@ end;
 procedure TShelf.AddBibles(path: string);
 var
   Item : TBible;
-  List : TStringList;
-     i : integer;
+  List : TStringArray;
+  f : string;
 begin
-  List := TStringList.Create;
-  GetFileList(path, '*.*', List);
+  List := GetFileList(path, '*.*');
 
-  for i:= 0 to List.Count-1 do
+  for f in List do
     begin
-      Item := TBible.Create(List[i]);
+      Item := TBible.Create(f);
       if Item.connected then Add(Item) else Item.Free;
     end;
-
-  List.Free;
 end;
 
 procedure TShelf.SetCurrent(index: integer);

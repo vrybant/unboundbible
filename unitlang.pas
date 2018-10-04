@@ -60,15 +60,14 @@ end;
 
 constructor TLocalization.Create;
 var
-  List: TStringList;
-  i: integer;
+  List : TStringArray;
+  f : string;
+  i : integer;
 begin
   inherited;
 
-  List := TStringList.Create;
-  GetFileList(SharePath + LangDirectory, '*.lng', List);
-  for i:=0 to List.Count-1 do self.Add(ExtractOnlyName(List[i]));
-  List.Free;
+  List := GetFileList(SharePath + LangDirectory, '*.lng');
+  for f in List do self.Add(ExtractOnlyName(f));
 
   Self.CustomSort(Comparison);
 end;

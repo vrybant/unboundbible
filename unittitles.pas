@@ -74,25 +74,22 @@ end;
 
 function TTitles.GetFileName(language: string): string;
 var
-  List : TStringList;
+  List : TStringArray;
   Path, FileName : string;
+  f : string;
   i : integer;
 begin
   Result := 'english';
   language := LowerCase(language);
 
-  List := TStringList.Create;
-
   Path := SharePath + titleDirectory;
-  GetFileList(Path, '*.sqlite', List);
+  List := GetFileList(Path, '*.sqlite');
 
-  for i:= 0 to List.Count-1 do
+  for f in List do
     begin
-      FileName := ExtractOnlyName(List[i]);
+      FileName := ExtractOnlyName(f);
       if Prefix(language, FileName) then Result := FileName;
     end;
-
-  List.Free;
 end;
 
 function TTitles.GetTitleEx(n: integer; abbreviation: boolean): string;

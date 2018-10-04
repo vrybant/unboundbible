@@ -37,6 +37,7 @@ function MyStrToInt(st: string): integer;
 function CleanString(s: string): string;
 function StringPos(subst: string; s: string): TIntegerArray;
 procedure Replace(var s: string; const oldPattern, newPattern: String);
+function ListToArray(const List: TStringList): TStringArray;
 function StringToList(ch: Char; st: string): TStringArray;
 function CleanTags(s: string): string;
 procedure RemoveTags(var s: string);
@@ -48,7 +49,7 @@ procedure RemoveTags(var s: string);
 // file's functions
 
 function ExtractOnlyName(s: string): string;
-procedure GetFileList(const Path, Mask : string; const List: TStrings);
+function GetFileList(const Path, Mask: string) : TStringArray;
 function SharePath: string;
 function DocumentsPath: string;
 function ConfigFile: string;
@@ -145,6 +146,14 @@ begin
   s := StringReplace(s, oldPattern, newPattern, [rfReplaceAll]);
 end;
 
+function ListToArray(const List: TStringList): TStringArray;
+var i : integer;
+begin
+  SetLength(Result, List.Count);
+  for i:=0 to List.Count-1 do
+    Result[i] := List[i];
+end;
+
 function StringToList(ch: Char; st: string): TStringArray;
 var
   Point : array of integer;
@@ -232,12 +241,14 @@ begin
   Result := ExtractFileName(ChangeFileExt(s,''));
 end;
 
-procedure GetFileList(const Path, Mask: string; const List: TStrings);
+function GetFileList(const Path, Mask: string) : TStringArray;
 var
+  List : TStringList;
   SearchRec : TSearchRec;
   Res : integer;
   s : string;
 begin
+  List := TStringList.Create;
   Res  := SysUtils.FindFirst(Path + slash + Mask, faAnyFile, SearchRec);
 
   while Res=0 do
@@ -248,6 +259,8 @@ begin
     end;
 
   SysUtils.FindClose(SearchRec);
+  Result := ListToArray(List);
+  List.Free;
 end;
 
 function SharePath: string;
