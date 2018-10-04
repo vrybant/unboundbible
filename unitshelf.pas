@@ -7,7 +7,7 @@ unit UnitShelf;
 interface
 
 uses
-  Classes, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
+  Classes, Fgl, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
   UnitLib, UnitTitles, UnitType;
 
@@ -24,7 +24,7 @@ type
     sorting : integer;
   end;
 
-  TBible = class(TList)
+  TBible = class(TFPGList<TBook>)
     {$ifdef zeos}
       Connection : TZConnection;
       Query : TZReadOnlyQuery;
@@ -60,9 +60,6 @@ type
     connected    : boolean;
     loaded       : boolean;
   private
-    function  GetItem(index: integer): TBook;
-    procedure SetItem(index: integer; lst: TBook);
-    function Add(lst: TBook): integer;
     function EncodeID(id: integer): integer;
     function DecodeID(id: integer): integer;
     function SortingIndex(number: integer): integer;
@@ -86,20 +83,15 @@ type
     function  ChaptersCount(Verse: TVerse): integer;
     procedure SavePrivate(const IniFile: TIniFile);
     procedure ReadPrivate(const IniFile: TIniFile);
-    property Items[Index: Integer]: TBook read GetItem write SetItem; default;
     destructor Destroy; override;
   end;
 
-  TShelf = class(TList)
+  TShelf = class(TFPGList<TBible>)
     Current : integer;
   private
-    function  GetItem(Index: Integer): TBible;
-    procedure SetItem(Index: Integer; TheBible: TBible);
   public
     constructor Create;
     procedure AddBibles(path: string);
-    function Add(TheBible: TBible): Integer;
-    property Items[Index: Integer]: TBible read GetItem write SetItem; default;
     destructor Destroy; override;
     {-}
     procedure SetCurrent(FileName: string); overload;
@@ -175,9 +167,9 @@ begin
   OpenDatabase;
 end;
 
-function BookComparison(Item1, Item2: Pointer): integer;
+function BookComparison(const Item1: TBook; const Item2: TBook): integer;
 begin
-  Result := TBook(Item1).sorting - TBook(Item2).sorting;
+  Result := Item1.sorting - Item2.sorting;
 end;
 
 procedure TBible.OpenDatabase;
@@ -676,21 +668,6 @@ begin
   Compare := IniFile.ReadBool(FileName, 'Compare', True);
 end;
 
-function TBible.Add(lst: TBook): integer;
-begin
-  Result := inherited Add(lst);
-end;
-
-function TBible.GetItem(index: integer): TBook;
-begin
-  Result := TBook(inherited Items[index]);
-end;
-
-procedure TBible.SetItem(index: integer; lst: TBook);
-begin
-  inherited Items[index] := List;
-end;
-
 destructor TBible.Destroy;
 var
   i : integer;
@@ -708,10 +685,9 @@ end;
 //                                         TShelf
 //=================================================================================================
 
-function Comparison(Item1, Item2: Pointer): integer;
+function Comparison(const Item1: TBible; const Item2: TBible): integer;
 begin
-  Result := CompareText(TBible(Item1).Name,
-                        TBible(Item2).Name) ;
+  Result := CompareText(Item1.Name, Item2.Name);
 end;
 
 constructor TShelf.Create;
@@ -741,21 +717,6 @@ begin
     end;
 
   List.Free;
-end;
-
-function TShelf.Add(TheBible: TBible): integer;
-begin
-  Result := inherited Add(Pointer(TheBible));
-end;
-
-function TShelf.GetItem(Index: Integer): TBible;
-begin
-  Result := TBible(inherited Items[Index]);
-end;
-
-procedure TShelf.SetItem(Index: Integer; TheBible: TBible);
-begin
-  inherited Items[Index] := TheBible;
 end;
 
 procedure TShelf.SetCurrent(index: integer);
