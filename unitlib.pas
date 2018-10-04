@@ -37,7 +37,7 @@ function MyStrToInt(st: string): integer;
 function CleanString(s: string): string;
 function StringPos(subst: string; s: string): TIntegerArray;
 procedure Replace(var s: string; const oldPattern, newPattern: String);
-function ListToArray(const List: TStringList): TStringArray;
+function ListToArray(List: TStringList): TStringArray;
 function StringToList(ch: Char; st: string): TStringArray;
 function CleanTags(s: string): string;
 procedure RemoveTags(var s: string);
@@ -146,7 +146,7 @@ begin
   s := StringReplace(s, oldPattern, newPattern, [rfReplaceAll]);
 end;
 
-function ListToArray(const List: TStringList): TStringArray;
+function ListToArray(List: TStringList): TStringArray;
 var i : integer;
 begin
   SetLength(Result, List.Count);
