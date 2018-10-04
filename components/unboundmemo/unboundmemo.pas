@@ -155,9 +155,10 @@ end;
 {$ifdef windows}
 function IsNumeral(c: string): boolean;
 begin
-  Result :=
-    (c = '0') or (c = '1') or (c = '2') or (c = '3') or (c = '4') or
-    (c = '5') or (c = '6') or (c = '7') or (c = '8') or (c = '9') ;
+  case c of
+    '0','1','2','3','4','5','6','7','8','9' : Result := true;
+    else Result := false;
+  end;
 end;
 {$endif}
 
