@@ -45,8 +45,8 @@ var
   t : string;
   i,len : integer;
 const
-  before = '\cf2 ';
-  after  = '\cf1 ';
+  before = '<h>';
+  after  = '</h>';
 begin
   t := s;
   len := Length(target);
@@ -79,24 +79,20 @@ end;
 procedure Search_Text(Stream: TRichStream; st: string; var count: integer);
   var
     ContentArray : TContentArray;
-    v : TVerse;
+    content : TContent;
     link, text : string;
-    i : integer;
   begin
     if Shelf.Count = 0 then Exit;
 
     Stream.Open;
     ContentArray := Bible.Search(st, CurrentSearchOptions, CurrentSearchRange);
-    Count := Length(ContentArray);
 
-    for i:=0 to Count-1 do
+    for content in ContentArray do
       begin
-        v := ContentArray[i].verse;
-        link := Bible.VerseToStr(v,true);
-        text := ContentArray[i].text;
-        text := parse(text,false);
+        link := Bible.VerseToStr(content.verse,true);
+        text := content.text;
         Highlights(text,st,CurrentSearchOptions);
-        text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + text + '\i0\par\par';
+        text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + parse(text,false) + '\i0\par\par';
         Stream.Writeln(text);
       end;
 

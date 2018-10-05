@@ -64,6 +64,8 @@ begin
   if s = '</f>' then r := color + '\nosupersub ';
   if s =  '<i>' then r := '\i ';
   if s = '</i>' then r := '\i0 ';
+  if s =  '<h>' then r := '\cf2 ';
+  if s = '</h>' then r := '\cf1 ';
 
   Result := r;
 end;
