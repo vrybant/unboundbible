@@ -30,8 +30,7 @@ begin
 
   for i:=Low(Strings) to High(Strings) do
     begin
-      text := Strings[i];
-      text := Parse(text, true);
+      text := Parse(Strings[i],true);
       text := '\cf3 ' + ' ' + IntToStr(i+1) + '\cf1 ' + ' ' + text + '\i0\par';
       Stream.Writeln(text);
     end;
@@ -92,7 +91,7 @@ begin
       link := Bible.VerseToStr(content.verse,true);
       text := content.text;
       Highlights(text,st,CurrentSearchOptions);
-      text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + parse(text,false) + '\i0\par\par';
+      text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + Parse(text,false) + '\i0\par\par';
       Stream.Writeln(text);
     end;
 
@@ -102,7 +101,7 @@ end;
 procedure Load_Compare(Stream: TRichStream);
 var
   Strings : TStringArray;
-  text, s : string;
+  s, item : string;
   i, j : integer;
 begin
   if Shelf.Count = 0 then Exit;
@@ -123,11 +122,9 @@ begin
           Stream.Writeln(s);
         end;
 
-      for j:=Low(Strings) to High(Strings) do
+      for item in Strings  do
         begin
-          text := Strings[j];
-          text := parse(text,false);
-          s := text + '\i0\par';
+          s := Parse(item,false) + '\i0\par';
           Stream.Writeln(s);
         end;
     end;
@@ -165,9 +162,7 @@ begin
           if (i>0) or ((i=0) and Options.cvEnd) then
             q := q + '(' + IntToStr(ActiveVerse.Number + i) + ') ';
 
-      t := Strings[i];
-      t := parse(t,false);
-      q := q + t + ' ';
+      q := q + Parse(Strings[i],false) + ' ';
     end;
 
   q := Trim(q);
@@ -186,7 +181,7 @@ end;
 procedure Load_Translate(Stream: TRichStream; Verse: TVerse);
 var
   Strings : TStringArray;
-  text, s : string;
+  s, item : string;
   i, j : integer;
 begin
   if Shelf.Count = 0 then Exit;
@@ -207,10 +202,9 @@ begin
           Stream.Writeln(s);
         end;
 
-      for j:=Low(Strings) to High(Strings) do
+      for item in Strings do
         begin
-          text := Strings[j];
-          s := parse(text,false) + '\i0\par';
+          s := parse(item,false) + '\i0\par';
           Stream.Writeln(s);
         end;
     end;
