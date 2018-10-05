@@ -13,43 +13,7 @@ procedure Show_Message(Stream: TRichStream; s: string);
 
 implementation
 
-uses UnitShelf, UnitSearch, UnitLib;
-
-procedure RemoveFootnotes(var s: string);
-var
-  x1,x2 : integer;
-begin
-  repeat
-    x1 := Pos( '<f>',s); if x1 = 0  then Exit;
-    x2 := Pos('</f>',s); if x2 < x1 then Exit;
-    Delete(s,x1,x2-x1+4);
-  until false
-end;
-
-procedure Replacement(var s: string; jtag: boolean);
-begin
-  Replace(s, '</S><S>','</S> <S>'    );
-  Replace(s, '<S>','\cf6\super '     ); // strong
-  Replace(s,'</S>','\cf1\nosupersub ');
-
-  Replace(s,' <f>','<f>'             );
-  Replace(s, '<f>','\cf5\super '     ); // footnotes
-  Replace(s,'</f>','\cf1\nosupersub ');
-
-  Replace(s, '<i>','\i ' );
-  Replace(s,'</i>','\i0 ');
-
-  Replace(s,'<FI>','\i ' );
-  Replace(s,'<Fi>','\i0 ');
-
-  if not jtag then Exit;
-
-  Replace(s, '<J>','\cf2 ');
-  Replace(s,'</J>','\cf1 ');
-
-  Replace(s,'<FR>','\cf2 ');
-  Replace(s,'<Fr>','\cf1 ');
-end;
+uses UnitShelf, UnitSearch, UnitParse, UnitLib;
 
 procedure Load_Chapter(Stream: TRichStream);
 var
@@ -67,8 +31,7 @@ begin
   for i:=Low(Strings) to High(Strings) do
     begin
       text := Strings[i];
-      Replacement(text,true);
-      RemoveTags(text);
+      text := Parse(text, true);
       text := '\cf3 ' + ' ' + IntToStr(i+1) + '\cf1 ' + ' ' + text + '\i0\par';
       Stream.Writeln(text);
     end;
@@ -131,8 +94,7 @@ procedure Search_Text(Stream: TRichStream; st: string; var count: integer);
         v := ContentArray[i].verse;
         link := Bible.VerseToStr(v,true);
         text := ContentArray[i].text;
-        Replacement(text,false);
-        RemoveTags(text);
+        text := parse(text,false);
         Highlights(text,st,CurrentSearchOptions);
         text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + text + '\i0\par\par';
         Stream.Writeln(text);
@@ -168,8 +130,7 @@ begin
       for j:=Low(Strings) to High(Strings) do
         begin
           text := Strings[j];
-          Replacement(text,false);
-          RemoveTags(text);
+          text := parse(text,false);
           s := text + '\i0\par';
           Stream.Writeln(s);
         end;
@@ -209,8 +170,7 @@ begin
             q := q + '(' + IntToStr(ActiveVerse.Number + i) + ') ';
 
       t := Strings[i];
-      Replacement(t,false);
-      RemoveTags(t);
+      t := parse(t,false);
       q := q + t + ' ';
     end;
 
@@ -254,9 +214,7 @@ begin
       for j:=Low(Strings) to High(Strings) do
         begin
           text := Strings[j];
-          Replacement(text,false);
-          RemoveTags(text);
-          s := text + '\i0\par';
+          s := parse(text,false) + '\i0\par';
           Stream.Writeln(s);
         end;
     end;
