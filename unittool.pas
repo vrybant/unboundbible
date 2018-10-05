@@ -66,13 +66,13 @@ end;
 procedure Highlights(var s: string; searchString: string; Options: TSearchOptions);
 var
   List : TStringArray;
-  line : string;
+  item : string;
 begin
   if not (caseSensitive in Options) then searchString := Utf8LowerCase(searchString);
   List := StringToList(' ', searchString);
 
-  for line in List do
-    Highlight(s, line, Options);
+  for item in List do
+    Highlight(s, item, Options);
 end;
 
 procedure Search_Text(Stream: TRichStream; st: string; var count: integer);
@@ -204,7 +204,7 @@ begin
 
       for item in Strings do
         begin
-          s := parse(item,false) + '\i0\par';
+          s := Parse(item,false) + '\i0\par';
           Stream.Writeln(s);
         end;
     end;
