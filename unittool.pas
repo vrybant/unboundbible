@@ -77,27 +77,27 @@ begin
 end;
 
 procedure Search_Text(Stream: TRichStream; st: string; var count: integer);
-  var
-    ContentArray : TContentArray;
-    content : TContent;
-    link, text : string;
-  begin
-    if Shelf.Count = 0 then Exit;
+var
+  ContentArray : TContentArray;
+  content : TContent;
+  link, text : string;
+begin
+  if Shelf.Count = 0 then Exit;
 
-    Stream.Open;
-    ContentArray := Bible.Search(st, CurrentSearchOptions, CurrentSearchRange);
+  Stream.Open;
+  ContentArray := Bible.Search(st, CurrentSearchOptions, CurrentSearchRange);
 
-    for content in ContentArray do
-      begin
-        link := Bible.VerseToStr(content.verse,true);
-        text := content.text;
-        Highlights(text,st,CurrentSearchOptions);
-        text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + parse(text,false) + '\i0\par\par';
-        Stream.Writeln(text);
-      end;
+  for content in ContentArray do
+    begin
+      link := Bible.VerseToStr(content.verse,true);
+      text := content.text;
+      Highlights(text,st,CurrentSearchOptions);
+      text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + parse(text,false) + '\i0\par\par';
+      Stream.Writeln(text);
+    end;
 
-    Stream.Close;
-  end;
+  Stream.Close;
+end;
 
 procedure Load_Compare(Stream: TRichStream);
 var
