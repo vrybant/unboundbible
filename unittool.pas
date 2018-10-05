@@ -44,8 +44,8 @@ var
   t : string;
   i,len : integer;
 const
-  before = '<h>';
-  after  = '</h>';
+  before = '\cf2 ';
+  after  = '\cf1 ';
 begin
   t := s;
   len := Length(target);
