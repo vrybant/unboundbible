@@ -295,7 +295,7 @@ object MainForm: TMainForm
         Align = alClient
         HideSelection = False
         OnContextPopup = MemoContextPopup
-        OnMouseUp = MemoBibleMouseUp
+        OnMouseUp = MemoMouseUp
         ReadOnly = True
         ScrollBars = ssBoth
         TabOrder = 0

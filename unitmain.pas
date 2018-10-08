@@ -184,7 +184,6 @@ type
     procedure BookBoxClick(Sender: TObject);
     procedure ChapterBoxClick(Sender: TObject);
     procedure MemoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
-    procedure MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure MemoAttrChange(Sender: TObject);
     procedure miBibleFolderClick(Sender: TObject);
@@ -722,42 +721,35 @@ end;
 //                                        memo's events
 //-------------------------------------------------------------------------------------------------
 
-procedure TMainForm.MemoBibleMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
-begin
-  if Button = mbLeft then
-    begin
-      ActiveVerse.Number := MemoBible.ParagraphStart;
-      ActiveVerse.Count  := MemoBible.ParagraphCount;
-      if FormTranslate.Visible then LoadTranslate(ActiveVerse);
-    end;
-
-  if Button = mbRight then
-    begin
-      {$ifdef darwin} MemoBible.RestoreSelection; {$endif}
-      ShowPopup;
-    end;
-
-  {$ifdef darwin} if Button = mbLeft then MemoBible.SaveSelection; {$endif}
-end;
-
 procedure TMainForm.MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
   Verse : TVerse;
-  s : string;
+  hyperlink : string;
 begin
-  if Button = mbRight then ShowPopup;
-
-  if Button <> mbLeft then Exit;
   if Shelf.Count = 0  then Exit;
 
-  s := (Sender as TUnboundMemo).hyperlink;
-  Verse := Bible.SrtToVerse(s);
-  if Verse.Book = 0 then Exit;
+  if Button = mbLeft then
+    begin
+      hyperlink := (Sender as TUnboundMemo).hyperlink; output(hyperlink);
+      Verse := Bible.SrtToVerse(hyperlink);
 
-  if FormTranslate.Visible then LoadTranslate(Verse);
+      if Verse.Book <> 0 then
+        begin
+          if FormTranslate.Visible then LoadTranslate(Verse);
+          if (Sender = MemoSearch) or (not FormTranslate.Visible) or (ssCtrl in Shift) then
+            GoToVerse(Verse, True);
+        end;
 
-  if (Sender = MemoSearch) or (not FormTranslate.Visible) or (ssCtrl in Shift)
-    then GoToVerse(Verse, True);
+      if hyperlink = '' then
+        begin
+          ActiveVerse.Number := MemoBible.ParagraphStart;
+          ActiveVerse.Count  := MemoBible.ParagraphCount;
+          if FormTranslate.Visible then LoadTranslate(ActiveVerse);
+        end;
+
+    end;
+
+  if Button = mbRight then ShowPopup;
 end;
 
 procedure TMainForm.MemoAttrChange(Sender: TObject);
