@@ -8,13 +8,12 @@ object FormInfo: TFormInfo
   ClientHeight = 321
   ClientWidth = 416
   OnActivate = FormActivate
-  OnClose = FormClose
   Position = poDesktopCenter
   LCLVersion = '1.6.4.0'
   object Memo: TUnboundMemo
     Cursor = crArrow
     Left = 8
-    Height = 180
+    Height = 272
     Top = 8
     Width = 400
     Color = clWhite
@@ -25,66 +24,15 @@ object FormInfo: TFormInfo
     ZoomFactor = 1
   end
   object ButtonCopy: TButton
-    Left = 290
+    Left = 318
     Height = 25
-    Top = 216
+    Top = 288
     Width = 90
     AutoSize = True
-    Caption = 'Copy'
+    Caption = 'OK'
     Constraints.MaxWidth = 90
     Constraints.MinWidth = 90
     ModalResult = 1
-    OnClick = ButtonCopyClick
     TabOrder = 1
-  end
-  object CheckGroup: TCheckGroup
-    Left = 8
-    Height = 120
-    Top = 192
-    Width = 248
-    AutoFill = True
-    Caption = ' Options '
-    ChildSizing.LeftRightSpacing = 6
-    ChildSizing.TopBottomSpacing = 6
-    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
-    ChildSizing.EnlargeVertical = crsHomogenousChildResize
-    ChildSizing.ShrinkHorizontal = crsScaleChilds
-    ChildSizing.ShrinkVertical = crsScaleChilds
-    ChildSizing.Layout = cclLeftToRightThenTopToBottom
-    ChildSizing.ControlsPerLine = 1
-    ClientHeight = 100
-    ClientWidth = 244
-    Items.Strings = (
-      'Abbreviate book names'
-      'Enumerated'
-      'Guillemets'
-      'Parentheses'
-      'Link in the end'
-    )
-    OnItemClick = CheckGroupItemClick
-    TabOrder = 2
-    Data = {
-      050000000202020202
-    }
-  end
-  object ButtonCancel: TButton
-    Left = 290
-    Height = 25
-    Top = 272
-    Width = 90
-    AutoSize = True
-    Caption = 'Cancel'
-    Constraints.MaxWidth = 90
-    Constraints.MinWidth = 90
-    ModalResult = 2
-    TabOrder = 3
-  end
-  object CheckBox: TCheckBox
-    Left = 153
-    Height = 19
-    Top = 285
-    Width = 76
-    Caption = 'Set default'
-    TabOrder = 4
   end
 end
