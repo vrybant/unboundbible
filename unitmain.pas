@@ -243,8 +243,8 @@ var
 implementation
 
 uses
-  UnitAbout, UnitSearch, UnitCompare, UnitTool,
-  UnitStream, UnitLib, UnitLang, UnitShelf, UnitCopy, UnitTrans;
+  UnitAbout, UnitSearch, UnitCompare, UnitTool, UnitStream, UnitLang,
+  UnitShelf, UnitInfo, UnitCopy, UnitTrans, UnitLib;
 
 const
   sUntitled = 'Untitled';
@@ -475,6 +475,7 @@ begin
   SearchForm   .Translate;
   CompareForm  .Translate;
   AboutBox     .Translate;
+  FormInfo     .Translate;
   FormCopy     .Translate;
   FormTranslate.Translate;
 
