@@ -723,33 +723,40 @@ end;
 
 procedure TMainForm.MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
+  Memo : TUnboundMemo;
   Verse : TVerse;
-  hyperlink : string;
 begin
   if Shelf.Count = 0  then Exit;
-
-  if Button = mbLeft then
-    begin
-      hyperlink := (Sender as TUnboundMemo).hyperlink; output(hyperlink);
-      Verse := Bible.SrtToVerse(hyperlink);
-
-      if Verse.Book <> 0 then
-        begin
-          if FormTranslate.Visible then LoadTranslate(Verse);
-          if (Sender = MemoSearch) or (not FormTranslate.Visible) or (ssCtrl in Shift) then
-            GoToVerse(Verse, True);
-        end;
-
-      if hyperlink = '' then
-        begin
-          ActiveVerse.Number := MemoBible.ParagraphStart;
-          ActiveVerse.Count  := MemoBible.ParagraphCount;
-          if FormTranslate.Visible then LoadTranslate(ActiveVerse);
-        end;
-
-    end;
+  Memo := Sender as TUnboundMemo;
 
   if Button = mbRight then ShowPopup;
+  if Button <> mbLeft then Exit;
+
+  Output(Memo.hyperlink);
+
+  if Memo.hyperlink = '' then
+    begin
+      ActiveVerse.Number := MemoBible.ParagraphStart;
+      ActiveVerse.Count  := MemoBible.ParagraphCount;
+      if FormTranslate.Visible then LoadTranslate(ActiveVerse);
+    end;
+
+  if Memo.hyperlink = '' then Exit;
+
+  if Memo.Foreground = fgLink then
+    begin
+      Verse := Bible.SrtToVerse(Memo.hyperlink);
+
+      if Verse.Book > 0 then
+        begin
+          if FormTranslate.Visible then LoadTranslate(Verse);
+          if (Memo = MemoSearch) or (not FormTranslate.Visible) or (ssCtrl in Shift) then
+            GoToVerse(Verse, True);
+        end;
+    end;
+
+  if Memo.Foreground = fgStrong   then FormInfo.ShowModal;
+  if Memo.Foreground = fgFootnote then FormInfo.ShowModal;
 end;
 
 procedure TMainForm.MemoAttrChange(Sender: TObject);

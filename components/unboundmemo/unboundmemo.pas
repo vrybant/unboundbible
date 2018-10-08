@@ -18,7 +18,6 @@ type
     FParagraphic : boolean;
     SelStartTemp  : integer;
     SelLengthTemp : integer;
-    function Foreground: integer;
     function  Colored: boolean;
     function  GetLink: string;
     function  GetParagraphNumber: integer;
@@ -30,6 +29,7 @@ type
     ParagraphStart : integer;
     ParagraphCount : integer;
     constructor Create(AOwner: TComponent); override;
+    function Foreground: integer;
     procedure SelectParagraph(n : integer);
     procedure SelectWord;
     procedure SaveSelection;
@@ -39,15 +39,15 @@ type
     property Paragraphic : boolean read FParagraphic write FParagraphic default False;
   end;
 
-procedure Register;
-
-implementation
-
 const
   fgText     = 0;
   fgLink     = 1;
   fgStrong   = 2;
   fgFootnote = 3;
+
+procedure Register;
+
+implementation
 
 function MyStrToInt(st: string): integer;
 var v, r : integer;
@@ -140,7 +140,9 @@ begin
   //if Linkable then Hyperlink := GetLink else Hyperlink := '';
   Hyperlink := GetLink;
 
-  if Paragraphic and (Button = mbLeft) then GetParagraphRange;
+  if Hyperlink = '' then
+    if Paragraphic and (Button = mbLeft) then GetParagraphRange;
+
   inherited;
 end;
 
@@ -156,7 +158,7 @@ end;
 function IsNumeral(c: string): boolean;
 begin
   case c of
-    '0','1','2','3','4','5','6','7','8','9' : Result := true;
+    '0'..'9' : Result := true;
     else Result := false;
   end;
 end;
