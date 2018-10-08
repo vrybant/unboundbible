@@ -9,13 +9,11 @@ function Parse(st: string; jtag: boolean): string;
 
 implementation
 
-function XmlToList(s: string): TStringArray;
+procedure XmlToList(s: string; List: TStringList);
 var
-  List : TStringList;
   temp : string;
   i : integer;
 begin
-  List := TStringList.Create;
   temp := '';
 
   for i:=1 to Length(s) do
@@ -36,9 +34,6 @@ begin
     end;
 
   if temp <> '' then List.Add(temp);
-
-  Result := ListToArray(List);
-  List.Free;
 end;
 
 function Format(s: string; j: boolean): string;
@@ -70,18 +65,19 @@ end;
 
 function Parse(st: string; jtag: boolean): string;
 var
-  List : TStringArray;
+  List : TStringList;
   s : string;
 begin
   Result := '';
   Replace(st, '</S><S>','</S> <S>');
-  List := XmlToList(st);
+
+  List := TStringList.Create;
+  XmlToList(st, List);
 
   for s in List do
-    if Prefix('<',s) then
-      Result := Result + Format(s, jtag)
-    else
-      Result := Result + s;
+    if Prefix('<',s) then Result := Result + Format(s, jtag)
+                     else Result := Result + s;
+  List.Free;
 end;
 
 end.
