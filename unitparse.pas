@@ -60,6 +60,14 @@ begin
   if s =  '<i>' then r := '\i ';
   if s = '</i>' then r := '\i0 ';
 
+  if s = '<TS>' then r := '\cf4 ';
+  if s = '<Ts>' then r := '\cf1 ';
+
+  if s = '<RF>' then r := '\cf4\super  ';
+  if s = '<Rf>' then r := '\cf1\nosupersub ';
+
+  if Prefix('<RF q=', s) then r := '\cf4\super  '; // '<RF q=a>'
+
   Result := r;
 end;
 
@@ -68,6 +76,8 @@ var
   List : TStringList;
   s : string;
 begin
+  //Result := st; EXIT;
+
   Result := '';
   Replace(st, '</S><S>','</S> <S>');
 
