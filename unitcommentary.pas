@@ -55,8 +55,7 @@ type
     constructor Create(filePath: string);
     procedure OpenDatabase;
     function GetChapter(Verse: TVerse): TStringArray;
-    function GetRange(Verse: TVerse): TStringArray;
-    function GoodLink(Verse: TVerse): boolean;
+    function GetData(Verse: TVerse): TStringArray;
     function  Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     function GetAll: TContentArray;
     function  ChaptersCount(Verse: TVerse): integer;
@@ -80,7 +79,6 @@ type
 
 var
   Commentaries : TCommentaries;
-  ActiveVerse : TVerse;
 
 function Commentary: TCommentary;
 
@@ -123,7 +121,7 @@ begin
   fileFormat   := unbound;
   z            := unboundCommentaryAlias;
 
-  name         := fileName;                                       output(name);
+  name         := fileName;
   native       := '';
   abbreviation := '';
   copyright    := '';
@@ -293,7 +291,7 @@ begin
   end;
 end;
 
-function TCommentary.GetRange(Verse: TVerse): TStringArray;
+function TCommentary.GetData(Verse: TVerse): TStringArray;
 var
   index, i : integer;
   id, chapter : string;
@@ -332,11 +330,6 @@ begin
   finally
     Query.Close;
   end;
-end;
-
-function TCommentary.GoodLink(Verse: TVerse): boolean;
-begin
-  Result := Length(GetRange(Verse)) > 0;
 end;
 
 function TCommentary.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
@@ -504,7 +497,7 @@ end;
 procedure TCommentaries.SetCurrent(index: integer);
 begin
   Current := index;
-  if not Self[Current].GoodLink(ActiveVerse) then ActiveVerse := Self[Current].FirstVerse;
+//  if not Self[Current].GoodLink(ActiveVerse) then ActiveVerse := Self[Current].FirstVerse;
 end;
 
 procedure TCommentaries.SetCurrent(FileName: string);

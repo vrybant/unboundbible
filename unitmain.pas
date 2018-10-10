@@ -212,6 +212,7 @@ type
     procedure LoadChapter;
     procedure LoadCompare;
     procedure LoadTranslate(Verse: TVerse);
+    procedure LoadCommentary;
     procedure MakeBookList;
     procedure MakeChapterList(n: integer);
     {$ifdef darwin} procedure ScrollBoxes; {$endif}
@@ -1202,6 +1203,7 @@ begin
   UnboundMemo.SetFocus;
   UnboundMemo.Repaint;
   if PageControl.ActivePageIndex = apCompare then LoadCompare;
+  if PageControl.ActivePageIndex = apCommentary then LoadCommentary;
 end;
 
 procedure TMainForm.RadioButtonClick(Sender: TObject);
@@ -1351,6 +1353,17 @@ begin
   Load_Translate(Stream, Verse);
   FormTranslate.Memo.LoadRichText(Stream);
   FormTranslate.Repaint;
+  Stream.Free;
+end;
+
+procedure TMainForm.LoadCommentary;
+var
+  Stream : TRichStream;
+begin
+  Stream := TRichStream.Create;
+  SelectPage(apCommentary);
+  Load_Commentary(Stream);
+  MemoCommentary.LoadRichText(Stream);
   Stream.Free;
 end;
 

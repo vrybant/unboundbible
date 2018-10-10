@@ -8,12 +8,13 @@ procedure Load_Chapter(Stream: TRichStream);
 procedure Search_Text (Stream: TRichStream; st: string; var count: integer);
 procedure Load_Compare(Stream: TRichStream);
 procedure Load_Translate(Stream: TRichStream; Verse: TVerse);
+procedure Load_Commentary(Stream: TRichStream);
 procedure Load_Verses(Stream: TRichStream);
 procedure Show_Message(Stream: TRichStream; s: string);
 
 implementation
 
-uses UnitShelf, UnitSearch, UnitParse, UnitLib;
+uses UnitShelf, UnitCommentary, UnitSearch, UnitParse, UnitLib;
 
 procedure Load_Chapter(Stream: TRichStream);
 var
@@ -132,6 +133,75 @@ begin
   Stream.Close;
 end;
 
+procedure Load_Translate(Stream: TRichStream; Verse: TVerse);
+var
+  Strings : TStringArray;
+  s, item : string;
+  i : integer;
+begin
+  if Shelf.Count = 0 then Exit;
+  Stream.Open;
+
+  s := '\cf3 ' + Bible.VerseToStr(Verse, true) + '\par ';
+  Stream.Writeln(s);
+
+  for i:=0 to Shelf.Count-1 do
+    begin
+      if not Shelf[i].Compare then Continue;
+
+      Strings := Shelf[i].GetRange(Verse);
+
+      if Length(Strings) > 0 then
+        begin
+          s:= '\par\cf4 ' + Shelf[i].Name + '\par\par\cf1 ';
+          Stream.Writeln(s);
+        end;
+
+      for item in Strings do
+        begin
+          s := Parse(item,false) + '\i0\par';
+          Stream.Writeln(s);
+        end;
+    end;
+
+  Stream.Close;
+end;
+
+procedure Load_Commentary(Stream: TRichStream);
+var
+  Strings : TStringArray;
+  s, item : string;
+  i : integer;
+begin
+  if Commentaries.Count = 0 then Exit;
+
+  Stream.Open;
+
+  s := '\cf1 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
+  Stream.Writeln(s);
+
+  for i:=0 to Commentaries.Count-1 do
+    begin
+//    if not Commentaries[i].Compare then Continue;
+
+      Strings := Commentaries[i].GetData(ActiveVerse);
+
+      //if Length(Strings) > 0 then
+      //  begin
+          s:= '\par\cf3 ' + Commentaries[i].Name + '\par\cf1 ';
+          Stream.Writeln(s);
+        //end;
+
+      for item in Strings  do
+        begin
+          s := Parse(item,false) + '\i0\par';
+          Stream.Writeln(s);
+        end;
+    end;
+
+  Stream.Close;
+end;
+
 procedure Load_Verses(Stream: TRichStream);
 var
   Book : TBook;
@@ -175,40 +245,6 @@ begin
   Stream.Open;
   Stream.Writeln(s);
   Stream.Writeln('\par ');
-  Stream.Close;
-end;
-
-procedure Load_Translate(Stream: TRichStream; Verse: TVerse);
-var
-  Strings : TStringArray;
-  s, item : string;
-  i : integer;
-begin
-  if Shelf.Count = 0 then Exit;
-  Stream.Open;
-
-  s := '\cf3 ' + Bible.VerseToStr(Verse, true) + '\par ';
-  Stream.Writeln(s);
-
-  for i:=0 to Shelf.Count-1 do
-    begin
-      if not Shelf[i].Compare then Continue;
-
-      Strings := Shelf[i].GetRange(Verse);
-
-      if Length(Strings) > 0 then
-        begin
-          s:= '\par\cf4 ' + Shelf[i].Name + '\par\par\cf1 ';
-          Stream.Writeln(s);
-        end;
-
-      for item in Strings do
-        begin
-          s := Parse(item,false) + '\i0\par';
-          Stream.Writeln(s);
-        end;
-    end;
-
   Stream.Close;
 end;
 
