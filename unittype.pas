@@ -12,12 +12,22 @@ type
   TSearchOptions = set of TSearchOption;
 
 type
-  TStringAlias = record
+  TBibleAlias = record
     bible   : string;
     book    : string;
     chapter : string;
     verse   : string;
     text    : string;
+  end;
+
+  TCommentaryAlias = record
+    commentary : string;
+    id         : string;
+    book       : string;
+    chapter    : string;
+    fromverse  : string;
+    toverse    : string;
+    data       : string;
   end;
 
  type
@@ -44,7 +54,7 @@ type
   end;
 
 const
-  unboundStringAlias : TStringAlias = (
+  unboundStringAlias : TBibleAlias = (
     bible   : 'Bible';
     book    : 'Book';
     chapter : 'Chapter';
@@ -52,12 +62,34 @@ const
     text    : 'Scripture';
     );
 
-  mybibleStringAlias : TStringAlias = (
+  mybibleStringAlias : TBibleAlias = (
     bible   : 'verses';
     book    : 'book_number';
     chapter : 'chapter';
     verse   : 'verse';
     text    : 'text';
+    );
+
+  unboundCommentaryAlias : TCommentaryAlias = (
+    commentary : 'commentary';
+    id         : 'id';
+    book       : 'book';
+    chapter    : 'chapter';
+    fromverse  : 'fromverse';
+    toverse    : 'toverse';
+    data       : 'data';
+    );
+
+  mybibleCommentaryAlias : TCommentaryAlias = (
+    commentary : 'commentaries';
+    id         : 'id';
+    book       : 'book_number';
+    chapter    : 'chapter_number_from';
+    fromverse  : 'verse_number_from';
+//  chapter    : 'chapter_number_to';
+    toverse    : 'verse_number_to';
+//  marker     : 'marker';
+    data       : 'text';
     );
 
   noneVerse : TVerse = (

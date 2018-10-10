@@ -38,7 +38,7 @@ type
     filePath     : string;
     fileName     : string;
     fileFormat   : TFileFormat;
-    z            : TStringAlias;
+    z            : TBibleAlias;
     {-}
     name         : string;
     native       : string;

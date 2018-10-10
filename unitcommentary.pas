@@ -29,7 +29,7 @@ type
     filePath     : string;
     fileName     : string;
     fileFormat   : TFileFormat;
-    z            : TStringAlias;
+    z            : TCommentaryAlias;
     {-}
     name         : string;
     native       : string;
@@ -121,7 +121,7 @@ begin
   self.fileName := ExtractFileName(filePath);
 
   fileFormat   := unbound;
-  z            := unboundStringAlias;
+  z            := unboundCommentaryAlias;
 
   name         := fileName;                                       output(name);
   native       := '';
@@ -197,7 +197,7 @@ begin
         end;
 
       fileFormat := mybible;
-      z := mybibleStringAlias;                                                    /////// alias
+      z := mybibleCommentaryAlias;
       connected := true;
     except
       //
@@ -208,7 +208,7 @@ begin
 
   FieldNames := TStringList.Create;
   try Connection.GetTableNames({$ifdef zeos}'',{$endif}FieldNames) except end;
-  if FieldNames.IndexOf('commentary') < 0 then connected := false;                /////// z.bible
+  if FieldNames.IndexOf(z.commentary) < 0 then connected := false;
   FieldNames.Free;
 
   language := LowerCase(language);
@@ -271,7 +271,7 @@ begin
 
   try
     try
-      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id + ' AND ' + z.chapter + '=' + chapter;
+/////      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id + ' AND ' + z.chapter + '=' + chapter;
       Query.Open;
 
       Query.Last;
@@ -280,7 +280,7 @@ begin
 
       for i:=0 to Query.RecordCount-1 do
         begin
-          try line := Query.FieldByName(z.text).AsString; except line := '' end;
+/////          try line := Query.FieldByName(z.text).AsString; except line := '' end;
       //  line = line.replace("\n", "") // ESWORD ?
           Result[i] := line;
           Query.Next;
@@ -310,10 +310,10 @@ begin
 
   try
     try
-      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id +
-                        ' AND ' + z.chapter + '=' + chapter +
-                        ' AND ' + z.verse + ' >= ' + verseNumber +
-                        ' AND ' + z.verse + ' < ' + toVerse;
+      //Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id +
+      //                  ' AND ' + z.chapter + '=' + chapter +
+      //                  ' AND ' + z.verse + ' >= ' + verseNumber +
+      //                  ' AND ' + z.verse + ' < ' + toVerse;
       Query.Open;
 
       Query.Last;
@@ -322,7 +322,7 @@ begin
 
       for i:=0 to Query.RecordCount-1 do
         begin
-          try line := Query.FieldByName(z.text).AsString; except line := '' end;
+////          try line := Query.FieldByName(z.text).AsString; except line := '' end;
           Result[i] := line;
           Query.Next;
         end;
@@ -359,7 +359,7 @@ begin
 
   try
     try
-      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE super(' + z.text + ')=''1''' + queryRange;
+/////      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE super(' + z.text + ')=''1''' + queryRange;
       Query.Open;
 
       Query.Last; // must be called before RecordCount
@@ -369,10 +369,10 @@ begin
       for i:=0 to Query.RecordCount-1 do
         begin
           Contents[i].verse := noneVerse;
-          try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
-          try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
-          try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
-          try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
+          //try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
+          //try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
+          //try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
+          //try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
           Contents[i].verse.book := DecodeID(Contents[i].verse.book);
           Query.Next;
         end;
@@ -394,7 +394,7 @@ begin
 
   try
     try
-      Query.SQL.Text := 'SELECT * FROM ' + z.bible;
+/////      Query.SQL.Text := 'SELECT * FROM ' + z.bible;
       Query.Open;
 
       Query.Last; // must be called before RecordCount
@@ -406,8 +406,8 @@ begin
           Contents[i].verse := noneVerse;
           try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
           try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
-          try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
-          try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
+          //try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
+          //try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
           Contents[i].verse.book := DecodeID(Contents[i].verse.book);
           Query.Next;
         end;
@@ -431,7 +431,7 @@ begin
 
   try
     try
-      Query.SQL.Text := 'SELECT MAX(' + z.chapter + ') AS Count FROM ' + z.bible + ' WHERE ' + z.book + '=' + id;
+/////      Query.SQL.Text := 'SELECT MAX(' + z.chapter + ') AS Count FROM ' + z.bible + ' WHERE ' + z.book + '=' + id;
       Query.Open;
 
       try Result := Query.FieldByName('Count').AsInteger; except end;
