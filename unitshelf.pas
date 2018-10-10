@@ -105,10 +105,11 @@ var
   ActiveVerse : TVerse;
 
 const
-  apBible   = 0; // PageControl.ActivePageIndex
-  apSearch  = 1;
-  apCompare = 2;
-  apNotes   = 3;
+  apBible      = 0; // PageControl.ActivePageIndex
+  apSearch     = 1;
+  apCompare    = 2;
+  apCommentary = 3;
+  apNotes      = 4;
 
 function Bible: TBible;
 

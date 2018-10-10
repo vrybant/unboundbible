@@ -23,6 +23,7 @@ type
     MenuItem3: TMenuItem;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
+    TabSheetCommentary: TTabSheet;
     ToolSeparator1: TToolButton;
     ToolButtonVerses: TToolButton;
     ActionList: TActionList;
@@ -152,6 +153,7 @@ type
     ToolSeparator3: TToolButton;
     ToolSeparator4: TToolButton;
     ToolSeparator5: TToolButton;
+    MemoCommentary: TUnboundMemo;
 
     procedure CmdAbout(Sender: TObject);
     procedure CmdCompare(Sender: TObject);
@@ -434,6 +436,7 @@ begin
   TabSheetBible.Caption := T('Bible');
   TabSheetSearch.Caption := T('Search');
   TabSheetCompare.Caption := T('Compare');
+  TabSheetCommentary.Caption := 'Коментарии'; // T('Commentary'); // *********** !!! *************
   TabSheetNotes.Caption := T('Notes');
 
   ToolButtonNew.Hint := T('New');
@@ -972,10 +975,11 @@ end;
 function TMainForm.UnboundMemo: TUnboundMemo;
 begin
   case PageControl.ActivePageIndex of
-    apBible   : Result := MemoBible;
-    apSearch  : Result := MemoSearch;
-    apCompare : Result := MemoCompare;
-    apNotes   : Result := MemoNotes;
+    apBible      : Result := MemoBible;
+    apSearch     : Result := MemoSearch;
+    apCompare    : Result := MemoCompare;
+    apCommentary : Result := MemoCommentary;
+    apNotes      : Result := MemoNotes;
     else
       Result := nil;
   end;
