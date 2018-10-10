@@ -101,7 +101,6 @@ type
 
 var
   Shelf : TShelf;
-  ActiveVerse : TVerse;
 
 function Bible: TBible;
 

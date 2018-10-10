@@ -107,6 +107,7 @@ const
     );
 
 var
+  ActiveVerse : TVerse;
   Options : TCopyOptions;
 
 const
