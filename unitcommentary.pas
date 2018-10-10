@@ -9,22 +9,13 @@ interface
 uses
   Classes, Fgl, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
-  UnitLib, UnitTitles, UnitType;
+  UnitLib, UnitType;
 
 const
   BookMax = 86;
 
 type
-  TBook = class
-  public
-    title   : string;
-    abbr    : string;
-    number  : integer;
-    id      : integer;
-    sorting : integer;
-  end;
-
-  TCommentary = class(TFPGList<TBook>)
+  TCommentary = class
     {$ifdef zeos}
       Connection : TZConnection;
       Query : TZReadOnlyQuery;
@@ -54,32 +45,20 @@ type
     fontName     : TFontName;
     fontSize     : integer;
     {-}
-//  oldTestament : boolean;
-//  newTestament : boolean;
-//  apocrypha    : boolean;
     connected    : boolean;
     loaded       : boolean;
   private
     function EncodeID(id: integer): integer;
     function DecodeID(id: integer): integer;
     function SortingIndex(number: integer): integer;
-    function RankContents(const Contents: TContentArray): TContentArray;
   public
     constructor Create(filePath: string);
     procedure OpenDatabase;
-    procedure LoadDatabase;
-    function MinBook: integer;
-    function BookByNum(n: integer): TBook;
-    function BookByName(s: string): TBook;
-    function VerseToStr(Verse: TVerse; full: boolean): string;
-    function SrtToVerse(link : string): TVerse;
-    procedure SetTitles;
     function GetChapter(Verse: TVerse): TStringArray;
     function GetRange(Verse: TVerse): TStringArray;
     function GoodLink(Verse: TVerse): boolean;
     function  Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     function GetAll: TContentArray;
-    procedure GetTitles(var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
     procedure SavePrivate(const IniFile: TIniFile);
     procedure ReadPrivate(const IniFile: TIniFile);
@@ -89,7 +68,7 @@ type
   TCommentaries = class(TFPGList<TCommentary>)
     Current : integer;
   private
-    procedure AddBibles(path: string);
+    procedure AddCommentaries(path: string);
     procedure SavePrivates;
     procedure ReadPrivates;
   public
@@ -100,25 +79,18 @@ type
   end;
 
 var
-  Shelf : TCommentaries;
+  Commentaries : TCommentaries;
   ActiveVerse : TVerse;
 
-const
-  apBible      = 0; // PageControl.ActivePageIndex
-  apSearch     = 1;
-  apCompare    = 2;
-  apCommentary = 3;
-  apNotes      = 4;
-
-function Bible: TCommentary;
+function Commentary: TCommentary;
 
 implementation
 
 uses UnitSQLiteEx;
 
-function Bible: TCommentary;
+function Commentary: TCommentary;
 begin
-  Result := Shelf[Shelf.Current];
+  Result := Commentaries[Commentaries.Current];
 end;
 
 //========================================================================================
@@ -151,7 +123,7 @@ begin
   fileFormat   := unbound;
   z            := unboundStringAlias;
 
-  name         := fileName;
+  name         := fileName;          output(name);
   native       := '';
   abbreviation := '';
   copyright    := '';
@@ -160,16 +132,8 @@ begin
   connected    := false;
   loaded       := false;
   RightToLeft  := false;
-//oldTestament := false;
-//newTestament := false;
-//apocrypha    := false;
 
   OpenDatabase;
-end;
-
-function BookComparison(const Item1: TBook; const Item2: TBook): integer;
-begin
-  Result := Item1.sorting - Item2.sorting;
 end;
 
 procedure TCommentary.OpenDatabase;
@@ -252,65 +216,6 @@ begin
   RemoveTags(info);
 end;
 
-procedure TCommentary.LoadDatabase;
-var
-  Book : TBook;
-  x, n : integer;
-begin
-  if loaded then exit;
-
-  try
-    try
-      Query.SQL.Text := 'SELECT DISTINCT ' + z.book + ' FROM ' + z.bible;
-      Query.Open;
-
-      while not Query.Eof do
-        begin
-          try x := Query.FieldByName(z.book).AsInteger; except x := 0 end;
-          if  x <= 0 then Continue;
-
-          Book := TBook.Create;
-          n := DecodeID(x);
-          Book.number := n;
-          Book.title := IntToStr(x);
-          Book.id := x;
-          Book.sorting := SortingIndex(n);
-          Add(Book);
-          Query.Next;
-        end;
-
-      SetTitles;
-      firstVerse := minVerse;
-      firstVerse.book := MinBook;
-      Sort(BookComparison);
-
-      loaded := true;
-    except
-      //
-    end;
-  finally
-    Query.Close;
-  end;
-
-//Output(self.fileName + ' loaded');
-end;
-
-procedure TCommentary.SetTitles;
-var
-  Titles : TTitles;
-  i : integer;
-begin
-  Titles := TTitles.Create(Language);
-
-  for i:=0 to Count-1 do
-    begin
-      self[i].title := Titles.getTitle(self[i].number);
-      self[i].abbr  := Titles.getAbbr(self[i].number);
-    end;
-
-  Titles.Free;
-end;
-
 function TCommentary.EncodeID(id: integer): integer;
 begin
   Result := id;
@@ -350,103 +255,6 @@ begin
         Result := i;
         Exit;
       end;
-end;
-
-function TCommentary.MinBook: integer;
-var i, min : integer;
-begin
-  min := 0;
-  for i:=0 to Count-1 do
-    if (Items[i].Number < min) or (min = 0) then min := Items[i].Number;
-  Result := min;
-end;
-
-function TCommentary.BookByNum(n: integer): TBook;
-var i : integer;
-begin
-  Result := nil;
-  for i:=0 to Count-1 do
-    if Items[i].Number = n then Result := Items[i];
-end;
-
-function TCommentary.BookByName(s: string): TBook;
-var i : integer;
-begin
-  Result := nil;
-  for i:=0 to Count-1 do
-    if Items[i].Title = s then Result := Items[i];
-end;
-
-function TCommentary.VerseToStr(verse: TVerse; full: boolean): string;
-var
-  Book : TBook;
-  title : string;
-begin
-  Result := 'error';
-
-  Book := Bible.BookByNum(verse.book);
-  if not Assigned(Book) then Exit;
-
-  if full then title := Book.title else title := Book.abbr;
-  if Pos('.', title) = 0 then title := title + ' ';
-
-  Result := title + IntToStr(verse.chapter) + ':' + IntToStr(verse.number);
-  if (verse.number <> 0) and (verse.count > 1) then
-    Result := Result + '-' + IntToStr(verse.number + verse.count - 1);
-end;
-
-function TCommentary.SrtToVerse(link : string): TVerse;
-var
-  i : integer;
-
-  procedure GetLink(i: integer; T: boolean);
-  var
-    s, p : string;
-    len, n : integer;
-    endVerse : integer;
-  begin
-    if T then len := Length(Items[i].title)
-         else len := Length(Items[i].abbr );
-
-    s := Copy(link,len+1,255);
-    s := Trim(s);
-
-    if Length(s) = 0 then Exit;
-    if not IsNumeral(s[1]) then Exit;
-
-    Result.count := 1;
-    endVerse := 0;
-
-    n := Pos('-',s);
-    if n > 0 then
-      begin
-        p := Copy(s,n+1,255);
-        s := Copy(s,1,n-1);
-        endVerse := MyStrToInt(p);
-      end;
-
-    n := Pos(':',s);      Result.book    := Items[i].number;
-    p := Copy(s,1,n-1);   Result.chapter := MyStrToInt(p);
-    p := Copy(s,n+1,255); Result.number  := MyStrToInt(p);
-
-    if endVerse > 0 then
-      Result.count := endVerse - Result.number + 1;
-  end;
-
-begin
-  Result.Book    := 0;
-  Result.Chapter := 0;
-  Result.Number  := 0;
-  Result.Count   := 0;
-
-  if Pos(':',link) = 0 then Exit;
-  link := Trim(link);
-
-  for i:=0 to Count-1 do
-    begin
-      if Prefix(Items[i].title,link) then GetLink(i,true );
-      if Prefix(Items[i].abbr ,link) then GetLink(i,false);
-    end;
 end;
 
 function TCommentary.GetChapter(Verse: TVerse): TStringArray;
@@ -531,21 +339,6 @@ begin
   Result := Length(GetRange(Verse)) > 0;
 end;
 
-function TCommentary.RankContents(const Contents: TContentArray): TContentArray;
-var
-  i,j,k : integer;
-begin
-  SetLength(Result,Length(Contents));
-  k:=0;
-  for i:=0 to Count-1 do
-    for j:=0 to Length(Contents)-1 do
-      if Contents[j].verse.book = Items[i].Number then
-        begin
-          Result[k] := Contents[j];
-          Inc(k);
-        end;
-end;
-
 function TCommentary.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
 var
   Contents : TContentArray;
@@ -590,7 +383,6 @@ begin
     Exit;
   end;
 
-  Result := RankContents(Contents);
 end;
 
 function TCommentary.GetAll: TContentArray;
@@ -625,13 +417,6 @@ begin
   finally
     Query.Close;
   end;
-end;
-
-procedure TCommentary.GetTitles(var List: TStringList);
-var i : integer;
-begin
-  for i := 0 to self.Count - 1 do
-    List.Add(self[i].Title);
 end;
 
 function TCommentary.ChaptersCount(Verse: TVerse): integer;
@@ -672,8 +457,6 @@ destructor TCommentary.Destroy;
 var
   i : integer;
 begin
-  for i:=0 to Count-1 do Items[i].Free;
-
   Query.Free;
   {$ifndef zeos} Transaction.Free; {$endif}
   Connection.Free;
@@ -694,14 +477,15 @@ constructor TCommentaries.Create;
 begin
   inherited;
 
-  AddBibles(GetUserDir + AppName);
-  {$ifdef windows} if Self.Count = 0 then {$endif} AddBibles(SharePath + 'bibles');
+  AddCommentaries(GetUserDir + AppName);
+
+  {$ifdef windows} if Self.Count = 0 then {$endif} AddCommentaries(SharePath + 'bibles');
   Sort(Comparison);
 
-  ReadPrivates;
+  //ReadPrivates;
 end;
 
-procedure TCommentaries.AddBibles(path: string);
+procedure TCommentaries.AddCommentaries(path: string);
 var
   Item : TCommentary;
   List : TStringArray;
@@ -711,6 +495,7 @@ begin
 
   for f in List do
     begin
+      output(f);
       Item := TCommentary.Create(f);
       if Item.connected then Add(Item) else Item.Free;
     end;
@@ -719,7 +504,6 @@ end;
 procedure TCommentaries.SetCurrent(index: integer);
 begin
   Current := index;
-  Self[Current].LoadDatabase;
   if not Self[Current].GoodLink(ActiveVerse) then ActiveVerse := Self[Current].FirstVerse;
 end;
 
@@ -756,15 +540,15 @@ end;
 destructor TCommentaries.Destroy;
 var i : integer;
 begin
-  SavePrivates;
+  //SavePrivates;
   for i:=0 to Count-1 do Items[i].Free;
   inherited Destroy;
 end;
 
 initialization
-  Shelf := TCommentaries.Create;
+  Commentaries := TCommentaries.Create;
 
 finalization
-  Shelf.Free;
+  Commentaries.Free;
 
 end.

@@ -158,6 +158,7 @@
       <Unit17>
         <Filename Value="unitcommentary.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitCommentary"/>
       </Unit17>
     </Units>
   </ProjectOptions>

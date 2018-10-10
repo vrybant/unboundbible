@@ -248,6 +248,13 @@ uses
   UnitShelf, UnitInfo, UnitCopy, UnitTrans, UnitLib;
 
 const
+  apBible      = 0; // active page
+  apSearch     = 1;
+  apCompare    = 2;
+  apCommentary = 3;
+  apNotes      = 4;
+
+const
   sUntitled = 'Untitled';
   RecentMax = 10;
 
