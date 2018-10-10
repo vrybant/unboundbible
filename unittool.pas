@@ -102,7 +102,7 @@ procedure Load_Compare(Stream: TRichStream);
 var
   Strings : TStringArray;
   s, item : string;
-  i, j : integer;
+  i : integer;
 begin
   if Shelf.Count = 0 then Exit;
   Stream.Open;
@@ -136,7 +136,7 @@ procedure Load_Verses(Stream: TRichStream);
 var
   Book : TBook;
   Strings : TStringArray;
-  s, q, t : string;
+  s, q : string;
   i : integer;
 
   function Link: string;
@@ -182,7 +182,7 @@ procedure Load_Translate(Stream: TRichStream; Verse: TVerse);
 var
   Strings : TStringArray;
   s, item : string;
-  i, j : integer;
+  i : integer;
 begin
   if Shelf.Count = 0 then Exit;
   Stream.Open;

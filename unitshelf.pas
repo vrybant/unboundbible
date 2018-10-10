@@ -89,15 +89,14 @@ type
   TShelf = class(TFPGList<TBible>)
     Current : integer;
   private
-  public
-    constructor Create;
     procedure AddBibles(path: string);
-    destructor Destroy; override;
-    {-}
-    procedure SetCurrent(FileName: string); overload;
-    procedure SetCurrent(index: integer); overload;
     procedure SavePrivates;
     procedure ReadPrivates;
+  public
+    constructor Create;
+    procedure SetCurrent(FileName: string); overload;
+    procedure SetCurrent(index: integer); overload;
+    destructor Destroy; override;
   end;
 
 var
