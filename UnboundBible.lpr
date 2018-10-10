@@ -3,7 +3,7 @@ program unboundbible;
 uses
   {$ifdef unix}{$ifdef UseCThreads} cthreads, {$endif}{$endif}
   {$ifdef darwin} printer4lazarus, {$endif}
-  Interfaces, Graphics, Forms, richmemopackage, UnitShelf,
+  Interfaces, Graphics, Forms, richmemopackage,
   UnitMain, UnitLang, UnitAbout, UnitSearch, UnitTool, UnitCompare,
   UnitInfo, UnitCopy, UnitTrans, UnitStream, UnitParse;
 

@@ -49,7 +49,7 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="18">
       <Unit0>
         <Filename Value="unboundbible.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -155,6 +155,10 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitInfo"/>
       </Unit16>
+      <Unit17>
+        <Filename Value="unitcommentary.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit17>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
