@@ -123,7 +123,7 @@ begin
   fileFormat   := unbound;
   z            := unboundStringAlias;
 
-  name         := fileName;          output(name);
+  name         := fileName;                                       output(name);
   native       := '';
   abbreviation := '';
   copyright    := '';
@@ -197,7 +197,7 @@ begin
         end;
 
       fileFormat := mybible;
-      z := mybibleStringAlias;
+      z := mybibleStringAlias;                                                    /////// alias
       connected := true;
     except
       //
@@ -208,7 +208,7 @@ begin
 
   FieldNames := TStringList.Create;
   try Connection.GetTableNames({$ifdef zeos}'',{$endif}FieldNames) except end;
-  if FieldNames.IndexOf(z.bible) < 0 then connected := false;
+  if FieldNames.IndexOf('commentary') < 0 then connected := false;                /////// z.bible
   FieldNames.Free;
 
   language := LowerCase(language);
@@ -495,7 +495,7 @@ begin
 
   for f in List do
     begin
-      output(f);
+      if Pos('.cmt.',f) = 0 then continue; // '.commentaries.'
       Item := TCommentary.Create(f);
       if Item.connected then Add(Item) else Item.Free;
     end;
