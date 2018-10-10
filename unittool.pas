@@ -186,11 +186,11 @@ begin
 
       Strings := Commentaries[i].GetData(ActiveVerse);
 
-      //if Length(Strings) > 0 then
-      //  begin
+      if Length(Strings) > 0 then
+        begin
           s:= '\par\cf3 ' + Commentaries[i].Name + '\par\cf1 ';
           Stream.Writeln(s);
-        //end;
+        end;
 
       for item in Strings  do
         begin

@@ -54,9 +54,8 @@ type
   public
     constructor Create(filePath: string);
     procedure OpenDatabase;
-    function GetChapter(Verse: TVerse): TStringArray;
     function GetData(Verse: TVerse): TStringArray;
-    function  Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
+    function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     function GetAll: TContentArray;
     function  ChaptersCount(Verse: TVerse): integer;
     procedure SavePrivate(const IniFile: TIniFile);
@@ -255,63 +254,25 @@ begin
       end;
 end;
 
-function TCommentary.GetChapter(Verse: TVerse): TStringArray;
-var
-  index, i : integer;
-  id, chapter : string;
-  line : string;
-begin
-  SetLength(Result,0);
-
-  index := EncodeID(Verse.book);
-  id := IntToStr(index);
-  chapter := IntToStr(Verse.chapter);
-
-  try
-    try
-/////      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id + ' AND ' + z.chapter + '=' + chapter;
-      Query.Open;
-
-      Query.Last;
-      SetLength(Result, Query.RecordCount);
-      Query.First;
-
-      for i:=0 to Query.RecordCount-1 do
-        begin
-/////          try line := Query.FieldByName(z.text).AsString; except line := '' end;
-      //  line = line.replace("\n", "") // ESWORD ?
-          Result[i] := line;
-          Query.Next;
-        end;
-    except
-      //
-    end;
-  finally
-    Query.Close;
-  end;
-end;
-
 function TCommentary.GetData(Verse: TVerse): TStringArray;
 var
   index, i : integer;
-  id, chapter : string;
-  verseNumber, toVerse : string;
+  book, chapter, fromverse, toverse : string;
   line : string;
 begin
   SetLength(Result,0);
 
-  index := EncodeID(Verse.book);
-  id := IntToStr(index);
+  book := IntToStr(Verse.book);                                //////////////  EncodeID
   chapter := IntToStr(Verse.chapter);
-  verseNumber := IntToStr(Verse.number);
+  fromverse := IntToStr(Verse.number);
   toVerse := IntToStr(verse.number + verse.count);
 
   try
     try
-      //Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id +
-      //                  ' AND ' + z.chapter + '=' + chapter +
-      //                  ' AND ' + z.verse + ' >= ' + verseNumber +
-      //                  ' AND ' + z.verse + ' < ' + toVerse;
+      Query.SQL.Text := 'SELECT * FROM ' + z.commentary + ' WHERE ' + z.book + '=' + book +
+                        ' AND ' + z.chapter + '=' + chapter +
+                        ' AND ' + z.fromverse + ' >= ' + fromverse +
+                        ' AND ' + z.toverse + ' < ' + toverse;
       Query.Open;
 
       Query.Last;
@@ -320,7 +281,7 @@ begin
 
       for i:=0 to Query.RecordCount-1 do
         begin
-////          try line := Query.FieldByName(z.text).AsString; except line := '' end;
+          try line := Query.FieldByName(z.data).AsString; except line := '' end;
           Result[i] := line;
           Query.Next;
         end;
