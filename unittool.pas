@@ -125,7 +125,7 @@ begin
 
       for item in Strings  do
         begin
-          s := Parse(item,false) + '\i0\par';
+          s := Parse(item) + '\i0\par';
           Stream.Writeln(s);
         end;
     end;
@@ -159,7 +159,7 @@ begin
 
       for item in Strings do
         begin
-          s := Parse(item,false) + '\i0\par';
+          s := Parse(item) + '\i0\par';
           Stream.Writeln(s);
         end;
     end;
@@ -194,7 +194,7 @@ begin
 
       for item in Strings  do
         begin
-          s := Parse(item,false) + '\par'
+          s := ParseHTML(item) + '\par'
           //+ '\par' + item + '\par'
           ;
           Stream.Writeln(s);
@@ -234,7 +234,7 @@ begin
           if (i>0) or ((i=0) and Options.cvEnd) then
             q := q + '(' + IntToStr(ActiveVerse.Number + i) + ') ';
 
-      q := q + Parse(Strings[i],false) + ' ';
+      q := q + Parse(Strings[i]) + ' ';
     end;
 
   q := Trim(q);
