@@ -28,7 +28,7 @@ type
     info         : string;
     filePath     : string;
     fileName     : string;
-    fileFormat   : TFileFormat;
+    format       : TFileFormat;
     z            : TCommentaryAlias;
     {-}
     name         : string;
@@ -39,7 +39,6 @@ type
     fileType     : string;
     note         : string;
     {-}
-    FirstVerse   : TVerse;
     RightToLeft  : boolean;
     compare      : boolean;
     fontName     : TFontName;
@@ -48,14 +47,11 @@ type
     connected    : boolean;
     loaded       : boolean;
   private
-    function EncodeID(id: integer): integer;
-    function DecodeID(id: integer): integer;
     function SortingIndex(number: integer): integer;
   public
     constructor Create(filePath: string);
     procedure OpenDatabase;
     function GetData(Verse: TVerse): TStringArray;
-    function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     function GetAll: TContentArray;
     function  ChaptersCount(Verse: TVerse): integer;
     procedure SavePrivate(const IniFile: TIniFile);
@@ -71,8 +67,6 @@ type
     procedure ReadPrivates;
   public
     constructor Create;
-    procedure SetCurrent(FileName: string); overload;
-    procedure SetCurrent(index: integer); overload;
     destructor Destroy; override;
   end;
 
@@ -117,7 +111,7 @@ begin
   self.filePath := filePath;
   self.fileName := ExtractFileName(filePath);
 
-  fileFormat   := unbound;
+  format       := unbound;
   z            := unboundCommentaryAlias;
 
   name         := fileName;
@@ -193,7 +187,7 @@ begin
           Query.Next;
         end;
 
-      fileFormat := mybible;
+      format := mybible;
       z := mybibleCommentaryAlias;
       connected := true;
     except
@@ -211,29 +205,6 @@ begin
   language := LowerCase(language);
   RightToLeft := GetRightToLeft(language);
   RemoveTags(info);
-end;
-
-function TCommentary.EncodeID(id: integer): integer;
-begin
-  Result := id;
-  if fileFormat = mybible then
-    if id > 0 then
-      if id <= Length(myBibleArray) then
-        Result := myBibleArray[id];
-end;
-
-function TCommentary.DecodeID(id: integer): integer;
-var i : integer;
-begin
-  Result := id;
-  if fileFormat = mybible then
-    if id > 0 then
-      for i:=1 to Length(myBibleArray) do
-        if id = myBibleArray[i] then
-          begin
-            Result := i;
-            Exit;
-          end;
 end;
 
 function TCommentary.SortingIndex(number: integer): integer;
@@ -262,7 +233,7 @@ var
 begin
   SetLength(Result,0);
 
-  book := IntToStr(EncodeID(Verse.book));
+  book := IntToStr(EncodeID(format, Verse.book));
   chapter := IntToStr(Verse.chapter);
   fromverse := IntToStr(Verse.number);
   toVerse := IntToStr(verse.number + verse.count);
@@ -293,52 +264,6 @@ begin
   end;
 end;
 
-function TCommentary.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
-var
-  Contents : TContentArray;
-  queryRange, from, till : string;
-  i : integer;
-begin
-  SetLength(Result,0);
-  queryRange := '';
-
-  SetSearchOptions(searchString, SearchOptions);
-
-  if Range.from > 0 then
-    begin
-      from := IntToStr(EncodeID(Range.from));
-      till := IntToStr(EncodeID(Range.till));
-      queryRange := ' AND ' + z.book + ' >= ' + from + ' AND ' + z.book + ' <= ' + till;
-    end;
-
-  try
-    try
-/////      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE super(' + z.text + ')=''1''' + queryRange;
-      Query.Open;
-
-      Query.Last; // must be called before RecordCount
-      SetLength(Contents,Query.RecordCount);
-      Query.First;
-
-      for i:=0 to Query.RecordCount-1 do
-        begin
-          Contents[i].verse := noneVerse;
-          //try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
-          //try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
-          //try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
-          //try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
-          Contents[i].verse.book := DecodeID(Contents[i].verse.book);
-          Query.Next;
-        end;
-    finally
-      Query.Close;
-    end;
-  except
-    Exit;
-  end;
-
-end;
-
 function TCommentary.GetAll: TContentArray;
 var
   Contents : TContentArray;
@@ -362,7 +287,7 @@ begin
           try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           //try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           //try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
-          Contents[i].verse.book := DecodeID(Contents[i].verse.book);
+          Contents[i].verse.book := DecodeID(format, Contents[i].verse.book);
           Query.Next;
         end;
     except
@@ -380,7 +305,7 @@ var
 begin
   Result := 1;
 
-  index := EncodeID(Verse.book);
+  index := EncodeID(format, Verse.book);
   id := IntToStr(index);
 
   try
@@ -454,22 +379,6 @@ begin
       Item := TCommentary.Create(f);
       if Item.connected then Add(Item) else Item.Free;
     end;
-end;
-
-procedure TCommentaries.SetCurrent(index: integer);
-begin
-  Current := index;
-//  if not Self[Current].GoodLink(ActiveVerse) then ActiveVerse := Self[Current].FirstVerse;
-end;
-
-procedure TCommentaries.SetCurrent(FileName: string);
-var i : integer;
-begin
-  Current := 0;
-  if Count = 0 then Exit;
-  for i:= Count-1 downto 0 do
-    if Items[i].FileName = FileName then Current := i;
-  SetCurrent(Current);
 end;
 
 procedure TCommentaries.SavePrivates;

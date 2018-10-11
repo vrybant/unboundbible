@@ -148,6 +148,8 @@ var
 function IsNewTestament(n: integer): boolean;
 function IsOldTestament(n: integer): boolean;
 function IsApocrypha(n: integer): boolean;
+function EncodeID(format: TFileFormat; id: integer): integer;
+function DecodeID(format: TFileFormat; id: integer): integer;
 
 implementation
 
@@ -164,6 +166,29 @@ end;
 function IsApocrypha(n: integer): boolean;
 begin
   Result := n > 66;
+end;
+
+function EncodeID(format: TFileFormat; id: integer): integer;
+begin
+  Result := id;
+  if format = mybible then
+    if id > 0 then
+      if id <= Length(myBibleArray) then
+        Result := myBibleArray[id];
+end;
+
+function DecodeID(format: TFileFormat; id: integer): integer;
+var i : integer;
+begin
+  Result := id;
+  if format = mybible then
+    if id > 0 then
+      for i:=1 to Length(myBibleArray) do
+        if id = myBibleArray[i] then
+          begin
+            Result := i;
+            Exit;
+          end;
 end;
 
 end.
