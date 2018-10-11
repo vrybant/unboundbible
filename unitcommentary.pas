@@ -52,8 +52,6 @@ type
     constructor Create(filePath: string);
     procedure OpenDatabase;
     function GetData(Verse: TVerse): TStringArray;
-    function GetAll: TContentArray;
-    function  ChaptersCount(Verse: TVerse): integer;
     procedure SavePrivate(const IniFile: TIniFile);
     procedure ReadPrivate(const IniFile: TIniFile);
     destructor Destroy; override;
@@ -264,64 +262,6 @@ begin
   end;
 end;
 
-function TCommentary.GetAll: TContentArray;
-var
-  Contents : TContentArray;
-  i : integer;
-begin
-  SetLength(Result,0);
-
-  try
-    try
-/////      Query.SQL.Text := 'SELECT * FROM ' + z.bible;
-      Query.Open;
-
-      Query.Last; // must be called before RecordCount
-      SetLength(Contents,Query.RecordCount);
-      Query.First;
-
-      for i:=0 to Query.RecordCount-1 do
-        begin
-          Contents[i].verse := noneVerse;
-          try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
-          try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
-          //try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
-          //try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
-          Contents[i].verse.book := DecodeID(format, Contents[i].verse.book);
-          Query.Next;
-        end;
-    except
-      //
-    end;
-  finally
-    Query.Close;
-  end;
-end;
-
-function TCommentary.ChaptersCount(Verse: TVerse): integer;
-var
-  index : integer;
-  id : string;
-begin
-  Result := 1;
-
-  index := EncodeID(format, Verse.book);
-  id := IntToStr(index);
-
-  try
-    try
-/////      Query.SQL.Text := 'SELECT MAX(' + z.chapter + ') AS Count FROM ' + z.bible + ' WHERE ' + z.book + '=' + id;
-      Query.Open;
-
-      try Result := Query.FieldByName('Count').AsInteger; except end;
-    except
-      //
-    end;
-  finally
-    Query.Close;
-  end;
-end;
-
 procedure TCommentary.SavePrivate(const IniFile : TIniFile);
 begin
   IniFile.WriteBool(FileName, 'Compare', Compare);
@@ -348,8 +288,17 @@ end;
 //=================================================================================================
 
 function Comparison(const Item1: TCommentary; const Item2: TCommentary): integer;
+var
+  s1 : string = '';
+  s2 : string = '';
 begin
-  Result := CompareText(Item1.Name, Item2.Name);
+  if Orthodox(GetDefaultLanguage) then
+    begin
+      if Orthodox(Item1.language) then s1 := ' ';
+      if Orthodox(Item2.language) then s2 := ' ';
+    end;
+
+  Result := CompareText(s1 + Item1.Name, s2 + Item2.Name);
 end;
 
 constructor TCommentaries.Create;
@@ -374,8 +323,7 @@ begin
 
   for f in List do
     begin
-      //if Pos('.cmt.',f) = 0 then continue;
-      if Pos('.commentaries.',f) = 0 then continue;
+      if Pos('.cmt.',f) + Pos('.commentaries.',f) = 0 then continue;
       Item := TCommentary.Create(f);
       if Item.connected then Add(Item) else Item.Free;
     end;
