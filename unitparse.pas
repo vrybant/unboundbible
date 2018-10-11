@@ -12,22 +12,20 @@ implementation
 
 procedure XmlToList(s: string; List: TStringList);
 var
-  temp : string;
-  i : integer;
+  temp : string = '';
+  c : char;
 begin
-  temp := '';
-
-  for i:=1 to Length(s) do
+  for c in s do
     begin
-      if s[i] = '<' then
+      if c = '<' then
         begin
           List.Add(temp);
           temp := '';
         end;
 
-      temp := temp + s[i];
+      temp := temp + c;
 
-      if s[i] = '>' then
+      if c = '>' then
         begin
           List.Add(temp);
           temp := '';

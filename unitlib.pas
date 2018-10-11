@@ -157,12 +157,13 @@ end;
 function StringToList(ch: Char; st: string): TStringArray;
 var
   Point : array of integer;
-  i, n, index, len : integer;
+  i, len : integer;
+  index : integer = 0;
+  n : integer = 0;
 begin
   SetLength(Result,Length(st)+2);
   SetLength(Point ,Length(st)+2);
   Point[0] := 0;
-  n := 0;
 
   for i:=1 to Length(st) do
     if st[i] = ch then
@@ -172,7 +173,6 @@ begin
       end;
 
   Point[n+1] := Length(st)+1;
-  index := 0;
 
   for i:=0 to n do
     begin
@@ -189,10 +189,9 @@ end;
 
 function CleanTags(s: string): string;
 var
+  l : boolean = true;
   i : integer;
-  l : boolean;
 begin
-  l := True;
   for i:=1 to Length(s) do
     begin
       if s[i]='<' then l := False;
@@ -204,12 +203,10 @@ end;
 
 procedure RemoveTags(var s: string);
 var
-  result : string;
+  result : string = '';
+  l : boolean = true;
   i : integer;
-  l : boolean;
 begin
-  result := '';
-  l := True;
   for i:=1 to Length(s) do
     begin
       if s[i]='<' then l := False;
