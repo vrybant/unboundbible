@@ -56,7 +56,8 @@ begin
   WriteLn('\red0\green0\blue128;'     ); // 3 navy
   WriteLn('\red0\green128\blue0;'     ); // 4 green
   WriteLn('\red128\green128\blue128;' ); // 5 gray
-  WriteLn('\red128\green0\blue128;'   ); // 6 purple
+  WriteLn('\red96\green96\blue96;'    ); // 6 dark gray
+  WriteLn('\red128\green0\blue128;'   ); // 7 purple
   WriteLn('}');
 
   Write('\f0\cf1');

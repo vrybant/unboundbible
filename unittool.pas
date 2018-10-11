@@ -188,13 +188,15 @@ begin
 
       if Length(Strings) > 0 then
         begin
-          s:= '\par\cf3 ' + Commentaries[i].Name + '\par\cf1 ';
+          s:= '\par\cf3 ' + Commentaries[i].Name + '\par\par\cf1 ';
           Stream.Writeln(s);
         end;
 
       for item in Strings  do
         begin
-          s := Parse(item,false) + '\i0\par';
+          s := Parse(item,false) + '\par'
+          //+ '\par' + item + '\par'
+          ;
           Stream.Writeln(s);
         end;
     end;

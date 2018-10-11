@@ -262,7 +262,7 @@ var
 begin
   SetLength(Result,0);
 
-  book := IntToStr(Verse.book);                                //////////////  EncodeID
+  book := IntToStr(EncodeID(Verse.book));
   chapter := IntToStr(Verse.chapter);
   fromverse := IntToStr(Verse.number);
   toVerse := IntToStr(verse.number + verse.count);
@@ -449,7 +449,8 @@ begin
 
   for f in List do
     begin
-      if Pos('.cmt.',f) = 0 then continue; // '.commentaries.'
+      //if Pos('.cmt.',f) = 0 then continue;
+      if Pos('.commentaries.',f) = 0 then continue;
       Item := TCommentary.Create(f);
       if Item.connected then Add(Item) else Item.Free;
     end;

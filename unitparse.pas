@@ -53,20 +53,41 @@ begin
   if j then if s =  '<J>' then begin r := '\cf2 '; jColor := true;  end;
   if j then if s = '</J>' then begin r := '\cf1 '; jColor := false; end;
 
-  if s =  '<S>' then r := '\cf6\super ';
-  if s = '</S>' then r := color + '\nosupersub ';
-  if s =  '<f>' then r := '\cf5\super ';
-  if s = '</f>' then r := color + '\nosupersub ';
-  if s =  '<i>' then r := '\i ';
-  if s = '</i>' then r := '\i0 ';
-
   if s = '<TS>' then r := '\cf4 ';
   if s = '<Ts>' then r := '\cf1 ';
 
-  if s = '<RF>' then r := '\cf4\super  ';
+  if s = '<RF>' then r := '\cf4\super ';
   if s = '<Rf>' then r := '\cf1\nosupersub ';
 
   if Prefix('<RF q=', s) then r := '\cf4\super  '; // '<RF q=a>'
+
+  s := LowerCase(s);
+
+  if s = '<br/>' then s := '<br>';
+  if s =  '<p/>' then s := '<p>';
+  if s =  '<td>' then s := '<br>';
+  if s =  '<tr>' then s := '<br>';
+  if s = '</td>' then s := '<br>';
+  if s = '</tr>' then s := '<br>';
+
+  if s =  '<s>' then r := '\cf6\super ';
+  if s = '</s>' then r := color + '\nosupersub ';
+  if s =  '<f>' then r := '\cf5\super ';
+  if s = '</f>' then r := color + '\nosupersub ';
+  if s =  '<b>' then r := '\b ' ;
+  if s = '</b>' then r := '\b0 ';
+  if s =  '<i>' then r := '\i ';
+  if s = '</i>' then r := '\i0 ';
+  if s =  '<p>' then r := '\par\tab ';
+  if s = '</p>' then r := '\par ';
+  if s = '<br>'  then r := '\par\tab ';
+  if s =  '<strong>' then r := '\b ' ;
+  if s = '</strong>' then r := '\b0 ';
+  if s =  '<sup>' then r := '\super ';
+  if s = '</sup>' then r := '\nosupersub ';
+
+  if Prefix('<a ', s) then r := '\cf6 ';
+  if       s = '</a>' then r := '\cf1 ';
 
   Result := r;
 end;
