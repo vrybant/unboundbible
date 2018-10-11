@@ -271,12 +271,12 @@ object MainForm: TMainForm
     Height = 309
     Top = 32
     Width = 595
-    ActivePage = TabSheetCommentary
+    ActivePage = TabSheetBible
     Align = alClient
     Font.Color = clWindowText
     Font.Height = -13
     ParentFont = False
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 2
     OnChange = PageControlChange
     object TabSheetBible: TTabSheet

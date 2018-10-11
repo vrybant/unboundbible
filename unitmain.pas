@@ -620,8 +620,14 @@ begin
   if Sender = ActionEditCopy   then UnboundMemo.CopyToClipboard;
   if Sender = ActionEditPaste  then UnboundMemo.PasteFromClipboard;
   if Sender = ActionEditDel    then UnboundMemo.ClearSelection;
-  if Sender = ActionEditSelAll then UnboundMemo.SelectAll;
   if Sender = ActionEditUndo   then UnboundMemo.Undo;
+
+  if Sender = ActionEditSelAll then
+    begin
+      UnboundMemo.SelectAll;
+      ActiveVerse.Number := MemoBible.ParagraphStart;
+      ActiveVerse.Count  := MemoBible.ParagraphCount;
+   end;
 
   if Sender = ActionEditCut then
     begin

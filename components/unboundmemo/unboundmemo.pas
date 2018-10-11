@@ -32,6 +32,7 @@ type
     function Foreground: integer;
     procedure SelectParagraph(n : integer);
     procedure SelectWord;
+    procedure SelectAll;
     procedure SaveSelection;
     procedure RestoreSelection;
   published
@@ -327,6 +328,15 @@ begin
   SelStart  := GetStartSelection;
   SelLength := GetEndSelection - SelStart;
 end;
+
+procedure TUnboundMemo.SelectAll;
+begin
+  Hide_Selection;
+  inherited;
+  GetParagraphRange;
+  Show_Selection;
+end;
+
 
 procedure TUnboundMemo.SaveSelection;
 begin
