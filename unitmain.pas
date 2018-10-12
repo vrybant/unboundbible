@@ -444,7 +444,7 @@ begin
   TabSheetBible.Caption := T('Bible');
   TabSheetSearch.Caption := T('Search');
   TabSheetCompare.Caption := T('Compare');
-  TabSheetCommentary.Caption := 'Коментарии'; // T('Commentary'); // *********** !!! *************
+  TabSheetCommentary.Caption := T('Commentary');
   TabSheetNotes.Caption := T('Notes');
 
   ToolButtonNew.Hint := T('New');
