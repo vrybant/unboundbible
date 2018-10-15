@@ -33,7 +33,8 @@ function IsNumeral(c: char): boolean;
 function IsLetter(c: char): boolean;
 function Prefix(ps, st: string): boolean;
 function OneUpCase(st: string): string;
-function MyStrToInt(st: string): integer;
+function MyStrToInt(s: string): integer;
+function StrToBoolean(s: string): boolean;
 function CleanString(s: string): string;
 function StringPos(subst: string; s: string): TIntegerArray;
 procedure Replace(var s: string; const oldPattern, newPattern: String);
@@ -105,12 +106,19 @@ begin
   Result := st;
 end;
 
-function MyStrToInt(st: string): integer;
+function MyStrToInt(s: string): integer;
 var v, r : integer;
 begin
-  st := Trim(st);
-  Val(st, v, r);
+  s := Trim(s);
+  Val(s, v, r);
   if r=0 then Result := v else Result := 0;
+end;
+
+function StrToBoolean(s: string): boolean;
+var v : boolean;
+begin
+  Result := false;
+  if TryStrToBool(s,v) then Result := v;
 end;
 
 function CleanString(s: string): string;
