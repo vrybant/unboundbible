@@ -91,11 +91,11 @@ begin
   if s = '</b>' then r := '\b0 ';
   if s =  '<i>' then r := '\i ';
   if s = '</i>' then r := '\i0 ';
+  if s = '<br>' then r := '\par\tab ';
   if s =  '<p>' then r := '\par\tab ';
   if s = '</p>' then r := '\par ';
   if s =  '<a>' then r := '\cf6 ';
   if s = '</a>' then r := '\cf1 ';
-  if s = '<br>' then r := '\par\tab ';
   if s =  '<strong>' then r := '\b ' ;
   if s = '</strong>' then r := '\b0 ';
   if s =  '<sup>' then r := '\super ';

@@ -33,13 +33,13 @@ type
     {-}
     name         : string;
     native       : string;
-    abbreviation : string;
     copyright    : string;
     language     : string;
     fileType     : string;
     note         : string;
     {-}
     RightToLeft  : boolean;
+    footnotes    : boolean;
     compare      : boolean;
     fontName     : TFontName;
     fontSize     : integer;
@@ -114,10 +114,10 @@ begin
 
   name         := fileName;
   native       := '';
-  abbreviation := '';
   copyright    := '';
   language     := 'english';
   filetype     := '';
+  footnotes    := false;
   connected    := false;
   loaded       := false;
   RightToLeft  := false;
@@ -154,11 +154,11 @@ begin
       Query.SQL.Text := 'SELECT * FROM Details';
       Query.Open;
 
-      try info      := Query.FieldByName('Information').AsString; except end;
-      try info      := Query.FieldByName('Description').AsString; except end;
-      try name      := Query.FieldByName('Title'      ).AsString; except name := info; end;
-      try copyright := Query.FieldByName('Copyright'  ).AsString; except end;
-      try language  := Query.FieldByName('Language'   ).AsString; except end;
+      try info      := Query.FieldByName('Information').AsString;  except end;
+      try info      := Query.FieldByName('Description').AsString;  except end;
+      try name      := Query.FieldByName('Title'      ).AsString;  except name := info; end;
+      try copyright := Query.FieldByName('Copyright'  ).AsString;  except end;
+      try language  := Query.FieldByName('Language'   ).AsString;  except end;
 
       connected := true;
     except
@@ -178,9 +178,10 @@ begin
           try key   := Query.FieldByName('name' ).AsString; except end;
           try value := Query.FieldByName('value').AsString; except end;
 
-          if key = 'description'   then name     := value;
-          if key = 'detailed_info' then info     := value;
-          if key = 'language'      then language := value;
+          if key = 'description'   then name      := value;
+          if key = 'detailed_info' then info      := value;
+          if key = 'language'      then language  := value;
+          if key = 'is_footnotes'  then footnotes := StrToBoolean(value);
 
           Query.Next;
         end;
@@ -225,25 +226,26 @@ end;
 
 function TCommentary.GetData(Verse: TVerse): TStringArray;
 var
-  index, i : integer;
   book, chapter, fromverse, toverse : string;
   line : string;
+  i : integer;
 begin
   SetLength(Result,0);
 
   book := IntToStr(EncodeID(format, Verse.book));
   chapter := IntToStr(Verse.chapter);
-  fromverse := IntToStr(Verse.number);
-  toVerse := IntToStr(verse.number + verse.count);
+  fromVerse := IntToStr(Verse.number);
+  toVerse := IntToStr(verse.number + verse.count - 1);
 
   try
     try
-      Query.SQL.Text := 'SELECT * FROM ' + z.commentary + ' WHERE ' + z.book + '=' + book +
-                        ' AND ' + z.chapter + '=' + chapter +
-                        ' AND ' + z.fromverse + ' >= ' + fromverse +
-                        ' AND ' + z.toverse + ' < ' + toverse;
-      Query.Open;
+      Query.SQL.Text := 'SELECT * FROM ' + z.commentary +
+                 ' WHERE ' + z.book      + ' = '  + book    +
+                   ' AND ' + z.chapter   + ' = '  + chapter +
+                 ' AND ((' + z.fromverse + ' BETWEEN ' + fromVerse + ' AND ' + toVerse + ')' +
+                   ' OR (' + z.toverse   + ' BETWEEN ' + fromVerse + ' AND ' + toVerse + ')) ' ;
 
+      Query.Open;
       Query.Last;
       SetLength(Result, Query.RecordCount);
       Query.First;
@@ -273,13 +275,10 @@ begin
 end;
 
 destructor TCommentary.Destroy;
-var
-  i : integer;
 begin
   Query.Free;
   {$ifndef zeos} Transaction.Free; {$endif}
   Connection.Free;
-
   inherited Destroy;
 end;
 

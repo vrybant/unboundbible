@@ -182,7 +182,7 @@ begin
 
   for i:=0 to Commentaries.Count-1 do
     begin
-//    if not Commentaries[i].Compare then Continue;
+      if Commentaries[i].footnotes then Continue;
 
       Strings := Commentaries[i].GetData(ActiveVerse);
 
@@ -194,9 +194,7 @@ begin
 
       for item in Strings  do
         begin
-          s := ParseHTML(item) + '\par'
-          //+ '\par' + item + '\par'
-          ;
+          s := ParseHTML(item) + '\par';
           Stream.Writeln(s);
         end;
     end;
