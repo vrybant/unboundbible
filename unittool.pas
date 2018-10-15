@@ -169,34 +169,24 @@ end;
 
 procedure Load_Commentary(Stream: TRichStream);
 var
-  Strings : TStringArray;
-  s, item : string;
+  comment, s : string;
   i : integer;
 begin
   if Commentaries.Count = 0 then Exit;
 
   Stream.Open;
-
   s := '\cf1 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
   Stream.Writeln(s);
 
   for i:=0 to Commentaries.Count-1 do
     begin
       if Commentaries[i].footnotes then Continue;
-
-      Strings := Commentaries[i].GetData(ActiveVerse);
-
-      if Length(Strings) > 0 then
-        begin
-          s:= '\par\cf3 ' + Commentaries[i].Name + '\par\par\cf1 ';
-          Stream.Writeln(s);
-        end;
-
-      for item in Strings  do
-        begin
-          s := ParseHTML(item) + '\par';
-          Stream.Writeln(s);
-        end;
+      comment := Commentaries[i].GetData(ActiveVerse);
+      if comment = '' then Continue;
+      s:= '\par\cf3 ' + Commentaries[i].Name + '\par\par\cf1 ';
+      Stream.Writeln(s);
+      s := ParseHTML(comment) + '\par';
+      Stream.Writeln(s);
     end;
 
   Stream.Close;

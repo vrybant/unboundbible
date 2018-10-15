@@ -51,7 +51,8 @@ type
   public
     constructor Create(filePath: string);
     procedure OpenDatabase;
-    function GetData(Verse: TVerse): TStringArray;
+    function GetData(Verse: TVerse): string;
+    function GetFootnote(Verse: TVerse; marker: string): string;
     procedure SavePrivate(const IniFile: TIniFile);
     procedure ReadPrivate(const IniFile: TIniFile);
     destructor Destroy; override;
@@ -224,7 +225,34 @@ begin
       end;
 end;
 
-function TCommentary.GetData(Verse: TVerse): TStringArray;
+function TCommentary.GetData(Verse: TVerse): string;
+var
+  book, chapter, fromverse, toverse : string;
+begin
+  Result := '';
+  book := IntToStr(EncodeID(format, Verse.book));
+  chapter := IntToStr(Verse.chapter);
+  fromVerse := IntToStr(Verse.number);
+  toVerse := IntToStr(verse.number + verse.count - 1);
+
+  try
+    try
+      Query.SQL.Text := 'SELECT * FROM ' + z.commentary +
+                 ' WHERE ' + z.book      + ' = '  + book    +
+                   ' AND ' + z.chapter   + ' = '  + chapter +
+                 ' AND ((' + z.fromverse + ' BETWEEN ' + fromVerse + ' AND ' + toVerse + ')' +
+                   ' OR (' + z.toverse   + ' BETWEEN ' + fromVerse + ' AND ' + toVerse + ')) ' ;
+      Query.Open;
+      try Result := Query.FieldByName(z.data).AsString; except end;
+    except
+      //
+    end;
+  finally
+    Query.Close;
+  end;
+end;
+
+function TCommentary.GetFootnote(Verse: TVerse; marker: string): string;
 var
   book, chapter, fromverse, toverse : string;
   line : string;
@@ -240,10 +268,10 @@ begin
   try
     try
       Query.SQL.Text := 'SELECT * FROM ' + z.commentary +
-                 ' WHERE ' + z.book      + ' = '  + book    +
-                   ' AND ' + z.chapter   + ' = '  + chapter +
-                 ' AND ((' + z.fromverse + ' BETWEEN ' + fromVerse + ' AND ' + toVerse + ')' +
-                   ' OR (' + z.toverse   + ' BETWEEN ' + fromVerse + ' AND ' + toVerse + ')) ' ;
+                 ' WHERE ' + z.book      + ' = ' + book      +
+                   ' AND ' + z.chapter   + ' = ' + chapter   +
+                   ' AND ' + z.fromverse + ' = ' + fromVerse +
+                   ' AND ' + 'marker'    + ' = ' + marker    ;
 
       Query.Open;
       Query.Last;
@@ -253,7 +281,7 @@ begin
       for i:=0 to Query.RecordCount-1 do
         begin
           try line := Query.FieldByName(z.data).AsString; except line := '' end;
-          Result[i] := line;
+          Result := line;
           Query.Next;
         end;
     except
