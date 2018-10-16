@@ -8,7 +8,7 @@ interface
 uses
   {$ifdef windows} Windows, Windirs, {$endif}
   {$ifdef debugmode and linux} LazLogger, {$endif}
-  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, Buttons,
+  SysUtils, StrUtils, Classes, Graphics, Controls, Forms, Dialogs, Buttons,
   { FileUtil depreciated } LazFileUtils, LazUtf8, LCLProc,
   ExtCtrls, ClipBrd, Process;
 
@@ -37,6 +37,7 @@ function ToInt(s: string): integer;
 function ToBoolean(s: string): boolean;
 function ToStr(value: longint): string;
 function CleanString(s: string): string;
+function DelDoubleSpace(s: string): string;
 function StringPos(subst: string; s: string): TIntegerArray;
 procedure Replace(var s: string; const oldPattern, newPattern: String);
 function ListToArray(List: TStringList): TStringArray;
@@ -132,6 +133,11 @@ begin
   for i:=1 to Length(s) do
     if not IsLetter(s[i]) then s[i] := ' ';
   Result := s;
+end;
+
+function DelDoubleSpace(s: string): string;
+begin
+  Result := DelSpace1(s);
 end;
 
 function StringPos(subst: string; s: string): TIntegerArray;
