@@ -51,8 +51,8 @@ type
   public
     constructor Create(filePath: string);
     procedure OpenDatabase;
-    function GetData(v: TVerse): string;
-    function GetFootnote(v: TVerse; marker: string): string;
+    function GetData(Verse: TVerse): string;
+    function GetFootnote(Verse: TVerse; marker: string): string;
     procedure SavePrivate(const IniFile: TIniFile);
     procedure ReadPrivate(const IniFile: TIniFile);
     destructor Destroy; override;
@@ -226,22 +226,22 @@ begin
       end;
 end;
 
-function TCommentary.GetData(v: TVerse): string;
+function TCommentary.GetData(Verse: TVerse): string;
 var
   id : integer;
   num_to: string;
 begin
   Result := '';
-  id := EncodeID(format, v.book);
-  num_to := ToStr(v.number + v.count - 1);
+  id := EncodeID(format, Verse.book);
+  num_to := ToStr(Verse.number + Verse.count - 1);
 
   try
     try
         Query.SQL.Text := 'SELECT * FROM ' + z.commentary +
           ' WHERE ' + z.book      + ' = '  + ToStr(id) +
-            ' AND ' + z.chapter   + ' = '  + ToStr(v.chapter) +
-          ' AND ((' + z.fromverse + ' BETWEEN ' + ToStr(v.number) + ' AND ' + num_to + ')' +
-            ' OR (' + z.toverse   + ' BETWEEN ' + ToStr(v.number) + ' AND ' + num_to + ')) ' ;
+            ' AND ' + z.chapter   + ' = '  + ToStr(Verse.chapter) +
+          ' AND ((' + z.fromverse + ' BETWEEN ' + ToStr(Verse.number) + ' AND ' + num_to + ')' +
+            ' OR (' + z.toverse   + ' BETWEEN ' + ToStr(Verse.number) + ' AND ' + num_to + ')) ' ;
 
       Query.Open;
       try Result := Query.FieldByName(z.data).AsString; except end;
@@ -253,18 +253,18 @@ begin
   end;
 end;
 
-function TCommentary.GetFootnote(v: TVerse; marker: string): string;
+function TCommentary.GetFootnote(Verse: TVerse; marker: string): string;
 var
   id : integer;
 begin
   Result := '';
-  id := EncodeID(format, v.book);
+  id := EncodeID(format, Verse.book);
 
   try
     try
       Query.SQL.Text := 'SELECT * FROM ' + z.commentary +
                  ' WHERE ' + z.book      + ' = ' + ToStr(id) +
-                   ' AND ' + z.chapter   + ' = ' + ToStr(v.chapter) +
+                   ' AND ' + z.chapter   + ' = ' + ToStr(Verse.chapter) +
                    ' AND ' + 'marker'    + ' ="' + marker    + '" ';
 
       Query.Open;

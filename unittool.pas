@@ -181,6 +181,7 @@ begin
 
   for i:=0 to Commentaries.Count-1 do
     begin
+      if Commentaries[i].footnotes then Continue;
       comment := Commentaries[i].GetData(ActiveVerse);
       if comment = '' then Continue;
       s:= '\par\cf3 ' + Commentaries[i].Name + '\par\par\cf1 ';
