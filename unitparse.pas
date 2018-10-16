@@ -68,7 +68,7 @@ begin
           Continue;
         end;
 
-      if l then List[i] := '[*]';
+      if l then List[i] := '*';
     end;
 end;
 
@@ -106,7 +106,7 @@ begin
 
       if marker <> '' then
         begin
-          List[i] := ' [' + marker + '] ';
+          List[i] := ' ' + marker + ' ';
           marker := '';
           Continue;
         end;

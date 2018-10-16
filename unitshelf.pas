@@ -608,7 +608,6 @@ var
   x : integer;
 begin
   Result := '';
-  marker := '<RF q=' + Copy(marker,2,1) + '>';     // !! [abc]
   x := Pos(marker,s); if x = 0 then Exit;
   x := x + Length(marker);
   s := Copy(s, x, Length(s));
@@ -618,16 +617,18 @@ end;
 
 function TBible.GetFootnote(Verse: TVerse; marker: string): string;
 var
-  id, i : integer;
+  id : integer;
   line : string = '';
 begin
   id := EncodeID(format, Verse.book);
+  marker := '<RF q=' + marker + '>';
 
   try
     try
       Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + ToStr(id) +
                       ' AND ' + z.chapter + ' = ' + ToStr(Verse.chapter) +
-                      ' AND ' + z.verse   + ' = ' + ToStr(Verse.number)  ;
+                   // ' AND ' + z.verse   + ' = ' + ToStr(Verse.number)  +
+                      ' AND ' + z.text   + ' LIKE ' + '"%' + marker + '%"';
       Query.Open;
       try line := Query.FieldByName(z.text).AsString; except end;
     except
