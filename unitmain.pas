@@ -772,7 +772,7 @@ begin
     end;
 
   if Memo.Foreground = fgStrong   then FormInfo.ShowModal;
-  if Memo.Foreground = fgFootnote then LoadFootnote(Memo.Hyperlink);
+  if Memo.Foreground = fgFootnote then LoadFootnote(Trim(Memo.Hyperlink));
 end;
 
 procedure TMainForm.MemoAttrChange(Sender: TObject);

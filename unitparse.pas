@@ -204,7 +204,7 @@ begin
     if Prefix('<',s) then Result := Result + FormatString(s, jtag)
                      else Result := Result + s;
 
-  Result := DelDoubleSpace(Trim(Result));
+  Result := Trim(Result);
   List.Free;
 end;
 

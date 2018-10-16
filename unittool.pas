@@ -198,7 +198,8 @@ var s : string;
 begin
   if Commentaries.Count = 0 then Exit;
   Stream.Open;
-  s := Commentaries.GetFootnote(Bible.fileName, ActiveVerse, marker);
+  s := Bible.GetFootnote(ActiveVerse, marker); // , marker);
+//s := Commentaries.GetFootnote(Bible.fileName, ActiveVerse, marker);
   if s = '' then s := 'no comments';
   s := ParseHTML(s) + '\par';
   Stream.Writeln(s);
