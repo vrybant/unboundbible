@@ -262,7 +262,7 @@ begin
           Book := TBook.Create;
           n := DecodeID(format, x);
           Book.number := n;
-          Book.title := IntToStr(x);
+          Book.title := ToStr(x);
           Book.id := x;
           Book.sorting := SortingIndex(n);
           Add(Book);
@@ -357,9 +357,9 @@ begin
   if full then title := Book.title else title := Book.abbr;
   if Pos('.', title) = 0 then title := title + ' ';
 
-  Result := title + IntToStr(verse.chapter) + ':' + IntToStr(verse.number);
+  Result := title + ToStr(verse.chapter) + ':' + ToStr(verse.number);
   if (verse.number <> 0) and (verse.count > 1) then
-    Result := Result + '-' + IntToStr(verse.number + verse.count - 1);
+    Result := Result + '-' + ToStr(verse.number + verse.count - 1);
 end;
 
 function TBible.SrtToVerse(link : string): TVerse;
@@ -389,12 +389,12 @@ var
       begin
         p := Copy(s,n+1,255);
         s := Copy(s,1,n-1);
-        endVerse := MyStrToInt(p);
+        endVerse := ToInt(p);
       end;
 
     n := Pos(':',s);      Result.book    := Items[i].number;
-    p := Copy(s,1,n-1);   Result.chapter := MyStrToInt(p);
-    p := Copy(s,n+1,255); Result.number  := MyStrToInt(p);
+    p := Copy(s,1,n-1);   Result.chapter := ToInt(p);
+    p := Copy(s,n+1,255); Result.number  := ToInt(p);
 
     if endVerse > 0 then
       Result.count := endVerse - Result.number + 1;
@@ -425,8 +425,8 @@ begin
   SetLength(Result,0);
 
   index := EncodeID(format, Verse.book);
-  id := IntToStr(index);
-  chapter := IntToStr(Verse.chapter);
+  id := ToStr(index);
+  chapter := ToStr(Verse.chapter);
 
   try
     try
@@ -454,18 +454,17 @@ end;
 
 function TBible.GetRange(Verse: TVerse): TStringArray;
 var
-  index, i : integer;
   id, chapter : string;
   verseNumber, toVerse : string;
   line : string;
+  i : integer;
 begin
   SetLength(Result,0);
 
-  index := EncodeID(format, Verse.book);
-  id := IntToStr(index);
-  chapter := IntToStr(Verse.chapter);
-  verseNumber := IntToStr(Verse.number);
-  toVerse := IntToStr(verse.number + verse.count);
+  id := ToStr(EncodeID(format, Verse.book));
+  chapter := ToStr(Verse.chapter);
+  verseNumber := ToStr(Verse.number);
+  toVerse := ToStr(verse.number + verse.count);
 
   try
     try
@@ -526,8 +525,8 @@ begin
 
   if Range.from > 0 then
     begin
-      from := IntToStr(EncodeID(format, Range.from));
-      till := IntToStr(EncodeID(format, Range.till));
+      from := ToStr(EncodeID(format, Range.from));
+      till := ToStr(EncodeID(format, Range.till));
       queryRange := ' AND ' + z.book + ' >= ' + from + ' AND ' + z.book + ' <= ' + till;
     end;
 
@@ -609,7 +608,7 @@ begin
   Result := 1;
 
   index := EncodeID(format, Verse.book);
-  id := IntToStr(index);
+  id := ToStr(index);
 
   try
     try

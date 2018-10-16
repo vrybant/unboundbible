@@ -35,7 +35,7 @@ begin
     unicode := UTF8CharacterToUnicode(p,CharLen);
     if unicode = 0 then Continue;
     if unicode < $80 then Result := Result + char(unicode)
-                     else Result := Result + '\u' + IntToStr(unicode) + endchar;
+                     else Result := Result + '\u' + ToStr(unicode) + endchar;
 
     inc(p,CharLen);
   until (CharLen=0) or (unicode=0);
@@ -61,7 +61,7 @@ begin
   WriteLn('}');
 
   Write('\f0\cf1');
-  Write('\fs' + IntToStr(CurrFont.Size * 2));
+  Write('\fs' + ToStr(CurrFont.Size * 2));
 
   if RightToLeft then WriteLn('\rtlpar\qr');
   WriteLn(''); // important

@@ -101,7 +101,7 @@ begin
 
   try
     try
-      Query.SQL.Text := 'SELECT * FROM Books WHERE Number=' + IntToStr(n);
+      Query.SQL.Text := 'SELECT * FROM Books WHERE Number=' + ToStr(n);
       Query.Open;
 
       try name := Query.FieldByName('Name').AsString; except end;
@@ -111,7 +111,7 @@ begin
     end;
   finally
     Query.Close;
-    if name = '' then name := IntToStr(n);
+    if name = '' then name := ToStr(n);
     if abbr = '' then abbr := name;
   end;
 

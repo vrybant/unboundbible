@@ -213,6 +213,7 @@ type
     procedure LoadCompare;
     procedure LoadTranslate(Verse: TVerse);
     procedure LoadCommentary;
+    procedure LoadFootnote(s: string);
     procedure MakeBookList;
     procedure MakeChapterList(n: integer);
     {$ifdef darwin} procedure ScrollBoxes; {$endif}
@@ -611,7 +612,7 @@ var s : string;
 begin
   if not (ActiveVerse.book in [1..66]) then Exit;
   s := BibleHubArray[ActiveVerse.book];
-  s := s + '/' +  IntToStr(ActiveVerse.chapter) + '-' + IntToStr(ActiveVerse.number) + '.htm';
+  s := s + '/' +  ToStr(ActiveVerse.chapter) + '-' + ToStr(ActiveVerse.number) + '.htm';
   OpenURL('http://biblehub.com/interlinear/' + s);
 end;
 
@@ -756,9 +757,8 @@ begin
       ActiveVerse.Number := MemoBible.ParagraphStart;
       ActiveVerse.Count  := MemoBible.ParagraphCount;
       if FormTranslate.Visible then LoadTranslate(ActiveVerse);
+      Exit;
     end;
-
-  if Memo.hyperlink = '' then Exit;
 
   if Memo.Foreground = fgLink then
     begin
@@ -773,7 +773,7 @@ begin
     end;
 
   if Memo.Foreground = fgStrong   then FormInfo.ShowModal;
-  if Memo.Foreground = fgFootnote then FormInfo.ShowModal;
+  if Memo.Foreground = fgFootnote then LoadFootnote(Memo.Hyperlink);
 end;
 
 procedure TMainForm.MemoAttrChange(Sender: TObject);
@@ -1260,7 +1260,7 @@ begin
   ChapterBox.Items.BeginUpdate;
   ChapterBox.Items.Clear;
 
-  for i := 1 to n do ChapterBox.Items.Add(IntToStr(i));
+  for i := 1 to n do ChapterBox.Items.Add(ToStr(i));
   {$ifdef darwin} if n = 1 then ChapterBox.Items.Add(''); {$endif}
 
   ChapterBox.ItemIndex := 0;
@@ -1330,7 +1330,7 @@ begin
   MemoSearch.LoadRichText(Stream);
   Cursor := crArrow;
   SelectPage(apSearch);
-  UpdateStatus(IntToStr(Count) + ' ' + ms_found);
+  UpdateStatus(ToStr(Count) + ' ' + ms_found);
   Stream.Free;
 end;
 
@@ -1370,6 +1370,17 @@ begin
   SelectPage(apCommentary);
   Load_Commentary(Stream);
   MemoCommentary.LoadRichText(Stream);
+  Stream.Free;
+end;
+
+procedure TMainForm.LoadFootnote(s: string);
+var
+  Stream : TRichStream;
+begin
+  Stream := TRichStream.Create;
+  Load_Footnote(Stream, s);
+  FormInfo.Memo.LoadRichText(Stream);
+  FormInfo.ShowModal;
   Stream.Free;
 end;
 
@@ -1461,7 +1472,7 @@ begin
   IniFile.WriteInteger('Recent', 'Count', RecentList.Count);
 
   for i := 0 to RecentList.Count - 1 do
-    IniFile.WriteString('Recent', 'File_' + IntToStr(i), RecentList[i]);
+    IniFile.WriteString('Recent', 'File_' + ToStr(i), RecentList[i]);
 
   IniFile.Free;
 end;
@@ -1509,7 +1520,7 @@ begin
   Max := IniFile.ReadInteger('Recent', 'Count', RecentList.Count);
 
   for i := 0 to Max - 1 do
-    RecentList.Add(IniFile.ReadString('Recent', 'File_' + IntToStr(i), ''));
+    RecentList.Add(IniFile.ReadString('Recent', 'File_' + ToStr(i), ''));
 
   Shelf.SetCurrent(BibleFile);
 
