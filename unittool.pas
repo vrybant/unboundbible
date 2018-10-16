@@ -9,6 +9,7 @@ procedure Search_Text (Stream: TRichStream; st: string; var count: integer);
 procedure Load_Compare(Stream: TRichStream);
 procedure Load_Translate(Stream: TRichStream; Verse: TVerse);
 procedure Load_Commentary(Stream: TRichStream);
+procedure Load_Footnote(Stream: TRichStream; marker: string = '');
 procedure Load_Verses(Stream: TRichStream);
 procedure Show_Message(Stream: TRichStream; s: string);
 
@@ -32,7 +33,7 @@ begin
   for i:=Low(Strings) to High(Strings) do
     begin
       text := Parse(Strings[i],true);
-      text := '\cf3 ' + ' ' + IntToStr(i+1) + '\cf1 ' + ' ' + text + '\i0\par';
+      text := '\cf3 ' + ' ' + ToStr(i+1) + '\cf1 ' + ' ' + text + '\i0\par';
       Stream.Writeln(text);
     end;
 
@@ -180,7 +181,6 @@ begin
 
   for i:=0 to Commentaries.Count-1 do
     begin
-      if Commentaries[i].footnotes then Continue;
       comment := Commentaries[i].GetData(ActiveVerse);
       if comment = '' then Continue;
       s:= '\par\cf3 ' + Commentaries[i].Name + '\par\par\cf1 ';
@@ -189,6 +189,18 @@ begin
       Stream.Writeln(s);
     end;
 
+  Stream.Close;
+end;
+
+procedure Load_Footnote(Stream: TRichStream; marker: string = '');
+var s : string;
+begin
+  if Commentaries.Count = 0 then Exit;
+  Stream.Open;
+  s := Commentaries.GetFootnote(Bible.fileName, ActiveVerse, marker);
+  if s = '' then s := 'no comments';
+  s := ParseHTML(s) + '\par';
+  Stream.Writeln(s);
   Stream.Close;
 end;
 
@@ -220,7 +232,7 @@ begin
       if Options.cvEnumerated then
         if ActiveVerse.Count > 1 then
           if (i>0) or ((i=0) and Options.cvEnd) then
-            q := q + '(' + IntToStr(ActiveVerse.Number + i) + ') ';
+            q := q + '(' + ToStr(ActiveVerse.Number + i) + ') ';
 
       q := q + Parse(Strings[i]) + ' ';
     end;

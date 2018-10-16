@@ -51,8 +51,8 @@ type
   public
     constructor Create(filePath: string);
     procedure OpenDatabase;
-    function GetData(Verse: TVerse): string;
-    function GetFootnote(Verse: TVerse; marker: string): string;
+    function GetData(v: TVerse): string;
+    function GetFootnote(v: TVerse; marker: string): string;
     procedure SavePrivate(const IniFile: TIniFile);
     procedure ReadPrivate(const IniFile: TIniFile);
     destructor Destroy; override;
@@ -66,6 +66,7 @@ type
     procedure ReadPrivates;
   public
     constructor Create;
+    function GetFootnote(module: string; Verse: TVerse; marker: string): string;
     destructor Destroy; override;
   end;
 
@@ -182,7 +183,7 @@ begin
           if key = 'description'   then name      := value;
           if key = 'detailed_info' then info      := value;
           if key = 'language'      then language  := value;
-          if key = 'is_footnotes'  then footnotes := StrToBoolean(value);
+          if key = 'is_footnotes'  then footnotes := ToBoolean(value);
 
           Query.Next;
         end;
@@ -225,23 +226,23 @@ begin
       end;
 end;
 
-function TCommentary.GetData(Verse: TVerse): string;
+function TCommentary.GetData(v: TVerse): string;
 var
-  book, chapter, fromverse, toverse : string;
+  id : integer;
+  num_to: string;
 begin
   Result := '';
-  book := IntToStr(EncodeID(format, Verse.book));
-  chapter := IntToStr(Verse.chapter);
-  fromVerse := IntToStr(Verse.number);
-  toVerse := IntToStr(verse.number + verse.count - 1);
+  id := EncodeID(format, v.book);
+  num_to := ToStr(v.number + v.count - 1);
 
   try
     try
-      Query.SQL.Text := 'SELECT * FROM ' + z.commentary +
-                 ' WHERE ' + z.book      + ' = '  + book    +
-                   ' AND ' + z.chapter   + ' = '  + chapter +
-                 ' AND ((' + z.fromverse + ' BETWEEN ' + fromVerse + ' AND ' + toVerse + ')' +
-                   ' OR (' + z.toverse   + ' BETWEEN ' + fromVerse + ' AND ' + toVerse + ')) ' ;
+        Query.SQL.Text := 'SELECT * FROM ' + z.commentary +
+          ' WHERE ' + z.book      + ' = '  + ToStr(id) +
+            ' AND ' + z.chapter   + ' = '  + ToStr(v.chapter) +
+          ' AND ((' + z.fromverse + ' BETWEEN ' + ToStr(v.number) + ' AND ' + num_to + ')' +
+            ' OR (' + z.toverse   + ' BETWEEN ' + ToStr(v.number) + ' AND ' + num_to + ')) ' ;
+
       Query.Open;
       try Result := Query.FieldByName(z.data).AsString; except end;
     except
@@ -252,38 +253,22 @@ begin
   end;
 end;
 
-function TCommentary.GetFootnote(Verse: TVerse; marker: string): string;
+function TCommentary.GetFootnote(v: TVerse; marker: string): string;
 var
-  book, chapter, fromverse, toverse : string;
-  line : string;
-  i : integer;
+  id : integer;
 begin
-  SetLength(Result,0);
-
-  book := IntToStr(EncodeID(format, Verse.book));
-  chapter := IntToStr(Verse.chapter);
-  fromVerse := IntToStr(Verse.number);
-  toVerse := IntToStr(verse.number + verse.count - 1);
+  Result := '';
+  id := EncodeID(format, v.book);
 
   try
     try
       Query.SQL.Text := 'SELECT * FROM ' + z.commentary +
-                 ' WHERE ' + z.book      + ' = ' + book      +
-                   ' AND ' + z.chapter   + ' = ' + chapter   +
-                   ' AND ' + z.fromverse + ' = ' + fromVerse +
-                   ' AND ' + 'marker'    + ' = ' + marker    ;
+                 ' WHERE ' + z.book      + ' = ' + ToStr(id) +
+                   ' AND ' + z.chapter   + ' = ' + ToStr(v.chapter) +
+                   ' AND ' + 'marker'    + ' ="' + marker    + '" ';
 
       Query.Open;
-      Query.Last;
-      SetLength(Result, Query.RecordCount);
-      Query.First;
-
-      for i:=0 to Query.RecordCount-1 do
-        begin
-          try line := Query.FieldByName(z.data).AsString; except line := '' end;
-          Result := line;
-          Query.Next;
-        end;
+      try Result := Query.FieldByName(z.data).AsString; except end;
     except
       //
     end;
@@ -353,6 +338,23 @@ begin
       if Pos('.cmt.',f) + Pos('.commentaries.',f) = 0 then continue;
       Item := TCommentary.Create(f);
       if Item.connected then Add(Item) else Item.Free;
+    end;
+end;
+
+function TCommentaries.GetFootnote(module: string; Verse: TVerse; marker: string): string;
+var
+  name : string;
+  i : integer;
+begin
+  Result := '';
+  if self.Count = 0 then Exit;
+  name := ExtractOnlyName(module);
+
+  for i:=0 to self.Count-1 do
+    begin
+      if not self[i].footnotes then Continue;
+      if not Prefix(name,self[i].filename) then Continue;
+      Result := self[i].GetFootnote(Verse, marker);
     end;
 end;
 
