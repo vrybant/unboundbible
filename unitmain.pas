@@ -751,13 +751,13 @@ begin
 
   Output(Memo.hyperlink);
 
-  if Memo.hyperlink = '' then
-    begin
+//if Memo.hyperlink = '' then
+//  begin
       ActiveVerse.Number := MemoBible.ParagraphStart;
       ActiveVerse.Count  := MemoBible.ParagraphCount;
       if FormTranslate.Visible then LoadTranslate(ActiveVerse);
-      Exit;
-    end;
+//    Exit;
+//  end;
 
   if Memo.Foreground = fgLink then
     begin

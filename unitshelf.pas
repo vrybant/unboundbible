@@ -608,7 +608,7 @@ var
   x : integer;
 begin
   Result := '';
-  marker := '<RF q=' + Copy(marker,2,1) + '>';
+  marker := '<RF q=' + Copy(marker,2,1) + '>';     // !! [abc]
   x := Pos(marker,s); if x = 0 then Exit;
   x := x + Length(marker);
   s := Copy(s, x, Length(s));
