@@ -1,38 +1,27 @@
 object FormInfo: TFormInfo
   Left = 442
-  Height = 321
+  Height = 249
   Top = 435
-  Width = 416
+  Width = 316
   BorderStyle = bsDialog
   Caption = 'Info'
-  ClientHeight = 321
-  ClientWidth = 416
+  ClientHeight = 249
+  ClientWidth = 316
   OnActivate = FormActivate
   Position = poDesktopCenter
   LCLVersion = '1.6.4.0'
   object Memo: TUnboundMemo
     Cursor = crArrow
-    Left = 8
-    Height = 272
-    Top = 8
-    Width = 400
-    Color = clWhite
+    Left = 0
+    Height = 249
+    Top = 0
+    Width = 316
+    Align = alClient
+    Color = clInfoBk
     HideSelection = True
     ReadOnly = True
     ScrollBars = ssAutoVertical
     TabOrder = 0
     ZoomFactor = 1
-  end
-  object ButtonCopy: TButton
-    Left = 318
-    Height = 25
-    Top = 288
-    Width = 90
-    AutoSize = True
-    Caption = 'OK'
-    Constraints.MaxWidth = 90
-    Constraints.MinWidth = 90
-    ModalResult = 1
-    TabOrder = 1
   end
 end
