@@ -54,9 +54,6 @@ type
     fontName     : TFontName;
     fontSize     : integer;
     {-}
-//  oldTestament : boolean;
-//  newTestament : boolean;
-//  apocrypha    : boolean;
     connected    : boolean;
     loaded       : boolean;
   private
@@ -150,9 +147,6 @@ begin
   connected    := false;
   loaded       := false;
   RightToLeft  := false;
-//oldTestament := false;
-//newTestament := false;
-//apocrypha    := false;
 
   OpenDatabase;
 end;
@@ -401,11 +395,7 @@ var
   end;
 
 begin
-  Result.Book    := 0;
-  Result.Chapter := 0;
-  Result.Number  := 0;
-  Result.Count   := 0;
-
+  Result := noneVerse;
   if Pos(':',link) = 0 then Exit;
   link := Trim(link);
 
@@ -418,19 +408,16 @@ end;
 
 function TBible.GetChapter(Verse: TVerse): TStringArray;
 var
-  index, i : integer;
-  id, chapter : string;
+  id, i : integer;
   line : string;
 begin
   SetLength(Result,0);
-
-  index := EncodeID(format, Verse.book);
-  id := ToStr(index);
-  chapter := ToStr(Verse.chapter);
+  id := EncodeID(format, Verse.book);
 
   try
     try
-      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id + ' AND ' + z.chapter + '=' + chapter;
+      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + ToStr(id) +
+                                 ' AND ' + z.chapter + '=' + ToStr(Verse.chapter);
       Query.Open;
 
       Query.Last;
@@ -454,24 +441,19 @@ end;
 
 function TBible.GetRange(Verse: TVerse): TStringArray;
 var
-  id, chapter : string;
-  verseNumber, toVerse : string;
+  id, num_to, i : integer;
   line : string;
-  i : integer;
 begin
   SetLength(Result,0);
-
-  id := ToStr(EncodeID(format, Verse.book));
-  chapter := ToStr(Verse.chapter);
-  verseNumber := ToStr(Verse.number);
-  toVerse := ToStr(verse.number + verse.count);
+  id := EncodeID(format, Verse.book);
+  num_to := Verse.number + Verse.count;
 
   try
     try
-      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + id +
-                        ' AND ' + z.chapter + '=' + chapter +
-                        ' AND ' + z.verse + ' >= ' + verseNumber +
-                        ' AND ' + z.verse + ' < ' + toVerse;
+      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + ToStr(id) +
+                      ' AND ' + z.chapter + '='    + ToStr(Verse.chapter) +
+                      ' AND ' + z.verse   + ' >= ' + ToStr(Verse.number)  +
+                      ' AND ' + z.verse   + ' < '  + ToStr(num_to)    ;
       Query.Open;
 
       Query.Last;
@@ -602,19 +584,16 @@ end;
 
 function TBible.ChaptersCount(Verse: TVerse): integer;
 var
-  index : integer;
-  id : string;
+  id : integer;
 begin
   Result := 1;
-
-  index := EncodeID(format, Verse.book);
-  id := ToStr(index);
+  id := EncodeID(format, Verse.book);
 
   try
     try
-      Query.SQL.Text := 'SELECT MAX(' + z.chapter + ') AS Count FROM ' + z.bible + ' WHERE ' + z.book + '=' + id;
+      Query.SQL.Text := 'SELECT MAX(' + z.chapter + ') AS Count FROM ' + z.bible +
+                            ' WHERE ' + z.book + '=' + ToStr(id);
       Query.Open;
-
       try Result := Query.FieldByName('Count').AsInteger; except end;
     except
       //
