@@ -35,7 +35,7 @@ begin
   if temp <> '' then List.Add(temp);
 end;
 
-procedure Clean(List: TStringList);
+procedure ClearTitles(List: TStringList);
 var
   l : boolean = false;
   i : integer;
@@ -44,14 +44,85 @@ begin
     begin
       if List[i] = '<TS>' then l := true;
       if List[i] = '<Ts>' then l := false;
-      if List[i] = '<RF>' then l := true;
-      if List[i] = '<Rf>' then l := false;
-      if Prefix('<RF ', List[i]) then l := true;
-      if l then List[i] := '  ';
+      if l then List[i] := '';
     end;
 end;
 
-function Format(s: string; j: boolean): string;
+procedure RemakeFootnotes1(List: TStringList);
+var
+  l : boolean = false;
+  i : integer;
+begin
+  l := false;
+  for i:=0 to List.Count-1 do
+    begin
+      if List[i] = '<RF>' then
+        begin
+          l := true;
+          Continue;
+        end;
+
+      if List[i] = '<Rf>' then
+        begin
+          l := false;
+          Continue;
+        end;
+
+      if l then List[i] := '[*]';
+    end;
+end;
+
+function ExtractMarker(s: string): string;
+var
+  x1, x2 : integer;
+begin
+  Result := s;
+  x1 := Pos('=',s); if x1 = 0 then Exit;
+  x2 := Pos('>',s); if x2 = 0 then Exit;
+  Result := Copy(s,x1+1,x2-x1-1);
+end;
+
+procedure RemakeFootnotes2(List: TStringList);
+var
+  marker : string = '';
+  l : boolean = false;
+  i : integer;
+begin
+  for i:=0 to List.Count-1 do
+    begin
+      if Prefix('<RF ', List[i]) then
+        begin
+          marker := ExtractMarker(List[i]);
+          List[i] := '<RF>';
+          l := true;
+          Continue;
+        end;
+
+      if List[i] = '<Rf>' then
+        begin
+          l := false;
+          Continue;
+        end;
+
+      if marker <> '' then
+        begin
+          List[i] := ' [' + marker + '] ';
+          marker := '';
+          Continue;
+        end;
+
+      if l then List[i] := '';
+    end;
+end;
+
+procedure Remake(List: TStringList);
+begin
+  ClearTitles(List);
+  RemakeFootnotes1(List);
+  RemakeFootnotes2(List);
+end;
+
+function FormatString(s: string; j: boolean): string;
 var
   r : string = '';
   color : string;
@@ -64,6 +135,8 @@ begin
   if s =  '<Fr>' then s := '</J>';
   if s =  '<FI>' then s :=  '<i>';
   if s =  '<Fi>' then s := '</i>';
+  if s =  '<RF>' then s :=  '<f>';
+  if s =  '<Rf>' then s := '</f>';
   if s =  '<em>' then s :=  '<i>';
   if s = '</em>' then s := '</i>';
 
@@ -125,10 +198,10 @@ begin
 
   List := TStringList.Create;
   XmlToList(st, List);
-  Clean(List);
+  Remake(List);
 
   for s in List do
-    if Prefix('<',s) then Result := Result + Format(s, jtag)
+    if Prefix('<',s) then Result := Result + FormatString(s, jtag)
                      else Result := Result + s;
 
   Result := DelDoubleSpace(Trim(Result));

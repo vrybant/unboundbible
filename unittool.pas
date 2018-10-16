@@ -32,7 +32,7 @@ begin
 
   for i:=Low(Strings) to High(Strings) do
     begin
-      text := Parse(Strings[i],true);
+      text := Parse(Strings[i], true);
       text := '\cf3 ' + ' ' + ToStr(i+1) + '\cf1 ' + ' ' + text + '\i0\par';
       Stream.Writeln(text);
     end;
@@ -93,7 +93,7 @@ begin
       link := Bible.VerseToStr(content.verse,true);
       text := content.text;
       Highlights(text,st,CurrentSearchOptions);
-      text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + Parse(text,false) + '\i0\par\par';
+      text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + Parse(text) + '\i0\par\par';
       Stream.Writeln(text);
     end;
 
