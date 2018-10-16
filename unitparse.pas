@@ -35,6 +35,22 @@ begin
   if temp <> '' then List.Add(temp);
 end;
 
+procedure Clean(List: TStringList);
+var
+  l : boolean = false;
+  i : integer;
+begin
+  for i:=0 to List.Count-1 do
+    begin
+      if List[i] = '<TS>' then l := true;
+      if List[i] = '<Ts>' then l := false;
+      if List[i] = '<RF>' then l := true;
+      if List[i] = '<Rf>' then l := false;
+      if Prefix('<RF ', List[i]) then l := true;
+      if l then List[i] := '  ';
+    end;
+end;
+
 function Format(s: string; j: boolean): string;
 var
   r : string = '';
@@ -44,20 +60,15 @@ const
 begin
   if jColor then color := '\cf2' else color := '\cf1';
 
-  if s = '<FR>' then s :=  '<J>';
-  if s = '<Fr>' then s := '</J>';
-  if s = '<FI>' then s :=  '<i>';
-  if s = '<Fi>' then s := '</i>';
+  if s =  '<FR>' then s :=  '<J>';
+  if s =  '<Fr>' then s := '</J>';
+  if s =  '<FI>' then s :=  '<i>';
+  if s =  '<Fi>' then s := '</i>';
+  if s =  '<em>' then s :=  '<i>';
+  if s = '</em>' then s := '</i>';
 
   if j then if s =  '<J>' then begin r := '\cf2 '; jColor := true;  end;
   if j then if s = '</J>' then begin r := '\cf1 '; jColor := false; end;
-
-  if s = '<TS>' then r := '\cf4 ';
-  if s = '<Ts>' then r := '\cf1 ';
-  if s = '<RF>' then r := '\cf4\super ';
-  if s = '<Rf>' then r := '\cf1\nosupersub ';
-
-  if Prefix('<RF q=', s) then r := '\cf4\super  '; // '<RF q=a>'
 
   s := LowerCase(s);
 
@@ -110,14 +121,17 @@ var
   s : string;
 begin
   Result := '';
-  Replace(st, '</S><S>','</S> <S>');
+  Replace(st,'</S><S>','</S> <S>');
 
   List := TStringList.Create;
   XmlToList(st, List);
+  Clean(List);
 
   for s in List do
     if Prefix('<',s) then Result := Result + Format(s, jtag)
                      else Result := Result + s;
+
+  Result := DelDoubleSpace(Trim(Result));
   List.Free;
 end;
 

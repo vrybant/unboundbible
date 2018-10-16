@@ -603,8 +603,7 @@ end;
 
 procedure TMainForm.CmdCompare(Sender: TObject);
 begin
-  //if CompareForm.ShowModal = mrOk then LoadCompare;
-    if FormInfo.ShowModal = mrOk then ;
+  if CompareForm.ShowModal = mrOk then LoadCompare;
 end;
 
 procedure TMainForm.CmdInterline(Sender: TObject);
