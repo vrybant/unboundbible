@@ -41,6 +41,7 @@ function DelDoubleSpace(s: string): string;
 function StringPos(subst: string; s: string): TIntegerArray;
 procedure Replace(var s: string; const oldPattern, newPattern: String);
 function ListToArray(List: TStringList): TStringArray;
+function ListToString(List: TStringList): string;
 function StringToList(ch: Char; st: string): TStringArray;
 function CleanTags(s: string): string;
 procedure RemoveTags(var s: string);
@@ -171,6 +172,14 @@ begin
   SetLength(Result, List.Count);
   for i:=0 to List.Count-1 do
     Result[i] := List[i];
+end;
+
+function ListToString(List: TStringList): string;
+var s : string;
+begin
+  Result := '';
+  for s in List do
+    Result := Result + s;
 end;
 
 function StringToList(ch: Char; st: string): TStringArray;

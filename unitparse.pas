@@ -211,16 +211,15 @@ end;
 function ParseHTML(st: string): string;
 var
   List : TStringList;
-  s : string;
+  i : integer;
 begin
-  Result := '';
-
   List := TStringList.Create;
   XmlToList(st, List);
 
-  for s in List do
-    if Prefix('<',s) then Result := Result + HTML(s)
-                     else Result := Result + s;
+  for i:=0 to List.Count-1 do
+    if Prefix('<', List[i]) then List[i] := HTML(List[i]);
+
+  Result := ListToString(List);
   List.Free;
 end;
 
