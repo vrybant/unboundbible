@@ -10,51 +10,34 @@ function ParseHTML(st: string): string;
 
 implementation
 
-procedure XmlToList(s: string; List: TStringList);
-var
-  temp : string = '';
-  c : char;
-begin
-  for c in s do
-    begin
-      if c = '<' then
-        begin
-          List.Add(temp);
-          temp := '';
-        end;
-
-      temp := temp + c;
-
-      if c = '>' then
-        begin
-          List.Add(temp);
-          temp := '';
-        end;
-    end;
-
-  if temp <> '' then List.Add(temp);
-end;
-
-procedure ClearTitles(List: TStringList);
+procedure ClearTitles(var List: TStringArray);
 var
   l : boolean = false;
   i : integer;
 begin
-  for i:=0 to List.Count-1 do
+  output(ListToString(List));
+  for i:=Low(List) to High(List) do
     begin
       if List[i] = '<TS>' then l := true;
-      if List[i] = '<Ts>' then l := false;
+
+      if List[i] = '<Ts>' then
+        begin
+          List[i] := '';
+          l := false;
+        end;
+
       if l then List[i] := '';
     end;
+  output(ListToString(List));
 end;
 
-procedure RemakeFootnotes1(List: TStringList);
+procedure RemakeFootnotes1(var List: TStringArray);
 var
   l : boolean = false;
   i : integer;
 begin
   l := false;
-  for i:=0 to List.Count-1 do
+  for i:=Low(List) to High(List) do
     begin
       if List[i] = '<RF>' then
         begin
@@ -82,13 +65,13 @@ begin
   Result := Copy(s,x1+1,x2-x1-1);
 end;
 
-procedure RemakeFootnotes2(List: TStringList);
+procedure RemakeFootnotes2(var List: TStringArray);
 var
   marker : string = '';
   l : boolean = false;
   i : integer;
 begin
-  for i:=0 to List.Count-1 do
+  for i:=Low(List) to High(List) do
     begin
       if Prefix('<RF ', List[i]) then
         begin
@@ -115,7 +98,7 @@ begin
     end;
 end;
 
-procedure Remake(List: TStringList);
+procedure Remake(var List: TStringArray);
 begin
   ClearTitles(List);
   RemakeFootnotes1(List);
@@ -190,37 +173,34 @@ end;
 
 function Parse(st: string; jtag: boolean = false): string;
 var
-  List : TStringList;
-  s : string;
+  List : TStringArray;
+  i : integer;
 begin
-  Result := '';
+  Result := st;
   Replace(st,'</S><S>','</S> <S>');
 
-  List := TStringList.Create;
-  XmlToList(st, List);
+  List := XmlToList(st);
   Remake(List);
 
-  for s in List do
-    if Prefix('<',s) then Result := Result + FormatString(s, jtag)
-                     else Result := Result + s;
+  for i:=Low(List) to High(List) do
+    if Prefix('<', List[i]) then List[i] := FormatString(List[i], jtag);
 
-  Result := Trim(Result);
-  List.Free;
+  Result := Trim(ListToString(List));
 end;
 
 function ParseHTML(st: string): string;
 var
-  List : TStringList;
+  List : TStringArray;
   i : integer;
 begin
-  List := TStringList.Create;
-  XmlToList(st, List);
+  Result := st; EXIT;
 
-  for i:=0 to List.Count-1 do
+  List := XmlToList(st);
+
+  for i:=Low(List) to High(List) do
     if Prefix('<', List[i]) then List[i] := HTML(List[i]);
 
-  Result := ListToString(List);
-  List.Free;
+  Result := Trim(ListToString(List));
 end;
 
 end.

@@ -77,7 +77,6 @@ var
   List : TStringArray;
   Path, FileName : string;
   f : string;
-  i : integer;
 begin
   Result := 'english';
   language := LowerCase(language);
