@@ -15,7 +15,6 @@ var
   l : boolean = false;
   i : integer;
 begin
-  output(ListToString(List));
   for i:=Low(List) to High(List) do
     begin
       if List[i] = '<TS>' then l := true;
@@ -28,7 +27,6 @@ begin
 
       if l then List[i] := '';
     end;
-  output(ListToString(List));
 end;
 
 procedure RemakeFootnotes1(var List: TStringArray);
