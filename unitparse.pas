@@ -191,7 +191,7 @@ var
   List : TStringArray;
   i : integer;
 begin
-  Result := st; EXIT;
+  Result := st;
 
   List := XmlToList(st);
 
