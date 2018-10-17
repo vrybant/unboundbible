@@ -749,8 +749,6 @@ begin
   if Button = mbRight then ShowPopup;
   if Button <> mbLeft then Exit;
 
-  Output(Memo.hyperlink);
-
 //if Memo.hyperlink = '' then
 //  begin
       ActiveVerse.Number := MemoBible.ParagraphStart;
@@ -771,8 +769,12 @@ begin
         end;
     end;
 
+  if Sender <> MemoBible then Exit;
+
   if Memo.Foreground = fgStrong   then FormInfo.ShowModal;
   if Memo.Foreground = fgFootnote then LoadFootnote(Trim(Memo.Hyperlink));
+
+  Memo.HideCursor;
 end;
 
 procedure TMainForm.MemoAttrChange(Sender: TObject);
