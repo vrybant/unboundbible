@@ -41,8 +41,9 @@ function DelDoubleSpace(s: string): string;
 function StringPos(subst: string; s: string): TIntegerArray;
 procedure Replace(var s: string; const oldPattern, newPattern: String);
 function ListToArray(List: TStringList): TStringArray;
-function ListToString(List: TStringList): string;
-function StringToList(ch: Char; st: string): TStringArray;
+function ListToString(List: TStringArray): string;
+function StringToList(ch: Char; s: string): TStringArray;
+function XmlToList(s: string): TStringArray;
 function CleanTags(s: string): string;
 procedure RemoveTags(var s: string);
 
@@ -174,7 +175,7 @@ begin
     Result[i] := List[i];
 end;
 
-function ListToString(List: TStringList): string;
+function ListToString(List: TStringArray): string;
 var s : string;
 begin
   Result := '';
@@ -182,37 +183,73 @@ begin
     Result := Result + s;
 end;
 
-function StringToList(ch: Char; st: string): TStringArray;
+function StringToList(ch: Char; s: string): TStringArray;
 var
   Point : array of integer;
   i, len : integer;
   index : integer = 0;
   n : integer = 0;
 begin
-  SetLength(Result,Length(st)+2);
-  SetLength(Point ,Length(st)+2);
+  SetLength(Result,Length(s)+2);
+  SetLength(Point ,Length(s)+2);
   Point[0] := 0;
 
-  for i:=1 to Length(st) do
-    if st[i] = ch then
+  for i:=1 to Length(s) do
+    if s[i] = ch then
       begin
         Inc(n);
         Point[n] := i;
       end;
 
-  Point[n+1] := Length(st)+1;
+  Point[n+1] := Length(s)+1;
 
   for i:=0 to n do
     begin
       len := Point[i+1]-Point[i]-1;
       if len > 0 then
         begin
-          Result[index] := Copy(st, Point[i]+1, len);
+          Result[index] := Copy(s, Point[i]+1, len);
           Inc(index);
         end;
     end;
 
   SetLength(Result,index);
+end;
+
+function XmlToList(s: string): TStringArray;
+var
+  temp : string = '';
+  i : integer = 0;
+  c : char;
+begin
+  SetLength(Result,Length(s)+1);
+
+  for c in s do
+    begin
+      if c = '<' then
+        begin
+          Result[i] := temp;
+          inc(i);
+          temp := '';
+        end;
+
+      temp := temp + c;
+
+      if c = '>' then
+        begin
+          Result[i] := temp;
+          inc(i);
+          temp := '';
+        end;
+    end;
+
+  if temp <> '' then
+    begin
+      Result[i] := temp;
+      inc(i);
+    end;
+
+  SetLength(Result,i);
 end;
 
 function CleanTags(s: string): string;
