@@ -137,12 +137,18 @@ begin
 end;
 
 procedure TUnboundMemo.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  x1 : integer = 0;
+  x2 : integer = 0;
 begin
-  //if Linkable then Hyperlink := GetLink else Hyperlink := '';
-  Hyperlink := GetLink;
+  if Linkable then Hyperlink := GetLink else Hyperlink := '';
 
-  if Hyperlink = '' then
-    if Paragraphic and (Button = mbLeft) then GetParagraphRange;
+  if Paragraphic and (Button = mbLeft) then
+    begin
+      if Hyperlink <> '' then GetSel(x1,x2);
+      GetParagraphRange;
+      if Hyperlink <> '' then SetSel(x1,x2);
+    end;
 
   inherited;
 end;
