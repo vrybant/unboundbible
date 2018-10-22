@@ -5,19 +5,20 @@ interface
 uses
   Classes, SysUtils, UnitLib;
 
+function Reformat(st: string; purge: boolean = true): string;
 
 implementation
 
-procedure ClearTitles(var List: TStringArray);
+procedure RemoveTags(var List: TStringArray; StartTag, EndTag: string);
 var
   l : boolean = false;
   i : integer;
 begin
   for i:=Low(List) to High(List) do
     begin
-      if List[i] = '<TS>' then l := true;
+      if List[i] = StartTag then l := true;
 
-      if List[i] = '<Ts>' then
+      if List[i] = EndTag then
         begin
           List[i] := '';
           l := false;
@@ -27,7 +28,7 @@ begin
     end;
 end;
 
-procedure RemakeFootnotes1(var List: TStringArray);
+procedure RemakeFootnotes1(var List: TStringArray; purge: boolean);
 var
   l : boolean = false;
   i : integer;
@@ -37,17 +38,20 @@ begin
     begin
       if List[i] = '<RF>' then
         begin
+          if purge then List[i] := '';
           l := true;
           Continue;
         end;
 
-      if List[i] = '<Rf>' then
+      if l and (List[i] = '<Rf>') then
         begin
+          if purge then List[i] := '';
           l := false;
           Continue;
         end;
 
-      if l then List[i] := '*';
+      if l and not purge then List[i] := '*';
+      if l and purge then List[i] := '';
     end;
 end;
 
@@ -61,7 +65,7 @@ begin
   Result := Copy(s,x1+1,x2-x1-1);
 end;
 
-procedure RemakeFootnotes2(var List: TStringArray);
+procedure RemakeFootnotes2(var List: TStringArray; purge: boolean);
 var
   marker : string = '';
   l : boolean = false;
@@ -71,14 +75,15 @@ begin
     begin
       if Prefix('<RF ', List[i]) then
         begin
-          marker := ExtractMarker(List[i]);
-          List[i] := '<RF>';
+          if not purge then marker := ExtractMarker(List[i]);
+          if purge then List[i] := '' else List[i] := '<RF>';
           l := true;
           Continue;
         end;
 
       if List[i] = '<Rf>' then
         begin
+          if purge then List[i] := '';
           l := false;
           Continue;
         end;
@@ -94,12 +99,26 @@ begin
     end;
 end;
 
-procedure Remake(var List: TStringArray);
+procedure Remake(var List: TStringArray; purge: boolean);
 begin
-  ClearTitles(List);
-  RemakeFootnotes1(List);
-  RemakeFootnotes2(List);
+  RemoveTags(List,'<TS>','<Ts>');
+
+  RemakeFootnotes1(List, purge);
+  RemakeFootnotes2(List, purge);
+
+  if purge then RemoveTags(List, '<f>','</f>');
 end;
+
+function Reformat(st: string; purge: boolean = true): string;
+var
+  List : TStringArray;
+begin
+  Replace(st,'</S><S>','</S> <S>');
+  List := XmlToList(st);
+  Remake(List, purge);
+  Result := Trim(ListToString(List));
+end;
+
 
 end.
 

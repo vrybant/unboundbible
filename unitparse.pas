@@ -17,6 +17,8 @@ var
 const
   jColor : boolean = false;
 begin
+  r := '\cf4 ' + s + '\cf1 ';  // show tags
+
   if jColor then color := '\cf2' else color := '\cf1';
 
   if s =  '<FR>' then s :=  '<J>';

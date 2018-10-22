@@ -9,7 +9,7 @@ interface
 uses
   Classes, Fgl, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
-  UnitLib, UnitTitles, UnitType;
+  UnitLib, UnitTitles, UnitType, UnitFormat;
 
 const
   BookMax = 86;
@@ -420,7 +420,6 @@ begin
       Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + ToStr(id) +
                                  ' AND ' + z.chapter + '=' + ToStr(Verse.chapter);
       Query.Open;
-
       Query.Last;
       SetLength(Result, Query.RecordCount);
       Query.First;
@@ -429,7 +428,7 @@ begin
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
       //  line = line.replace("\n", "") // ESWORD ?
-          Result[i] := line;
+          Result[i] := Reformat(line, false);
           Query.Next;
         end;
     except
@@ -442,19 +441,18 @@ end;
 
 function TBible.GetRange(Verse: TVerse): TStringArray;
 var
-  id, num_to, i : integer;
+  id, i : integer;
   line : string;
 begin
   SetLength(Result,0);
   id := EncodeID(format, Verse.book);
-  num_to := Verse.number + Verse.count;
 
   try
     try
       Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + ToStr(id) +
                       ' AND ' + z.chapter + '='    + ToStr(Verse.chapter) +
-                      ' AND ' + z.verse   + ' >= ' + ToStr(Verse.number)  +
-                      ' AND ' + z.verse   + ' < '  + ToStr(num_to)    ;
+                      ' AND ' + z.verse   + ' >= ' + ToStr(Verse.number ) +
+                      ' AND ' + z.verse   + ' < '  + ToStr(Verse.number + Verse.count);
       Query.Open;
       Query.Last;
       SetLength(Result, Query.RecordCount);
@@ -463,7 +461,7 @@ begin
       for i:=0 to Query.RecordCount-1 do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
-          Result[i] := line;
+          Result[i] := Reformat(line);
           Query.Next;
         end;
     except
