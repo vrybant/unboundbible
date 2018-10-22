@@ -6,7 +6,7 @@ uses
   Interfaces, Graphics, Forms, richmemopackage,
   UnitShelf, UnitCommentary,
   UnitMain, UnitLang, UnitAbout, UnitSearch, UnitTool, UnitCompare,
-  UnitInfo, UnitCopy, UnitTrans, UnitStream, UnitParse;
+  UnitCopy, UnitTrans, UnitStream, UnitParse;
 
 {$R *.res}
 
@@ -17,7 +17,6 @@ begin
   Application.CreateForm(TAboutBox,      AboutBox);
   Application.CreateForm(TSearchForm,    SearchForm);
   Application.CreateForm(TCompareForm,   CompareForm);
-  Application.CreateForm(TFormInfo,      FormInfo);
   Application.CreateForm(TFormCopy,      FormCopy);
   Application.CreateForm(TFormTranslate, FormTranslate);
   MainForm.TranslateAll;

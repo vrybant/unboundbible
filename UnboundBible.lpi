@@ -148,17 +148,14 @@
         <UnitName Value="UnitParse"/>
       </Unit15>
       <Unit16>
-        <Filename Value="unitinfo.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormInfo"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UnitInfo"/>
-      </Unit16>
-      <Unit17>
         <Filename Value="unitcommentary.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitCommentary"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="richnotifier.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RichNotifier"/>
       </Unit17>
     </Units>
   </ProjectOptions>
