@@ -200,8 +200,7 @@ begin
   if Bible.format = unbound
     then s := Bible.GetFootnote(ActiveVerse, marker)
     else s := Commentaries.GetFootnote(Bible.fileName, ActiveVerse, marker);
-  if s = '' then s := 'no comments';
-  s := ParseHTML(s) + '\par';
+  s := '\f0\fs18 ' + ParseHTML(s);
   Stream.Open;
   Stream.Writeln(s);
   Stream.Close;

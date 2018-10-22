@@ -6,7 +6,8 @@ uses
   {$ifdef darwin} RichMemoEx, {$endif}
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
-  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitType, RichMemoEx;
+  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo,
+  UnboundMemo, UnitType, RichMemoEx, RichNotifier;
 
 type
 
@@ -195,6 +196,7 @@ type
     procedure RadioButtonClick(Sender: TObject);
     procedure ToolButtonFBClick(Sender: TObject);
   private
+    RichNotifier : TRichNotifier;
     NoteFileName: string;
     RecentList: TStringList;
     {$ifdef darwin} bag01 : boolean; {$endif}
@@ -247,7 +249,7 @@ implementation
 
 uses
   UnitAbout, UnitSearch, UnitCompare, UnitTool, UnitStream, UnitLang,
-  UnitShelf, UnitInfo, UnitCopy, UnitTrans, UnitLib;
+  UnitShelf, UnitCopy, UnitTrans, UnitLib;
 
 const
   apBible      = 0; // active page
@@ -280,6 +282,7 @@ begin
 
   CreateDirectories;
 
+  RichNotifier := TRichNotifier.Create(self);
   RecentList := TStringList.Create;
 
   SaveDialog.InitialDir := DocumentsPath;
@@ -310,7 +313,7 @@ begin
 
   NoteFileName := sUntitled;
   MemoNotes.Lines.Clear;
-  MemoNotes.Font.Size := CurrFont.Size;
+  MemoNotes.Font.Size := DefaultFont.Size;
   ToolButtonFB.Visible := not FBPageVisited;
 
   {$ifdef linux}
@@ -359,6 +362,7 @@ procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   SaveIniFile;
   RecentList.Free;
+  RichNotifier.Free;
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -486,7 +490,6 @@ begin
   SearchForm   .Translate;
   CompareForm  .Translate;
   AboutBox     .Translate;
-  FormInfo     .Translate;
   FormCopy     .Translate;
   FormTranslate.Translate;
 
@@ -652,7 +655,7 @@ end;
 
 procedure TMainForm.CmdSearch(Sender: TObject);
 begin
-  SearchForm.Edit.Font.Name := CurrFont.Name;
+  SearchForm.Edit.Font.Name := DefaultFont.Name;
   if SearchForm.ShowModal = mrOk then SearchText(SearchForm.Edit.Text);
 end;
 
@@ -771,7 +774,7 @@ begin
 
   if Sender <> MemoBible then Exit;
 
-  if Memo.Foreground = fgStrong   then FormInfo.ShowModal;
+//if Memo.Foreground = fgStrong   then ..
   if Memo.Foreground = fgFootnote then LoadFootnote(Trim(Memo.Hyperlink));
 
   Memo.HideCursor;
@@ -1165,10 +1168,10 @@ end;
 
 procedure TMainForm.CmdOptions(Sender: TObject);
 begin
-  FontDialog.Font.Assign(CurrFont);
+  FontDialog.Font.Assign(DefaultFont);
   if FontDialog.Execute then
   begin
-    CurrFont.Assign(FontDialog.Font);
+    DefaultFont.Assign(FontDialog.Font);
     MakeBookList;
     LoadChapter;
     FormPaint(self);
@@ -1234,7 +1237,7 @@ begin
 
   BookBox.Items.BeginUpdate;
   BookBox.Items.Clear;
-  BookBox.Font.Assign(CurrFont);
+  BookBox.Font.Assign(DefaultFont);
 
   List := TStringList.Create;
   Bible.GetTitles(List);
@@ -1253,7 +1256,7 @@ procedure TMainForm.MakeChapterList(n: integer);
 var
   i: integer;
 begin
-  ChapterBox.Font.Assign(CurrFont);
+  ChapterBox.Font.Assign(DefaultFont);
   if ChapterBox.Items.Count = n then Exit;
 
   {$ifdef darwin} bag01 := True; {$endif}
@@ -1380,9 +1383,10 @@ var
 begin
   Stream := TRichStream.Create;
   Load_Footnote(Stream, s);
-  FormInfo.Memo.LoadRichText(Stream);
-  FormInfo.ShowModal;
+  RichNotifier.LoadRichText(Stream);
   Stream.Free;
+  RichNotifier.Title := 'Сноска'; // 'Footnote';
+  RichNotifier.ShowAtPos(Mouse.CursorPos.x, Mouse.CursorPos.y);
 end;
 
 {$ifdef windows}
@@ -1454,8 +1458,8 @@ begin
                                else IniFile.WriteString('Application', 'State', 'Normal');
 
   IniFile.WriteString('Application', 'FileName', Bible.FileName);
-  IniFile.WriteString('Application', 'FontName', CurrFont.Name);
-  IniFile.WriteInteger('Application', 'FontSize', CurrFont.Size);
+  IniFile.WriteString('Application', 'FontName', DefaultFont.Name);
+  IniFile.WriteInteger('Application', 'FontSize', DefaultFont.Size);
   IniFile.WriteInteger('Application', 'Splitter', PanelLeft.Width);
   IniFile.WriteString('Application', 'Interface', FaceLang);
   IniFile.WriteBool('Application', 'ShortLink', ShortLink);
@@ -1503,8 +1507,8 @@ begin
   Left := IniFile.ReadInteger('Application', 'Left', 200);
   Top := IniFile.ReadInteger('Application', 'Top', 70);
 
-  CurrFont.Name := IniFile.ReadString('Application', 'FontName', CurrFont.Name);
-  CurrFont.Size := IniFile.ReadInteger('Application', 'FontSize', CurrFont.Size);
+  DefaultFont.Name := IniFile.ReadString('Application', 'FontName', DefaultFont.Name);
+  DefaultFont.Size := IniFile.ReadInteger('Application', 'FontSize', DefaultFont.Size);
   PanelLeft.Width := IniFile.ReadInteger('Application', 'Splitter', 270);
   FaceLang := IniFile.ReadString('Application', 'Interface', GetDefaultLanguage);
   ShortLink := IniFile.ReadBool('Application', 'ShortLink', True);
