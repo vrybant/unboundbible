@@ -76,11 +76,11 @@ procedure Output(s: string); overload;
 procedure Output(n: integer); overload;
 
 var
-  CurrFont: TFont;
+  DefaultFont: TFont;
   facelang : string;
 
 const
-  Slash = DirectorySeparator; // or AppendPathDelim()
+  Slash = DirectorySeparator;
 
 implementation
 
@@ -454,7 +454,7 @@ var
 begin
   Bitmap := TBitmap.Create;
   try
-    Bitmap.Canvas.Font := CurrFont;
+    Bitmap.Canvas.Font := DefaultFont;
     Result := Bitmap.Canvas.TextWidth(s);
   finally
     Bitmap.Free;
@@ -475,12 +475,12 @@ begin
 end;
 
 initialization
-  CurrFont := TFont.Create;
-  CurrFont.Name := {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
-  CurrFont.Size := {$ifdef darwin} 14 {$else} 12 {$endif};
+  DefaultFont := TFont.Create;
+  DefaultFont.Name := {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
+  DefaultFont.Size := 12;
 
 finalization
-  CurrFont.Free;
+  DefaultFont.Free;
 
 end.
 

@@ -11,7 +11,6 @@ type
     procedure Write(s: string); overload;
   public
     RightToLeft : boolean;
-    constructor Create;
     procedure Open;
     procedure Close;
     procedure WriteLn(s: string);
@@ -41,15 +40,14 @@ begin
   until (CharLen=0) or (unicode=0);
 end;
 
-constructor TRichStream.Create;
-begin
-  inherited Create;
-end;
-
 procedure TRichStream.Open;
 begin
   WriteLn('{\rtf1\ansi\ansicpg1251\cocoartf1187 ');
-  WriteLn('{\fonttbl\f0\fcharset0 ' + CurrFont.Name + ';}');
+
+  WriteLn('{\fonttbl');
+  WriteLn('{\f0 default;}');
+  WriteLn('{\f1 ' + DefaultFont.Name + ';}');
+  WriteLn('}');
   WriteLn('{\colortbl;');
   WriteLn('\red0\green0\blue0;'       ); // 1 black
   WriteLn('\red192\green0\blue0;'     ); // 2 red
@@ -60,8 +58,8 @@ begin
   WriteLn('\red128\green0\blue128;'   ); // 7 purple
   WriteLn('}');
 
-  Write('\f0\cf1');
-  Write('\fs' + ToStr(CurrFont.Size * 2));
+  Write('\f1\cf1');
+  Write('\fs' + ToStr(DefaultFont.Size * 2));
 
   if RightToLeft then WriteLn('\rtlpar\qr');
   WriteLn(''); // important
