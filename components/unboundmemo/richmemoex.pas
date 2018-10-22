@@ -177,6 +177,7 @@ procedure TRichMemoEx.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: In
 begin
   inherited MouseUp(Button, Shift, X, Y);
   DoAttributesChange;
+  if ReadOnly then HideCursor;
 end;
 
 procedure TRichMemoEx.SetSel(x1,x2: integer);
