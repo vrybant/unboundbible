@@ -123,7 +123,7 @@ procedure TNotifierForm.HideForm(Sender: TObject);
 var NoValue: TCloseAction;
 begin
   if Assigned(OnClose) then OnClose(Self, NoValue);
-  Hide;
+  Close; // Hide;
 end;
 
 procedure TNotifierForm.HandleResize(Sender: TObject);
@@ -217,7 +217,7 @@ end;
 
 procedure TRichNotifier.Show;
 begin
-  NotifierForm.Show;
+  NotifierForm.ShowModal;
 end;
 
 procedure TRichNotifier.ShowAtPos(x: Integer; y: Integer);
@@ -238,7 +238,7 @@ begin
   else
     NotifierForm.top := y;
 
-  NotifierForm.Show;
+  Show;
 end;
 
 procedure TRichNotifier.LoadRichText(Source: TStream);
