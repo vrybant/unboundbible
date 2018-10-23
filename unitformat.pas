@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, UnitLib;
 
-function Reformat(st: string; purge: boolean = true): string;
+function Reformat(s: string; purge: boolean = true): string;
 
 implementation
 
@@ -80,20 +80,17 @@ begin
     end;
 end;
 
-procedure Remake(var List: TStringArray; purge: boolean);
-begin
-  RemoveTagContent(List,'<TS>','<Ts>'); // Prologue
-  RemakeFootnotes(List, purge);
-  if purge then RemoveTagContent(List, '<f>','</f>');
-end;
-
-function Reformat(st: string; purge: boolean = true): string;
+function Reformat(s: string; purge: boolean = true): string;
 var
   List : TStringArray;
 begin
-  Replace(st,'</S><S>','</S> <S>');
-  List := XmlToList(st);
-  Remake(List, purge);
+  Replace(s,'</S><S>','</S> <S>');
+  List := XmlToList(s);
+
+  RemoveTagContent(List,'<TS>','<Ts>'); // Prologue
+  RemakeFootnotes(List, purge);
+  if purge then RemoveTagContent(List, '<f>','</f>');
+
   Result := Trim(ListToString(List));
 end;
 
