@@ -186,7 +186,7 @@ begin
       if comment = '' then Continue;
       s:= '\par\cf3 ' + Commentaries[i].Name + '\par\par\cf1 ';
       Stream.Writeln(s);
-      s := ParseHTML(comment) + '\par';
+      s := ParseHTML(comment,true) + '\par';
       Stream.Writeln(s);
     end;
 

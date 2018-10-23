@@ -6,9 +6,20 @@ uses
   Classes, SysUtils, UnitLib;
 
 function Parse(s: string; jtag: boolean = false): string;
-function ParseHTML(s: string): string;
+function ParseHTML(s: string; tab: boolean = false): string;
 
 implementation
+
+function LeadingTab(s: string): string;
+var x : integer;
+begin
+  Result := '\tab ';
+  x := Pos('\par',s);
+  if x = 0 then Exit;
+  s := Copy(s,1,x);
+  x := Pos('\tab',s);
+  if x > 0 then Result := '';
+end;
 
 function ParseString(s: string; j: boolean): string;
 var
@@ -81,6 +92,7 @@ end;
 procedure Replacement(var s: string);
 begin
   Replace(s,'&nbsp;' ,' ');
+  Replace(s,'&quot;' ,'"');
   Replace(s,'&ldquo;','"');
   Replace(s,'&rdquo;','"');
 end;
@@ -98,21 +110,19 @@ begin
   Result := Trim(ListToString(List));
 end;
 
-function ParseHTML(s: string): string;
+function ParseHTML(s: string; tab: boolean = false): string;
 var
   List : TStringArray;
   i : integer;
-  l : boolean;
 begin
   Replacement(s);
   List := XmlToList(s);
-  l := Pos('<p>',LowerCase(s)) > 0;
 
   for i:=Low(List) to High(List) do
     if Prefix('<', List[i]) then List[i] := HTML(List[i]);
 
   Result := Trim(ListToString(List));
-  if not l then Result := '\tab ' + Result;
+  if tab then Result := LeadingTab(Result) + Result;
 end;
 
 end.
