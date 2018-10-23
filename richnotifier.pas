@@ -130,7 +130,7 @@ procedure TNotifierForm.HandleResize(Sender: TObject);
 begin
   if Title <> nil then
   begin
-    Title.Left := INT_NOTIFIER_SPACING;
+    Title.Left := INT_NOTIFIER_SPACING * 2;
     Title.Top := INT_NOTIFIER_SPACING;
     Title.Width := Width - (Title.Left + INT_NOTIFIER_SPACING);
     Title.Height := 20;

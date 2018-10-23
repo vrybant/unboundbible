@@ -262,12 +262,12 @@ const
   RecentMax = 10;
 
 const
-  ms_Save      : string = '';
-  ms_Overwrite : string = '';
-  ms_found     : string = '';
-//ms_loading   : string = '';
   ms_Confirm   : string = '';
+  ms_Footnote  : string = '';
+  ms_Found     : string = '';
   ms_Message   : string = '';
+  ms_Overwrite : string = '';
+  ms_Save      : string = '';
 
 {$R *.lfm}
 
@@ -473,10 +473,11 @@ begin
   ToolButtonRight.Hint := T('Align Right');
   ToolButtonBullets.Hint := T('Bullets');
 
-  ms_Save := T('Save changes?');
-  ms_Overwrite := T('OK to overwrite %s?');
-  ms_found := T('verses found');
   ms_Confirm := T('Confirmation');
+  ms_Footnote := T('Footnote');
+  ms_Found := T('verses found');
+  ms_Overwrite := T('OK to overwrite %s?');
+  ms_Save := T('Save changes?');
   ms_Message := T('This search returned too many results.') + ' ' +
                 T('Please narrow your search.');
 end;
@@ -1384,7 +1385,7 @@ begin
   Load_Footnote(Stream, s);
   RichNotifier.LoadRichText(Stream);
   Stream.Free;
-  RichNotifier.Title := 'Сноска'; // 'Footnote';
+  RichNotifier.Title := ms_Footnote;
   RichNotifier.ShowAtPos(Mouse.CursorPos.x, Mouse.CursorPos.y);
 end;
 
