@@ -9,7 +9,7 @@ function Reformat(st: string; purge: boolean = true): string;
 
 implementation
 
-procedure RemoveTags(var List: TStringArray; StartTag, EndTag: string);
+procedure RemoveTagContent(var List: TStringArray; StartTag, EndTag: string);
 var
   l : boolean = false;
   i : integer;
@@ -28,33 +28,6 @@ begin
     end;
 end;
 
-procedure RemakeFootnotes1(var List: TStringArray; purge: boolean);
-var
-  l : boolean = false;
-  i : integer;
-begin
-  l := false;
-  for i:=Low(List) to High(List) do
-    begin
-      if List[i] = '<RF>' then
-        begin
-          if purge then List[i] := '';
-          l := true;
-          Continue;
-        end;
-
-      if l and (List[i] = '<Rf>') then
-        begin
-          if purge then List[i] := '';
-          l := false;
-          Continue;
-        end;
-
-      if l and not purge then List[i] := '*';
-      if l and purge then List[i] := '';
-    end;
-end;
-
 function ExtractMarker(s: string): string;
 var
   x1, x2 : integer;
@@ -65,7 +38,7 @@ begin
   Result := Copy(s,x1+1,x2-x1-1);
 end;
 
-procedure RemakeFootnotes2(var List: TStringArray; purge: boolean);
+procedure RemakeFootnotes(var List: TStringArray; p: boolean);
 var
   marker : string = '';
   l : boolean = false;
@@ -73,24 +46,32 @@ var
 begin
   for i:=Low(List) to High(List) do
     begin
-      if Prefix('<RF ', List[i]) then
+      if List[i] = '<RF>' then
         begin
-          if not purge then marker := ExtractMarker(List[i]);
-          if purge then List[i] := '' else List[i] := '<RF>';
+          if not p then marker := '*';
+          if p then List[i] := '';
           l := true;
           Continue;
         end;
 
-      if List[i] = '<Rf>' then
+      if Prefix('<RF ', List[i]) then
         begin
-          if purge then List[i] := '';
+          if not p then marker := ExtractMarker(List[i]);
+          if p then List[i] := '' else List[i] := '<RF>';
+          l := true;
+          Continue;
+        end;
+
+      if l and (List[i] = '<Rf>') then
+        begin
+          if p then List[i] := '';
           l := false;
           Continue;
         end;
 
       if marker <> '' then
         begin
-          List[i] := ' ' + marker + ' ';
+          List[i] := ' ' + marker;
           marker := '';
           Continue;
         end;
@@ -101,12 +82,9 @@ end;
 
 procedure Remake(var List: TStringArray; purge: boolean);
 begin
-  RemoveTags(List,'<TS>','<Ts>');
-
-  RemakeFootnotes1(List, purge);
-  RemakeFootnotes2(List, purge);
-
-  if purge then RemoveTags(List, '<f>','</f>');
+  RemoveTagContent(List,'<TS>','<Ts>'); // Prologue
+  RemakeFootnotes(List, purge);
+  if purge then RemoveTagContent(List, '<f>','</f>');
 end;
 
 function Reformat(st: string; purge: boolean = true): string;

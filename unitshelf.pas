@@ -527,6 +527,7 @@ begin
           try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
           Contents[i].verse.book := DecodeID(format, Contents[i].verse.book);
+          Contents[i].text := Reformat(Contents[i].text);
           Query.Next;
         end;
     finally
