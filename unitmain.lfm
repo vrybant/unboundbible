@@ -371,6 +371,7 @@ object MainForm: TMainForm
         ScrollBars = ssBoth
         TabOrder = 0
         ZoomFactor = 1
+        OnAttrChange = MemoAttrChange
       end
     end
     object TabSheetNotes: TTabSheet

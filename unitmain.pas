@@ -16,7 +16,6 @@ type
   TMainForm = class(TForm)
     ActionInterline: TAction;
     IdleTimer: TIdleTimer;
-    MenuItem4: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
     FontDialogNotes: TFontDialog;
