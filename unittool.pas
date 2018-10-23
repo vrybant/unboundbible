@@ -93,7 +93,7 @@ begin
       link := Bible.VerseToStr(content.verse,true);
       text := content.text;
       Highlights(text,st,CurrentSearchOptions);
-      text := '\f0\cf3 ' + link + '\f0\cf1 ' + ' ' + Parse(text) + '\i0\par\par';
+      text := '\cf3 ' + link + '\cf1 ' + ' ' + Parse(text) + '\i0\par\par';
       Stream.Writeln(text);
     end;
 

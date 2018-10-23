@@ -5,8 +5,8 @@ interface
 uses
   Classes, SysUtils, UnitLib;
 
-function Parse(st: string; jtag: boolean = false): string;
-function ParseHTML(st: string): string;
+function Parse(s: string; jtag: boolean = false): string;
+function ParseHTML(s: string): string;
 
 implementation
 
@@ -78,16 +78,19 @@ begin
   Result := r;
 end;
 
-function Parse(st: string; jtag: boolean = false): string;
+procedure Replacement(var s: string);
+begin
+  Replace(s,'&nbsp;' ,' ');
+  Replace(s,'&ldquo;','"');
+  Replace(s,'&rdquo;','"');
+end;
+
+function Parse(s: string; jtag: boolean = false): string;
 var
   List : TStringArray;
   i : integer;
 begin
-  Result := st;
-  Replace(st,'</S><S>','</S> <S>');
-
-  List := XmlToList(st);
-//Remake(List);
+  List := XmlToList(s);
 
   for i:=Low(List) to High(List) do
     if Prefix('<', List[i]) then List[i] := ParseString(List[i], jtag);
@@ -95,19 +98,21 @@ begin
   Result := Trim(ListToString(List));
 end;
 
-function ParseHTML(st: string): string;
+function ParseHTML(s: string): string;
 var
   List : TStringArray;
   i : integer;
+  l : boolean;
 begin
-  Result := st;
-
-  List := XmlToList(st);
+  Replacement(s);
+  List := XmlToList(s);
+  l := Pos('<p>',LowerCase(s)) > 0;
 
   for i:=Low(List) to High(List) do
     if Prefix('<', List[i]) then List[i] := HTML(List[i]);
 
   Result := Trim(ListToString(List));
+  if not l then Result := '\tab ' + Result;
 end;
 
 end.
