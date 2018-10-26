@@ -20,7 +20,7 @@ type
     SelLengthTemp : integer;
     function  Colored: boolean;
     function  GetLink: string;
-    function  GetParagraphNumber: integer;
+    function  GetParagraphNumber(Pos: integer; select: boolean): integer;
     procedure GetParagraphRange;
     function  GetStartSelection: integer;
     function  GetEndSelection: integer;
@@ -162,33 +162,26 @@ begin
 end;
 
 {$ifdef windows}
-function IsNumeral(c: string): boolean;
+function TUnboundMemo.GetParagraphNumber(Pos: integer; select: boolean): integer;
+var
+  x1, x2, ln : integer;
 begin
-  case c of
-    '0'..'9' : Result := true;
-    else Result := false;
-  end;
+  GetParaRange(Pos, x1{%H-}, ln{%H-});
+  x2 := GetRightWordBreak(x1+1);
+  Result := MyStrToInt(GetTextRange(x1, x2-x1));
+  if select then SetSel(x1,x1+1);
 end;
 {$endif}
 
-function TUnboundMemo.GetParagraphNumber: integer;
+{$ifdef unix}
+function TUnboundMemo.GetParagraphNumber(Pos: integer; select: boolean): integer;
 var
   x1, x2 : integer;
-  char : string;
 begin
+ // GetParaRange !
   Result := 0;
-  Hide_Selection;
-  x1 := SelStart;
-
-  {$ifdef windows}
-  if not Colored then
-    while true and (x1 > 0) do
-      begin
-        dec(x1);
-        char := GetTextRange(x1, 1);
-        if IsNumeral(char) then break;
-      end;
-  {$endif}
+  x1 := Pos;
+  SetSel(x1, x1);
 
   while not Colored and (x1 > 0) do
     begin
@@ -210,21 +203,26 @@ begin
   inc(x1);
 
   SetSel(x1,x2); Result := MyStrToInt(SelText);
-  SetSel(x1,x1+1);
-
-  Show_Selection;
+  if select then SetSel(x1,x1+1);
 end;
+{$endif}
 
 procedure TUnboundMemo.GetParagraphRange;
 var
   ParagraphEnd : integer;
-  x1,x2 : integer;
+  x1, x2 : integer;
 begin
   GetSel(x1{%H-},x2{%H-});
-  SetSel(x2,x2); ParagraphEnd   := GetParagraphNumber;
-  SetSel(x1,x1); ParagraphStart := GetParagraphNumber;
-  ParagraphCount := ParagraphEnd - ParagraphStart + 1;
-  if x1 <> x2 then SetSel(x1,x2);
+
+  ParagraphStart := GetParagraphNumber(x1, x1=x2);
+  ParagraphCount := 1;
+
+  if x1 <> x2 then
+    begin
+      ParagraphEnd := GetParagraphNumber(x2, false);
+      ParagraphCount := ParagraphEnd - ParagraphStart + 1;
+      {$ifdef unix} SetSel(x1,x2); {$endif}
+    end;
 end;
 
 {$ifdef windows}

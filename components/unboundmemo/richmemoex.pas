@@ -40,6 +40,7 @@ type
     procedure LoadFromFile(const FileName : string);
     procedure SaveToFile(const FileName : string);
     property SelAttributes: TFontParams read GetAttributes write SetAttributes;
+    {$ifdef windows} function GetRightWordBreak(Pos: integer): integer; {$endif}
     {$ifdef windows} function GetTextRange(Pos, Length: Integer): string; {$endif}
     {$ifdef windows} property Modified: boolean read GetModified write SetModified; {$endif}
     {$ifdef linux} procedure CopyToClipboard; override; {$endif}
@@ -82,6 +83,11 @@ end;
 procedure TRichMemoEx.SetModified(value: boolean);
 begin
   SendMessage(Handle, EM_SETMODIFY, Byte(value), 0);
+end;
+
+function TRichMemoEx.GetRightWordBreak(Pos: integer): integer;
+begin
+  Result := SendMessage(Handle, EM_FINDWORDBREAK, WB_MOVEWORDRIGHT, Pos);
 end;
 
 function TRichMemoEx.GetTextRange(Pos, Length: Integer): string;
