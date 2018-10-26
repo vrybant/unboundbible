@@ -1,9 +1,9 @@
 ﻿ 
 ; -- UnboundBible.iss --
-
+                             
 #define MyAppName "Unbound Bible"
-#define MyAppVerName "Unbound Bible 2.01"
-#define MyAppVersion "2.01"
+#define MyAppVerName "Unbound Bible 2.02"
+#define MyAppVersion "2.02"
 #define MyAppCopyright "GNU GPL"
 #define MyAppPublisher "Vladimir Rybant"
 #define MyAppURL "http://vladimirrybant.org"
@@ -42,7 +42,7 @@
  Source: "localization\*"     ; DestDir: "{app}\localization"
 ;Source: "titles\*"           ; DestDir: "{app}\titles" ; Attribs: readonly ; Flags: uninsremovereadonly
  Source: "titles\*"           ; DestDir: "{app}\titles" 
- Source: "{#MyAppExeName}"    ; DestDir: "{app}"
+ Source: "{#MyAppExeName}"    ; DestDir: "{app}" ; Flags: ignoreversion
  Source: "sqlite3.dll"        ; DestDir: "{app}"
 
 [Icons]
