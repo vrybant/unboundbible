@@ -50,11 +50,11 @@ procedure Register;
 
 implementation
 
-function MyStrToInt(st: string): integer;
+function ToInt(s: string): integer;
 var v, r : integer;
 begin
-  st := Trim(st);
-  Val(st, v, r);
+  s := Trim(s);
+  Val(s, v, r);
   if r=0 then Result := v else Result := 0;
 end;
 
@@ -168,7 +168,7 @@ var
 begin
   GetParaRange(Pos, x1{%H-}, ln{%H-});
   x2 := GetRightWordBreak(x1+1);
-  Result := MyStrToInt(GetTextRange(x1, x2-x1));
+  Result := ToInt(GetTextRange(x1, x2-x1));
   if select then SetSel(x1,x1+1);
 end;
 {$endif}
