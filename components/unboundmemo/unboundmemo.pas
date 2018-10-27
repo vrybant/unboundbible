@@ -167,7 +167,7 @@ var
   x1, x2, ln : integer;
 begin
   GetParaRange(Pos, x1{%H-}, ln{%H-});
-  x2 := GetRightWordBreak(x1+1);
+  x2 := FindRightWordBreak(x1+1);
   Result := ToInt(GetTextRange(x1, x2-x1));
   if select then SetSel(x1,x1+1);
 end;
