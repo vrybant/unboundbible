@@ -176,31 +176,15 @@ end;
 {$ifdef unix}
 function TUnboundMemo.GetParagraphNumber(Pos: integer; select: boolean): integer;
 var
-  x1, x2 : integer;
+  x1, x2, ln : integer;
 begin
- // GetParaRange !
-  Result := 0;
-  x1 := Pos;
-  SetSel(x1, x1);
-
-  while not Colored and (x1 > 0) do
-    begin
-      dec(x1);
-      SetSel(x1, x1);
-    end;
-
-  repeat
-    dec(x1);
-    SetSel(x1, x1);
-  until not Colored or (x1 < 0);
+  GetParaRange(Pos, x1{%H-}, ln{%H-});
 
   x2 := x1;
   repeat
     inc(x2);
     SetSel(x2, x2);
   until not Colored;
-
-  inc(x1);
 
   SetSel(x1,x2); Result := ToInt(SelText);
   if select then SetSel(x1,x1+1);
