@@ -202,7 +202,7 @@ begin
 
   inc(x1);
 
-  SetSel(x1,x2); Result := MyStrToInt(SelText);
+  SetSel(x1,x2); Result := ToInt(SelText);
   if select then SetSel(x1,x1+1);
 end;
 {$endif}

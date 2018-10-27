@@ -3,9 +3,9 @@ unit RichMemoEx;
 interface
 
 uses
-  {$ifdef windows} Windows, Printers, OSPrinters, {$endif}
+  {$ifdef windows} Windows, RichEdit, Printers, OSPrinters, {$endif}
   {$ifdef linux} Gtk2, Glib2, Gdk2, {$endif}
-  Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichEdit, RichMemo;
+  Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo;
 
 type
 
