@@ -198,6 +198,8 @@ type
     RichNotifier : TRichNotifier;
     NoteFileName: string;
     RecentList: TStringList;
+    ShortLink: boolean;
+    FBPageVisited: boolean;
     {$ifdef darwin} bag01 : boolean; {$endif}
     {$ifdef darwin} bag02 : boolean; {$endif}
     {$ifdef linux } IdleMessage : string; {$endif}
@@ -241,8 +243,6 @@ type
 
 var
   MainForm: TMainForm;
-  ShortLink: boolean;
-  FBPageVisited: boolean;
 
 implementation
 
@@ -1462,7 +1462,6 @@ begin
   IniFile.WriteInteger('Application', 'FontSize', DefaultFont.Size);
   IniFile.WriteInteger('Application', 'Splitter', PanelLeft.Width);
   IniFile.WriteString('Application', 'Interface', FaceLang);
-  IniFile.WriteBool('Application', 'ShortLink', ShortLink);
   IniFile.WriteBool('Application', 'ShortLink', ShortLink);
   IniFile.WriteBool('Application', 'FBPage', FBPageVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
