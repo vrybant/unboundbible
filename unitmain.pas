@@ -737,8 +737,6 @@ begin
 
 //if Memo.Foreground = fgStrong   then ..
   if Memo.Foreground = fgFootnote then LoadFootnote(Trim(Memo.Hyperlink));
-
-  Memo.HideCursor;
 end;
 
 procedure TMainForm.MemoAttrChange(Sender: TObject);

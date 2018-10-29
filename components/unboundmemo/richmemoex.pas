@@ -24,6 +24,7 @@ type
     {$ifdef windows} function LineCount: integer; {$endif}
     {$ifdef windows} function LineIndex(x: longint): integer; {$endif}
     procedure KeyUp(var Key: Word; Shift: TShiftState); override;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
   public
     {$ifdef darwin} Modified : boolean; {$endif}
@@ -110,7 +111,7 @@ end;
 procedure TRichMemoEx.HideCursor;
 begin
    {$ifdef windows} HideCaret(Handle); {$endif}
-// {$ifdef linux} gtk_text_view_set_cursor_visible(GetTextView, False); {$endif}
+   {$ifdef linux} gtk_text_view_set_cursor_visible(GetTextView, False); {$endif}
 end;
 
 procedure TRichMemoEx.Hide_Selection;
@@ -177,6 +178,12 @@ begin
   inherited KeyUp(Key, Shift);
   DoAttributesChange;
   {$ifdef unix} Modified := True; {$endif}
+end;
+
+procedure TRichMemoEx.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  inherited MouseDown(Button, Shift, X, Y);
+  if ReadOnly then HideCursor;
 end;
 
 procedure TRichMemoEx.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

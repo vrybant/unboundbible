@@ -10,7 +10,6 @@ uses
 type
   TUnboundMemo = class(TRichMemoEx)
   protected
-    procedure CreateWnd; override;
     procedure MouseUp  (Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure KeyUp  (var Key: Word; Shift: TShiftState); override;
   private
@@ -78,12 +77,6 @@ begin
   SelStartTemp := 0;
   SelLengthTemp := 0;
   Cursor := crArrow;
-end;
-
-procedure TUnboundMemo.CreateWnd;
-begin
-  inherited;
-  if ReadOnly then HideCursor;
 end;
 
 function TUnboundMemo.Foreground: integer;
