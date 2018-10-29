@@ -3,9 +3,11 @@ unit UnitMain;
 interface
 
 uses
+  {$ifdef darwin} RichMemoEx, {$endif}
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
-  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitType, RichNotifier;
+  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo,
+  UnboundMemo, UnitType, RichMemoEx, RichNotifier;
 
 type
 
@@ -178,6 +180,8 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure IdleTimerTimer(Sender: TObject);
     procedure BookBoxClick(Sender: TObject);
     procedure ChapterBoxClick(Sender: TObject);
@@ -196,10 +200,13 @@ type
     RecentList: TStringList;
     ShortLink: boolean;
     FBPageVisited: boolean;
+    {$ifdef darwin} bag01 : boolean; {$endif}
+    {$ifdef darwin} bag02 : boolean; {$endif}
     {$ifdef linux } IdleMessage : string; {$endif}
     function UnboundMemo: TUnboundMemo;
     function CheckFileSave: boolean;
     procedure ComboBoxInit;
+    {$ifdef darwin} procedure ComboBoxSetIndex; {$endif}
     procedure EnableButtons;
     procedure UpDownButtons;
     procedure SelectBook(title: string; scroll: boolean);
@@ -212,6 +219,7 @@ type
     procedure LoadFootnote(s: string);
     procedure MakeBookList;
     procedure MakeChapterList(n: integer);
+    {$ifdef darwin} procedure ScrollBoxes; {$endif}
     procedure OnLangClick(Sender: TObject);
     procedure OnRecentClick(Sender: TObject);
     procedure PerformFileOpen(const FileName: string);
@@ -227,6 +235,8 @@ type
     procedure UpdateActionImage;
     procedure VersesToClipboard;
     procedure ShowPopup;
+    {$ifdef darwin} procedure UpdateMenuImage; {$endif}
+    {$ifdef darwin} procedure UpdateShortCut; {$endif}
   public
     procedure TranslateAll;
   end;
@@ -325,6 +335,20 @@ begin
   ToolSeparator5.Visible := False;
   {$endif}
 
+  {$ifdef darwin}
+  bag01 := False;
+  bag02 := False;
+
+  ChapterBox.Width := ChapterBox.Width + 5;
+
+  N4.Visible         := False;
+  miExit.Visible     := False;
+  ActionExit.Enabled := False;
+
+  UpdateMenuImage;
+  UpdateShortCut;
+  {$endif}
+
   UpdateActionImage;
 end;
 
@@ -350,6 +374,7 @@ begin
 end;
 
 procedure TMainForm.FormPaint(Sender: TObject);
+{$ifdef darwin} var o : integer; {$endif}
 const
   Streak = 3;
 begin
@@ -364,6 +389,20 @@ begin
   ChapterBox.Width := WidthInPixels('150') + 30;
   BookBox.Width := PanelLeft.Width - BookBox.Left - BookBox.Left - ChapterBox.Width - Streak;
   ChapterBox.Left := PanelLeft.Width - ChapterBox.Width - Streak;
+
+  {$ifdef darwin}
+  bag01 := True;
+
+  o := BookBox.ItemIndex;
+  if BookBox.Items.Count > 0 then BookBox.ItemIndex := 1;
+  BookBox.ItemIndex := o;
+
+  o := ChapterBox.ItemIndex;
+  if ChapterBox.Items.Count > 0 then ChapterBox.ItemIndex := 1;
+  ChapterBox.ItemIndex := o;
+
+  bag01 := False;
+  {$endif}
 end;
 
 procedure TMainForm.Translate;
@@ -762,14 +801,17 @@ var
   Book : TBook;
   s : string;
 begin
+  {$ifdef darwin} if bag01 or bag02 then Exit; {$endif}
   if BookBox.Count = 0 then Exit;
   s := BookBox.Items[BookBox.ItemIndex];
 
   Book := Bible.BookByName(s);
   if not Assigned(Book) then Exit;
 
-  ActiveVerse := minVerse;
   ActiveVerse.Book := Book.Number;
+  ActiveVerse.Chapter := 1;
+  ActiveVerse.Number := 1;
+  ActiveVerse.Count := 1;
 
   ChapterBox.ItemIndex := 0;
   LoadChapter;
@@ -777,6 +819,7 @@ end;
 
 procedure TMainForm.ChapterBoxClick(Sender: TObject);
 begin
+  {$ifdef darwin} if bag01 or bag02 then Exit; {$endif}
   ActiveVerse.Chapter := ChapterBox.ItemIndex + 1;
   ActiveVerse.Number := 1;
   ActiveVerse.Count := 1;
@@ -784,11 +827,27 @@ begin
 end;
 
 procedure TMainForm.ComboBoxInit;
-var i : integer;
+var
+  i : integer;
 begin
   ComboBox.Items.Clear;
-  for i := 0 to Shelf.Count - 1 do ComboBox.Items.Add(Shelf[i].Name);
+
+  for i := 0 to Shelf.Count - 1 do
+  begin
+    ComboBox.Items.Add(Shelf[i].Name);
+    {$ifndef darwin} if i = Shelf.Current then ComboBox.ItemIndex := i; {$endif}
+  end;
 end;
+
+{$ifdef darwin}
+procedure TMainForm.ComboBoxSetIndex;
+var
+  i : integer;
+begin
+  for i := 0 to Shelf.Count - 1 do
+    if i = Shelf.Current then ComboBox.ItemIndex := i;
+end;
+{$endif}
 
 procedure TMainForm.UpdateCaption(s: string);
 begin
@@ -820,12 +879,14 @@ begin
 
   BookBox.ItemIndex := index;
   if scroll then BookBox.TopIndex := index;
+  {$ifdef darwin} ScrollBoxes; {$endif}
 end;
 
 procedure TMainForm.GoToVerse(Verse: TVerse; select: boolean);
 var
   Book : TBook;
 begin
+  {$ifdef darwin} bag02 := True; {$endif}
   if Shelf.Count = 0 then Exit;
   if not Bible.GoodLink(Verse) then Exit;
 
@@ -839,6 +900,7 @@ begin
   ChapterBox.ItemIndex := Verse.Chapter - 1;
 
   if select then MemoBible.SelectParagraph(Verse.Number);
+  {$ifdef darwin} bag02 := False; {$endif}
   Repaint;
 end;
 
@@ -1014,6 +1076,42 @@ begin
           else TAction(Actions[i]).ImageIndex := TAction(Actions[i]).Tag + 1;
 end;
 
+{$ifdef darwin}
+procedure TMainForm.UpdateMenuImage;
+var
+  i,j : integer;
+begin
+  with MainMenu do
+    for i:=0 to Items.Count-1 do
+      for j:=0 to Items[i].Count-1 do
+        Items[i].Items[j].ImageIndex := -1; // Bitmap := nil;
+
+  with PopupMenu do
+    for i:=0 to Items.Count-1 do Items[i].ImageIndex := -1;
+end;
+{$endif}
+
+{$ifdef darwin}
+procedure TMainForm.UpdateShortCut;
+begin
+  ActionSearch    .ShortCut := ShortCut(VK_F, [ssMeta]);
+  ActionEditUndo  .ShortCut := ShortCut(VK_Z, [ssMeta]);
+  ActionEditCut   .ShortCut := ShortCut(VK_X, [ssModifier]);
+  ActionEditCopy  .ShortCut := ShortCut(VK_C, [ssMeta]);
+  ActionCopyVerses.ShortCut := ShortCut(VK_R, [ssMeta]);
+  ActionEditPaste .ShortCut := ShortCut(VK_V, [ssMeta]);
+  ActionEditSelAll.ShortCut := ShortCut(VK_A, [ssMeta]);
+  ActionFileNew   .ShortCut := ShortCut(VK_N, [ssMeta]);
+  ActionFileOpen  .ShortCut := ShortCut(VK_O, [ssMeta]);
+  ActionFileSave  .ShortCut := ShortCut(VK_S, [ssMeta]);
+  ActionFilePrint .ShortCut := ShortCut(VK_P, [ssMeta]);
+  ActionBold      .ShortCut := ShortCut(VK_B, [ssMeta]);
+  ActionItalic    .ShortCut := ShortCut(VK_I, [ssMeta]);
+  ActionUnderline .ShortCut := ShortCut(VK_U, [ssMeta]);
+  ActionLink      .ShortCut := ShortCut(VK_K, [ssMeta]);
+end;
+{$endif}
+
 procedure TMainForm.RebuildRecentList;
 var
   i: integer;
@@ -1079,6 +1177,19 @@ begin
     FormPaint(self);
     Invalidate;
   end;
+end;
+
+procedure TMainForm.FormResize(Sender: TObject);
+begin
+  {$ifdef darwin}
+  if Height < 300 then Height := 300;
+  if Width  < 500 then Width  := 500;
+  {$endif}
+end;
+
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+  {$ifdef darwin} if ComboBox.ItemIndex = -1 then ComboBoxSetIndex; {$endif}
 end;
 
 procedure TMainForm.IdleTimerTimer(Sender: TObject);
@@ -1148,14 +1259,36 @@ begin
   ChapterBox.Font.Assign(DefaultFont);
   if ChapterBox.Items.Count = n then Exit;
 
+  {$ifdef darwin} bag01 := True; {$endif}
+
   ChapterBox.Items.BeginUpdate;
   ChapterBox.Items.Clear;
 
   for i := 1 to n do ChapterBox.Items.Add(ToStr(i));
+  {$ifdef darwin} if n = 1 then ChapterBox.Items.Add(''); {$endif}
 
   ChapterBox.ItemIndex := 0;
   ChapterBox.Items.EndUpdate;
+
+  {$ifdef darwin} bag01 := False; {$endif}
 end;
+
+{$ifdef darwin}
+procedure TMainForm.ScrollBoxes;
+var i: integer;
+begin
+  for i:=0 to BookBox.Count-1 do
+    begin
+      if BookBox.ItemFullyVisible(BookBox.ItemIndex) then break;
+      BookBox.TopIndex := i;
+    end;
+  for i:=0 to ChapterBox.Count-1 do
+    begin
+      if ChapterBox.ItemFullyVisible(ChapterBox.ItemIndex) then break;
+      ChapterBox.TopIndex := i;
+    end;
+end;
+{$endif}
 
 //----------------------------------------------------------------------------------------
 //                                       tools
