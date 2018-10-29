@@ -324,7 +324,7 @@ end;
 function EffectsToVScriptPost(Effects: LongWord): TVScriptPos;
 begin
   if Effects and CFE_SUBSCRIPT > 0 then Result:=vpSubScript
-  else if Effects and CFE_SUBSCRIPT > 0 then Result:=vpSuperScript
+  else if Effects and CFE_SUPERSCRIPT > 0 then Result:=vpSuperScript
   else Result:=vpNormal;
 end;
          
