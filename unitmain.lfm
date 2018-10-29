@@ -12,8 +12,6 @@ object MainForm: TMainForm
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnPaint = FormPaint
-  OnResize = FormResize
-  OnShow = FormShow
   LCLVersion = '1.6.4.0'
   object StandardToolBar: TToolBar
     Left = 0
