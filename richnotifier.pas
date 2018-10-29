@@ -2,17 +2,15 @@ unit RichNotifier;
 
 interface
 
-{$mode delphi}{$H+}
-
 uses
   Classes, SysUtils, Forms, Controls, Graphics, StdCtrls, PopupNotifier, RichMemoEx;
 
 type
-  TNotifierForm = class(THintWindow)
+  TNotifierForm = class({$ifdef windows} THintWindow {$else} TForm {$endif})
   private
     Title: TLabel;
     btnX: TNotifierXButton;
-    procedure HideForm(Sender: TObject);
+    procedure CloseForm(Sender: TObject);
     procedure HandleResize(Sender: TObject);
   public
     Memo: TRichMemoEx;
@@ -35,7 +33,6 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Hide;
     procedure Show;
     procedure ShowAtPos(x: Integer; y: Integer);
     procedure LoadRichText(Source: TStream);
@@ -46,8 +43,6 @@ type
     property OnClose: TCloseEvent  read GetOnClose write SetOnClose;
   end;
 
-// procedure Register;
-
 implementation
 
 const
@@ -55,11 +50,6 @@ const
   INT_NOTIFIER_FORM_HEIGHT = 110;
   INT_NOTIFIER_SPACING = 5;
   INT_NOTIFIER_BUTTON_SIZE = 20;
-
-// procedure Register;
-// begin
-//   RegisterComponents('Common Controls', [TRichNotifier]);
-// end;
 
 { TNotifierForm }
 
@@ -79,14 +69,12 @@ begin
   Title.Font.Style := [FsBold];
   Title.Caption := 'Caption';
   Title.ParentColor := True;
-//Title.OnClick := HideForm;
 
   Memo := TRichMemoEx.Create(Self);
   Memo.Parent := Self;
   Memo.AutoSize := False;
   Memo.WordWrap := True;
   Memo.ParentColor := True;
-//Memo.OnClick :=  HideForm;
   Memo.ReadOnly := True;
   Memo.BorderStyle := bsNone;
   Memo.ScrollBars := ssAutoVertical;
@@ -94,13 +82,12 @@ begin
   BtnX := TNotifierXButton.Create(Self);
   BtnX.Parent := Self;
   BtnX.Color :=  Color;
-  btnX.OnClick := HideForm;
+  btnX.OnClick := CloseForm;
 
   HandleResize(Self);
 
   Color := $DCFFFF; // Doesn't work on Gtk
 
-//OnClick := HideForm;
   OnShow := HandleResize;
 end;
 
@@ -117,13 +104,14 @@ begin
   Canvas.Brush.Style := bsSolid;
   Canvas.Brush.Color := Color;
   Canvas.FillRect(Rect(0,0,width,height));
+  {$ifdef linux} Memo.HideCursor; {$endif}
 end;
 
-procedure TNotifierForm.HideForm(Sender: TObject);
+procedure TNotifierForm.CloseForm(Sender: TObject);
 var NoValue: TCloseAction;
 begin
   if Assigned(OnClose) then OnClose(Self, NoValue);
-  Close; // Hide;
+  Close;
 end;
 
 procedure TNotifierForm.HandleResize(Sender: TObject);
@@ -205,14 +193,9 @@ end;
 
 destructor TRichNotifier.Destroy;
 begin
-  NotifierForm.Hide;
+  NotifierForm.Close;
   NotifierForm.Free;
   inherited Destroy;
-end;
-
-procedure TRichNotifier.Hide;
-begin
-  NotifierForm.Hide;
 end;
 
 procedure TRichNotifier.Show;
