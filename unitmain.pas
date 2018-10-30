@@ -494,21 +494,25 @@ begin
     if fp.Color = clNavy then fp.Color := clBlack
                          else fp.Color := clNavy;
 
-  if Sender = ActionFont then
-  begin
-    FontDialogNotes.Font.Name  := fp.Name;
-    FontDialogNotes.Font.Size  := fp.Size;
-    FontDialogNotes.Font.Style := fp.Style;
-    FontDialogNotes.Font.Color := fp.Color;
+//if Sender = ActionSuper then
+//  if fp.vScriptPos = vpSuperscript then fp.vScriptPos := vpNormal
+//                                   else fp.vScriptPos := vpSuperscript;
 
-    if FontDialogNotes.Execute then
+  if Sender = ActionFont then
     begin
-      fp.Name  := FontDialogNotes.Font.Name;
-      fp.Size  := FontDialogNotes.Font.Size;
-      fp.Style := FontDialogNotes.Font.Style;
-      fp.Color := FontDialogNotes.Font.Color;
+      FontDialogNotes.Font.Name  := fp.Name;
+      FontDialogNotes.Font.Size  := fp.Size;
+      FontDialogNotes.Font.Style := fp.Style;
+      FontDialogNotes.Font.Color := fp.Color;
+
+      if FontDialogNotes.Execute then
+        begin
+          fp.Name  := FontDialogNotes.Font.Name;
+          fp.Size  := FontDialogNotes.Font.Size;
+          fp.Style := FontDialogNotes.Font.Style;
+          fp.Color := FontDialogNotes.Font.Color;
+        end;
     end;
-  end;
 
   MemoNotes.SelAttributes := fp;
 
