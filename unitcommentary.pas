@@ -51,7 +51,7 @@ type
   public
     constructor Create(filePath: string);
     procedure OpenDatabase;
-    function GetData(Verse: TVerse): string;
+    function GetData(Verse: TVerse): TStringArray;
     function GetFootnote(Verse: TVerse; marker: string): string;
     procedure SavePrivate(const IniFile: TIniFile);
     procedure ReadPrivate(const IniFile: TIniFile);
@@ -226,25 +226,40 @@ begin
       end;
 end;
 
-function TCommentary.GetData(Verse: TVerse): string;
+function TCommentary.GetData(Verse: TVerse): TStringArray;
 var
-  id : integer;
-  num_to: string;
+  v_from, v_to : string;
+  line : string;
+  i, id : integer;
 begin
-  Result := '';
+  SetLength(Result,0);
+
   id := EncodeID(format, Verse.book);
-  num_to := ToStr(Verse.number + Verse.count - 1);
+  v_from := ToStr(Verse.number);
+  v_to   := ToStr(Verse.number + Verse.count - 1);
+
+  output(v_from);
+  output(v_to);
 
   try
     try
         Query.SQL.Text := 'SELECT * FROM ' + z.commentary +
           ' WHERE ' + z.book      + ' = '  + ToStr(id) +
             ' AND ' + z.chapter   + ' = '  + ToStr(Verse.chapter) +
-          ' AND ((' + z.fromverse + ' BETWEEN ' + ToStr(Verse.number) + ' AND ' + num_to + ')' +
-            ' OR (' + z.toverse   + ' BETWEEN ' + ToStr(Verse.number) + ' AND ' + num_to + ')) ' ;
+          ' AND ((' + v_from      + ' BETWEEN ' + z.fromverse + ' AND ' + z.toverse + ')' +
+            ' OR (' + z.fromverse + ' BETWEEN ' + v_from      + ' AND ' + v_to      + ')) ';
 
-      Query.Open;
-      try Result := Query.FieldByName(z.data).AsString; except end;
+        Query.Open;
+        Query.Last;
+        SetLength(Result, Query.RecordCount);
+        Query.First;
+
+        for i:=0 to Query.RecordCount-1 do
+          begin
+            try line := Query.FieldByName(z.data).AsString; except line := '' end;
+            Result[i] := line;
+            Query.Next;
+          end;
     except
       //
     end;

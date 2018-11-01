@@ -170,7 +170,8 @@ end;
 
 procedure Load_Commentary(Stream: TRichStream);
 var
-  comment, s : string;
+  Strings : TStringArray;
+  item, s : string;
   i : integer;
 begin
   if Commentaries.Count = 0 then Exit;
@@ -182,12 +183,20 @@ begin
   for i:=0 to Commentaries.Count-1 do
     begin
       if Commentaries[i].footnotes then Continue;
-      comment := Commentaries[i].GetData(ActiveVerse);
-      if comment = '' then Continue;
-      s:= '\par\cf3 ' + Commentaries[i].Name + '\par\par\cf1 ';
-      Stream.Writeln(s);
-      s := ParseHTML(comment,true) + '\par';
-      Stream.Writeln(s);
+
+      Strings := Commentaries[i].GetData(ActiveVerse);
+
+      if Length(Strings) > 0 then
+        begin
+          s:= '\par\cf3 ' + Commentaries[i].Name + '\par\par\cf1 ';
+          Stream.Writeln(s);
+        end;
+
+      for item in Strings  do
+        begin
+          s := ParseHTML(item, true) + '\par';
+          Stream.Writeln(s);
+        end;
     end;
 
   Stream.Close;
