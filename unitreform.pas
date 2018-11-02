@@ -28,7 +28,7 @@ begin
     end;
 end;
 
-function ExtractMarker(s: string): string;
+function ExtractFootnoteMarker(s: string): string;
 var
   x1, x2 : integer;
 begin
@@ -56,7 +56,7 @@ begin
 
       if Prefix('<RF ', List[i]) then
         begin
-          if not p then marker := ExtractMarker(List[i]);
+          if not p then marker := ExtractFootnoteMarker(List[i]);
           if p then List[i] := '' else List[i] := '<RF>';
           l := true;
           Continue;
