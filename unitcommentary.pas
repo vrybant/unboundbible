@@ -3,8 +3,7 @@ unit UnitCommentary;
 interface
 
 uses
-  Classes, Fgl, SysUtils, Dialogs, Graphics, ClipBrd, LazUtf8,
-  UnitShelf, UnitType, UnitLib;
+  Classes, Fgl, SysUtils, UnitShelf, UnitType, UnitLib;
 
 type
   TCommentary = class(TModule)
@@ -18,9 +17,8 @@ type
   end;
 
   TCommentaries = class(TFPGList<TCommentary>)
-    Current : integer;
   private
-    procedure AddCommentaries(path: string);
+    procedure LoadCommentaries(path: string);
   public
     constructor Create;
     function GetFootnote(module: string; Verse: TVerse; marker: string): string;
@@ -30,14 +28,7 @@ type
 var
   Commentaries : TCommentaries;
 
-function Commentary: TCommentary;
-
 implementation
-
-function Commentary: TCommentary;
-begin
-  Result := Commentaries[Commentaries.Current];
-end;
 
 //========================================================================================
 //                                     TCommentary
@@ -137,12 +128,12 @@ end;
 constructor TCommentaries.Create;
 begin
   inherited;
-  AddCommentaries(GetUserDir + AppName);
-  {$ifdef windows} if Self.Count = 0 then {$endif} AddCommentaries(SharePath + 'bibles');
+  LoadCommentaries(GetUserDir + AppName);
+  {$ifdef windows} if Self.Count = 0 then {$endif} LoadCommentaries(SharePath + 'bibles');
   Sort(Comparison);
 end;
 
-procedure TCommentaries.AddCommentaries(path: string);
+procedure TCommentaries.LoadCommentaries(path: string);
 var
   Item : TCommentary;
   List : TStringArray;
