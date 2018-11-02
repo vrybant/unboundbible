@@ -19,7 +19,6 @@ type
     function SortingIndex(number: integer): integer;
   public
     constructor Create(filePath: string);
-    procedure OpenDatabase;
     function GetData(Verse: TVerse): TStringArray;
     function GetFootnote(Verse: TVerse; marker: string): string;
   end;
@@ -58,14 +57,8 @@ begin
   z := unboundCommentaryAlias;
   footnotes := false;
   OpenDatabase;
-end;
-
-procedure TCommentary.OpenDatabase;
-begin
-  inherited;
-  if not connected then Exit;
   if format = mybible then z := mybibleCommentaryAlias;
-  if not Validate(z.commentary) then connected := false;
+  if connected and not Validate(z.commentary) then connected := false;
 end;
 
 function TCommentary.SortingIndex(number: integer): integer;

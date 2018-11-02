@@ -68,7 +68,6 @@ type
   public
     compare : boolean;
     constructor Create(filePath: string);
-    procedure OpenDatabase;
     procedure LoadDatabase;
     function MinBook: integer;
     function BookByNum(n: integer): TBook;
@@ -256,19 +255,13 @@ begin
   Books := TBooks.Create;
   z := unboundStringAlias;
   OpenDatabase;
+  if format = mybible then z := mybibleStringAlias;
+  if connected and not Validate(z.bible) then connected := false;
 end;
 
 function BookComparison(const Item1: TBook; const Item2: TBook): integer;
 begin
   Result := Item1.sorting - Item2.sorting;
-end;
-
-procedure TBible.OpenDatabase;
-begin
-  inherited;
-  if not connected then Exit;
-  if format = mybible then z := mybibleStringAlias;
-  if not Validate(z.bible) then connected := false;
 end;
 
 procedure TBible.LoadDatabase;
