@@ -11,9 +11,6 @@ uses
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
   UnitLib, UnitTitles, UnitType, UnitFormat;
 
-const
-  BookMax = 86;
-
 type
   TBook = class
   public
@@ -24,7 +21,9 @@ type
     sorting : integer;
   end;
 
-  TBible = class(TFPGList<TBook>)
+  TBooks = TFPGList<TBook>;
+
+  TBible = class
     {$ifdef zeos}
       Connection : TZConnection;
       Query : TZReadOnlyQuery;
@@ -33,6 +32,7 @@ type
       Transaction : TSQLTransaction;
       Query : TSQLQuery;
     {$endif}
+    Books        : TBooks;
     {-}
     info         : string;
     filePath     : string;
@@ -149,6 +149,8 @@ begin
   loaded       := false;
   RightToLeft  := false;
 
+  Books := TBooks.Create;
+
   OpenDatabase;
 end;
 
@@ -260,14 +262,14 @@ begin
           Book.title := ToStr(x);
           Book.id := x;
           Book.sorting := SortingIndex(n);
-          Add(Book);
+          Books.Add(Book);
           Query.Next;
         end;
 
       SetTitles;
       firstVerse := minVerse;
       firstVerse.book := MinBook;
-      Sort(BookComparison);
+      Books.Sort(BookComparison);
 
       loaded := true;
     except
@@ -287,10 +289,10 @@ var
 begin
   Titles := TTitles.Create(Language);
 
-  for i:=0 to Count-1 do
+  for i:=0 to Books.Count-1 do
     begin
-      self[i].title := Titles.getTitle(self[i].number);
-      self[i].abbr  := Titles.getAbbr(self[i].number);
+      Books[i].title := Titles.getTitle(Books[i].number);
+      Books[i].abbr  := Titles.getAbbr(Books[i].number);
     end;
 
   Titles.Free;
@@ -318,8 +320,8 @@ function TBible.MinBook: integer;
 var i, min : integer;
 begin
   min := 0;
-  for i:=0 to Count-1 do
-    if (Items[i].Number < min) or (min = 0) then min := Items[i].Number;
+  for i:=0 to Books.Count-1 do
+    if (Books[i].Number < min) or (min = 0) then min := Books[i].Number;
   Result := min;
 end;
 
@@ -327,16 +329,16 @@ function TBible.BookByNum(n: integer): TBook;
 var i : integer;
 begin
   Result := nil;
-  for i:=0 to Count-1 do
-    if Items[i].Number = n then Result := Items[i];
+  for i:=0 to Books.Count-1 do
+    if Books[i].Number = n then Result := Books[i];
 end;
 
 function TBible.BookByName(s: string): TBook;
 var i : integer;
 begin
   Result := nil;
-  for i:=0 to Count-1 do
-    if Items[i].Title = s then Result := Items[i];
+  for i:=0 to Books.Count-1 do
+    if Books[i].Title = s then Result := Books[i];
 end;
 
 function TBible.VerseToStr(verse: TVerse; full: boolean): string;
@@ -367,8 +369,8 @@ var
     len, n : integer;
     endVerse : integer;
   begin
-    if T then len := Length(Items[i].title)
-         else len := Length(Items[i].abbr );
+    if T then len := Length(Books[i].title)
+         else len := Length(Books[i].abbr );
 
     s := Copy(link,len+1,255);
     s := Trim(s);
@@ -387,7 +389,7 @@ var
         endVerse := ToInt(p);
       end;
 
-    n := Pos(':',s);      Result.book    := Items[i].number;
+    n := Pos(':',s);      Result.book    := Books[i].number;
     p := Copy(s,1,n-1);   Result.chapter := ToInt(p);
     p := Copy(s,n+1,255); Result.number  := ToInt(p);
 
@@ -400,10 +402,10 @@ begin
   if Pos(':',link) = 0 then Exit;
   link := Trim(link);
 
-  for i:=0 to Count-1 do
+  for i:=0 to Books.Count-1 do
     begin
-      if Prefix(Items[i].title,link) then GetLink(i,true );
-      if Prefix(Items[i].abbr ,link) then GetLink(i,false);
+      if Prefix(Books[i].title,link) then GetLink(i,true );
+      if Prefix(Books[i].abbr ,link) then GetLink(i,false);
     end;
 end;
 
@@ -483,9 +485,9 @@ var
 begin
   SetLength(Result,Length(Contents));
   k:=0;
-  for i:=0 to Count-1 do
+  for i:=0 to Books.Count-1 do
     for j:=0 to Length(Contents)-1 do
-      if Contents[j].verse.book = Items[i].Number then
+      if Contents[j].verse.book = Books[i].Number then
         begin
           Result[k] := Contents[j];
           Inc(k);
@@ -577,8 +579,8 @@ end;
 procedure TBible.GetTitles(var List: TStringList);
 var i : integer;
 begin
-  for i := 0 to self.Count - 1 do
-    List.Add(self[i].Title);
+  for i := 0 to Books.Count - 1 do
+    List.Add(Books[i].Title);
 end;
 
 function TBible.ChaptersCount(Verse: TVerse): integer;
@@ -634,7 +636,7 @@ begin
       Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + ToStr(id) +
                       ' AND ' + z.chapter + ' = ' + ToStr(Verse.chapter) +
                       ' AND ' + z.verse   + ' = ' + ToStr(Verse.number)  +
-                      ' AND ' + z.text   + ' LIKE ' + '"%' + marker + '%"';
+                      ' AND ' + z.text + ' LIKE ' + '"%' + marker + '%"' ;
       Query.Open;
       try line := Query.FieldByName(z.text).AsString; except end;
     except
@@ -658,15 +660,13 @@ begin
 end;
 
 destructor TBible.Destroy;
-var
-  i : integer;
+var i : integer;
 begin
-  for i:=0 to Count-1 do Items[i].Free;
-
+  for i:=0 to Books.Count-1 do Books[i].Free;
+  Books.Free;
   Query.Free;
   {$ifndef zeos} Transaction.Free; {$endif}
   Connection.Free;
-
   inherited Destroy;
 end;
 

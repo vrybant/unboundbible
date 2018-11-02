@@ -11,9 +11,6 @@ uses
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
   UnitLib, UnitType;
 
-const
-  BookMax = 86;
-
 type
   TCommentary = class
     {$ifdef zeos}
