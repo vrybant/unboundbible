@@ -161,14 +161,14 @@
         <UnitName Value="RichNotifier"/>
       </Unit17>
       <Unit18>
-        <Filename Value="unitformat.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitFormat"/>
-      </Unit18>
-      <Unit19>
         <Filename Value="unitdictionary.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitDictionary"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="unitreform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitReform"/>
       </Unit19>
     </Units>
   </ProjectOptions>

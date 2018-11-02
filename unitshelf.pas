@@ -9,7 +9,7 @@ interface
 uses
   Classes, Fgl, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
-  UnitLib, UnitTitles, UnitType, UnitFormat;
+  UnitLib, UnitTitles, UnitType, UnitReform;
 
 type
   TBook = class
@@ -459,7 +459,7 @@ begin
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
       //  line = line.replace("\n", "") // ESWORD ?
-          Result[i] := Reformat(line, false);
+          Result[i] := Reform(line, false);
           Query.Next;
         end;
     except
@@ -492,7 +492,7 @@ begin
       for i:=0 to Query.RecordCount-1 do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
-          Result[i] := Reformat(line);
+          Result[i] := Reform(line);
           Query.Next;
         end;
     except
@@ -558,7 +558,7 @@ begin
           try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
           Contents[i].verse.book := DecodeID(format, Contents[i].verse.book);
-          Contents[i].text := Reformat(Contents[i].text);
+          Contents[i].text := Reform(Contents[i].text);
           Query.Next;
         end;
     finally

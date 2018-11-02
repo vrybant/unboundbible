@@ -1,11 +1,11 @@
-unit UnitFormat;
+unit UnitReform;
 
 interface
 
 uses
   Classes, SysUtils, UnitLib;
 
-function Reformat(s: string; purge: boolean = true): string;
+function Reform(s: string; purge: boolean = true): string;
 
 implementation
 
@@ -103,7 +103,7 @@ begin
       end;
 end;
 
-function Reformat(s: string; purge: boolean = true): string;
+function Reform(s: string; purge: boolean = true): string;
 var
   List : TStringArray;
 begin
