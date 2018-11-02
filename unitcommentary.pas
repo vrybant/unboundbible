@@ -72,9 +72,6 @@ begin
   v_from := ToStr(Verse.number);
   v_to   := ToStr(Verse.number + Verse.count - 1);
 
-  output(v_from);
-  output(v_to);
-
   try
     try
         Query.SQL.Text := 'SELECT * FROM ' + z.commentary +

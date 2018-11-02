@@ -77,7 +77,7 @@ begin
   if s =  '<i>' then r := '\i ';
   if s = '</i>' then r := '\i0 ';
   if s = '<br>' then r := '\par\tab ';
-  if s =  '<p>' then r := '\par\tab ';
+  if s =  '<p>' then r := '\tab ';
   if s = '</p>' then r := '\par ';
   if s =  '<a>' then r := '\cf6 ';
   if s = '</a>' then r := '\cf1 ';
@@ -95,6 +95,8 @@ begin
   Replace(s,'&quot;' ,'"');
   Replace(s,'&ldquo;','"');
   Replace(s,'&rdquo;','"');
+  Replace(s, #09,' ');
+  DelDoubleSpace(s);
 end;
 
 function Parse(s: string; jtag: boolean = false): string;

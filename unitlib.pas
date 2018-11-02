@@ -37,9 +37,9 @@ function ToInt(s: string): integer;
 function ToBoolean(s: string): boolean;
 function ToStr(value: longint): string;
 function CleanString(s: string): string;
-function DelDoubleSpace(s: string): string;
 function StringPos(subst: string; s: string): TIntegerArray;
 procedure Replace(var s: string; const oldPattern, newPattern: String);
+procedure DelDoubleSpace(var s: string);
 function ListToArray(List: TStringList): TStringArray;
 function ListToString(List: TStringArray): string;
 function StringToList(ch: Char; s: string): TStringArray;
@@ -137,11 +137,6 @@ begin
   Result := s;
 end;
 
-function DelDoubleSpace(s: string): string;
-begin
-  Result := DelSpace1(s);
-end;
-
 function StringPos(subst: string; s: string): TIntegerArray;
 var
   i,k,n : integer;
@@ -165,6 +160,11 @@ end;
 procedure Replace(var s: string; const oldPattern, newPattern: string);
 begin
   s := StringReplace(s, oldPattern, newPattern, [rfReplaceAll]);
+end;
+
+procedure DelDoubleSpace(var s: string);
+begin
+  s := DelSpace1(s);
 end;
 
 function ListToArray(List: TStringList): TStringArray;
