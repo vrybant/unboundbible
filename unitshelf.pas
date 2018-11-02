@@ -32,8 +32,6 @@ type
       Transaction : TSQLTransaction;
       Query : TSQLQuery;
     {$endif}
-    Books        : TBooks;
-    {-}
     info         : string;
     filePath     : string;
     fileName     : string;
@@ -57,6 +55,7 @@ type
     connected    : boolean;
     loaded       : boolean;
   private
+    Books        : TBooks;
     function SortingIndex(number: integer): integer;
     function RankContents(const Contents: TContentArray): TContentArray;
   public
