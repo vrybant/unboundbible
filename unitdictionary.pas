@@ -40,7 +40,7 @@ begin
   footnotes := false;
   OpenDatabase;
   if format = mybible then z := mybibleDictionaryAlias;
-  Validate(z.commentary);
+  Validate(z.dictionary);
 end;
 
 function TDictionary.GetData(Verse: TVerse): TStringArray;
@@ -57,11 +57,11 @@ begin
 
   try
     try
-        Query.SQL.Text := 'SELECT * FROM ' + z.commentary +
-          ' WHERE ' + z.book      + ' = '  + ToStr(id) +
-            ' AND ' + z.chapter   + ' = '  + ToStr(Verse.chapter) +
-          ' AND ((' + v_from      + ' BETWEEN ' + z.fromverse + ' AND ' + z.toverse + ')' +
-            ' OR (' + z.fromverse + ' BETWEEN ' + v_from      + ' AND ' + v_to      + ')) ';
+        //Query.SQL.Text := 'SELECT * FROM ' + z.dictionary +
+        //  ' WHERE ' + z.book      + ' = '  + ToStr(id) +
+        //    ' AND ' + z.chapter   + ' = '  + ToStr(Verse.chapter) +
+        //  ' AND ((' + v_from      + ' BETWEEN ' + z.fromverse + ' AND ' + z.toverse + ')' +
+        //    ' OR (' + z.fromverse + ' BETWEEN ' + v_from      + ' AND ' + v_to      + ')) ';
 
         Query.Open;
         Query.Last;
@@ -70,7 +70,7 @@ begin
 
         for i:=0 to Query.RecordCount-1 do
           begin
-            try line := Query.FieldByName(z.data).AsString; except line := '' end;
+            //try line := Query.FieldByName(z.definition).AsString; except line := '' end;
             Result[i] := line;
             Query.Next;
           end;
@@ -118,7 +118,7 @@ begin
 
   for f in List do
     begin
-      if Pos('.cmt.',f) + Pos('.commentaries.',f) = 0 then continue;
+      if Pos('.dct.',f) + Pos('.dictionary.',f) = 0 then continue;
       Item := TDictionary.Create(f);
       if Item.connected then Add(Item) else Item.Free;
     end;
@@ -137,7 +137,7 @@ begin
     begin
       if not self[i].footnotes then Continue;
       if not Prefix(name,self[i].filename) then Continue;
-      Result := self[i].GetFootnote(Verse, marker);
+      //Result := self[i].GetFootnote(Verse, marker);
     end;
 end;
 

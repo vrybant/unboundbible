@@ -31,12 +31,8 @@ type
   end;
 
   TDictionaryAlias = record
-    commentary : string;
-    id         : string;
-    book       : string;
-    chapter    : string;
-    fromverse  : string;
-    toverse    : string;
+    dictionary : string;
+    word       : string;
     data       : string;
   end;
 
@@ -103,23 +99,15 @@ const
     );
 
   unboundDictionaryAlias : TDictionaryAlias = (
-    commentary : 'commentary';
-    id         : 'id';
-    book       : 'book';
-    chapter    : 'chapter';
-    fromverse  : 'fromverse';
-    toverse    : 'toverse';
+    dictionary : 'dictionary';
+    word       : 'word';
     data       : 'data';
     );
 
   mybibleDictionaryAlias : TDictionaryAlias = (
-  commentary : 'commentary';
-  id         : 'id';
-  book       : 'book';
-  chapter    : 'chapter';
-  fromverse  : 'fromverse';
-  toverse    : 'toverse';
-  data       : 'data';
+    dictionary : 'dictionary';
+    word       : 'topic';
+    data       : 'definition';
   );
 
   noneVerse : TVerse = (
