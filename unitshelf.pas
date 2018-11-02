@@ -23,7 +23,7 @@ type
 
   TBooks = TFPGList<TBook>;
 
-  TBible = class
+  TModule = class
     {$ifdef zeos}
       Connection : TZConnection;
       Query : TZReadOnlyQuery;
@@ -48,17 +48,23 @@ type
     {-}
     FirstVerse   : TVerse;
     RightToLeft  : boolean;
-    compare      : boolean;
     fontName     : TFontName;
     fontSize     : integer;
     {-}
     connected    : boolean;
     loaded       : boolean;
+  public
+    constructor Create(filePath: string);
+    destructor Destroy; override;
+  end;
+
+  TBible = class(TModule)
   private
-    Books        : TBooks;
+    Books : TBooks;
     function SortingIndex(number: integer): integer;
     function RankContents(const Contents: TContentArray): TContentArray;
   public
+    compare : boolean;
     constructor Create(filePath: string);
     procedure OpenDatabase;
     procedure LoadDatabase;
@@ -109,10 +115,10 @@ begin
 end;
 
 //========================================================================================
-//                                     TBible
+//                                     TModule
 //========================================================================================
 
-constructor TBible.Create(filePath: string);
+constructor TModule.Create(filePath: string);
 begin
   inherited Create;
 
@@ -148,8 +154,26 @@ begin
   loaded       := false;
   RightToLeft  := false;
 
-  Books := TBooks.Create;
+//  OpenDatabase;
+end;
 
+destructor TModule.Destroy;
+var i : integer;
+begin
+  Query.Free;
+  {$ifndef zeos} Transaction.Free; {$endif}
+  Connection.Free;
+  inherited Destroy;
+end;
+
+//========================================================================================
+//                                     TBible
+//========================================================================================
+
+constructor TBible.Create(filePath: string);
+begin
+  inherited Create(filePath);
+  Books := TBooks.Create;
   OpenDatabase;
 end;
 
@@ -663,9 +687,6 @@ var i : integer;
 begin
   for i:=0 to Books.Count-1 do Books[i].Free;
   Books.Free;
-  Query.Free;
-  {$ifndef zeos} Transaction.Free; {$endif}
-  Connection.Free;
   inherited Destroy;
 end;
 

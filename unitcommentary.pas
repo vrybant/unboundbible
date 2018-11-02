@@ -9,40 +9,33 @@ interface
 uses
   Classes, Fgl, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
-  UnitLib, UnitType;
+  UnitShelf, UnitLib, UnitType;
 
 type
-  TCommentary = class
-    {$ifdef zeos}
-      Connection : TZConnection;
-      Query : TZReadOnlyQuery;
-    {$else}
-      Connection : TSQLite3Connection;
-      Transaction : TSQLTransaction;
-      Query : TSQLQuery;
-    {$endif}
-    {-}
-    info         : string;
-    filePath     : string;
-    fileName     : string;
-    format       : TFileFormat;
-    z            : TCommentaryAlias;
-    {-}
-    name         : string;
-    native       : string;
-    copyright    : string;
-    language     : string;
-    fileType     : string;
-    note         : string;
-    {-}
-    RightToLeft  : boolean;
-    footnotes    : boolean;
-    compare      : boolean;
-    fontName     : TFontName;
-    fontSize     : integer;
-    {-}
-    connected    : boolean;
-    loaded       : boolean;
+  TCommentary = class(TModule)
+    //{-}
+    //info         : string;
+    //filePath     : string;
+    //fileName     : string;
+    //format       : TFileFormat;
+    //{-}
+    //name         : string;
+    //native       : string;
+    //copyright    : string;
+    //language     : string;
+    //fileType     : string;
+    //note         : string;
+    //{-}
+    //RightToLeft  : boolean;
+    //compare      : boolean;
+    //fontName     : TFontName;
+    //fontSize     : integer;
+    //{-}
+    //connected    : boolean;
+    //loaded       : boolean;
+
+    z : TCommentaryAlias;
+    footnotes : boolean;
   private
     function SortingIndex(number: integer): integer;
   public
@@ -50,8 +43,6 @@ type
     procedure OpenDatabase;
     function GetData(Verse: TVerse): TStringArray;
     function GetFootnote(Verse: TVerse; marker: string): string;
-    procedure SavePrivate(const IniFile: TIniFile);
-    procedure ReadPrivate(const IniFile: TIniFile);
     destructor Destroy; override;
   end;
 
@@ -59,8 +50,6 @@ type
     Current : integer;
   private
     procedure AddCommentaries(path: string);
-    procedure SavePrivates;
-    procedure ReadPrivates;
   public
     constructor Create;
     function GetFootnote(module: string; Verse: TVerse; marker: string): string;
@@ -87,41 +76,17 @@ end;
 
 constructor TCommentary.Create(filePath: string);
 begin
-  inherited Create;
+  inherited Create(filePath);
 
-  {$ifdef zeos}
-    Connection := TZConnection.Create(nil);
-    Query := TZReadOnlyQuery.Create(nil);
-    Connection.Database := filePath;
-    Connection.Protocol := 'sqlite-3';
-    Query.Connection := Connection;
-  {$else}
-    Connection := TSQLite3Connection.Create(nil);
-    Connection.CharSet := 'UTF8';
-    Connection.DatabaseName := filePath;
-    Transaction := TSQLTransaction.Create(Connection);
-    Connection.Transaction := Transaction;
-    Query := TSQLQuery.Create(nil);
-    Query.DataBase := Connection;
-  {$endif}
-
-  self.filePath := filePath;
-  self.fileName := ExtractFileName(filePath);
-
-  format       := unbound;
-  z            := unboundCommentaryAlias;
-
-  name         := fileName;
-  native       := '';
-  copyright    := '';
-  language     := 'english';
-  filetype     := '';
-  footnotes    := false;
-  connected    := false;
-  loaded       := false;
-  RightToLeft  := false;
+  z := unboundCommentaryAlias;
+  footnotes := false;
 
   OpenDatabase;
+end;
+
+destructor TCommentary.Destroy;
+begin
+  inherited Destroy;
 end;
 
 procedure TCommentary.OpenDatabase;
@@ -289,24 +254,6 @@ begin
   end;
 end;
 
-procedure TCommentary.SavePrivate(const IniFile : TIniFile);
-begin
-  IniFile.WriteBool(FileName, 'Compare', Compare);
-end;
-
-procedure TCommentary.ReadPrivate(const IniFile : TIniFile);
-begin
-  Compare := IniFile.ReadBool(FileName, 'Compare', True);
-end;
-
-destructor TCommentary.Destroy;
-begin
-  Query.Free;
-  {$ifndef zeos} Transaction.Free; {$endif}
-  Connection.Free;
-  inherited Destroy;
-end;
-
 //=================================================================================================
 //                                         TCommentaries
 //=================================================================================================
@@ -368,26 +315,6 @@ begin
       if not Prefix(name,self[i].filename) then Continue;
       Result := self[i].GetFootnote(Verse, marker);
     end;
-end;
-
-procedure TCommentaries.SavePrivates;
-var
-  IniFile : TIniFile;
-  i : integer;
-begin
-  IniFile := TIniFile.Create(ConfigFile);
-  for i:=0 to Count-1 do Items[i].SavePrivate(IniFile);
-  IniFile.Free;
-end;
-
-procedure TCommentaries.ReadPrivates;
-var
-  IniFile : TIniFile;
-  i : integer;
-begin
-  IniFile := TIniFile.Create(ConfigFile);
-  for i:=0 to Count-1 do Items[i].ReadPrivate(IniFile);
-  IniFile.Free;
 end;
 
 destructor TCommentaries.Destroy;
