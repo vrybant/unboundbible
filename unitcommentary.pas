@@ -1,15 +1,10 @@
 unit UnitCommentary;
 
-{$ifdef linux}
-  {$define zeos}
-{$endif}
-
 interface
 
 uses
-  Classes, Fgl, SysUtils, Dialogs, Graphics, ClipBrd, LazUtf8, DB, SQLdb,
-  {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
-  UnitShelf, UnitLib, UnitType;
+  Classes, Fgl, SysUtils, Dialogs, Graphics, ClipBrd, LazUtf8,
+  UnitShelf, UnitType, UnitLib;
 
 type
   TCommentary = class(TModule)
@@ -38,8 +33,6 @@ var
 function Commentary: TCommentary;
 
 implementation
-
-uses UnitSQLiteEx;
 
 function Commentary: TCommentary;
 begin
