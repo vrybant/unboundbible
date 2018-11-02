@@ -80,6 +80,29 @@ begin
     end;
 end;
 
+function ExtractStrongNumber(s: string): string;
+var
+  x1, x2 : integer;
+begin
+  Result := s;
+  x1 := Pos('<',s); if x1 = 0 then Exit;
+  x2 := Pos('>',s); if x2 = 0 then Exit;
+  Result := Copy(s,x1+3,x2-x1-3);
+end;
+
+procedure RemakeStrongs(var List: TStringArray);
+var
+  number : string = '';
+  i : integer;
+begin
+  for i:=Low(List) to High(List) do
+    if Prefix('<W', List[i]) then
+      begin
+        number := ExtractStrongNumber(List[i]);
+        List[i] := ' ' + '<S>' + number + '</S>';
+      end;
+end;
+
 function Reformat(s: string; purge: boolean = true): string;
 var
   List : TStringArray;
@@ -89,6 +112,7 @@ begin
 
   RemoveTagContent(List,'<TS>','<Ts>'); // Prologue
   RemakeFootnotes(List, purge);
+  RemakeStrongs(List);
   if purge then RemoveTagContent(List, '<f>','</f>');
 
   Result := Trim(ListToString(List));
