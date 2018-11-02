@@ -16,7 +16,6 @@ type
     footnotes : boolean;
   private
     z : TCommentaryAlias;
-    function SortingIndex(number: integer): integer;
   public
     constructor Create(filePath: string);
     function GetData(Verse: TVerse): TStringArray;
@@ -59,24 +58,6 @@ begin
   OpenDatabase;
   if format = mybible then z := mybibleCommentaryAlias;
   Validate(z.commentary);
-end;
-
-function TCommentary.SortingIndex(number: integer): integer;
-var
-  i : integer;
-  l : boolean;
-begin
-  Result := 100;
-  if number <= 0 then Exit;
-  l := Orthodox(language);
-
-  for i:=1 to Length(sortArrayEN) do
-    if (not l and (number = sortArrayEN[i])) or
-           (l and (number = sortArrayRU[i])) then
-      begin
-        Result := i;
-        Exit;
-      end;
 end;
 
 function TCommentary.GetData(Verse: TVerse): TStringArray;
@@ -166,13 +147,9 @@ end;
 constructor TCommentaries.Create;
 begin
   inherited;
-
   AddCommentaries(GetUserDir + AppName);
-
   {$ifdef windows} if Self.Count = 0 then {$endif} AddCommentaries(SharePath + 'bibles');
   Sort(Comparison);
-
-  //ReadPrivates;
 end;
 
 procedure TCommentaries.AddCommentaries(path: string);
