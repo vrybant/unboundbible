@@ -36,7 +36,6 @@ type
     filePath     : string;
     fileName     : string;
     format       : TFileFormat;
-    z            : TBibleAlias;
     {-}
     name         : string;
     native       : string;
@@ -55,12 +54,15 @@ type
     loaded       : boolean;
   public
     constructor Create(filePath: string);
+    procedure OpenDatabase;
+    function Validate(field: string): boolean;
     destructor Destroy; override;
   end;
 
   TBible = class(TModule)
   private
     Books : TBooks;
+    z : TBibleAlias;
     function SortingIndex(number: integer): integer;
     function RankContents(const Contents: TContentArray): TContentArray;
   public
@@ -142,8 +144,6 @@ begin
   self.fileName := ExtractFileName(filePath);
 
   format       := unbound;
-  z            := unboundStringAlias;
-
   name         := fileName;
   native       := '';
   abbreviation := '';
@@ -153,12 +153,19 @@ begin
   connected    := false;
   loaded       := false;
   RightToLeft  := false;
+end;
 
-//  OpenDatabase;
+function TModule.Validate(field: string): boolean;
+var
+  FieldNames : TStringList;
+begin
+  FieldNames := TStringList.Create;
+  try Connection.GetTableNames({$ifdef zeos}'',{$endif}FieldNames) except end;
+  Result := FieldNames.IndexOf(field) >= 0;
+  FieldNames.Free;
 end;
 
 destructor TModule.Destroy;
-var i : integer;
 begin
   Query.Free;
   {$ifndef zeos} Transaction.Free; {$endif}
@@ -166,25 +173,8 @@ begin
   inherited Destroy;
 end;
 
-//========================================================================================
-//                                     TBible
-//========================================================================================
-
-constructor TBible.Create(filePath: string);
-begin
-  inherited Create(filePath);
-  Books := TBooks.Create;
-  OpenDatabase;
-end;
-
-function BookComparison(const Item1: TBook; const Item2: TBook): integer;
-begin
-  Result := Item1.sorting - Item2.sorting;
-end;
-
-procedure TBible.OpenDatabase;
+procedure TModule.OpenDatabase;
 var
-  FieldNames : TStringList;
   key, value : string;
   dbhandle : Pointer;
 begin
@@ -243,7 +233,6 @@ begin
         end;
 
       format := mybible;
-      z := mybibleStringAlias;
       connected := true;
     except
       //
@@ -252,14 +241,34 @@ begin
     Query.Close;
   end;
 
-  FieldNames := TStringList.Create;
-  try Connection.GetTableNames({$ifdef zeos}'',{$endif}FieldNames) except end;
-  if FieldNames.IndexOf(z.bible) < 0 then connected := false;
-  FieldNames.Free;
-
   language := LowerCase(language);
   RightToLeft := GetRightToLeft(language);
   RemoveTags(info);
+end;
+
+//========================================================================================
+//                                     TBible
+//========================================================================================
+
+constructor TBible.Create(filePath: string);
+begin
+  inherited Create(filePath);
+  Books := TBooks.Create;
+  z := unboundStringAlias;
+  OpenDatabase;
+end;
+
+function BookComparison(const Item1: TBook; const Item2: TBook): integer;
+begin
+  Result := Item1.sorting - Item2.sorting;
+end;
+
+procedure TBible.OpenDatabase;
+begin
+  inherited;
+  if not connected then Exit;
+  if format = mybible then z := mybibleStringAlias;
+  if not Validate(z.bible) then connected := false;
 end;
 
 procedure TBible.LoadDatabase;
