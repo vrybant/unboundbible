@@ -18,7 +18,7 @@ type
 
   TCommentaries = class(TFPGList<TCommentary>)
   private
-    procedure LoadCommentaries(path: string);
+    procedure Load(path: string);
   public
     constructor Create;
     function GetFootnote(module: string; Verse: TVerse; marker: string): string;
@@ -128,12 +128,12 @@ end;
 constructor TCommentaries.Create;
 begin
   inherited;
-  LoadCommentaries(GetUserDir + AppName);
-  {$ifdef windows} if Self.Count = 0 then {$endif} LoadCommentaries(SharePath + 'bibles');
+  Load(GetUserDir + AppName);
+  {$ifdef windows} if Self.Count = 0 then {$endif} Load(SharePath + 'bibles');
   Sort(Comparison);
 end;
 
-procedure TCommentaries.LoadCommentaries(path: string);
+procedure TCommentaries.Load(path: string);
 var
   Item : TCommentary;
   List : TStringArray;
