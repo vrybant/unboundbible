@@ -30,6 +30,16 @@ type
     data       : string;
   end;
 
+  TDictionaryAlias = record
+    commentary : string;
+    id         : string;
+    book       : string;
+    chapter    : string;
+    fromverse  : string;
+    toverse    : string;
+    data       : string;
+  end;
+
  type
   TVerse = record
     book     : integer;
@@ -91,6 +101,26 @@ const
 //  marker     : 'marker';
     data       : 'text';
     );
+
+  unboundDictionaryAlias : TDictionaryAlias = (
+    commentary : 'commentary';
+    id         : 'id';
+    book       : 'book';
+    chapter    : 'chapter';
+    fromverse  : 'fromverse';
+    toverse    : 'toverse';
+    data       : 'data';
+    );
+
+  mybibleDictionaryAlias : TDictionaryAlias = (
+  commentary : 'commentary';
+  id         : 'id';
+  book       : 'book';
+  chapter    : 'chapter';
+  fromverse  : 'fromverse';
+  toverse    : 'toverse';
+  data       : 'data';
+  );
 
   noneVerse : TVerse = (
     book    : 0;
