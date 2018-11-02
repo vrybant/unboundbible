@@ -7,7 +7,6 @@ uses
 
 type
   TCommentary = class(TModule)
-    footnotes : boolean;
   private
     z : TCommentaryAlias;
   public
@@ -38,7 +37,6 @@ constructor TCommentary.Create(filePath: string);
 begin
   inherited Create(filePath);
   z := unboundCommentaryAlias;
-  footnotes := false;
   OpenDatabase;
   if format = mybible then z := mybibleCommentaryAlias;
   Validate(z.commentary);

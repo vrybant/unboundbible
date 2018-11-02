@@ -7,7 +7,6 @@ uses
 
 type
   TDictionary = class(TModule)
-    footnotes : boolean;
   private
     z : TDictionaryAlias;
   public
@@ -20,7 +19,6 @@ type
     procedure Load(path: string);
   public
     constructor Create;
-    function GetFootnote(module: string; Verse: TVerse; marker: string): string;
     destructor Destroy; override;
   end;
 
@@ -37,7 +35,6 @@ constructor TDictionary.Create(filePath: string);
 begin
   inherited Create(filePath);
   z := unboundDictionaryAlias;
-  footnotes := false;
   OpenDatabase;
   if format = mybible then z := mybibleDictionaryAlias;
   Validate(z.dictionary);
@@ -121,23 +118,6 @@ begin
       if Pos('.dct.',f) + Pos('.dictionary.',f) = 0 then continue;
       Item := TDictionary.Create(f);
       if Item.connected then Add(Item) else Item.Free;
-    end;
-end;
-
-function TDictionaries.GetFootnote(module: string; Verse: TVerse; marker: string): string;
-var
-  name : string;
-  i : integer;
-begin
-  Result := '';
-  if self.Count = 0 then Exit;
-  name := ExtractOnlyName(module);
-
-  for i:=0 to self.Count-1 do
-    begin
-      if not self[i].footnotes then Continue;
-      if not Prefix(name,self[i].filename) then Continue;
-      //Result := self[i].GetFootnote(Verse, marker);
     end;
 end;
 

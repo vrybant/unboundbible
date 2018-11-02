@@ -52,6 +52,7 @@ type
     {-}
     connected    : boolean;
     loaded       : boolean;
+    footnotes    : boolean;
   public
     constructor Create(filePath: string);
     procedure OpenDatabase;
@@ -152,6 +153,7 @@ begin
   connected    := false;
   loaded       := false;
   RightToLeft  := false;
+  footnotes    := false;
 end;
 
 procedure TModule.Validate(field: string);
@@ -225,9 +227,10 @@ begin
           try key   := Query.FieldByName('name' ).AsString; except end;
           try value := Query.FieldByName('value').AsString; except end;
 
-          if key = 'description'   then name     := value;
-          if key = 'detailed_info' then info     := value;
-          if key = 'language'      then language := value;
+          if key = 'description'   then name      := value;
+          if key = 'detailed_info' then info      := value;
+          if key = 'language'      then language  := value;
+          if key = 'is_footnotes'  then footnotes := ToBoolean(value);
 
           Query.Next;
         end;
