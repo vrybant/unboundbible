@@ -55,7 +55,7 @@ type
   public
     constructor Create(filePath: string);
     procedure OpenDatabase;
-    function Validate(field: string): boolean;
+    procedure Validate(field: string);
     destructor Destroy; override;
   end;
 
@@ -154,13 +154,14 @@ begin
   RightToLeft  := false;
 end;
 
-function TModule.Validate(field: string): boolean;
+procedure TModule.Validate(field: string);
 var
   FieldNames : TStringList;
 begin
+  if not connected then Exit;
   FieldNames := TStringList.Create;
   try Connection.GetTableNames({$ifdef zeos}'',{$endif}FieldNames) except end;
-  Result := FieldNames.IndexOf(field) >= 0;
+  if FieldNames.IndexOf(field) < 0 then connected := false;
   FieldNames.Free;
 end;
 
@@ -256,7 +257,7 @@ begin
   z := unboundStringAlias;
   OpenDatabase;
   if format = mybible then z := mybibleStringAlias;
-  if connected and not Validate(z.bible) then connected := false;
+  Validate(z.bible);
 end;
 
 function BookComparison(const Item1: TBook; const Item2: TBook): integer;

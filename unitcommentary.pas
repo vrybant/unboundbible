@@ -58,7 +58,7 @@ begin
   footnotes := false;
   OpenDatabase;
   if format = mybible then z := mybibleCommentaryAlias;
-  if connected and not Validate(z.commentary) then connected := false;
+  Validate(z.commentary);
 end;
 
 function TCommentary.SortingIndex(number: integer): integer;
