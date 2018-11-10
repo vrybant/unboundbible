@@ -451,11 +451,6 @@ begin
     rtfFontSize: prm.fnt.Size:=round(aparam/2);
     rtfUnderline: if aparam=0 then Exclude(prm.fnt.Style,fsUnderline)  else Include(prm.fnt.Style, fsUnderline);
     rtfNoUnderline: Exclude(prm.fnt.Style, fsUnderline);
-
-    rtfSuperScript: prm.fnt.VScriptPos:=vpSuperscript;
-    rtfSubScript  : prm.fnt.VScriptPos:=vpSubScript;
-    rtfNoSuperSub : prm.fnt.VScriptPos:=vpNormal;
-
     rtfHighlight: begin
       prm.fnt.HasBkClr := (aparam>0) and (aparam<=high(HColor));
       if prm.fnt.HasBkClr then begin
@@ -725,7 +720,6 @@ var
   isbold    : Boolean;
   isitalic  : Boolean;
   isuline   : Boolean;
-  issupersub: Boolean;
   isColor   : integer;
 
   pm : TParaMetric;
@@ -802,7 +796,6 @@ begin
     rng:=root;
     isbold:=false;
     isitalic:=false;
-    issupersub:=false;
     iscolor:=0;
     while Assigned(rng) do begin
       ARich.SelStart:=rng.textStart;
@@ -835,20 +828,6 @@ begin
         if isitalic then RtfOut('\i0');
         isitalic:=false;
       end;
-
-      if rng.font.VScriptPos=vpSuperScript then begin
-        RtfOut('\super');
-        issupersub:=true;
-      end;
-      if rng.font.VScriptPos=vpSubScript then begin
-        RtfOut('\sub');
-        issupersub:=true;
-      end;
-      if rng.font.VScriptPos=vpNormal then begin
-        if issupersub then RtfOut('\nosupersub');
-        issupersub:=false;
-      end;
-
       RtfOut(' ');
 
       i:=1;
