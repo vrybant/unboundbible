@@ -10,6 +10,9 @@ uses
   CocoaAll, Classes, SysUtils,
   LCLType, Graphics, Controls, StdCtrls,
   CocoaPrivate, CocoaTextEdits, CocoaUtils, CocoaWSCommon,
+  {$ifndef RMLCL18} // it can be defined in the package's CustomOptions -dRMLCL18
+  CocoaScrollers, // this unit was introduced in summer-fall 2018 with Lazarus 2.0 release
+  {$endif}
   WSRichMemo, RichMemo;
 
 type
