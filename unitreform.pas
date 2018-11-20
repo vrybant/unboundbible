@@ -38,7 +38,7 @@ begin
   Result := Copy(s,x1+1,x2-x1-1);
 end;
 
-procedure RemakeFootnotes(var List: TStringArray; p: boolean);
+procedure Footnotes(var List: TStringArray; p: boolean);
 var
   marker : string = '';
   l : boolean = false;
@@ -90,7 +90,7 @@ begin
   Result := Copy(s,x1+2,x2-x1-3);
 end;
 
-procedure RemakeStrongs(var List: TStringArray);
+procedure Strongs(var List: TStringArray);
 var
   number : string = '';
   i : integer;
@@ -103,6 +103,22 @@ begin
       end;
 end;
 
+procedure Replacement(var List: TStringArray);
+var i : integer;
+begin
+  for i:=Low(List) to High(List) do
+    begin
+      if List[i] =  '<FR>' then List[i] :=  '<J>';
+      if List[i] =  '<Fr>' then List[i] := '</J>';
+      if List[i] =  '<FI>' then List[i] :=  '<i>';
+      if List[i] =  '<Fi>' then List[i] := '</i>';
+      if List[i] =  '<RF>' then List[i] :=  '<f>';
+      if List[i] =  '<Rf>' then List[i] := '</f>';
+      if List[i] =  '<em>' then List[i] :=  '<i>';
+      if List[i] = '</em>' then List[i] := '</i>';
+    end;
+end;
+
 function Reform(s: string; purge: boolean = true): string;
 var
   List : TStringArray;
@@ -111,13 +127,13 @@ begin
   List := XmlToList(s);
 
   RemoveTagContent(List,'<TS>','<Ts>'); // Prologue
-  RemakeFootnotes(List, purge);
-  RemakeStrongs(List);
+  Footnotes(List, purge);
+  Strongs(List);
+  Replacement(List);
   if purge then RemoveTagContent(List, '<f>','</f>');
 
   Result := Trim(ListToString(List));
 end;
-
 
 end.
 

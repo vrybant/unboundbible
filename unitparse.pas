@@ -30,27 +30,22 @@ const
 begin
  // r := '\cf4 ' + s + '\cf1 ';  // show tags
 
-  if jColor then color := '\cf2' else color := '\cf1';
+  if jColor then color := '\cf7' else color := '\cf1';
 
-  if s =  '<FR>' then s :=  '<J>';
-  if s =  '<Fr>' then s := '</J>';
-  if s =  '<FI>' then s :=  '<i>';
-  if s =  '<Fi>' then s := '</i>';
-  if s =  '<RF>' then s :=  '<f>';
-  if s =  '<Rf>' then s := '</f>';
-  if s =  '<em>' then s :=  '<i>';
-  if s = '</em>' then s := '</i>';
-
-  if j then if s =  '<J>' then begin r := '\cf2 '; jColor := true;  end;
+  if j then if s =  '<J>' then begin r := '\cf7 '; jColor := true;  end;
   if j then if s = '</J>' then begin r := '\cf1 '; jColor := false; end;
 
   s := LowerCase(s);
 
   if s =  '<i>' then r := '\i ';
   if s = '</i>' then r := '\i0 ';
-  if s =  '<s>' then r := '\cf6\super ';
+  if s =  '<s>' then r := '\cf8\super ';
   if s = '</s>' then r := color + '\nosupersub ';
-  if s =  '<f>' then r := '\cf5\super ';
+  if s =  '<n>' then r := '\cf5 ';
+  if s = '</n>' then r := color + ' ';
+  if s =  '<m>' then r := '\cf9\super '; // морфология
+  if s = '</m>' then r := color + '\nosupersub ';
+  if s =  '<f>' then r := '\cf6\super ';
   if s = '</f>' then r := color + '\nosupersub ';
 
   Result := r;
@@ -76,8 +71,8 @@ begin
   if s = '</b>' then r := '\b0 ';
   if s =  '<i>' then r := '\i ';
   if s = '</i>' then r := '\i0 ';
-  if s = '<br>' then r := '\par\tab ';
-  if s =  '<p>' then r := '\tab ';
+  if s = '<br>' then r := '\par'; ///////// \tab ';
+  //////// if s =  '<p>' then r := '\tab ';
   if s = '</p>' then r := '\par ';
   if s =  '<a>' then r := '\cf6 ';
   if s = '</a>' then r := '\cf1 ';
