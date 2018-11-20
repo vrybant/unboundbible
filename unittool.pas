@@ -9,13 +9,14 @@ procedure Search_Text (Stream: TRichStream; st: string; var count: integer);
 procedure Load_Compare(Stream: TRichStream);
 procedure Load_Translate(Stream: TRichStream; Verse: TVerse);
 procedure Load_Commentary(Stream: TRichStream);
+procedure Load_Strong(Stream: TRichStream; marker: string = '');
 procedure Load_Footnote(Stream: TRichStream; marker: string = '');
 procedure Load_Verses(Stream: TRichStream);
 procedure Show_Message(Stream: TRichStream; s: string);
 
 implementation
 
-uses UnitShelf, UnitCommentary, UnitSearch, UnitParse, UnitLib;
+uses UnitShelf, UnitDictionary, UnitCommentary, UnitSearch, UnitParse, UnitLib;
 
 procedure Load_Chapter(Stream: TRichStream);
 var
@@ -115,7 +116,6 @@ begin
   for i:=0 to Shelf.Count-1 do
     begin
       if not Shelf[i].Compare then Continue;
-
       Strings := Shelf[i].GetRange(ActiveVerse);
 
       if Length(Strings) > 0 then
@@ -199,6 +199,17 @@ begin
         end;
     end;
 
+  Stream.Close;
+end;
+
+procedure Load_Strong(Stream: TRichStream; marker: string = '');
+var s : string;
+begin
+  if Commentaries.Count = 0 then Exit;
+  s := Dictionaries.GetStrong(Bible.fileName, ActiveVerse, marker);
+  s := '\f0\fs18 ' + ParseHTML(s);
+  Stream.Open;
+  Stream.Writeln(s);
   Stream.Close;
 end;
 

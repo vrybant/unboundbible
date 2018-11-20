@@ -209,6 +209,7 @@ type
     procedure LoadCompare;
     procedure LoadTranslate(Verse: TVerse);
     procedure LoadCommentary;
+    procedure LoadStrong(s: string);
     procedure LoadFootnote(s: string);
     procedure MakeBookList;
     procedure MakeChapterList(n: integer);
@@ -253,6 +254,7 @@ const
 
 const
   ms_Confirm   : string = '';
+  ms_Strong    : string = 'Strong';
   ms_Footnote  : string = '';
   ms_Found     : string = '';
   ms_Message   : string = '';
@@ -739,8 +741,10 @@ begin
 
   if Sender <> MemoBible then Exit;
 
-//if Memo.Foreground = fgStrong   then ..
-  if Memo.Foreground = fgFootnote then LoadFootnote(Trim(Memo.Hyperlink));
+  output(Memo.Hyperlink);
+
+  if Memo.Foreground = fgStrong   then LoadStrong(Memo.Hyperlink);
+  if Memo.Foreground = fgFootnote then LoadFootnote(Memo.Hyperlink);
 end;
 
 procedure TMainForm.MemoAttrChange(Sender: TObject);
@@ -1270,6 +1274,18 @@ begin
   Load_Commentary(Stream);
   MemoCommentary.LoadRichText(Stream);
   Stream.Free;
+end;
+
+procedure TMainForm.LoadStrong(s: string);
+var
+  Stream : TRichStream;
+begin
+  Stream := TRichStream.Create;
+  Load_Strong(Stream, s);
+  RichNotifier.LoadRichText(Stream);
+  Stream.Free;
+  RichNotifier.Title := ms_Strong;
+  RichNotifier.ShowAtPos(Mouse.CursorPos.x, Mouse.CursorPos.y);
 end;
 
 procedure TMainForm.LoadFootnote(s: string);
