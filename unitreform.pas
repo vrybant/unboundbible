@@ -9,7 +9,7 @@ function Reform(s: string; purge: boolean = true): string;
 
 implementation
 
-procedure RemoveTagContent(var List: TStringArray; StartTag, EndTag: string);
+procedure RemoveTagContent(const List: TStringArray; StartTag, EndTag: string);
 var
   l : boolean = false;
   i : integer;
@@ -38,7 +38,7 @@ begin
   Result := Copy(s,x1+1,x2-x1-1);
 end;
 
-procedure Footnotes(var List: TStringArray; p: boolean);
+procedure Footnotes(const List: TStringArray; p: boolean);
 var
   marker : string = '';
   l : boolean = false;
@@ -90,7 +90,7 @@ begin
   Result := Copy(s,x1+2,x2-x1-3);
 end;
 
-procedure Strongs(var List: TStringArray);
+procedure Strongs(const List: TStringArray);
 var
   number : string = '';
   i : integer;
@@ -103,7 +103,7 @@ begin
       end;
 end;
 
-procedure Replacement(var List: TStringArray);
+procedure Replacement(const List: TStringArray);
 var i : integer;
 begin
   for i:=Low(List) to High(List) do
