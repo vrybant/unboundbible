@@ -52,6 +52,7 @@ type
     {-}
     connected    : boolean;
     loaded       : boolean;
+    strong       : boolean;
     footnotes    : boolean;
   public
     constructor Create(filePath: string);
@@ -153,6 +154,7 @@ begin
   connected    := false;
   loaded       := false;
   RightToLeft  := false;
+  strong       := false;
   footnotes    := false;
 end;
 
@@ -203,11 +205,12 @@ begin
       Query.SQL.Text := 'SELECT * FROM Details';
       Query.Open;
 
-      try info      := Query.FieldByName('Information').AsString; except end;
-      try info      := Query.FieldByName('Description').AsString; except end;
-      try name      := Query.FieldByName('Title'      ).AsString; except name := info; end;
-      try copyright := Query.FieldByName('Copyright'  ).AsString; except end;
-      try language  := Query.FieldByName('Language'   ).AsString; except end;
+      try info      := Query.FieldByName('Information').AsString;  except end;
+      try info      := Query.FieldByName('Description').AsString;  except end;
+      try name      := Query.FieldByName('Title'      ).AsString;  except name := info; end;
+      try copyright := Query.FieldByName('Copyright'  ).AsString;  except end;
+      try language  := Query.FieldByName('Language'   ).AsString;  except end;
+      try strong    := Query.FieldByName('Strong'     ).AsBoolean; except end;
 
       connected := true;
     except
@@ -230,6 +233,7 @@ begin
           if key = 'description'   then name      := value;
           if key = 'detailed_info' then info      := value;
           if key = 'language'      then language  := value;
+          if key = 'is_strong'     then strong    := ToBoolean(value);
           if key = 'is_footnotes'  then footnotes := ToBoolean(value);
 
           Query.Next;
