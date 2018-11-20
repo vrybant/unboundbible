@@ -80,13 +80,15 @@ begin
 end;
 
 function TUnboundMemo.Foreground: integer;
+const
+  clBrown = TColor($336699); // apple brown
 begin
   Result := fgText;
 
   case SelAttributes.Color of
-    clNavy   : Result := fgLink;
-    clPurple : Result := fgStrong;
-    clGray   : Result := fgFootnote;
+    clNavy  : Result := fgLink;
+    clBrown : Result := fgStrong;
+    clTeal  : Result := fgFootnote;
   end;
 
 end;
@@ -126,7 +128,7 @@ begin
   until Foreground <> fore;
 
   SetSel(x1, x2); Result := RemoveCRLF(SelText);
-  SetSel(n1, n2);
+  SetSel(n1, n2); Result := Trim(Result);
 end;
 
 procedure TUnboundMemo.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
