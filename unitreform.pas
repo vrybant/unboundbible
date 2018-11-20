@@ -87,7 +87,7 @@ begin
   Result := s;
   x1 := Pos('<',s); if x1 = 0 then Exit;
   x2 := Pos('>',s); if x2 = 0 then Exit;
-  Result := Copy(s,x1+3,x2-x1-3);
+  Result := Copy(s,x1+2,x2-x1-3);
 end;
 
 procedure RemakeStrongs(var List: TStringArray);
