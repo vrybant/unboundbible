@@ -11,7 +11,7 @@ type
     z : TDictionaryAlias;
   public
     constructor Create(filePath: string);
-    function GetData(Verse: TVerse): TStringArray;
+    function GetData(num: string): string;
   end;
 
   TDictionaries = class(TFPGList<TDictionary>)
@@ -19,6 +19,7 @@ type
     procedure Load(path: string);
   public
     constructor Create;
+    function GetStrong(module: string; Verse: TVerse; marker: string): string;
     destructor Destroy; override;
   end;
 
@@ -35,42 +36,24 @@ constructor TDictionary.Create(filePath: string);
 begin
   inherited Create(filePath);
   z := unboundDictionaryAlias;
-  OpenDatabase;
   if format = mybible then z := mybibleDictionaryAlias;
+  OpenDatabase;
   Validate(z.dictionary);
+//if self.strong then output(self.language + self.fileName + ' - ' + self.name );
 end;
 
-function TDictionary.GetData(Verse: TVerse): TStringArray;
-var
-  v_from, v_to : string;
-  line : string;
-  i, id : integer;
+function TDictionary.GetData(num: string): string;
 begin
-  SetLength(Result,0);
-
-  id := EncodeID(format, Verse.book);
-  v_from := ToStr(Verse.number);
-  v_to   := ToStr(Verse.number + Verse.count - 1);
-
+  Result := '---';
   try
     try
-        //Query.SQL.Text := 'SELECT * FROM ' + z.dictionary +
-        //  ' WHERE ' + z.book      + ' = '  + ToStr(id) +
-        //    ' AND ' + z.chapter   + ' = '  + ToStr(Verse.chapter) +
-        //  ' AND ((' + v_from      + ' BETWEEN ' + z.fromverse + ' AND ' + z.toverse + ')' +
-        //    ' OR (' + z.fromverse + ' BETWEEN ' + v_from      + ' AND ' + v_to      + ')) ';
+      Query.SQL.Text := 'SELECT * FROM ' + z.dictionary +
+                        ' WHERE ' + z.word + ' = "' + num + '"';
 
-        Query.Open;
-        Query.Last;
-        SetLength(Result, Query.RecordCount);
-        Query.First;
+      output(Query.SQL.Text);
 
-        for i:=0 to Query.RecordCount-1 do
-          begin
-            //try line := Query.FieldByName(z.definition).AsString; except line := '' end;
-            Result[i] := line;
-            Query.Next;
-          end;
+      Query.Open;
+      try Result := Query.FieldByName(z.data).AsString; except end;
     except
       //
     end;
@@ -118,6 +101,23 @@ begin
       if Pos('.dct.',f) + Pos('.dictionary.',f) = 0 then continue;
       Item := TDictionary.Create(f);
       if Item.connected then Add(Item) else Item.Free;
+    end;
+end;
+
+function TDictionaries.GetStrong(module: string; Verse: TVerse; marker: string): string;
+var
+  name : string;
+  i : integer;
+begin
+  Result := '';
+  if self.Count = 0 then Exit;
+  name := ExtractOnlyName(module);
+
+  for i:=0 to self.Count-1 do
+    begin
+      if not self[i].strong then Continue;
+      if not Prefix('strong_',self[i].filename) then Continue;
+      Result := self[i].GetData(marker);
     end;
 end;
 
