@@ -37,13 +37,13 @@ begin
 
   s := LowerCase(s);
 
-  if s =  '<i>' then r := '\i ';
-  if s = '</i>' then r := '\i0 ';
+  if s =  '<i>' then r := '\cf5\i ';
+  if s = '</i>' then r := color + '\i0 ';
   if s =  '<s>' then r := '\cf8\super ';
   if s = '</s>' then r := color + '\nosupersub ';
-  if s =  '<n>' then r := '\cf5 ';
+  if s =  '<n>' then r := '\cf5 ';       // note
   if s = '</n>' then r := color + ' ';
-  if s =  '<m>' then r := '\cf9\super '; // морфология
+  if s =  '<m>' then r := '\cf9\super '; // morphology
   if s = '</m>' then r := color + '\nosupersub ';
   if s =  '<f>' then r := '\cf6\super ';
   if s = '</f>' then r := color + '\nosupersub ';

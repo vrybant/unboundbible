@@ -37,8 +37,10 @@ type
     function GetChapter(Verse: TVerse): TStringArray;
     function GetRange(Verse: TVerse): TStringArray;
     function GoodLink(Verse: TVerse): boolean;
-    function  Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
+    function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     function GetAll: TContentArray;
+    procedure CheckTags;
+    procedure Extract;
     procedure GetTitles(var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
     function  GetFootnote(Verse: TVerse; marker: string): string;
@@ -397,9 +399,7 @@ begin
 end;
 
 function TBible.GetAll: TContentArray;
-var
-  Contents : TContentArray;
-  i : integer;
+var i : integer;
 begin
   SetLength(Result,0);
 
@@ -409,17 +409,18 @@ begin
       Query.Open;
 
       Query.Last; // must be called before RecordCount
-      SetLength(Contents,Query.RecordCount);
+      SetLength(Result,Query.RecordCount);
       Query.First;
 
       for i:=0 to Query.RecordCount-1 do
         begin
-          Contents[i].verse := noneVerse;
-          try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
-          try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
-          try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
-          try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
-          Contents[i].verse.book := DecodeID(format, Contents[i].verse.book);
+          Result[i].verse := noneVerse;
+          try Result[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
+          try Result[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
+          try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
+          try Result[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
+          Result[i].verse.book := DecodeID(format, Result[i].verse.book);
+          Result[i].text := Reform(Result[i].text, false);
           Query.Next;
         end;
     except
@@ -428,6 +429,52 @@ begin
   finally
     Query.Close;
   end;
+end;
+
+procedure TBible.CheckTags;
+var
+  List : TStringList;
+  tags : TStringArray;
+  Contents : TContentArray;
+  i : integer;
+  s : string;
+begin
+  List := TStringList.Create;
+
+  Contents := GetAll;
+  for i:=Low(Contents) to High(Contents) do
+    begin
+      tags := XmlToList(Contents[i].text);
+      for s in tags do
+        if Pos('<',s) > 0 then
+          if List.IndexOf(s) < 0 then List.Add(s);
+    end;
+
+  for i:=0 to List.Count-1 do output(List[i]);
+  List.Free;
+end;
+
+procedure TBible.Extract;
+var
+  File_Name : string;
+  f : System.Text;
+  Contents : TContentArray;
+  i : integer;
+begin
+  File_Name := GetUserDir + AppName + Slash + 'out.txt';
+
+  AssignFile(f,File_Name); Rewrite(f);
+
+  Contents := GetAll;
+  for i:=Low(Contents) to High(Contents) do
+    begin
+      write(f,Contents[i].verse.book   ); write(f,char($09));
+      write(f,Contents[i].verse.chapter); write(f,char($09));
+      write(f,Contents[i].verse.number ); write(f,char($09));
+      write(f,Contents[i].text         ); writeln(f);
+    end;
+
+  CloseFile(f);
 end;
 
 procedure TBible.GetTitles(var List: TStringList);
@@ -464,12 +511,19 @@ var
 begin
   Result := '';
 
+  Replace(s,'<RF>', '<f>'); // mysword
+  Replace(s,'<RF ', '<f ');
+  Replace(s,'<Rf>','</f>');
+
+  if Prefix('*',marker) then marker := '<f>'
+                        else marker := '<f q=' + marker + '>';
+
   while Pos(marker,s) > 0 do
     begin
       x := Pos(marker,s);
       x := x + Length(marker);
       s := Copy(s, x, Length(s));
-      x := Pos('<Rf>',s); if x = 0 then break;
+      x := Pos('</f>',s); if x = 0 then break;
       Result := Result + Copy(s,1,x-1) + '\par ';
     end;
 
@@ -478,19 +532,16 @@ end;
 
 function TBible.GetFootnote(Verse: TVerse; marker: string): string;
 var
-  id : integer;
   line : string = '';
+    id : integer;
 begin
   id := EncodeID(format, Verse.book);
 
-  if Prefix('*',marker) then marker := '<RF>'
-                        else marker := '<RF q=' + marker + '>';
   try
     try
       Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + ToStr(id) +
                       ' AND ' + z.chapter + ' = ' + ToStr(Verse.chapter) +
-                      ' AND ' + z.verse   + ' = ' + ToStr(Verse.number)  +
-                      ' AND ' + z.text + ' LIKE ' + '"%' + marker + '%"' ;
+                      ' AND ' + z.verse   + ' = ' + ToStr(Verse.number)  ;
       Query.Open;
       try line := Query.FieldByName(z.text).AsString; except end;
     except
@@ -500,6 +551,7 @@ begin
     Query.Close;
   end;
 
+  output(line);
   Result := ExtractFootnotes(line, marker);
 end;
 
@@ -594,6 +646,11 @@ end;
 destructor TShelf.Destroy;
 var i : integer;
 begin
+  Self[Current].CheckTags;
+  Self[Current].Extract;
+
+  // ++++++++++
+
   SavePrivates;
   for i:=0 to Count-1 do Items[i].Free;
   inherited Destroy;

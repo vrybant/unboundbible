@@ -28,58 +28,6 @@ begin
     end;
 end;
 
-function ExtractFootnoteMarker(s: string): string;
-var
-  x1, x2 : integer;
-begin
-  Result := s;
-  x1 := Pos('=',s); if x1 = 0 then Exit;
-  x2 := Pos('>',s); if x2 = 0 then Exit;
-  Result := Copy(s,x1+1,x2-x1-1);
-end;
-
-procedure Footnotes(const List: TStringArray; p: boolean);
-var
-  marker : string = '';
-  l : boolean = false;
-  i : integer;
-begin
-  for i:=Low(List) to High(List) do
-    begin
-      if List[i] = '<RF>' then
-        begin
-          if not p then marker := '*';
-          if p then List[i] := '';
-          l := true;
-          Continue;
-        end;
-
-      if Prefix('<RF ', List[i]) then
-        begin
-          if not p then marker := ExtractFootnoteMarker(List[i]);
-          if p then List[i] := '' else List[i] := '<RF>';
-          l := true;
-          Continue;
-        end;
-
-      if l and (List[i] = '<Rf>') then
-        begin
-          if p then List[i] := '';
-          l := false;
-          Continue;
-        end;
-
-      if marker <> '' then
-        begin
-          List[i] := ' ' + marker;
-          marker := '';
-          Continue;
-        end;
-
-      if l then List[i] := '';
-    end;
-end;
-
 function ExtractStrongNumber(s: string): string;
 var
   x1, x2 : integer;
@@ -99,8 +47,58 @@ begin
     if Prefix('<W', List[i]) then
       begin
         number := ExtractStrongNumber(List[i]);
-        List[i] := ' ' + '<S>' + number + '</S>';
+        List[i] := '<S>' + number + '</S>';
       end;
+end;
+
+function ExtractFootnoteMarker(s: string): string;
+var
+  x1, x2 : integer;
+begin
+  Result := s;
+  x1 := Pos('=',s); if x1 = 0 then Exit;
+  x2 := Pos('>',s); if x2 = 0 then Exit;
+  Result := Copy(s,x1+1,x2-x1-1);
+end;
+
+procedure Footnotes(const List: TStringArray);
+var
+  marker : string = '';
+  l : boolean = false;
+  i : integer;
+begin
+  for i:=Low(List) to High(List) do
+    begin
+      if List[i] = '<f>' then
+        begin
+          marker := '*';
+          l := true;
+          Continue;
+        end;
+
+      if Prefix('<f ', List[i]) then
+        begin
+          marker := ExtractFootnoteMarker(List[i]);
+          List[i] := '<f>';
+          l := true;
+          Continue;
+        end;
+
+      if l and (List[i] = '</f>') then
+        begin
+          l := false;
+          Continue;
+        end;
+
+      if marker <> '' then
+        begin
+          List[i] := marker;
+          marker := '';
+          Continue;
+        end;
+
+      if l then List[i] := '';
+    end;
 end;
 
 procedure Replacement(const List: TStringArray);
@@ -112,10 +110,19 @@ begin
       if List[i] =  '<Fr>' then List[i] := '</J>';
       if List[i] =  '<FI>' then List[i] :=  '<i>';
       if List[i] =  '<Fi>' then List[i] := '</i>';
-      if List[i] =  '<RF>' then List[i] :=  '<f>';
+      if List[i] =  '<FO>' then List[i] :=  '<t>'; // quote
+      if List[i] =  '<Fo>' then List[i] := '</t>';
+      if List[i] =  '<RF>' then List[i] :=  '<f>'; // footnote
       if List[i] =  '<Rf>' then List[i] := '</f>';
+      if List[i] =  '<TS>' then List[i] :=  '<h>'; // prologue
+      if List[i] =  '<Ts>' then List[i] := '</h>';
       if List[i] =  '<em>' then List[i] :=  '<i>';
       if List[i] = '</em>' then List[i] := '</i>';
+
+      if List[i] =  '<CM>' then List[i] := '';
+      if List[i] = '<pb/>' then List[i] := '';
+
+      if Prefix('<RF ',List[i]) then Replace(List[i],'<RF','<f');
     end;
 end;
 
@@ -123,16 +130,17 @@ function Reform(s: string; purge: boolean = true): string;
 var
   List : TStringArray;
 begin
-  Replace(s,'</S><S>','</S> <S>');
   List := XmlToList(s);
 
-  RemoveTagContent(List,'<TS>','<Ts>'); // Prologue
-  Footnotes(List, purge);
-  Strongs(List);
   Replacement(List);
+  Strongs(List);
+  Footnotes(List);
+
+  RemoveTagContent(List,'<h>','</h>');
   if purge then RemoveTagContent(List, '<f>','</f>');
 
   Result := Trim(ListToString(List));
+  Replace(Result,'</S><S>','</S> <S>');
 end;
 
 end.

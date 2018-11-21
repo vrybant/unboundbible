@@ -54,8 +54,11 @@ begin
   WriteLn('\red0\green0\blue128;'     ); // 3 navy
   WriteLn('\red0\green128\blue0;'     ); // 4 green
   WriteLn('\red128\green128\blue128;' ); // 5 gray
-  WriteLn('\red96\green96\blue96;'    ); // 6 dark gray
-  WriteLn('\red128\green0\blue128;'   ); // 7 purple
+  WriteLn('\red0\green128\blue128;'   ); // 6 teal
+  WriteLn('\red128\green0\blue0;'     ); // 7 maroon
+  WriteLn('\red153\green102\blue51;'  ); // 8 brown
+  WriteLn('\red139\green69\blue19;'   ); // 9 saddlebrown
+//WriteLn('\red128\green0\blue128;'   ); // 0 purple
   WriteLn('}');
 
   Write('\f1\cf1');
