@@ -12,7 +12,7 @@ object MainForm: TMainForm
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnPaint = FormPaint
-  LCLVersion = '1.6.4.0'
+  LCLVersion = '1.8.4.0'
   object StandardToolBar: TToolBar
     Left = 0
     Height = 30
@@ -39,10 +39,9 @@ object MainForm: TMainForm
       ParentShowHint = False
     end
     object ToolSeparator2: TToolButton
-      Left = 228
+      Left = 205
       Height = 28
       Top = 0
-      Width = 28
       Caption = 'ToolSeparator2'
       Style = tbsDivider
     end
@@ -69,90 +68,87 @@ object MainForm: TMainForm
       Action = ActionFilePrint
     end
     object ToolButtonSearch: TToolButton
-      Left = 172
+      Left = 149
       Top = 0
       Action = ActionSearch
     end
     object ToolSeparator3: TToolButton
-      Left = 396
+      Left = 350
       Height = 28
       Top = 0
-      Width = 28
       ImageIndex = 3
       Style = tbsDivider
     end
     object ToolButtonCut: TToolButton
-      Left = 256
+      Left = 210
       Top = 0
       Action = ActionEditCut
     end
     object ToolButtonCopy: TToolButton
-      Left = 284
+      Left = 238
       Top = 0
       Action = ActionEditCopy
     end
     object ToolButtonPaste: TToolButton
-      Left = 340
+      Left = 294
       Top = 0
       Action = ActionEditPaste
     end
     object ToolButtonUndo: TToolButton
-      Left = 368
+      Left = 322
       Top = 0
       Action = ActionEditUndo
     end
     object ToolSeparator4: TToolButton
-      Left = 564
+      Left = 495
       Height = 28
       Top = 0
-      Width = 28
       Caption = 'ToolSeparator4'
       ImageIndex = 15
       Style = tbsDivider
     end
     object ToolButtonCompare: TToolButton
-      Left = 200
+      Left = 177
       Top = 0
       Action = ActionCompare
       ParentShowHint = False
       ShowHint = True
     end
     object ToolSeparator5: TToolButton
-      Left = 676
+      Left = 584
       Height = 28
       Top = 0
-      Width = 28
       Caption = 'ToolSeparator5'
       Grouped = True
       ImageIndex = 15
       Style = tbsDivider
     end
     object ToolButtonBold: TToolButton
-      Left = 452
+      Left = 383
       Top = 0
       Action = ActionBold
       Style = tbsCheck
     end
     object ToolButtonItalic: TToolButton
-      Left = 480
+      Left = 411
       Top = 0
       Action = ActionItalic
       Style = tbsCheck
     end
     object ToolButtonUnderline: TToolButton
-      Left = 508
+      Left = 439
       Top = 0
       Action = ActionUnderline
       Style = tbsCheck
     end
     object ToolButtonLink: TToolButton
-      Left = 536
+      Left = 467
       Top = 0
       Action = ActionLink
       Style = tbsCheck
     end
     object ToolButtonLeft: TToolButton
-      Left = 592
+      Left = 500
       Top = 0
       Action = ActionLeft
       Grouped = True
@@ -160,7 +156,7 @@ object MainForm: TMainForm
     end
     object ToolButtonCenter: TToolButton
       Tag = 2
-      Left = 620
+      Left = 528
       Top = 0
       Action = ActionCenter
       Grouped = True
@@ -168,25 +164,25 @@ object MainForm: TMainForm
     end
     object ToolButtonRight: TToolButton
       Tag = 1
-      Left = 648
+      Left = 556
       Top = 0
       Action = ActionRight
       Grouped = True
       Style = tbsCheck
     end
     object ToolButtonBullets: TToolButton
-      Left = 704
+      Left = 589
       Top = 0
       Action = ActionBullets
       Style = tbsCheck
     end
     object ToolButtonFont: TToolButton
-      Left = 424
+      Left = 355
       Top = 0
       Action = ActionFont
     end
     object ToolButtonVerses: TToolButton
-      Left = 312
+      Left = 266
       Top = 0
       Action = ActionCopyVerses
       ParentShowHint = False
@@ -196,7 +192,6 @@ object MainForm: TMainForm
       Left = 144
       Height = 28
       Top = 0
-      Width = 28
       Caption = 'ToolSeparator1'
       Style = tbsDivider
     end
@@ -263,6 +258,8 @@ object MainForm: TMainForm
     Top = 341
     Width = 795
     Panels = <>
+    ParentShowHint = False
+    ShowHint = True
   end
   object PageControl: TPageControl
     Left = 200
