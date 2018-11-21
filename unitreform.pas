@@ -9,25 +9,6 @@ function Reform(s: string; format: TFileFormat; purge: boolean = true): string;
 
 implementation
 
-procedure RemoveTagContent(const List: TStringArray; StartTag, EndTag: string);
-var
-  l : boolean = false;
-  i : integer;
-begin
-  for i:=Low(List) to High(List) do
-    begin
-      if List[i] = StartTag then l := true;
-
-      if List[i] = EndTag then
-        begin
-          List[i] := '';
-          l := false;
-        end;
-
-      if l then List[i] := '';
-    end;
-end;
-
 function ExtractStrongNumber(s: string): string;
 var
   x1, x2 : integer;
@@ -136,8 +117,8 @@ begin
   Replacement(List);
   if format = unbound then Footnotes(List);
 
-  RemoveTagContent(List,'<h>','</h>');
-  if purge then RemoveTagContent(List, '<f>','</f>');
+  PurgeTag(List,'<h>','</h>');
+  if purge then PurgeTag(List, '<f','</f>');
 
   Result := Trim(ListToString(List));
   Replace(Result,'</S><S>','</S> <S>');

@@ -34,7 +34,9 @@ end;
 function Super(s: string): boolean;
 var i : integer;
 begin
-//s := CleanTags(s);
+  if Pos( '<f',s) > 0 then PurgeTag(s, '<f','</f>');
+  if Pos('<RF',s) > 0 then PurgeTag(s,'<RF','<Rf>');
+
   if not (caseSensitive in Options) then s := Utf8LowerCase(s);
   if wholeWords in Options then s := ' ' + CleanString(s) + ' ';
 
@@ -54,7 +56,7 @@ end;
 procedure SQLite3CreateFunctions(const Handle: pointer);
 begin
   if Assigned(Handle) then
-      sqlite3_create_function(Handle,'super',1,SQLITE_UTF8 or SQLITE_DETERMINISTIC,nil,@xSuper,nil,nil);
+    sqlite3_create_function(Handle,'super',1,SQLITE_UTF8 or SQLITE_DETERMINISTIC,nil,@xSuper,nil,nil);
 end;
 
 end.

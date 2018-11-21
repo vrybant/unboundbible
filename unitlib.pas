@@ -40,12 +40,14 @@ function CleanString(s: string): string;
 function StringPos(subst: string; s: string): TIntegerArray;
 procedure Replace(var s: string; const oldPattern, newPattern: String);
 procedure DelDoubleSpace(var s: string);
-function ListToArray(List: TStringList): TStringArray;
-function ListToString(List: TStringArray): string;
+function ListToArray(const List: TStringList): TStringArray;
+function ListToString(const List: TStringArray): string;
 function StringToList(ch: Char; s: string): TStringArray;
 function XmlToList(s: string): TStringArray;
 function CleanTags(s: string): string;
 procedure RemoveTags(var s: string);
+procedure PurgeTag(const List: TStringArray; StartTag, EndTag: string); overload;
+procedure PurgeTag(var line: string; StartTag, EndTag: string); overload;
 
 // сlipboard's function
 
@@ -167,7 +169,7 @@ begin
   s := DelSpace1(s);
 end;
 
-function ListToArray(List: TStringList): TStringArray;
+function ListToArray(const List: TStringList): TStringArray;
 var i : integer;
 begin
   SetLength(Result, List.Count);
@@ -175,7 +177,7 @@ begin
     Result[i] := List[i];
 end;
 
-function ListToString(List: TStringArray): string;
+function ListToString(const List: TStringArray): string;
 var s : string;
 begin
   Result := '';
@@ -279,6 +281,34 @@ begin
       if s[i]='>' then l := True;
     end;
   s := result;
+end;
+
+procedure PurgeTag(const List: TStringArray; StartTag, EndTag: string);
+var
+  l : boolean = false;
+  i : integer;
+begin
+  for i:=Low(List) to High(List) do
+    begin
+      if Prefix(StartTag, List[i]) then l := true;
+
+      if List[i] = EndTag then
+        begin
+          List[i] := '';
+          l := false;
+        end;
+
+      if l then List[i] := '';
+    end;
+end;
+
+procedure PurgeTag(var line: string; StartTag, EndTag: string);
+var
+  List : TStringArray;
+begin
+  List := XmlToList(line);
+  PurgeTag(List, StartTag, EndTag);
+  line := ListToString(List);
 end;
 
 // сlipboard's function
