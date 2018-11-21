@@ -285,8 +285,7 @@ begin
       for i:=0 to Query.RecordCount-1 do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
-      //  line = line.replace("\n", "") // ESWORD ?
-          Result[i] := Reform(line, false);
+          Result[i] := Reform(line, format, false);
           Query.Next;
         end;
     except
@@ -319,7 +318,7 @@ begin
       for i:=0 to Query.RecordCount-1 do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
-          Result[i] := Reform(line);
+          Result[i] := Reform(line, format);
           Query.Next;
         end;
     except
@@ -385,7 +384,7 @@ begin
           try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
           Contents[i].verse.book := DecodeID(format, Contents[i].verse.book);
-          Contents[i].text := Reform(Contents[i].text);
+          Contents[i].text := Reform(Contents[i].text, format);
           Query.Next;
         end;
     finally
@@ -420,7 +419,7 @@ begin
           try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Result[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
           Result[i].verse.book := DecodeID(format, Result[i].verse.book);
-          Result[i].text := Reform(Result[i].text, false);
+          Result[i].text := Reform(Result[i].text, format, false);
           Query.Next;
         end;
     except
@@ -456,14 +455,14 @@ end;
 
 procedure TBible.Extract;
 var
-  File_Name : string;
+  filepath : string;
   f : System.Text;
   Contents : TContentArray;
   i : integer;
 begin
-  File_Name := GetUserDir + AppName + Slash + 'out.txt';
+  filepath := GetUserDir + AppName + Slash + 'out.txt';
 
-  AssignFile(f,File_Name); Rewrite(f);
+  AssignFile(f,filepath); Rewrite(f);
 
   Contents := GetAll;
   for i:=Low(Contents) to High(Contents) do

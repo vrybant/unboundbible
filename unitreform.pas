@@ -3,9 +3,9 @@ unit UnitReform;
 interface
 
 uses
-  Classes, SysUtils, UnitLib;
+  Classes, SysUtils, UnitType, UnitLib;
 
-function Reform(s: string; purge: boolean = true): string;
+function Reform(s: string; format: TFileFormat; purge: boolean = true): string;
 
 implementation
 
@@ -126,15 +126,15 @@ begin
     end;
 end;
 
-function Reform(s: string; purge: boolean = true): string;
+function Reform(s: string; format: TFileFormat; purge: boolean = true): string;
 var
   List : TStringArray;
 begin
   List := XmlToList(s);
 
-  Replacement(List);
   Strongs(List);
-  Footnotes(List);
+  Replacement(List);
+  if format = unbound then Footnotes(List);
 
   RemoveTagContent(List,'<h>','</h>');
   if purge then RemoveTagContent(List, '<f>','</f>');
