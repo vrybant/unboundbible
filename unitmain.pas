@@ -224,7 +224,7 @@ type
     procedure SelectPage(page: integer);
     procedure Translate;
     procedure UpdateCaption(s: string);
-    procedure UpdateStatus(s: string);
+    procedure UpdateStatus(s, Hint: string);
     procedure UpdateActionImage;
     procedure VersesToClipboard;
     procedure ShowPopup;
@@ -289,7 +289,8 @@ begin
   begin
     MakeBookList;
     if not Bible.GoodLink(ActiveVerse) then ActiveVerse := Bible.FirstVerse;
-    UpdateStatus(Bible.Info);
+    UpdateStatus(Bible.Info, Bible.fileName);
+
     // LoadChapter; // RichMemo doesn't load from Stream,
                     // so we call it from FormActivate
   end;
@@ -553,7 +554,7 @@ var
   select : boolean;
 begin
   Shelf.SetCurrent(ComboBox.ItemIndex);
-  UpdateStatus(Bible.Info);
+  UpdateStatus(Bible.Info, Bible.fileName);
   MakeBookList;
   select := ActiveVerse.number > 1;
   {$ifdef linux}
@@ -806,9 +807,10 @@ begin
   Caption := AppName + ' ' + VersionInfo + ' - ' + s;
 end;
 
-procedure TMainForm.UpdateStatus(s: string);
+procedure TMainForm.UpdateStatus(s, Hint: string);
 begin
   StatusBar.SimpleText := ' ' + s;
+  StatusBar.Hint := Hint;
 end;
 
 procedure TMainForm.ShowPopup;
@@ -1130,7 +1132,7 @@ procedure TMainForm.PageControlChange(Sender: TObject);
 begin
   EnableButtons;
   UpDownButtons;
-  UpdateStatus('');
+  UpdateStatus('','');
   UnboundMemo.SetFocus;
   UnboundMemo.Repaint;
   if PageControl.ActivePageIndex = apCompare then LoadCompare;
@@ -1233,7 +1235,7 @@ begin
   MemoSearch.LoadRichText(Stream);
   Cursor := crArrow;
   SelectPage(apSearch);
-  UpdateStatus(ToStr(Count) + ' ' + ms_found);
+  UpdateStatus(ToStr(Count) + ' ' + ms_found,'');
   Stream.Free;
 end;
 
