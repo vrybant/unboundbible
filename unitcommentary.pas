@@ -154,6 +154,7 @@ var
 begin
   Result := '';
   if self.Count = 0 then Exit;
+  if marker = '❉' then marker := '*';
   name := ExtractOnlyName(module);
 
   for i:=0 to self.Count-1 do
