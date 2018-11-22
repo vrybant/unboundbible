@@ -88,6 +88,7 @@ begin
 
   Stream.Open;
   ContentArray := Bible.Search(st, CurrentSearchOptions, CurrentSearchRange);
+  Count := Length(ContentArray);
 
   for content in ContentArray do
     begin

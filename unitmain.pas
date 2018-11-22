@@ -1214,7 +1214,7 @@ end;
 procedure TMainForm.SearchText(s: string);
 var
   Stream : TRichStream;
-  Count: integer;
+  Count : integer = 0;
 {$ifdef linux}
 const
   max = 200;
