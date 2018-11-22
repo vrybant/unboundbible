@@ -398,7 +398,9 @@ begin
 end;
 
 function TBible.GetAll: TContentArray;
-var i : integer;
+var
+  text : string = '';
+  i : integer;
 begin
   SetLength(Result,0);
 
@@ -417,9 +419,10 @@ begin
           try Result[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
           try Result[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
-          try Result[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
+          try text                    := Query.FieldByName(z.text   ).AsString;  except end;
           Result[i].verse.book := DecodeID(format, Result[i].verse.book);
-          Result[i].text := Reform(Result[i].text, format, false);
+          // text := MybibleStrongsToUnbound(text, IsNewTestament(Result[i].verse.book));
+          Result[i].text := Reform(text, format, false);
           Query.Next;
         end;
     except
@@ -467,6 +470,7 @@ begin
   Contents := GetAll;
   for i:=Low(Contents) to High(Contents) do
     begin
+      DelDoubleSpace(Contents[i].text);
       write(f,Contents[i].verse.book   ); write(f,char($09));
       write(f,Contents[i].verse.chapter); write(f,char($09));
       write(f,Contents[i].verse.number ); write(f,char($09));
@@ -645,10 +649,8 @@ end;
 destructor TShelf.Destroy;
 var i : integer;
 begin
-  Self[Current].CheckTags;
-  Self[Current].Extract;
-
-  // ++++++++++
+  // Self[Current].CheckTags;
+  // Self[Current].Extract;
 
   SavePrivates;
   for i:=0 to Count-1 do Items[i].Free;

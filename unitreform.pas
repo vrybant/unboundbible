@@ -5,9 +5,39 @@ interface
 uses
   Classes, SysUtils, UnitType, UnitLib;
 
-function Reform(s: string; format: TFileFormat; purge: boolean = true): string;
+//function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
+  function Reform(s: string; format: TFileFormat; purge: boolean = true): string;
 
 implementation
+
+function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
+var
+  List : TStringArray;
+  l : boolean = false;
+  i : integer;
+begin
+  List := XmlToList(s);
+
+  for i:=Low(List) to High(List) do
+    begin
+      if List[i] = '<S>' then
+        begin
+          l := true;
+          Continue;
+        end;
+
+      if List[i] = '</S>' then l := false;
+
+      if l then
+        if not Prefix('H',List[i]) and not Prefix('G',List[i]) then
+          if NewTestament then List[i] := 'G' + List[i]
+                          else List[i] := 'H' + List[i];
+    end;
+
+  Result := ListToString(List);
+end;
+
+{ ----------------------------------------------------------------------------------------------- }
 
 function ExtractStrongNumber(s: string): string;
 var
@@ -16,7 +46,7 @@ begin
   Result := s;
   x1 := Pos('<',s); if x1 = 0 then Exit;
   x2 := Pos('>',s); if x2 = 0 then Exit;
-  Result := Copy(s,x1+2,x2-x1-3);
+  Result := Copy(s,x1+2,x2-x1-2);
 end;
 
 procedure Strongs(const List: TStringArray);
@@ -102,6 +132,7 @@ begin
 
       if List[i] =  '<CM>' then List[i] := '';
       if List[i] = '<pb/>' then List[i] := '';
+      if List[i] = '<br/>' then List[i] := '';
 
       if Prefix('<RF ',List[i]) then Replace(List[i],'<RF','<f');
     end;
