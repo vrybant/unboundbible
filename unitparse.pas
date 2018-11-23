@@ -5,13 +5,14 @@ interface
 uses
   Classes, SysUtils, UnitLib;
 
-function rtf_open: string;
-function Parse(s: string; jtag: boolean = false): string;
-function ParseHTML(s: string; tab: boolean = false): string;
-
 const
   rtf_rtl = '\rtlpar\qr ';
   rtf_close = '}';
+
+function rtf_open: string;
+procedure ReplaceTags(var s: string);
+function Parse(s: string; jtag: boolean = false): string;
+function ParseHTML(s: string; tab: boolean = false): string;
 
 implementation
 
@@ -68,7 +69,21 @@ begin
   if w =  '</i>' then s := '<Fi>';
   if w =  '<em>' then s := '<FI>';
   if w = '</em>' then s := '<Fi>';
+
+  if w = '<pb/>' then s := ''; // unused tags
+  if w = '<br/>' then s := '';
+
   Result := s;
+end;
+
+procedure ReplaceTags(var s: string);
+var
+  List : TStringArray;
+  i : integer;
+begin
+  List := XmlToList(s);
+  for i:= Low(List) to High(List) do List[i] := ReplaceTag(List[i]);
+  s := ListToString(List);
 end;
 
 function ParseString(s: string; j: boolean): string;
@@ -88,6 +103,8 @@ begin
 
   if s = '<RF>' then r := '\cf6\super ';
   if s = '<Rf>' then r := color + '\nosupersub ';
+  if s = '<FI>' then r := '\cf5\i ';
+  if s = '<Fi>' then r := color + '\i0 ';
   if s =  '<S>' then r := '\cf8\super ';
   if s = '</S>' then r := color + '\nosupersub ';
   if s =  '<l>' then r := '\cf2 ';
@@ -96,11 +113,6 @@ begin
   if s = '</n>' then r := color + ' ';
   if s =  '<m>' then r := '\cf9\super '; // morphology
   if s = '</m>' then r := color + '\nosupersub ';
-
-  s := LowerCase(s);
-
-  if s =  '<i>' then r := '\cf5\i ';
-  if s = '</i>' then r := color + '\i0 ';
 
   Result := r;
 end;

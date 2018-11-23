@@ -5,12 +5,12 @@ interface
 uses
   Classes, SysUtils, UnitType, UnitLib;
 
-//function MybibleExStrongs(s: string; NewTestament: boolean): string;
-  function Normalize(s: string; format: TFileFormat; purge: boolean = true): string;
+function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
+function Normalize(s: string; format: TFileFormat; purge: boolean = true): string;
 
 implementation
 
-function MybibleExStrongs(s: string; NewTestament: boolean): string;
+function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
 var
   List : TStringArray;
   l : boolean = false;
@@ -22,16 +22,20 @@ begin
     begin
       if List[i] = '<S>' then
         begin
+          List[i] := '<';
           l := true;
           Continue;
         end;
 
-      if List[i] = '</S>' then l := false;
+      if List[i] = '</S>' then
+        begin
+          List[i] := '>';
+          l := false;
+        end;
 
       if l then
-        if not Prefix('H',List[i]) and not Prefix('G',List[i]) then
-          if NewTestament then List[i] := 'G' + List[i]
-                          else List[i] := 'H' + List[i];
+        if NewTestament then List[i] := 'WG' + List[i]
+                        else List[i] := 'WH' + List[i];
     end;
 
   Result := ListToString(List);

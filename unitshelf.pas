@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Fgl, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
-  UnitLib, UnitModule, UnitTitles, UnitType, UnitNormalize;
+  UnitLib, UnitModule, UnitTitles, UnitType, UnitNormalize, UnitParse;
 
 type
   TBook = class
@@ -421,7 +421,7 @@ begin
           try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try text                    := Query.FieldByName(z.text   ).AsString;  except end;
           Result[i].verse.book := DecodeID(format, Result[i].verse.book);
-          // text := MybibleStrongsToUnbound(text, IsNewTestament(Result[i].verse.book));
+          text := MybibleStrongsToUnbound(text, IsNewTestament(Result[i].verse.book));
           Result[i].text := Normalize(text, format, false);
           Query.Next;
         end;
@@ -435,24 +435,25 @@ end;
 
 procedure TBible.CheckTags;
 var
+  Contents : TContentArray;
+  Content : TContent;
   List : TStringList;
   tags : TStringArray;
-  Contents : TContentArray;
-  i : integer;
   s : string;
 begin
   List := TStringList.Create;
 
   Contents := GetAll;
-  for i:=Low(Contents) to High(Contents) do
+  for Content in Contents do
     begin
-      tags := XmlToList(Contents[i].text);
+      tags := XmlToList(Content.text);
       for s in tags do
-        if Pos('<',s) > 0 then
-          if List.IndexOf(s) < 0 then List.Add(s);
+        if Prefix('<',s) then
+          if not Prefix('<W',s) then
+            if List.IndexOf(s) < 0 then List.Add(s);
     end;
 
-  for i:=0 to List.Count-1 do output(List[i]);
+  for s in List do output(s);
   List.Free;
 end;
 
@@ -461,20 +462,24 @@ var
   filepath : string;
   f : System.Text;
   Contents : TContentArray;
-  i : integer;
+  Content : TContent;
+  text : string;
 begin
   filepath := GetUserDir + AppName + Slash + 'out.txt';
 
   AssignFile(f,filepath); Rewrite(f);
 
   Contents := GetAll;
-  for i:=Low(Contents) to High(Contents) do
+  for Content in Contents do
     begin
-      DelDoubleSpace(Contents[i].text);
-      write(f,Contents[i].verse.book   ); write(f,char($09));
-      write(f,Contents[i].verse.chapter); write(f,char($09));
-      write(f,Contents[i].verse.number ); write(f,char($09));
-      write(f,Contents[i].text         ); writeln(f);
+      text := Content.text;
+      PurgeTag(text,'<f','</f>');
+      ReplaceTags(text);
+      DelDoubleSpace(text);
+      write(f,Content.verse.book   ); write(f,char($09));
+      write(f,Content.verse.chapter); write(f,char($09));
+      write(f,Content.verse.number ); write(f,char($09));
+      write(f,text                 ); writeln(f);
     end;
 
   CloseFile(f);
@@ -643,8 +648,8 @@ end;
 destructor TShelf.Destroy;
 var i : integer;
 begin
-  // Self[Current].CheckTags;
-  // Self[Current].Extract;
+   Self[Current].CheckTags;
+   Self[Current].Extract;
 
   SavePrivates;
   for i:=0 to Count-1 do Items[i].Free;
