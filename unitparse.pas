@@ -10,8 +10,8 @@ function Parse(s: string; jtag: boolean = false): string;
 function ParseHTML(s: string; tab: boolean = false): string;
 
 const
-  rtf_rtl = '\rtlpar\qr';
-  rtf_close = '}' + LineEnding;
+  rtf_rtl = '\rtlpar\qr ';
+  rtf_close = '}';
 
 implementation
 
@@ -39,8 +39,6 @@ begin
     + '}'
     + '\f1\cf1'
     + '\fs' + ToStr(DefaultFont.Size * 2);
-
-//  if RightToLeft then Result += '\rtlpar\qr';
 end;
 
 function LeadingTab(s: string): string;

@@ -295,7 +295,7 @@ end;
 function TRichMemoEx.LoadRichText(Source: string): Boolean;
 var Stream : TMemoryStream;
 begin
-  Source := Utf8ToRTF(Source);
+  Source := Utf8ToRTF(Source) + LineEnding;
   Stream := TMemoryStream.Create;
   Stream.WriteBuffer(Pointer(Source)^, Length(Source));
   Result := LoadRichText(Stream);
