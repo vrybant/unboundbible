@@ -31,16 +31,22 @@ begin
       SearchList[i] := ' ' + SearchList[i] + ' ';
 end;
 
+procedure PurgeTags(var s: string);
+begin
+  if Pos('<RF',s) > 0 then PurgeTag(s,'<RF','<Rf>');
+  if Pos('<TS',s) > 0 then PurgeTag(s,'<TS','<Ts>');
+  if Pos('<h>',s) > 0 then PurgeTag(s,'<h>','</h>');
+end;
+
 function Super(s: string): boolean;
 var i : integer;
-begin
-  if Pos( '<f',s) > 0 then PurgeTag(s, '<f','</f>');
-  if Pos('<RF',s) > 0 then PurgeTag(s,'<RF','<Rf>');
+begin;
+  Result := true;
+  PurgeTags(s);
 
   if not (caseSensitive in Options) then s := Utf8LowerCase(s);
   if wholeWords in Options then s := ' ' + CleanString(s) + ' ';
 
-  Result := true;
   for i:=Low(SearchList) to High(SearchList) do
     if Pos(SearchList[i],s) = 0 then Result := false;
 end;
