@@ -2,7 +2,7 @@ unit UnitTool;
 
 interface
 
-uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitStream, UnitType;
+uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitType;
 
 function Load_Chapter: string;
 function Search_Text(st: string; var count: integer): string;

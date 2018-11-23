@@ -53,8 +53,7 @@ begin
 end;
 
 function ReplaceTag(s: string): string;
-var
-  w, r : string;
+var w : string;
 begin
   w := LowerCase(s);
   if s =   '<J>' then s := '<FR>';

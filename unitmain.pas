@@ -238,7 +238,7 @@ var
 implementation
 
 uses
-  UnitAbout, UnitSearch, UnitCompare, UnitTool, UnitStream, UnitLang,
+  UnitAbout, UnitSearch, UnitCompare, UnitTool, UnitLang,
   UnitShelf, UnitCopy, UnitTrans, UnitLib;
 
 const
@@ -1209,7 +1209,7 @@ var count : integer = 0;
 {$ifdef linux} const max = 200; {$endif}
 begin
   if Shelf.Count = 0 then Exit;
-  {$ifdef linux} if count > max then Show_Message(Stream, '\i\par  ' + ms_Message); {$endif}
+  {$ifdef linux} if count > max then Show_Message('\i\par  ' + ms_Message); {$endif}
   Cursor := crHourGlass;
   MemoSearch.LoadRichText(Search_Text(s, count));
   Cursor := crArrow;
