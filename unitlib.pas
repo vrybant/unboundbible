@@ -51,7 +51,7 @@ procedure PurgeTag(var line: string; StartTag, EndTag: string); overload;
 
 // сlipboard's function
 
-{$ifdef windows} procedure StreamToClipboard(Stream : TMemoryStream); {$endif}
+{$ifdef windows} procedure StringToClipboard(Source: string); {$endif}
 
 // file's functions
 
@@ -129,7 +129,7 @@ end;
 function ToStr(value: longint): string;
 begin
  System.Str(value, Result);
-end ;
+end;
 
 function CleanString(s: string): string;
 var i: integer;
@@ -314,7 +314,7 @@ end;
 // сlipboard's function
 
 {$ifdef windows}
-procedure StreamToClipboard(Stream : TMemoryStream);
+procedure StreamToClipboard(Stream: TMemoryStream);
 var
   Clipboard : TClipBoard;
      CF_RTF : Word;
@@ -323,6 +323,17 @@ begin
   CF_RTF  := RegisterClipboardFormat('Rich Text Format');
   Clipboard.AddFormat(CF_RTF,Stream);
   Clipboard.Free ;
+end;
+
+procedure StringToClipboard(Source: string);
+var
+  Stream : TMemoryStream;
+begin
+  Stream := TMemoryStream.Create;
+  Stream.Seek(0,soFromBeginning);
+  Stream.WriteBuffer(Pointer(Source)^, Length(Source));
+  StreamToClipboard(Stream);
+  Stream.Free;
 end;
 {$endif}
 

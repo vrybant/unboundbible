@@ -4,41 +4,38 @@ interface
 
 uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitStream, UnitType;
 
-procedure Load_Chapter(Stream: TRichStream);
-procedure Search_Text (Stream: TRichStream; st: string; var count: integer);
-procedure Load_Compare(Stream: TRichStream);
-procedure Load_Translate(Stream: TRichStream; Verse: TVerse);
-procedure Load_Commentary(Stream: TRichStream);
-procedure Load_Strong(Stream: TRichStream; marker: string = '');
-procedure Load_Footnote(Stream: TRichStream; marker: string = '');
-procedure Load_Verses(Stream: TRichStream);
-procedure Show_Message(Stream: TRichStream; s: string);
+function Load_Chapter: string;
+function Search_Text(st: string; var count: integer): string;
+function Load_Compare: string;
+function Load_Translate(Verse: TVerse): string;
+function Load_Commentary: string;
+function Load_Strong(marker: string = ''): string;
+function Load_Footnote(marker: string = ''): string;
+function Load_Verses: string;
+function Show_Message(s: string): string;
 
 implementation
 
 uses UnitShelf, UnitDictionary, UnitCommentary, UnitSearch, UnitParse, UnitLib;
 
-procedure Load_Chapter(Stream: TRichStream);
+function Load_Chapter: string;
 var
   Strings : TStringArray;
   text : string;
   i : integer;
 begin
-  if Shelf.Count = 0 then Exit;
-
-  Stream.RightToLeft := Bible.RightToLeft;
-  Stream.Open;
-
+  Result := rtf_open;
+  if Bible.RightToLeft then Result += rtf_rtl;
   Strings := Bible.GetChapter(ActiveVerse);
 
   for i:=Low(Strings) to High(Strings) do
     begin
       text := Parse(Strings[i], true);
       text := '\cf3 ' + ' ' + ToStr(i+1) + '\cf1 ' + ' ' + text + '\i0\par';
-      Stream.Writeln(text);
+      Result += text;
     end;
 
-  Stream.Close;
+  Result += rtf_close;
 end;
 
 procedure Highlight(var s: string; target: string; Options: TSearchOptions);
@@ -47,8 +44,8 @@ var
   t : string;
   i,len : integer;
 const
-  before = '\cf2 ';
-  after  = '\cf1 ';
+  before =  '<l>';
+  after  = '</l>';
 begin
   t := s;
   len := Length(target);
@@ -78,15 +75,13 @@ begin
     Highlight(s, item, Options);
 end;
 
-procedure Search_Text(Stream: TRichStream; st: string; var count: integer);
+function Search_Text(st: string; var count: integer): string;
 var
   ContentArray : TContentArray;
   content : TContent;
   link, text : string;
 begin
-  if Shelf.Count = 0 then Exit;
-
-  Stream.Open;
+  Result := rtf_open;
   ContentArray := Bible.Search(st, CurrentSearchOptions, CurrentSearchRange);
   Count := Length(ContentArray);
 
@@ -96,23 +91,20 @@ begin
       text := content.text;
       Highlights(text,st,CurrentSearchOptions);
       text := '\cf3 ' + link + '\cf1 ' + ' ' + Parse(text) + '\i0\par\par';
-      Stream.Writeln(text);
+      Result += text;
     end;
 
-  Stream.Close;
+  Result += rtf_close;
 end;
 
-procedure Load_Compare(Stream: TRichStream);
+function Load_Compare: string;
 var
   Strings : TStringArray;
-  s, item : string;
+  item : string;
   i : integer;
 begin
-  if Shelf.Count = 0 then Exit;
-  Stream.Open;
-
-  s := '\cf1 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
-  Stream.Writeln(s);
+  Result := rtf_open;
+  Result += '\cf1 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
 
   for i:=0 to Shelf.Count-1 do
     begin
@@ -120,32 +112,23 @@ begin
       Strings := Shelf[i].GetRange(ActiveVerse);
 
       if Length(Strings) > 0 then
-        begin
-          s:= '\par\cf3 ' + Shelf[i].Name + '\par\cf1 ';
-          Stream.Writeln(s);
-        end;
+        Result += '\par\cf3 ' + Shelf[i].Name + '\par\cf1 ';
 
-      for item in Strings  do
-        begin
-          s := Parse(item) + '\i0\par';
-          Stream.Writeln(s);
-        end;
+      for item in Strings do
+        Result += Parse(item) + '\i0\par';
     end;
 
-  Stream.Close;
+  Result += rtf_close;
 end;
 
-procedure Load_Translate(Stream: TRichStream; Verse: TVerse);
+function Load_Translate(Verse: TVerse): string;
 var
   Strings : TStringArray;
-  s, item : string;
+  item : string;
   i : integer;
 begin
-  if Shelf.Count = 0 then Exit;
-  Stream.Open;
-
-  s := '\cf3 ' + Bible.VerseToStr(Verse, true) + '\par ';
-  Stream.Writeln(s);
+  Result := rtf_open;
+  Result += '\cf3 ' + Bible.VerseToStr(Verse, true) + '\par ';
 
   for i:=0 to Shelf.Count-1 do
     begin
@@ -154,32 +137,26 @@ begin
       Strings := Shelf[i].GetRange(Verse);
 
       if Length(Strings) > 0 then
-        begin
-          s:= '\par\cf4 ' + Shelf[i].Name + '\par\par\cf1 ';
-          Stream.Writeln(s);
-        end;
+        Result += '\par\cf4 ' + Shelf[i].Name + '\par\par\cf1 ';
 
       for item in Strings do
-        begin
-          s := Parse(item) + '\i0\par';
-          Stream.Writeln(s);
-        end;
+        Result += Parse(item) + '\i0\par';
     end;
 
-  Stream.Close;
+  Result += rtf_close;
 end;
 
-procedure Load_Commentary(Stream: TRichStream);
+function Load_Commentary: string;
 var
   Strings : TStringArray;
-  item, s : string;
+  item : string;
   i : integer;
 begin
+  Result := '';
   if Commentaries.Count = 0 then Exit;
 
-  Stream.Open;
-  s := '\cf1 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
-  Stream.Writeln(s);
+  Result += rtf_open;
+  Result += '\cf1 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
 
   for i:=0 to Commentaries.Count-1 do
     begin
@@ -188,46 +165,39 @@ begin
       Strings := Commentaries[i].GetData(ActiveVerse);
 
       if Length(Strings) > 0 then
-        begin
-          s:= '\par\cf3 ' + Commentaries[i].Name + '\par\par\cf1 ';
-          Stream.Writeln(s);
-        end;
+        Result += '\par\cf3 ' + Commentaries[i].Name + '\par\par\cf1 ';
 
       for item in Strings  do
-        begin
-          s := ParseHTML(item, true) + '\par';
-          Stream.Writeln(s);
-        end;
+        Result += ParseHTML(item, true) + '\par';
     end;
 
-  Stream.Close;
+  Result += rtf_close;
 end;
 
-procedure Load_Strong(Stream: TRichStream; marker: string = '');
+function Load_Strong(marker: string = ''): string;
 var s : string;
 begin
-  if Commentaries.Count = 0 then Exit;
+  Result := '';
+  if Dictionaries.Count = 0 then Exit;
+  Result += rtf_open;
   s := Dictionaries.GetStrong(Bible.fileName, ActiveVerse, marker);
-  s := '\f0\fs18 ' + ParseHTML(s);
-  Stream.Open;
-  Stream.Writeln(s);
-  Stream.Close;
+  Result += '\f0\fs18 ' + ParseHTML(s);
+  Result += rtf_close;
 end;
 
-procedure Load_Footnote(Stream: TRichStream; marker: string = '');
+function Load_Footnote(marker: string = ''): string;
 var s : string;
 begin
-  if Commentaries.Count = 0 then Exit;
+  Result := '';
+  if (Bible.format = mybible) and (Commentaries.Count = 0) then Exit;
   if Bible.format = unbound
     then s := Bible.GetFootnote(ActiveVerse, marker)
     else s := Commentaries.GetFootnote(Bible.fileName, ActiveVerse, marker);
   s := '\f0\fs18 ' + ParseHTML(s);
-  Stream.Open;
-  Stream.Writeln(s);
-  Stream.Close;
+  Result += rtf_open + s + rtf_close;
 end;
 
-procedure Load_Verses(Stream: TRichStream);
+function Load_Verses: string;
 var
   Book : TBook;
   Strings : TStringArray;
@@ -242,6 +212,7 @@ var
   end;
 
 begin
+  Result := '';
   if Shelf.Count = 0 then Exit;
 
   Book := Bible.BookByNum(ActiveVerse.Book);
@@ -266,19 +237,15 @@ begin
   if Options.cvGuillemets then q := '«' + q + '»';
   if Options.cvEnd then s := q + ' '+ Link else s := Link + ' ' + q;
 
-  Stream.RightToLeft := Bible.RightToLeft;
-  Stream.Open;
-  Stream.Writeln(s);
-  Stream.Writeln('\par ');
-  Stream.Close;
+  Result := rtf_open;
+  if Bible.RightToLeft then Result += rtf_rtl;
+  Result += s + '\par ';
+  Result += rtf_close;
 end;
 
-procedure Show_Message(Stream: TRichStream; s: string);
+function Show_Message(s: string): string;
 begin
-  Stream.Open;
-  s := '\cf1 ' + ' ' + s + '\par\par ';
-  Stream.Writeln(s);
-  Stream.Close;
+  Result := rtf_open + '\cf1  ' + s + '\par ' + rtf_close;
 end;
 
 end.

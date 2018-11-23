@@ -5,10 +5,43 @@ interface
 uses
   Classes, SysUtils, UnitLib;
 
+function rtf_open: string;
 function Parse(s: string; jtag: boolean = false): string;
 function ParseHTML(s: string; tab: boolean = false): string;
 
+const
+  rtf_rtl = '\rtlpar\qr';
+  rtf_close = '}' + LineEnding;
+
 implementation
+
+{ Rich Text Open }
+
+function rtf_open: string;
+begin
+  Result :=
+      '{\rtf1\ansi\ansicpg1251\cocoartf1187 '
+    + '{\fonttbl'
+    + '{\f0 default;}'
+    + '{\f1 ' + DefaultFont.Name + ';}'
+    + '}'
+    + '{\colortbl;'
+    + '\red0\green0\blue0;'        // 1 black
+    + '\red192\green0\blue0;'      // 2 red
+    + '\red0\green0\blue128;'      // 3 navy
+    + '\red0\green128\blue0;'      // 4 green
+    + '\red128\green128\blue128;'  // 5 gray
+    + '\red0\green128\blue128;'    // 6 teal
+    + '\red128\green0\blue0;'      // 7 maroon
+    + '\red153\green102\blue51;'   // 8 brown
+    + '\red139\green69\blue19;'    // 9 saddlebrown
+//  + '\red128\green0\blue128;'    // 0 purple
+    + '}'
+    + '\f1\cf1'
+    + '\fs' + ToStr(DefaultFont.Size * 2);
+
+//  if RightToLeft then Result += '\rtlpar\qr';
+end;
 
 function LeadingTab(s: string): string;
 var x : integer;
@@ -28,25 +61,30 @@ var
 const
   jColor : boolean = false;
 begin
- // r := '\cf4 ' + s + '\cf1 ';  // show tags
+  //Result := '\cf7 ' + s + '\cf1 '; Exit;  // show tags
 
   if jColor then color := '\cf7' else color := '\cf1';
 
   if j then if s =  '<J>' then begin r := '\cf7 '; jColor := true;  end;
   if j then if s = '</J>' then begin r := '\cf1 '; jColor := false; end;
 
-  s := LowerCase(s);
-
-  if s =  '<i>' then r := '\cf5\i ';
-  if s = '</i>' then r := color + '\i0 ';
-  if s =  '<s>' then r := '\cf8\super ';
-  if s = '</s>' then r := color + '\nosupersub ';
+  if s = '<RF>' then r := '\cf6 ';
+  if s = '<Rf>' then r := color;
+  if s =  '<S>' then r := '\cf8\super ';
+  if s = '</S>' then r := color + '\nosupersub ';
+  if s =  '<l>' then r := '\cf2 ';
+  if s = '</l>' then r := '\cf1 ';
   if s =  '<n>' then r := '\cf5 ';       // note
   if s = '</n>' then r := color + ' ';
   if s =  '<m>' then r := '\cf9\super '; // morphology
   if s = '</m>' then r := color + '\nosupersub ';
   if s =  '<f>' then r := '\cf6\super ';
   if s = '</f>' then r := color + '\nosupersub ';
+
+  s := LowerCase(s);
+
+  if s =  '<i>' then r := '\cf5\i ';
+  if s = '</i>' then r := color + '\i0 ';
 
   Result := r;
 end;

@@ -85,13 +85,8 @@ begin
 end;
 
 procedure TFormCopy.LoadText;
-var
-  Stream: TRichStream;
 begin
-  Stream := TRichStream.Create;
-  Load_Verses(Stream);
-  Memo.LoadRichText(Stream);
-  Stream.Free;
+  Memo.LoadRichText(Load_Verses());
 end;
 
 procedure TFormCopy.CopyToClipboard;

@@ -1196,121 +1196,65 @@ end;
 //----------------------------------------------------------------------------------------
 
 procedure TMainForm.LoadChapter;
-var
-  Stream : TRichStream;
 begin
   if Shelf.Count = 0 then Exit;
-  Stream := TRichStream.Create;
-
-  Load_Chapter(Stream);
-  MemoBible.LoadRichText(Stream);
+  MemoBible.LoadRichText(Load_Chapter());
   MakeChapterList(Bible.ChaptersCount(ActiveVerse));
   if FormTranslate.Visible then LoadTranslate(ActiveVerse);
   SelectPage(apBible);
-
-  Stream.Free;
 end;
 
 procedure TMainForm.SearchText(s: string);
-var
-  Stream : TRichStream;
-  Count : integer = 0;
-{$ifdef linux}
-const
-  max = 200;
-{$endif}
+var count : integer = 0;
+{$ifdef linux} const max = 200; {$endif}
 begin
-  Stream := TRichStream.Create;
+  if Shelf.Count = 0 then Exit;
+  {$ifdef linux} if count > max then Show_Message(Stream, '\i\par  ' + ms_Message); {$endif}
   Cursor := crHourGlass;
-  Search_Text(Stream, s, Count);
-
-  {$ifdef linux}
-  if Count > max then
-    begin
-      Stream.Clear;
-      Show_Message(Stream, '\i\par  ' + ms_Message);
-    end;
-  {$endif}
-
-  MemoSearch.LoadRichText(Stream);
+  MemoSearch.LoadRichText(Search_Text(s, count));
   Cursor := crArrow;
   SelectPage(apSearch);
-  UpdateStatus(ToStr(Count) + ' ' + ms_found,'');
-  Stream.Free;
+  UpdateStatus(ToStr(count) + ' ' + ms_found,'');
 end;
 
 procedure TMainForm.LoadCompare;
-var
-  Stream : TRichStream;
 begin
-      {
-      Stream := TRichStream.Create;
-      Show_Message(Stream, ms_loading);
-      MemoCompare.LoadRichText(Stream);
-      Stream.Free;
-      }
-  Stream := TRichStream.Create;
+  if Shelf.Count = 0 then Exit;
   SelectPage(apCompare);
-  Load_Compare(Stream);
-  MemoCompare.LoadRichText(Stream);
-  Stream.Free;
+  MemoCompare.LoadRichText(Load_Compare());
 end;
 
 procedure TMainForm.LoadTranslate(Verse: TVerse);
-var
-  Stream : TRichStream;
 begin
-  Stream := TRichStream.Create;
-  Load_Translate(Stream, Verse);
-  FormTranslate.Memo.LoadRichText(Stream);
+  if Shelf.Count = 0 then Exit;
+  FormTranslate.Memo.LoadRichText(Load_Translate(Verse));
   FormTranslate.Repaint;
-  Stream.Free;
 end;
 
 procedure TMainForm.LoadCommentary;
-var
-  Stream : TRichStream;
 begin
-  Stream := TRichStream.Create;
   SelectPage(apCommentary);
-  Load_Commentary(Stream);
-  MemoCommentary.LoadRichText(Stream);
-  Stream.Free;
+  MemoCommentary.LoadRichText(Load_Commentary());
 end;
 
 procedure TMainForm.LoadStrong(s: string);
-var
-  Stream : TRichStream;
 begin
-  Stream := TRichStream.Create;
-  Load_Strong(Stream, s);
-  RichNotifier.LoadRichText(Stream);
-  Stream.Free;
+  RichNotifier.LoadRichText(Load_Strong(s));
   RichNotifier.Title := ms_Strong;
   RichNotifier.ShowAtPos(Mouse.CursorPos.x, Mouse.CursorPos.y);
 end;
 
 procedure TMainForm.LoadFootnote(s: string);
-var
-  Stream : TRichStream;
 begin
-  Stream := TRichStream.Create;
-  Load_Footnote(Stream, s);
-  RichNotifier.LoadRichText(Stream);
-  Stream.Free;
+  RichNotifier.LoadRichText(Load_Footnote());
   RichNotifier.Title := ms_Footnote;
   RichNotifier.ShowAtPos(Mouse.CursorPos.x, Mouse.CursorPos.y);
 end;
 
 {$ifdef windows}
 procedure TMainForm.VersesToClipboard;
-var
-  Stream : TRichStream;
 begin
-  Stream := TRichStream.Create;
-  Load_Verses(Stream);
-  StreamToClipboard(Stream);
-  Stream.free;
+  StringToClipboard(Load_Verses());
 end;
 {$endif}
 
@@ -1318,9 +1262,7 @@ end;
 procedure TMainForm.VersesToClipboard;
 var
   MemoPreview : TUnboundMemo;
-  Stream: TRichStream;
 begin
-  Stream := TRichStream.Create;
   MemoPreview := TUnboundMemo.Create(self);
 
   with MemoPreview do
@@ -1332,18 +1274,14 @@ begin
       Width  := 100;
     end;
 
-  Load_Verses(Stream);
-
   {$ifdef linux} MemoBible.SaveSelection; {$endif}
   // saving selection because of strange bug in the gtk2's richmemo
 
-  MemoPreview.LoadRichText(Stream);
+  MemoPreview.LoadRichText(Load_Verses());
   MemoPreview.SelectAll;
   MemoPreview.CopyToClipboard;
 
   {$ifdef linux} MemoBible.RestoreSelection; {$endif}
-
-  Stream.Free;
   MemoPreview.Free;
 end;
 {$endif}

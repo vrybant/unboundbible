@@ -35,7 +35,7 @@ type
     destructor Destroy; override;
     procedure Show;
     procedure ShowAtPos(x: Integer; y: Integer);
-    procedure LoadRichText(Source: TStream);
+    procedure LoadRichText(Source: string);
   published
     property Color: TColor  read GetColor write SetColor;
     property Title: string read GetTitle write SetTitle;
@@ -47,7 +47,7 @@ implementation
 
 const
   INT_NOTIFIER_FORM_WIDTH  = 325;
-  INT_NOTIFIER_FORM_HEIGHT = 110;
+  INT_NOTIFIER_FORM_HEIGHT = 220; // 110
   INT_NOTIFIER_SPACING = 5;
   INT_NOTIFIER_BUTTON_SIZE = 20;
 
@@ -224,9 +224,8 @@ begin
   Show;
 end;
 
-procedure TRichNotifier.LoadRichText(Source: TStream);
+procedure TRichNotifier.LoadRichText(Source: string);
 begin
-  Source.Seek(0,soFromBeginning);
   NotifierForm.Memo.LoadRichText(Source);
 end;
 

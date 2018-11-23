@@ -52,7 +52,7 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="21">
+    <Units Count="20">
       <Unit0>
         <Filename Value="unboundbible.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -141,40 +141,35 @@
         <UnitName Value="UnitSQLiteEx"/>
       </Unit13>
       <Unit14>
-        <Filename Value="unitstream.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitStream"/>
-      </Unit14>
-      <Unit15>
         <Filename Value="unitparse.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitParse"/>
-      </Unit15>
-      <Unit16>
+      </Unit14>
+      <Unit15>
         <Filename Value="unitcommentary.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitCommentary"/>
-      </Unit16>
-      <Unit17>
+      </Unit15>
+      <Unit16>
         <Filename Value="richnotifier.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="RichNotifier"/>
-      </Unit17>
-      <Unit18>
+      </Unit16>
+      <Unit17>
         <Filename Value="unitdictionary.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitDictionary"/>
-      </Unit18>
-      <Unit19>
-        <Filename Value="unitreform.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitReform"/>
-      </Unit19>
-      <Unit20>
+      </Unit17>
+      <Unit18>
         <Filename Value="unitmodule.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitModule"/>
-      </Unit20>
+      </Unit18>
+      <Unit19>
+        <Filename Value="unitnormalize.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitNormalize"/>
+      </Unit19>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
