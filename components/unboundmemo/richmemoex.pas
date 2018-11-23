@@ -5,7 +5,7 @@ interface
 uses
   {$ifdef windows} Windows, RichEdit, Printers, OSPrinters, {$endif}
   {$ifdef linux} Gtk2, Glib2, Gdk2, {$endif}
-  Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo;
+  Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo, LazUTF8;
 
 type
 
@@ -30,7 +30,6 @@ type
     {$ifdef darwin} Modified : boolean; {$endif}
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    function LoadRichText(Source: TStream): Boolean; override;
     function CanUndo: boolean;
     function CanPaste: boolean; override;
     procedure HideCursor;
@@ -38,8 +37,6 @@ type
     procedure Show_Selection;
     function Selected: boolean;
     procedure SelectAll;
-    procedure LoadFromFile(const FileName : string);
-    procedure SaveToFile(const FileName : string);
     property SelAttributes: TFontParams read GetAttributes write SetAttributes;
     {$ifdef windows} function FindRightWordBreak(Pos: integer): integer; {$endif}
     {$ifdef windows} function GetTextRange(Pos, Length: Integer): string; {$endif}
@@ -47,11 +44,40 @@ type
     {$ifdef linux} procedure CopyToClipboard; override; {$endif}
     {$ifdef linux} procedure CutToClipboard; override; {$endif}
     {$ifdef linux} procedure PasteFromClipboard; override; {$endif}
+    function LoadRichText(Source: TStream): Boolean; override;
+    function LoadRichText(Source: string): Boolean;
+    procedure LoadFromFile(const FileName : string);
+    procedure SaveToFile(const FileName : string);
   published
     property OnAttrChange: TNotifyEvent read FOnAttrChange write FOnAttrChange;
   end;
 
 implementation
+
+function ToStr(value: longint): string;
+begin
+ System.Str(value, Result);
+end;
+
+function Utf8ToRTF(const s: string): string;
+var
+  p: PChar;
+  unicode: Cardinal;
+  CharLen: integer;
+const
+  endchar = {$ifdef linux} ' ' {$else} '?' {$endif};
+begin
+  Result := '';
+  p := PChar(s);
+  repeat
+    unicode := UTF8CharacterToUnicode(p,CharLen);
+    if unicode = 0 then Continue;
+    if unicode < $80 then Result := Result + char(unicode)
+                     else Result := Result + '\u' + ToStr(unicode) + endchar;
+
+    inc(p,CharLen);
+  until (CharLen=0) or (unicode=0);
+end;
 
 constructor TRichMemoEx.Create(AOwner: TComponent);
 begin
@@ -122,12 +148,6 @@ end;
 procedure TRichMemoEx.Show_Selection;
 begin
    {$ifdef windows} SendMessage(Handle, EM_HIDESELECTION, 0, 0); {$endif}
-end;
-
-function TRichMemoEx.LoadRichText(Source: TStream): Boolean;
-begin
-  Source.Seek(0,soFromBeginning);
-  Result := inherited LoadRichText(Source);
 end;
 
 procedure TRichMemoEx.SetAttributes(const value: TFontParams);
@@ -265,6 +285,22 @@ begin
 end;
 
 {$endif}
+
+function TRichMemoEx.LoadRichText(Source: TStream): Boolean;
+begin
+  Source.Seek(0,soFromBeginning);
+  Result := inherited LoadRichText(Source);
+end;
+
+function TRichMemoEx.LoadRichText(Source: string): Boolean;
+var Stream : TMemoryStream;
+begin
+  Source := Utf8ToRTF(Source);
+  Stream := TMemoryStream.Create;
+  Stream.WriteBuffer(Pointer(Source)^, Length(Source));
+  Result := LoadRichText(Stream);
+  Stream.Free;
+end;
 
 procedure TRichMemoEx.LoadFromFile(const FileName : string);
 var

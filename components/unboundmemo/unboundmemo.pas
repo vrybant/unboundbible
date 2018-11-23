@@ -320,7 +320,6 @@ begin
   Show_Selection;
 end;
 
-
 procedure TUnboundMemo.SaveSelection;
 begin
   SelStartTemp  := SelStart;
