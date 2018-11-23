@@ -513,20 +513,15 @@ var
   x : integer;
 begin
   Result := '';
-
-  Replace(s,'<RF>', '<f>'); // mysword
-  Replace(s,'<RF ', '<f ');
-  Replace(s,'<Rf>','</f>');
-
-  if Prefix('*',marker) then marker := '<f>'
-                        else marker := '<f q=' + marker + '>';
+  if Prefix('*',marker) then marker := '<RF>'
+                        else marker := '<RF q=' + marker + '>';
 
   while Pos(marker,s) > 0 do
     begin
       x := Pos(marker,s);
       x := x + Length(marker);
       s := Copy(s, x, Length(s));
-      x := Pos('</f>',s); if x = 0 then break;
+      x := Pos('<Rf>',s); if x = 0 then break;
       Result := Result + Copy(s,1,x-1) + '\par ';
     end;
 
@@ -554,7 +549,6 @@ begin
     Query.Close;
   end;
 
-  output(line);
   Result := ExtractFootnotes(line, marker);
 end;
 

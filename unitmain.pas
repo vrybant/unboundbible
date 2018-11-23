@@ -742,8 +742,6 @@ begin
 
   if Sender <> MemoBible then Exit;
 
-  output(Memo.Hyperlink);
-
   if Memo.Foreground = fgStrong   then LoadStrong(Memo.Hyperlink);
   if Memo.Foreground = fgFootnote then LoadFootnote(Memo.Hyperlink);
 end;
@@ -1246,7 +1244,7 @@ end;
 
 procedure TMainForm.LoadFootnote(s: string);
 begin
-  RichNotifier.LoadRichText(Load_Footnote());
+  RichNotifier.LoadRichText(Load_Footnote(s));
   RichNotifier.Title := ms_Footnote;
   RichNotifier.ShowAtPos(Mouse.CursorPos.x, Mouse.CursorPos.y);
 end;

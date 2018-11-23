@@ -60,7 +60,7 @@ begin
   if s =  '</J>' then s := '<Fr>';
   if s =   '<t>' then s := '<FO>'; // quote
   if s =  '</t>' then s := '<Fo>';
-  if s =   '<h>' then s := '<TS>'; // Title
+  if s =   '<h>' then s := '<TS>'; // title
   if s =  '</h>' then s := '<Ts>';
   if s =   '<f>' then s := '<RF>'; // footnote
   if s =  '</f>' then s := '<Rf>';
