@@ -52,6 +52,26 @@ begin
   if x > 0 then Result := '';
 end;
 
+function ReplaceTag(s: string): string;
+var
+  w, r : string;
+begin
+  w := LowerCase(s);
+  if s =   '<J>' then s := '<FR>';
+  if s =  '</J>' then s := '<Fr>';
+  if s =   '<t>' then s := '<FO>'; // quote
+  if s =  '</t>' then s := '<Fo>';
+  if s =   '<h>' then s := '<TS>'; // Title
+  if s =  '</h>' then s := '<Ts>';
+  if s =   '<f>' then s := '<RF>'; // footnote
+  if s =  '</f>' then s := '<Rf>';
+  if w =   '<i>' then s := '<FI>';
+  if w =  '</i>' then s := '<Fi>';
+  if w =  '<em>' then s := '<FI>';
+  if w = '</em>' then s := '<Fi>';
+  Result := s;
+end;
+
 function ParseString(s: string; j: boolean): string;
 var
   r : string = '';
@@ -61,13 +81,14 @@ const
 begin
   //Result := '\cf7 ' + s + '\cf1 '; Exit;  // show tags
 
+  s := ReplaceTag(s);
   if jColor then color := '\cf7' else color := '\cf1';
 
-  if j then if s =  '<J>' then begin r := '\cf7 '; jColor := true;  end;
-  if j then if s = '</J>' then begin r := '\cf1 '; jColor := false; end;
+  if j then if s = '<FR>' then begin r := '\cf7 '; jColor := true;  end;
+  if j then if s = '<Fr>' then begin r := '\cf1 '; jColor := false; end;
 
-  if s = '<RF>' then r := '\cf6 ';
-  if s = '<Rf>' then r := color;
+  if s = '<RF>' then r := '\cf6\super ';
+  if s = '<Rf>' then r := color + '\nosupersub ';
   if s =  '<S>' then r := '\cf8\super ';
   if s = '</S>' then r := color + '\nosupersub ';
   if s =  '<l>' then r := '\cf2 ';
@@ -76,8 +97,6 @@ begin
   if s = '</n>' then r := color + ' ';
   if s =  '<m>' then r := '\cf9\super '; // morphology
   if s = '</m>' then r := color + '\nosupersub ';
-  if s =  '<f>' then r := '\cf6\super ';
-  if s = '</f>' then r := color + '\nosupersub ';
 
   s := LowerCase(s);
 
@@ -107,8 +126,8 @@ begin
   if s = '</b>' then r := '\b0 ';
   if s =  '<i>' then r := '\i ';
   if s = '</i>' then r := '\i0 ';
-  if s = '<br>' then r := '\par'; ///////// \tab ';
-  //////// if s =  '<p>' then r := '\tab ';
+  if s = '<br>' then r := '\par'; // \tab ';
+//if s =  '<p>' then r := '\tab ';
   if s = '</p>' then r := '\par ';
   if s =  '<a>' then r := '\cf6 ';
   if s = '</a>' then r := '\cf1 ';

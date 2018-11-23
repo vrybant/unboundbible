@@ -1,16 +1,16 @@
-unit UnitReform;
+unit UnitNormalize;
 
 interface
 
 uses
   Classes, SysUtils, UnitType, UnitLib;
 
-//function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
-  function Reform(s: string; format: TFileFormat; purge: boolean = true): string;
+//function MybibleExStrongs(s: string; NewTestament: boolean): string;
+  function Normalize(s: string; format: TFileFormat; purge: boolean = true): string;
 
 implementation
 
-function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
+function MybibleExStrongs(s: string; NewTestament: boolean): string;
 var
   List : TStringArray;
   l : boolean = false;
@@ -80,22 +80,22 @@ var
 begin
   for i:=Low(List) to High(List) do
     begin
-      if List[i] = '<f>' then
+      if List[i] = '<RF>' then
         begin
           marker := '*';
           l := true;
           Continue;
         end;
 
-      if Prefix('<f ', List[i]) then
+      if Prefix('<RF ', List[i]) then
         begin
           marker := ExtractFootnoteMarker(List[i]);
-          List[i] := '<f>';
+          List[i] := '<RF>';
           l := true;
           Continue;
         end;
 
-      if l and (List[i] = '</f>') then
+      if l and (List[i] = '<Rf>') then
         begin
           l := false;
           Continue;
@@ -112,44 +112,25 @@ begin
     end;
 end;
 
-procedure Replacement(const List: TStringArray);
-var i : integer;
-begin
-  for i:=Low(List) to High(List) do
-    begin
-      if List[i] =  '<FR>' then List[i] :=  '<J>';
-      if List[i] =  '<Fr>' then List[i] := '</J>';
-      if List[i] =  '<FI>' then List[i] :=  '<i>';
-      if List[i] =  '<Fi>' then List[i] := '</i>';
-      if List[i] =  '<FO>' then List[i] :=  '<t>'; // quote
-      if List[i] =  '<Fo>' then List[i] := '</t>';
-      if List[i] =  '<RF>' then List[i] :=  '<f>'; // footnote
-      if List[i] =  '<Rf>' then List[i] := '</f>';
-      if List[i] =  '<TS>' then List[i] :=  '<h>'; // prologue
-      if List[i] =  '<Ts>' then List[i] := '</h>';
-      if List[i] =  '<em>' then List[i] :=  '<i>';
-      if List[i] = '</em>' then List[i] := '</i>';
-
-      if List[i] =  '<CM>' then List[i] := '';
-      if List[i] = '<pb/>' then List[i] := '';
-      if List[i] = '<br/>' then List[i] := '';
-
-      if Prefix('<RF ',List[i]) then Replace(List[i],'<RF','<f');
-    end;
-end;
-
-function Reform(s: string; format: TFileFormat; purge: boolean = true): string;
+function Normalize(s: string; format: TFileFormat; purge: boolean = true): string;
 var
   List : TStringArray;
 begin
   List := XmlToList(s);
 
-  Strongs(List);
-  Replacement(List);
-  if format = unbound then Footnotes(List);
+  if format = unbound then
+    begin
+      Strongs(List);
+      Footnotes(List);
+      PurgeTag(List,'<TS>','<Ts>');
+      if purge then PurgeTag(List, '<RF','<Rf>');
+    end;
 
-  PurgeTag(List,'<h>','</h>');
-  if purge then PurgeTag(List, '<f','</f>');
+  if format = mybible then
+    begin
+      PurgeTag(List,' <h>','</h>');
+      if purge then PurgeTag(List,  '<f','</f>');
+    end;
 
   Result := Trim(ListToString(List));
   Replace(Result,'</S><S>','</S> <S>');

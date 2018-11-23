@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Fgl, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
-  UnitLib, UnitModule, UnitTitles, UnitType, UnitReform;
+  UnitLib, UnitModule, UnitTitles, UnitType, UnitNormalize;
 
 type
   TBook = class
@@ -285,7 +285,7 @@ begin
       for i:=0 to Query.RecordCount-1 do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
-          Result[i] := Reform(line, format, false);
+          Result[i] := Normalize(line, format, false);
           Query.Next;
         end;
     except
@@ -318,7 +318,7 @@ begin
       for i:=0 to Query.RecordCount-1 do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
-          Result[i] := Reform(line, format);
+          Result[i] := Normalize(line, format);
           Query.Next;
         end;
     except
@@ -384,7 +384,7 @@ begin
           try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
           Contents[i].verse.book := DecodeID(format, Contents[i].verse.book);
-          Contents[i].text := Reform(Contents[i].text, format);
+          Contents[i].text := Normalize(Contents[i].text, format);
           Query.Next;
         end;
     finally
@@ -422,7 +422,7 @@ begin
           try text                    := Query.FieldByName(z.text   ).AsString;  except end;
           Result[i].verse.book := DecodeID(format, Result[i].verse.book);
           // text := MybibleStrongsToUnbound(text, IsNewTestament(Result[i].verse.book));
-          Result[i].text := Reform(text, format, false);
+          Result[i].text := Normalize(text, format, false);
           Query.Next;
         end;
     except
