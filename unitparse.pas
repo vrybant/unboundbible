@@ -10,7 +10,6 @@ const
   rtf_close = '}';
 
 function rtf_open: string;
-procedure ReplaceTags(var s: string);
 function Parse(s: string; jtag: boolean = false): string;
 function ParseHTML(s: string; tab: boolean = false): string;
 
@@ -36,7 +35,7 @@ begin
     + '\red128\green0\blue0;'      // 7 maroon
     + '\red153\green102\blue51;'   // 8 brown
     + '\red139\green69\blue19;'    // 9 saddlebrown
-//  + '\red128\green0\blue128;'    // 0 purple
+    + '\red128\green0\blue128;'    // 10 purple
     + '}'
     + '\f1\cf1'
     + '\fs' + ToStr(DefaultFont.Size * 2);
@@ -53,39 +52,6 @@ begin
   if x > 0 then Result := '';
 end;
 
-function ReplaceTag(s: string): string;
-var w : string;
-begin
-  w := LowerCase(s);
-  if s =   '<J>' then s := '<FR>';
-  if s =  '</J>' then s := '<Fr>';
-  if s =   '<t>' then s := '<FO>'; // quote
-  if s =  '</t>' then s := '<Fo>';
-  if s =   '<h>' then s := '<TS>'; // title
-  if s =  '</h>' then s := '<Ts>';
-  if s =   '<f>' then s := '<RF>'; // footnote
-  if s =  '</f>' then s := '<Rf>';
-  if w =   '<i>' then s := '<FI>';
-  if w =  '</i>' then s := '<Fi>';
-  if w =  '<em>' then s := '<FI>';
-  if w = '</em>' then s := '<Fi>';
-
-  if w = '<pb/>' then s := ''; // unused tags
-  if w = '<br/>' then s := '';
-
-  Result := s;
-end;
-
-procedure ReplaceTags(var s: string);
-var
-  List : TStringArray;
-  i : integer;
-begin
-  List := XmlToList(s);
-  for i:= Low(List) to High(List) do List[i] := ReplaceTag(List[i]);
-  s := ListToString(List);
-end;
-
 function ParseString(s: string; j: boolean): string;
 var
   r : string = '';
@@ -95,7 +61,6 @@ const
 begin
   //Result := '\cf7 ' + s + '\cf1 '; Exit;  // show tags
 
-  s := ReplaceTag(s);
   if jColor then color := '\cf7' else color := '\cf1';
 
   if j then if s = '<FR>' then begin r := '\cf7 '; jColor := true;  end;
@@ -133,14 +98,14 @@ begin
   if s = '</td>' then s := '<br>';
   if s = '</tr>' then s := '<br>';
 
-  if s =  '<b>' then r := '\b ' ;
-  if s = '</b>' then r := '\b0 ';
+  if s =  '<b>' then r := '\cf8\b ' ;   // cf8
+  if s = '</b>' then r := '\cf1\b0 ';
   if s =  '<i>' then r := '\i ';
   if s = '</i>' then r := '\i0 ';
   if s = '<br>' then r := '\par'; // \tab ';
 //if s =  '<p>' then r := '\tab ';
   if s = '</p>' then r := '\par ';
-  if s =  '<a>' then r := '\cf6 ';
+  if s =  '<a>' then r := '\cf5 ';
   if s = '</a>' then r := '\cf1 ';
   if s =  '<strong>' then r := '\b ' ;
   if s = '</strong>' then r := '\b0 ';

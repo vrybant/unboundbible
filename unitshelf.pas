@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Fgl, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
-  UnitLib, UnitModule, UnitTitles, UnitType, UnitNormalize, UnitParse;
+  UnitLib, UnitModule, UnitTitles, UnitType, UnitNormalize;
 
 type
   TBook = class
@@ -398,9 +398,7 @@ begin
 end;
 
 function TBible.GetAll: TContentArray;
-var
-  text : string = '';
-  i : integer;
+var i : integer;
 begin
   SetLength(Result,0);
 
@@ -419,10 +417,8 @@ begin
           try Result[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
           try Result[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
-          try text                    := Query.FieldByName(z.text   ).AsString;  except end;
+          try Result[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
           Result[i].verse.book := DecodeID(format, Result[i].verse.book);
-          text := MybibleStrongsToUnbound(text, IsNewTestament(Result[i].verse.book));
-          Result[i].text := Normalize(text, format, false);
           Query.Next;
         end;
     except
@@ -459,22 +455,22 @@ end;
 
 procedure TBible.Extract;
 var
-  filepath : string;
   f : System.Text;
   Contents : TContentArray;
   Content : TContent;
-  text : string;
+  filepath, text : string;
+  nt : boolean;
 begin
   filepath := GetUserDir + AppName + Slash + 'out.txt';
-
   AssignFile(f,filepath); Rewrite(f);
 
   Contents := GetAll;
   for Content in Contents do
     begin
       text := Content.text;
-      PurgeTag(text,'<f','</f>');
-      ReplaceTags(text);
+      nt := IsNewTestament(Content.verse.book);
+      if format = mybible then text := MybibleStrongsToUnbound(text, nt);
+      text := Normalize(text, format, not false);
       DelDoubleSpace(text);
       write(f,Content.verse.book   ); write(f,char($09));
       write(f,Content.verse.chapter); write(f,char($09));
@@ -648,8 +644,8 @@ end;
 destructor TShelf.Destroy;
 var i : integer;
 begin
-   Self[Current].CheckTags;
-   Self[Current].Extract;
+  // Self[Current].CheckTags;
+  // Self[Current].Extract;
 
   SavePrivates;
   for i:=0 to Count-1 do Items[i].Free;

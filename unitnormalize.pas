@@ -41,7 +41,34 @@ begin
   Result := ListToString(List);
 end;
 
-{ ----------------------------------------------------------------------------------------------- }
+function ReplaceTag(s: string): string;
+var w : string;
+begin
+  w := LowerCase(s);
+  if s =   '<J>' then s := '<FR>';
+  if s =  '</J>' then s := '<Fr>';
+  if s =   '<t>' then s := '<FO>'; // quote
+  if s =  '</t>' then s := '<Fo>';
+  if s =   '<h>' then s := '<TS>'; // title
+  if s =  '</h>' then s := '<Ts>';
+  if s =   '<f>' then s := '<RF>'; // footnote
+  if s =  '</f>' then s := '<Rf>';
+  if w =   '<i>' then s := '<FI>';
+  if w =  '</i>' then s := '<Fi>';
+  if w =  '<em>' then s := '<FI>';
+  if w = '</em>' then s := '<Fi>';
+
+  if w = '<pb/>' then s := ''; // unused tags
+  if w = '<br/>' then s := '';
+
+  Result := s;
+end;
+
+procedure ReplaceTags(const List: TStringArray);
+var i : integer;
+begin
+  for i:= Low(List) to High(List) do List[i] := ReplaceTag(List[i]);
+end;
 
 function ExtractStrongNumber(s: string): string;
 var
@@ -126,15 +153,11 @@ begin
     begin
       Strongs(List);
       Footnotes(List);
-      PurgeTag(List,'<TS>','<Ts>');
-      if purge then PurgeTag(List, '<RF','<Rf>');
     end;
 
-  if format = mybible then
-    begin
-      PurgeTag(List,' <h>','</h>');
-      if purge then PurgeTag(List,  '<f','</f>');
-    end;
+  ReplaceTags(List);
+  PurgeTag(List,'<TS>','<Ts>');
+  if purge then PurgeTag(List, '<RF','<Rf>');
 
   Result := Trim(ListToString(List));
   Replace(Result,'</S><S>','</S> <S>');
