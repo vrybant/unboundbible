@@ -1,0 +1,36 @@
+object NotifyForm: TNotifyForm
+  Left = 275
+  Height = 160
+  Top = 225
+  Width = 247
+  Caption = 'NotifyForm'
+  ClientHeight = 160
+  ClientWidth = 247
+  OnActivate = FormActivate
+  OnCreate = FormCreate
+  OnDeactivate = FormDeactivate
+  OnDestroy = FormDestroy
+  OnPaint = FormPaint
+  LCLVersion = '1.8.4.0'
+  object Title: TLabel
+    Left = 8
+    Height = 15
+    Top = 8
+    Width = 23
+    Caption = 'Title'
+    ParentColor = False
+  end
+  object Memo: TUnboundMemo
+    Cursor = crArrow
+    Left = 16
+    Height = 114
+    Top = 32
+    Width = 216
+    HideSelection = False
+    Lines.Strings = (
+      'Memo'
+    )
+    TabOrder = 0
+    ZoomFactor = 1
+  end
+end

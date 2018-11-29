@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
-  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitType, RichNotifier;
+  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitType;
 
 type
 
@@ -191,7 +191,6 @@ type
     procedure RadioButtonClick(Sender: TObject);
     procedure ToolButtonFBClick(Sender: TObject);
   private
-    RichNotifier : TRichNotifier;
     NoteFileName: string;
     RecentList: TStringList;
     ShortLink: boolean;
@@ -238,7 +237,7 @@ var
 implementation
 
 uses
-  UnitAbout, UnitSearch, UnitCompare, UnitTool, UnitLang,
+  UnitAbout, UnitNotify, UnitSearch, UnitCompare, UnitTool, UnitLang,
   UnitShelf, UnitCopy, UnitTrans, UnitLib;
 
 const
@@ -254,7 +253,7 @@ const
 
 const
   ms_Confirm   : string = '';
-  ms_Strong    : string = 'Strong';
+  ms_Strong    : string = 'Strong Dictionary';
   ms_Footnote  : string = '';
   ms_Found     : string = '';
   ms_Message   : string = '';
@@ -273,9 +272,7 @@ begin
 
   CreateDirectories;
 
-  RichNotifier := TRichNotifier.Create(self);
   RecentList := TStringList.Create;
-
   SaveDialog.InitialDir := DocumentsPath;
 
   NoteFileName := sUntitled;
@@ -340,7 +337,6 @@ procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   SaveIniFile;
   RecentList.Free;
-  RichNotifier.Free;
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1237,16 +1233,16 @@ end;
 
 procedure TMainForm.LoadStrong(s: string);
 begin
-  RichNotifier.LoadRichText(Load_Strong(s));
-  RichNotifier.Title := ms_Strong;
-  RichNotifier.ShowAtPos(Mouse.CursorPos.x, Mouse.CursorPos.y);
+  NotifyForm.Memo.LoadRichText(Load_Strong(s));
+  NotifyForm.Title.Caption := ' Словарь Стронга'; // ms_Strong;
+  NotifyForm.ShowAtPos(Mouse.CursorPos.x, Mouse.CursorPos.y);
 end;
 
 procedure TMainForm.LoadFootnote(s: string);
 begin
-  RichNotifier.LoadRichText(Load_Footnote(s));
-  RichNotifier.Title := ms_Footnote;
-  RichNotifier.ShowAtPos(Mouse.CursorPos.x, Mouse.CursorPos.y);
+  NotifyForm.Memo.LoadRichText(Load_Footnote(s));
+  NotifyForm.Title.Caption := ms_Footnote;
+  NotifyForm.ShowAtPos(Mouse.CursorPos.x, Mouse.CursorPos.y);
 end;
 
 {$ifdef windows}
