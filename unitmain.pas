@@ -1235,14 +1235,14 @@ procedure TMainForm.LoadStrong(s: string);
 begin
   NotifyForm.Memo.LoadRichText(Load_Strong(s));
   NotifyForm.Title.Caption := ' Словарь Стронга'; // ms_Strong;
-  NotifyForm.ShowAtPos(Mouse.CursorPos.x, Mouse.CursorPos.y);
+  NotifyForm.ShowAtPos(Mouse.CursorPos);
 end;
 
 procedure TMainForm.LoadFootnote(s: string);
 begin
   NotifyForm.Memo.LoadRichText(Load_Footnote(s));
   NotifyForm.Title.Caption := ms_Footnote;
-  NotifyForm.ShowAtPos(Mouse.CursorPos.x, Mouse.CursorPos.y);
+  NotifyForm.ShowAtPos(Mouse.CursorPos);
 end;
 
 {$ifdef windows}

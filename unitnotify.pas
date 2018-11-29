@@ -21,7 +21,7 @@ type
     procedure HandleResize(Sender: TObject);
     procedure CloseForm(Sender: TObject);
   public
-    procedure ShowAtPos(x: Integer; y: Integer);
+    procedure ShowAtPos(Pos: TPoint);
   end;
 
 var
@@ -98,57 +98,47 @@ end;
 
 procedure TNotifyForm.HandleResize(Sender: TObject);
 begin
-  if Title <> nil then
-  begin
-    Title.Left := INT_NOTIFIER_SPACING;
-    Title.Top := INT_NOTIFIER_SPACING;
-    Title.Width := Width - (Title.Left + INT_NOTIFIER_SPACING);
-    Title.Height := 20;
-  end;
+  Title.Left := INT_NOTIFIER_SPACING;
+  Title.Top := INT_NOTIFIER_SPACING;
+  Title.Width := Width - (Title.Left + INT_NOTIFIER_SPACING);
+  Title.Height := 20;
 
-  if Memo <> nil then
-  begin
-    Memo.Left := 20;
-    Memo.Top := Title.Top + Title.Height + INT_NOTIFIER_SPACING;
-    Memo.Width := Width - (Memo.Left + INT_NOTIFIER_SPACING);
-    Memo.Height := Height - (Memo.Top + INT_NOTIFIER_SPACING);
-  end;
+  Memo.Left := 20;
+  Memo.Top := Title.Top + Title.Height + INT_NOTIFIER_SPACING;
+  Memo.Width := Width - (Memo.Left + INT_NOTIFIER_SPACING);
+  Memo.Height := Height - (Memo.Top + INT_NOTIFIER_SPACING);
 
-  if BtnX <> nil then
-  begin
-    BtnX.Left := Width - (INT_NOTIFIER_BUTTON_SIZE + 5);
-    BtnX.Top := INT_NOTIFIER_SPACING;
-    BtnX.Width := INT_NOTIFIER_BUTTON_SIZE;
-    BtnX.Height := INT_NOTIFIER_BUTTON_SIZE;
-  end;
+  BtnX.Left := Width - (INT_NOTIFIER_BUTTON_SIZE + 5);
+  BtnX.Top := INT_NOTIFIER_SPACING;
+  BtnX.Width := INT_NOTIFIER_BUTTON_SIZE;
+  BtnX.Height := INT_NOTIFIER_BUTTON_SIZE;
+end;
+
+procedure TNotifyForm.ShowAtPos(Pos: TPoint);
+begin
+  Left := Pos.x;
+  Top  := Pos.y;
+
+  if Left + Width > Screen.Width then
+    begin
+      Left := Left - Width;
+      if Left < 0 then Left := 0;
+    end;
+
+  if Top + Height > Screen.Height then
+    begin
+      Top := Top - Height;
+      if Top < 0 then Top := 0;
+    end;
+
+  Show;
 end;
 
 procedure TNotifyForm.CloseForm(Sender: TObject);
-var NoValue: TCloseAction;
+var Value: TCloseAction;
 begin
-  if Assigned(OnClose) then OnClose(Self, NoValue);
+  if Assigned(OnClose) then OnClose(Self, Value);
   Close;
-end;
-
-procedure TNotifyForm.ShowAtPos(x: Integer; y: Integer);
-begin
-  if x + Width > Screen.Width then
-  begin
-    Left := x - Width;
-    if Left < 0 then Left := 0;
-  end
-  else
-    Left := x;
-
-  if y + Height > Screen.Height then
-  begin
-    Top := y - Height;
-    if Top < 0 then Top := 0;
-  end
-  else
-    Top := y;
-
-  Show;
 end;
 
 end.
