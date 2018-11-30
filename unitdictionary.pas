@@ -19,7 +19,7 @@ type
     procedure Load(path: string);
   public
     constructor Create;
-    function GetStrong(module: string; Verse: TVerse; marker: string): string;
+    function GetStrong(Verse: TVerse; language: string; marker: string): string;
     destructor Destroy; override;
   end;
 
@@ -49,9 +49,6 @@ begin
     try
       Query.SQL.Text := 'SELECT * FROM ' + z.dictionary +
                         ' WHERE ' + z.word + ' = "' + num + '"';
-
-      output(Query.SQL.Text);
-
       Query.Open;
       try Result := Query.FieldByName(z.data).AsString; except end;
     except
@@ -104,19 +101,24 @@ begin
     end;
 end;
 
-function TDictionaries.GetStrong(module: string; Verse: TVerse; marker: string): string;
+function TDictionaries.GetStrong(Verse: TVerse; language: string; marker: string): string;
 var
-  name : string;
+  filename : string = 'strong-en';
   i : integer;
 begin
   Result := '';
   if self.Count = 0 then Exit;
-  name := ExtractOnlyName(module);
+
+  if not Prefix('H',marker) and not Prefix('G',marker) then
+    if IsNewTestament(Verse.book) then marker := 'G' + marker
+                                  else marker := 'H' + marker;
+
+  if Prefix('ru', language) then filename := 'strong-ru';
 
   for i:=0 to self.Count-1 do
     begin
       if not self[i].strong then Continue;
-      if not Prefix('strong_',self[i].filename) then Continue;
+      if not Prefix(filename,self[i].filename) then Continue;
       Result := self[i].GetData(marker);
     end;
 end;

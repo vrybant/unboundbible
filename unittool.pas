@@ -179,8 +179,9 @@ var s : string;
 begin
   Result := '';
   if Dictionaries.Count = 0 then Exit;
+  s := Dictionaries.GetStrong(ActiveVerse, Bible.language, marker);
+  if s = '' then Exit;
   Result += rtf_open;
-  s := Dictionaries.GetStrong(Bible.fileName, ActiveVerse, marker);
   Result += '\f0\fs18 ' + ParseHTML(s);
   Result += rtf_close;
 end;
@@ -193,8 +194,10 @@ begin
   if Bible.format = unbound
     then s := Bible.GetFootnote(ActiveVerse, marker)
     else s := Commentaries.GetFootnote(Bible.fileName, ActiveVerse, marker);
-  s := '\f0\fs18 ' + ParseHTML(s);
-  Result += rtf_open + s + rtf_close;
+  if s = '' then Exit;
+  Result += rtf_open;
+  Result += '\f0\fs18 ' + ParseHTML(s);
+  Result += rtf_close;
 end;
 
 function Load_Verses: string;

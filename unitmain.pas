@@ -256,7 +256,8 @@ const
 
 const
   ms_Confirm   : string = '';
-  ms_Strong    : string = 'Strong Dictionary';
+//ms_Strong    : string = 'Strong Dictionary';
+  ms_Strong    : string = 'Словарь Стронга';
   ms_Footnote  : string = '';
   ms_Found     : string = '';
   ms_Message   : string = '';
@@ -378,8 +379,8 @@ begin
   if NotifyForm.Visible then
     begin
       Point := UnboundMemo.ScreenToClient(Mouse.CursorPos);
-      if (Point.x <= 0) or (Point.x >= MemoBible.Width  - 30) or
-         (Point.y <= 0) or (Point.y >= MemoBible.Height - 30) then NotifyForm.Close;
+      if (Point.x <= 0) or (Point.x >= UnboundMemo.Width  - 30) or
+         (Point.y <= 0) or (Point.y >= UnboundMemo.Height - 30) then NotifyForm.Close;
     end;
 end;
 
@@ -1250,19 +1251,25 @@ begin
 end;
 
 procedure TMainForm.LoadStrong(s: string);
+var text : string;
 begin
-  NotifyForm.Title.Caption := ' Словарь Стронга ' + s; // ms_Strong;
+  text := Load_Strong(s);
+  if text = '' then Exit;
+  NotifyForm.Title.Caption := ms_Strong;
   NotifyForm.Compact := True;
-  NotifyForm.Memo.LoadRichText(Load_Strong(s));
+  NotifyForm.Memo.LoadRichText(text);
   NotifyForm.ShowAtPos(Mouse.CursorPos);
   Self.SetFocus;
 end;
 
 procedure TMainForm.LoadFootnote(s: string);
+var text : string;
 begin
+  text := Load_Footnote(s);
+  if text = '' then Exit;
   NotifyForm.Title.Caption := ms_Footnote;
   NotifyForm.Compact := False;
-  NotifyForm.Memo.LoadRichText(Load_Footnote(s));
+  NotifyForm.Memo.LoadRichText(text);
   NotifyForm.ShowAtPos(Mouse.CursorPos);
   Self.SetFocus;
 end;
