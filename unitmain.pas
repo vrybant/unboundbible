@@ -1238,8 +1238,8 @@ end;
 
 procedure TMainForm.LoadStrong(s: string);
 begin
-  NotifyForm.Compact := True;
   NotifyForm.Title.Caption := ' Словарь Стронга ' + s; // ms_Strong;
+  NotifyForm.Compact := True;
   NotifyForm.Memo.LoadRichText(Load_Strong(s));
   NotifyForm.ShowAtPos(Mouse.CursorPos);
   Self.SetFocus;
@@ -1247,9 +1247,9 @@ end;
 
 procedure TMainForm.LoadFootnote(s: string);
 begin
+  NotifyForm.Title.Caption := ms_Footnote;
   NotifyForm.Compact := False;
   NotifyForm.Memo.LoadRichText(Load_Footnote(s));
-  NotifyForm.Title.Caption := ms_Footnote;
   NotifyForm.ShowAtPos(Mouse.CursorPos);
   Self.SetFocus;
 end;
