@@ -14,6 +14,7 @@ type
   TMainForm = class(TForm)
     ActionInterline: TAction;
     IdleTimer: TIdleTimer;
+    MenuItem4: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
     FontDialogNotes: TFontDialog;
@@ -228,6 +229,7 @@ type
     procedure VersesToClipboard;
     procedure ShowPopup;
   public
+    IdleMessage : string;
     procedure TranslateAll;
   end;
 
@@ -311,6 +313,9 @@ begin
   IdleMessage := '';
   IdleTimer.Enabled := true;
   {$endif}
+
+  IdleMessage := '';
+  IdleTimer.Enabled := true;
 
   {$ifdef unix}
   ActionEditUndo.Visible := False;
@@ -1233,16 +1238,20 @@ end;
 
 procedure TMainForm.LoadStrong(s: string);
 begin
+  NotifyForm.Compact := True;
+  NotifyForm.Title.Caption := ' Словарь Стронга ' + s; // ms_Strong;
   NotifyForm.Memo.LoadRichText(Load_Strong(s));
-  NotifyForm.Title.Caption := ' Словарь Стронга'; // ms_Strong;
   NotifyForm.ShowAtPos(Mouse.CursorPos);
+  Self.SetFocus;
 end;
 
 procedure TMainForm.LoadFootnote(s: string);
 begin
+  NotifyForm.Compact := False;
   NotifyForm.Memo.LoadRichText(Load_Footnote(s));
   NotifyForm.Title.Caption := ms_Footnote;
   NotifyForm.ShowAtPos(Mouse.CursorPos);
+  Self.SetFocus;
 end;
 
 {$ifdef windows}

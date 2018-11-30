@@ -1,35 +1,45 @@
 object NotifyForm: TNotifyForm
-  Left = 275
-  Height = 160
-  Top = 225
-  Width = 247
+  Left = 1394
+  Height = 155
+  Top = 479
+  Width = 325
+  BorderStyle = bsNone
   Caption = 'NotifyForm'
-  ClientHeight = 160
-  ClientWidth = 247
+  ClientHeight = 155
+  ClientWidth = 325
+  Color = clInfoBk
+  FormStyle = fsStayOnTop
   OnActivate = FormActivate
   OnCreate = FormCreate
   OnDeactivate = FormDeactivate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
+  OnShow = FormShow
   LCLVersion = '1.8.4.0'
   object Title: TLabel
-    Left = 8
-    Height = 15
-    Top = 8
-    Width = 23
-    Caption = 'Title'
+    Left = 5
+    Height = 20
+    Top = 5
+    Width = 42
+    AutoSize = False
+    Caption = 'Caption'
+    Font.Style = [fsBold]
     ParentColor = False
+    ParentFont = False
   end
   object Memo: TUnboundMemo
     Cursor = crArrow
-    Left = 16
-    Height = 114
+    Left = 20
+    Height = 106
     Top = 32
-    Width = 216
+    Width = 285
     HideSelection = False
     Lines.Strings = (
       'Memo'
     )
+    ParentColor = True
+    ReadOnly = True
+    ScrollBars = ssAutoVertical
     TabOrder = 0
     ZoomFactor = 1
   end
