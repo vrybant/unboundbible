@@ -50,7 +50,7 @@ end;
 procedure TNotifyForm.HandleResize;
 const
   HEIGHT_MIN = 110;
-  HEIGHT_MAX = 155;
+  HEIGHT_MAX = 160;
   SPACING = 5;
   BUTTON_SIZE = 20;
 begin
@@ -65,7 +65,7 @@ begin
   Memo.Left := 20;
   Memo.Top := Title.Top + Title.Height + SPACING;
   Memo.Width := Width - Memo.Left - SPACING;
-  Memo.Height := Height - Memo.Top - SPACING;
+  Memo.Height := Height - Memo.Top - SPACING - SPACING;
 
   BtnX.Left := Width - BUTTON_SIZE - SPACING;
   BtnX.Top := SPACING;

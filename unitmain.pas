@@ -175,13 +175,14 @@ type
     procedure ComboBoxChange(Sender: TObject);
     procedure ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
     procedure FormActivate(Sender: TObject);
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure IdleTimerTimer(Sender: TObject);
     procedure BookBoxClick(Sender: TObject);
     procedure ChapterBoxClick(Sender: TObject);
+    procedure MemoMouseLeave(Sender: TObject);
     procedure MemoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure MemoAttrChange(Sender: TObject);
@@ -333,15 +334,15 @@ begin
   UpdateActionImage;
 end;
 
-procedure TMainForm.FormActivate(Sender: TObject);
-begin
-  if ChapterBox.Items.Count = 0 then GoToVerse(ActiveVerse,(ActiveVerse.number > 1)); // first time
-end;
-
-procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   SaveIniFile;
   RecentList.Free;
+end;
+
+procedure TMainForm.FormActivate(Sender: TObject);
+begin
+  if ChapterBox.Items.Count = 0 then GoToVerse(ActiveVerse,(ActiveVerse.number > 1)); // first time
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -368,6 +369,18 @@ begin
   ChapterBox.Width := WidthInPixels('150') + 30;
   BookBox.Width := PanelLeft.Width - BookBox.Left - BookBox.Left - ChapterBox.Width - Streak;
   ChapterBox.Left := PanelLeft.Width - ChapterBox.Width - Streak;
+end;
+
+procedure TMainForm.MemoMouseLeave(Sender: TObject);
+var
+  Point : TPoint;
+begin
+  if NotifyForm.Visible then
+    begin
+      Point := UnboundMemo.ScreenToClient(Mouse.CursorPos);
+      if (Point.x <= 0) or (Point.x >= MemoBible.Width  - 30) or
+         (Point.y <= 0) or (Point.y >= MemoBible.Height - 30) then NotifyForm.Close;
+    end;
 end;
 
 procedure TMainForm.Translate;

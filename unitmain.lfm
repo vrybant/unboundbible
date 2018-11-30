@@ -8,9 +8,9 @@ object MainForm: TMainForm
   ClientWidth = 795
   Menu = MainMenu
   OnActivate = FormActivate
-  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnPaint = FormPaint
   LCLVersion = '1.8.4.0'
   object StandardToolBar: TToolBar
@@ -290,6 +290,7 @@ object MainForm: TMainForm
         Align = alClient
         HideSelection = False
         OnContextPopup = MemoContextPopup
+        OnMouseLeave = MemoMouseLeave
         OnMouseUp = MemoMouseUp
         ReadOnly = True
         ScrollBars = ssBoth
@@ -314,6 +315,7 @@ object MainForm: TMainForm
         Align = alClient
         HideSelection = False
         OnContextPopup = MemoContextPopup
+        OnMouseLeave = MemoMouseLeave
         OnMouseUp = MemoMouseUp
         ReadOnly = True
         ScrollBars = ssBoth
