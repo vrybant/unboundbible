@@ -14,7 +14,6 @@ type
     Title: TLabel;
     Memo: TUnboundMemo;
     procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
@@ -57,10 +56,8 @@ begin
   if Compact then Height := HEIGHT_MAX
              else Height := HEIGHT_MIN;
 
-  Title.Left := SPACING;
-  Title.Top := SPACING;
-  Title.Width := Width - Title.Left - SPACING;
-  Title.Height := 20;
+  Title.Left := 2 + SPACING;
+  Title.Top  := 1 + SPACING;
 
   Memo.Left := 20;
   Memo.Top := Title.Top + Title.Height + SPACING;
@@ -73,13 +70,9 @@ begin
   BtnX.Height := BUTTON_SIZE;
 end;
 
-procedure TNotifyForm.FormShow(Sender: TObject);
-begin
-  HandleResize;
-end;
-
 procedure TNotifyForm.FormActivate(Sender: TObject);
 begin
+  HandleResize;
   Memo.HideCursor;
 end;
 

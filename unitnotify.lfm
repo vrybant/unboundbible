@@ -14,14 +14,12 @@ object NotifyForm: TNotifyForm
   OnDeactivate = FormDeactivate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
-  OnShow = FormShow
   LCLVersion = '1.8.4.0'
   object Title: TLabel
     Left = 5
-    Height = 20
+    Height = 15
     Top = 5
     Width = 42
-    AutoSize = False
     Caption = 'Caption'
     Font.Style = [fsBold]
     ParentColor = False
