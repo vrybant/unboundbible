@@ -117,7 +117,7 @@ begin
   for i:=0 to self.Count-1 do
     begin
       if not self[i].strong then Continue;
-      if not Prefix(filename,self[i].filename) then Continue;
+      if self[i].filename <> filename then Continue;
       Result := self[i].GetData(marker);
     end;
 end;

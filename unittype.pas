@@ -99,9 +99,9 @@ const
     );
 
   unboundDictionaryAlias : TDictionaryAlias = (
-    dictionary : 'dictionary';
-    word       : 'word';
-    data       : 'data';
+    dictionary : 'Dictionary';
+    word       : 'Word';
+    data       : 'Data';
     );
 
   mybibleDictionaryAlias : TDictionaryAlias = (
