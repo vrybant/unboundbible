@@ -342,12 +342,14 @@ object MainForm: TMainForm
         Align = alClient
         HideSelection = False
         OnContextPopup = MemoContextPopup
+        OnMouseLeave = MemoMouseLeave
         OnMouseUp = MemoMouseUp
         ReadOnly = True
         ScrollBars = ssBoth
         TabOrder = 0
         ZoomFactor = 1
         OnAttrChange = MemoAttrChange
+        Linkable = True
       end
     end
     object TabSheetCommentary: TTabSheet

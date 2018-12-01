@@ -736,12 +736,13 @@ begin
   if Button <> mbLeft then Exit;
 
 //if Memo.hyperlink = '' then
-//  begin
+  if Memo = MemoBible then
+    begin
       ActiveVerse.Number := MemoBible.ParagraphStart;
       ActiveVerse.Count  := MemoBible.ParagraphCount;
       if FormTranslate.Visible then LoadTranslate(ActiveVerse);
 //    Exit;
-//  end;
+    end;
 
   if Memo.Foreground = fgLink then
     begin
@@ -755,10 +756,11 @@ begin
         end;
     end;
 
-  if Sender <> MemoBible then Exit;
+  if Memo = MemoBible then
+    if Memo.Foreground = fgFootnote then LoadFootnote(Memo.Hyperlink);
 
-  if Memo.Foreground = fgStrong   then LoadStrong(Memo.Hyperlink);
-  if Memo.Foreground = fgFootnote then LoadFootnote(Memo.Hyperlink);
+  if (Memo = MemoBible) or (Memo = MemoCompare) then
+    if Memo.Foreground = fgStrong then LoadStrong(Memo.Hyperlink);
 end;
 
 procedure TMainForm.MemoAttrChange(Sender: TObject);
