@@ -82,7 +82,7 @@ begin
   inherited;
   Load(GetUserDir + AppName);
   {$ifdef windows} if Self.Count = 0 then {$endif} Load(SharePath + 'bibles');
-  Sort(Comparison);
+//Sort(Comparison);
 end;
 
 procedure TDictionaries.Load(path: string);
@@ -91,7 +91,7 @@ var
   List : TStringArray;
   f : string;
 begin
-  List := GetFileList(path, '*.*');
+  List := GetFileList(path, '*.unbound');
 
   for f in List do
     begin
@@ -103,17 +103,16 @@ end;
 
 function TDictionaries.GetStrong(Verse: TVerse; language: string; marker: string): string;
 var
-  filename : string = 'strong-en';
+  filename : string = 'strong.dct.unbound';
   i : integer;
 begin
   Result := '';
   if self.Count = 0 then Exit;
+  if Prefix('ru', language) then filename := 'strongru.dct.unbound';
 
   if not Prefix('H',marker) and not Prefix('G',marker) then
     if IsNewTestament(Verse.book) then marker := 'G' + marker
                                   else marker := 'H' + marker;
-
-  if Prefix('ru', language) then filename := 'strong-ru';
 
   for i:=0 to self.Count-1 do
     begin

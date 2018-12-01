@@ -62,7 +62,7 @@ begin
   Memo.Left := 20;
   Memo.Top := Title.Top + Title.Height + SPACING;
   Memo.Width := Width - Memo.Left - SPACING;
-  Memo.Height := Height - Memo.Top - SPACING - SPACING;
+  Memo.Height := Height - Memo.Top - SPACING - SPACING - 1;
 
   BtnX.Left := Width - BUTTON_SIZE - SPACING;
   BtnX.Top := SPACING;
