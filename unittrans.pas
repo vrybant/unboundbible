@@ -6,7 +6,7 @@ uses
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, IniFiles, UnboundMemo;
 
 type
-  TFormTranslate = class(TForm)
+  TTranslateForm = class(TForm)
     Memo: TUnboundMemo;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -18,7 +18,7 @@ type
   end;
 
 var
-  FormTranslate: TFormTranslate;
+  TranslateForm: TTranslateForm;
 
 implementation
 
@@ -26,22 +26,22 @@ uses UnitLang, UnitLib;
 
 {$R *.lfm}
 
-procedure TFormTranslate.Translate;
+procedure TTranslateForm.Translate;
 begin
-  Caption := ' ' + T('Translation');
- end;
+  Caption := ' ' + 'Комментарии'; // T('Translation');
+end;
 
-procedure TFormTranslate.FormCreate(Sender: TObject);
+procedure TTranslateForm.FormCreate(Sender: TObject);
 begin
   ReadIniFile;
 end;
 
-procedure TFormTranslate.FormDestroy(Sender: TObject);
+procedure TTranslateForm.FormDestroy(Sender: TObject);
 begin
   SaveIniFile;
 end;
 
-procedure TFormTranslate.SaveIniFile;
+procedure TTranslateForm.SaveIniFile;
 var
   IniFile: TIniFile;
 begin
@@ -49,16 +49,16 @@ begin
 
   if WindowState = wsNormal then
     begin
-      IniFile.WriteInteger('Translation', 'Left',   FormTranslate.Left);
-      IniFile.WriteInteger('Translation', 'Top',    FormTranslate.Top);
-      IniFile.WriteInteger('Translation', 'Width',  FormTranslate.Width);
-      IniFile.WriteInteger('Translation', 'Height', FormTranslate.Height);
+      IniFile.WriteInteger('Translation', 'Left',   TranslateForm.Left);
+      IniFile.WriteInteger('Translation', 'Top',    TranslateForm.Top);
+      IniFile.WriteInteger('Translation', 'Width',  TranslateForm.Width);
+      IniFile.WriteInteger('Translation', 'Height', TranslateForm.Height);
     end;
 
   IniFile.Free;
 end;
 
-procedure TFormTranslate.ReadIniFile;
+procedure TTranslateForm.ReadIniFile;
 var
   IniFile: TIniFile;
 begin

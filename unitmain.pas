@@ -12,6 +12,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ActionCommentary: TAction;
     ActionInterline: TAction;
     IdleTimer: TIdleTimer;
     MenuItem4: TMenuItem;
@@ -23,6 +24,7 @@ type
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
     TabSheetCommentary: TTabSheet;
+    ToolButton1: TToolButton;
     ToolSeparator1: TToolButton;
     ToolButtonVerses: TToolButton;
     ActionList: TActionList;
@@ -154,6 +156,7 @@ type
     ToolSeparator5: TToolButton;
     MemoCommentary: TUnboundMemo;
 
+    procedure CmdCommentary(Sender: TObject);
     procedure CmdAbout(Sender: TObject);
     procedure CmdCompare(Sender: TObject);
     procedure CmdCopyAs(Sender: TObject);
@@ -230,7 +233,6 @@ type
     procedure VersesToClipboard;
     procedure ShowPopup;
   public
-    IdleMessage : string;
     procedure TranslateAll;
   end;
 
@@ -241,7 +243,7 @@ implementation
 
 uses
   UnitAbout, UnitNotify, UnitSearch, UnitCompare, UnitTool, UnitLang,
-  UnitShelf, UnitCopy, UnitTrans, UnitLib;
+  UnitShelf, UnitCopy, UnitTrans, FormCommentary, UnitLib;
 
 const
   apBible      = 0; // active page
@@ -255,14 +257,15 @@ const
   RecentMax = 10;
 
 const
-  ms_Confirm   : string = '';
-//ms_Strong    : string = 'Strong Dictionary';
-  ms_Strong    : string = 'Словарь Стронга';
-  ms_Footnote  : string = '';
-  ms_Found     : string = '';
-  ms_Message   : string = '';
-  ms_Overwrite : string = '';
-  ms_Save      : string = '';
+  ms_Commentary : string = 'Коментарии';
+  ms_Confirm    : string = '';
+//ms_Strong     : string = 'Strong Dictionary';
+  ms_Strong     : string = 'Словарь Стронга';
+  ms_Footnote   : string = '';
+  ms_Found      : string = '';
+  ms_Message    : string = '';
+  ms_Overwrite  : string = '';
+  ms_Save       : string = '';
 
 {$R *.lfm}
 
@@ -315,9 +318,6 @@ begin
   IdleMessage := '';
   IdleTimer.Enabled := true;
   {$endif}
-
-  IdleMessage := '';
-  IdleTimer.Enabled := true;
 
   {$ifdef unix}
   ActionEditUndo.Visible := False;
@@ -465,12 +465,13 @@ procedure TMainForm.TranslateAll;
 begin
   Language := TLanguage.Create;
 
-                Translate;
-  SearchForm   .Translate;
-  CompareForm  .Translate;
-  AboutBox     .Translate;
-  FormCopy     .Translate;
-  FormTranslate.Translate;
+                 Translate;
+  SearchForm    .Translate;
+  CompareForm   .Translate;
+  AboutBox      .Translate;
+  CopyForm      .Translate;
+  TranslateForm .Translate;
+  CommentaryForm.Translate;
 
   Language.Free;
 end;
@@ -627,7 +628,7 @@ end;
 procedure TMainForm.CmdCopyAs(Sender: TObject);
 begin
   {$ifdef linux} MemoBible.SaveSelection; {$endif}
-  FormCopy.ShowModal;
+  CopyForm.ShowModal;
   {$ifdef linux} MemoBible.RestoreSelection; {$endif}
 end;
 
@@ -644,8 +645,14 @@ end;
 
 procedure TMainForm.CmdTrans(Sender: TObject);
 begin
-  FormTranslate.Show;
+  TranslateForm.Show;
   LoadTranslate(ActiveVerse);
+end;
+
+procedure TMainForm.CmdCommentary(Sender: TObject);
+begin
+  CommentaryForm.Show;
+  LoadCommentary;
 end;
 
 procedure TMainForm.CmdFileNew(Sender: TObject);
@@ -740,7 +747,7 @@ begin
     begin
       ActiveVerse.Number := MemoBible.ParagraphStart;
       ActiveVerse.Count  := MemoBible.ParagraphCount;
-      if FormTranslate.Visible then LoadTranslate(ActiveVerse);
+      if TranslateForm.Visible then LoadTranslate(ActiveVerse);
 //    Exit;
     end;
 
@@ -750,8 +757,8 @@ begin
 
       if Verse.Book > 0 then
         begin
-          if FormTranslate.Visible then LoadTranslate(Verse);
-          if (Memo = MemoSearch) or (not FormTranslate.Visible) or (ssCtrl in Shift) then
+          if TranslateForm.Visible then LoadTranslate(Verse);
+          if (Memo = MemoSearch) or (not TranslateForm.Visible) or (ssCtrl in Shift) then
             GoToVerse(Verse, True);
         end;
     end;
@@ -1215,7 +1222,7 @@ begin
   if Shelf.Count = 0 then Exit;
   MemoBible.LoadRichText(Load_Chapter());
   MakeChapterList(Bible.ChaptersCount(ActiveVerse));
-  if FormTranslate.Visible then LoadTranslate(ActiveVerse);
+  if TranslateForm.Visible then LoadTranslate(ActiveVerse);
   SelectPage(apBible);
 end;
 
@@ -1242,14 +1249,16 @@ end;
 procedure TMainForm.LoadTranslate(Verse: TVerse);
 begin
   if Shelf.Count = 0 then Exit;
-  FormTranslate.Memo.LoadRichText(Load_Translate(Verse));
-  FormTranslate.Repaint;
+  TranslateForm.Memo.LoadRichText(Load_Translate(Verse));
+  TranslateForm.Repaint;
 end;
 
 procedure TMainForm.LoadCommentary;
 begin
-  SelectPage(apCommentary);
-  MemoCommentary.LoadRichText(Load_Commentary());
+  if Shelf.Count = 0 then Exit;
+  CommentaryForm.Caption := ms_Commentary + ' - ' + Bible.VerseToStr(ActiveVerse, true);
+  CommentaryForm.Memo.LoadRichText(Load_Commentary);
+  CommentaryForm.Repaint;
 end;
 
 procedure TMainForm.LoadStrong(s: string);

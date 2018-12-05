@@ -1,25 +1,25 @@
-object TranslateForm: TTranslateForm
-  Left = 1116
-  Height = 240
-  Top = 474
-  Width = 320
-  Caption = 'Translation'
-  ClientHeight = 240
-  ClientWidth = 320
-  FormStyle = fsStayOnTop
+object CommentaryForm: TCommentaryForm
+  Left = 543
+  Height = 182
+  Top = 292
+  Width = 255
+  BorderIcons = [biSystemMenu]
+  Caption = 'Commentary'
+  ClientHeight = 182
+  ClientWidth = 255
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '1.8.4.0'
   object Memo: TUnboundMemo
     Cursor = crArrow
     Left = 0
-    Height = 240
+    Height = 182
     Top = 0
-    Width = 320
+    Width = 255
     Align = alClient
     HideSelection = False
     ReadOnly = True
-    ScrollBars = ssBoth
+    ScrollBars = ssAutoVertical
     TabOrder = 0
     ZoomFactor = 1
   end

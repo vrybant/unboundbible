@@ -156,7 +156,8 @@ begin
   if Commentaries.Count = 0 then Exit;
 
   Result += rtf_open;
-  Result += '\cf1 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
+  Result += '\f0\fs20 ';
+  Result += '\cf1 ' ; // + Bible.VerseToStr(ActiveVerse, true) + '\par ';
 
   for i:=0 to Commentaries.Count-1 do
     begin

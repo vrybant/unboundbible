@@ -8,9 +8,9 @@ uses
 
 type
 
-  { TFormCopy }
+  { TCopyForm }
 
-  TFormCopy = class(TForm)
+  TCopyForm = class(TForm)
     ButtonCancel: TButton;
     ButtonCopy: TButton;
     CheckBox: TCheckBox;
@@ -31,7 +31,7 @@ type
   end;
 
 var
-  FormCopy: TFormCopy;
+  CopyForm: TCopyForm;
 
 implementation
 
@@ -46,7 +46,7 @@ const
 
 {$R *.lfm}
 
-procedure TFormCopy.Translate;
+procedure TCopyForm.Translate;
 begin
   Caption := ' ' + T('Copy Verses');
 
@@ -63,7 +63,7 @@ begin
   CheckBox.Caption := T('Set Default');
 end;
 
-procedure TFormCopy.FormActivate(Sender: TObject);
+procedure TCopyForm.FormActivate(Sender: TObject);
 begin
   {$ifdef linux}
   ButtonCancel.Top := 255;
@@ -84,12 +84,12 @@ begin
   LoadText;
 end;
 
-procedure TFormCopy.LoadText;
+procedure TCopyForm.LoadText;
 begin
   Memo.LoadRichText(Load_Verses());
 end;
 
-procedure TFormCopy.CopyToClipboard;
+procedure TCopyForm.CopyToClipboard;
 begin
   Memo.SelectAll;
   Memo.CopyToClipboard;
@@ -97,7 +97,7 @@ begin
   Memo.SelLength := 0;
 end;
 
-procedure TFormCopy.CheckGroupItemClick(Sender: TObject; Index: integer);
+procedure TCopyForm.CheckGroupItemClick(Sender: TObject; Index: integer);
 begin
   Options.cvAbbreviate  := CheckGroup.Checked[cgAbbreviate];
   Options.cvEnumerated  := CheckGroup.Checked[cgEnumerated];
@@ -108,12 +108,12 @@ begin
   Repaint;
 end;
 
-procedure TFormCopy.ButtonCopyClick(Sender: TObject);
+procedure TCopyForm.ButtonCopyClick(Sender: TObject);
 begin
   CopyToClipboard;
 end;
 
-procedure TFormCopy.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+procedure TCopyForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   if self.ModalResult <> mrOk then Options := TempOptions;
   if (self.ModalResult = mrOk) and (not CheckBox.Checked) then Options := TempOptions;

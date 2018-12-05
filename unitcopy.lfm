@@ -1,4 +1,4 @@
-object FormCopy: TFormCopy
+object CopyForm: TCopyForm
   Left = 442
   Height = 321
   Top = 435
@@ -10,7 +10,7 @@ object FormCopy: TFormCopy
   OnActivate = FormActivate
   OnClose = FormClose
   Position = poDesktopCenter
-  LCLVersion = '1.6.4.0'
+  LCLVersion = '1.8.4.0'
   object Memo: TUnboundMemo
     Cursor = crArrow
     Left = 8

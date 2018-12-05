@@ -10,7 +10,6 @@
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -52,7 +51,7 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="20">
+    <Units Count="21">
       <Unit0>
         <Filename Value="unboundbible.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -112,7 +111,7 @@
       <Unit9>
         <Filename Value="unitcopy.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormCopy"/>
+        <ComponentName Value="CopyForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitCopy"/>
@@ -120,7 +119,7 @@
       <Unit10>
         <Filename Value="unittrans.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormTranslate"/>
+        <ComponentName Value="TranslateForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitTrans"/>
@@ -173,6 +172,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitNotify"/>
       </Unit19>
+      <Unit20>
+        <Filename Value="formcommentary.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="CommentaryForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="FormCommentary"/>
+      </Unit20>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

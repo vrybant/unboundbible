@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 357
+  Left = 356
   Height = 384
-  Top = 432
+  Top = 431
   Width = 795
   Caption = 'Unbound Bible'
   ClientHeight = 364
@@ -195,6 +195,12 @@ object MainForm: TMainForm
       Caption = 'ToolSeparator1'
       Style = tbsDivider
     end
+    object ToolButton1: TToolButton
+      Left = 617
+      Top = 0
+      Action = ActionCommentary
+      ImageIndex = 0
+    end
   end
   object PanelLeft: TPanel
     Left = 0
@@ -219,6 +225,7 @@ object MainForm: TMainForm
       ItemHeight = 0
       OnClick = BookBoxClick
       ParentFont = False
+      ScrollWidth = 132
       TabOrder = 0
     end
     object ChapterBox: TListBox
@@ -231,6 +238,7 @@ object MainForm: TMainForm
       ItemHeight = 0
       OnClick = ChapterBoxClick
       ParentFont = False
+      ScrollWidth = 43
       TabOrder = 1
     end
     object ComboBox: TComboBox
@@ -303,8 +311,8 @@ object MainForm: TMainForm
     end
     object TabSheetSearch: TTabSheet
       Caption = 'Search'
-      ClientHeight = 279
-      ClientWidth = 587
+      ClientHeight = 268
+      ClientWidth = 589
       ImageIndex = 1
       object MemoSearch: TUnboundMemo
         Cursor = crArrow
@@ -327,8 +335,8 @@ object MainForm: TMainForm
     end
     object TabSheetCompare: TTabSheet
       Caption = 'Compare'
-      ClientHeight = 279
-      ClientWidth = 587
+      ClientHeight = 268
+      ClientWidth = 589
       Font.Color = clWindowText
       Font.Height = -12
       ImageIndex = 3
@@ -354,8 +362,8 @@ object MainForm: TMainForm
     end
     object TabSheetCommentary: TTabSheet
       Caption = 'Commentary'
-      ClientHeight = 279
-      ClientWidth = 587
+      ClientHeight = 268
+      ClientWidth = 589
       object MemoCommentary: TUnboundMemo
         Cursor = crArrow
         Left = 0
@@ -375,8 +383,8 @@ object MainForm: TMainForm
     end
     object TabSheetNotes: TTabSheet
       Caption = 'Notes'
-      ClientHeight = 279
-      ClientWidth = 587
+      ClientHeight = 268
+      ClientWidth = 589
       ImageIndex = 2
       object MemoNotes: TUnboundMemo
         Cursor = crArrow
@@ -2775,13 +2783,17 @@ object MainForm: TMainForm
       OnExecute = CmdCopyVerses
       ShortCut = 16466
     end
+    object ActionInterline: TAction
+      Caption = 'CmdOnline'
+      OnExecute = CmdInterline
+    end
     object ActionTrans: TAction
       Caption = 'CmdTrans'
       OnExecute = CmdTrans
     end
-    object ActionInterline: TAction
-      Caption = 'CmdOnline'
-      OnExecute = CmdInterline
+    object ActionCommentary: TAction
+      Caption = 'ActionCommentary'
+      OnExecute = CmdCommentary
     end
   end
   object OpenDialog: TOpenDialog
