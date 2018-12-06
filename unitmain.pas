@@ -211,7 +211,7 @@ type
     procedure LangMenuInit;
     procedure LoadChapter;
     procedure LoadCompare;
-    procedure LoadTranslate(Verse: TVerse);
+    procedure LoadTranslate;
     procedure LoadCommentary;
     procedure LoadStrong(s: string);
     procedure LoadFootnote(s: string);
@@ -646,7 +646,7 @@ end;
 procedure TMainForm.CmdTrans(Sender: TObject);
 begin
   TranslateForm.Show;
-  LoadTranslate(ActiveVerse);
+  LoadTranslate;
 end;
 
 procedure TMainForm.CmdCommentary(Sender: TObject);
@@ -747,7 +747,8 @@ begin
     begin
       ActiveVerse.Number := MemoBible.ParagraphStart;
       ActiveVerse.Count  := MemoBible.ParagraphCount;
-      if TranslateForm.Visible then LoadTranslate(ActiveVerse);
+      if TranslateForm.Visible then LoadTranslate;
+      if CommentaryForm.Visible then LoadCommentary;
 //    Exit;
     end;
 
@@ -757,7 +758,8 @@ begin
 
       if Verse.Book > 0 then
         begin
-          if TranslateForm.Visible then LoadTranslate(Verse);
+          if TranslateForm.Visible then LoadTranslate;
+          if CommentaryForm.Visible then LoadCommentary;
           if (Memo = MemoSearch) or (not TranslateForm.Visible) or (ssCtrl in Shift) then
             GoToVerse(Verse, True);
         end;
@@ -1222,7 +1224,8 @@ begin
   if Shelf.Count = 0 then Exit;
   MemoBible.LoadRichText(Load_Chapter());
   MakeChapterList(Bible.ChaptersCount(ActiveVerse));
-  if TranslateForm.Visible then LoadTranslate(ActiveVerse);
+  if TranslateForm.Visible then LoadTranslate;
+  if CommentaryForm.Visible then LoadCommentary;
   SelectPage(apBible);
 end;
 
@@ -1243,13 +1246,13 @@ procedure TMainForm.LoadCompare;
 begin
   if Shelf.Count = 0 then Exit;
   SelectPage(apCompare);
-  MemoCompare.LoadRichText(Load_Compare());
+  MemoCompare.LoadRichText(Load_Compare);
 end;
 
-procedure TMainForm.LoadTranslate(Verse: TVerse);
+procedure TMainForm.LoadTranslate;
 begin
   if Shelf.Count = 0 then Exit;
-  TranslateForm.Memo.LoadRichText(Load_Translate(Verse));
+  TranslateForm.Memo.LoadRichText(Load_Translate);
   TranslateForm.Repaint;
 end;
 

@@ -7,7 +7,7 @@ uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitType;
 function Load_Chapter: string;
 function Search_Text(st: string; var count: integer): string;
 function Load_Compare: string;
-function Load_Translate(Verse: TVerse): string;
+function Load_Translate: string;
 function Load_Commentary: string;
 function Load_Strong(marker: string = ''): string;
 function Load_Footnote(marker: string = ''): string;
@@ -121,20 +121,20 @@ begin
   Result += rtf_close;
 end;
 
-function Load_Translate(Verse: TVerse): string;
+function Load_Translate: string;
 var
   Strings : TStringArray;
   item : string;
   i : integer;
 begin
   Result := rtf_open;
-  Result += '\cf3 ' + Bible.VerseToStr(Verse, true) + '\par ';
+  Result += '\cf3 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
 
   for i:=0 to Shelf.Count-1 do
     begin
       if not Shelf[i].Compare then Continue;
 
-      Strings := Shelf[i].GetRange(Verse);
+      Strings := Shelf[i].GetRange(ActiveVerse);
 
       if Length(Strings) > 0 then
         Result += '\par\cf4 ' + Shelf[i].Name + '\par\par\cf1 ';
