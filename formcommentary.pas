@@ -47,17 +47,17 @@ procedure TCommentaryForm.SaveIniFile;
 var
   IniFile: TIniFile;
 begin
-  //IniFile := TIniFile.Create(ConfigFile);
-  //
-  //if WindowState = wsNormal then
-  //  begin
-  //    IniFile.WriteInteger('Commentary', 'Left',   TranslateForm.Left);
-  //    IniFile.WriteInteger('Commentary', 'Top',    TranslateForm.Top);
-  //    IniFile.WriteInteger('Commentary', 'Width',  TranslateForm.Width);
-  //    IniFile.WriteInteger('Commentary', 'Height', TranslateForm.Height);
-  //  end;
-  //
-  //IniFile.Free;
+  IniFile := TIniFile.Create(ConfigFile);
+
+  if WindowState = wsNormal then
+    begin
+      IniFile.WriteInteger('Commentary', 'Left',   CommentaryForm.Left);
+      IniFile.WriteInteger('Commentary', 'Top',    CommentaryForm.Top);
+      IniFile.WriteInteger('Commentary', 'Width',  CommentaryForm.Width);
+      IniFile.WriteInteger('Commentary', 'Height', CommentaryForm.Height);
+    end;
+
+  IniFile.Free;
 end;
 
 procedure TCommentaryForm.ReadIniFile;
@@ -68,8 +68,8 @@ begin
 
   Height := IniFile.ReadInteger('Commentary', 'Height', Screen.Height - 300);
   Width := IniFile.ReadInteger('Commentary', 'Width', Screen.Width div 5);
-  Left := IniFile.ReadInteger('Commentary', 'Left', Screen.Width div 10 * 7);
-  Top := IniFile.ReadInteger('Commentary', 'Top', 100);
+  Left := IniFile.ReadInteger('Commentary', 'Left', Screen.Width - Width - 50);
+  Top := IniFile.ReadInteger('Commentary', 'Top', 120);
 
   IniFile.Free;
 end;

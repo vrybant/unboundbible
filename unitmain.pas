@@ -257,7 +257,7 @@ const
   RecentMax = 10;
 
 const
-  ms_Commentary : string = 'Коментарии';
+  ms_Commentary : string = '';
   ms_Confirm    : string = '';
 //ms_Strong     : string = 'Strong Dictionary';
   ms_Strong     : string = 'Словарь Стронга';
@@ -453,6 +453,7 @@ begin
   ToolButtonRight.Hint := T('Align Right');
   ToolButtonBullets.Hint := T('Bullets');
 
+  ms_Commentary := T('Commentary');
   ms_Confirm := T('Confirmation');
   ms_Footnote := T('Footnote');
   ms_Found := T('verses found');
@@ -1383,16 +1384,13 @@ var
   i, max: integer;
 begin
   IniFile := TIniFile.Create(ConfigFile);
-  {
-  if IniFile.ReadString('Application', 'State', 'Normal') = 'Maximized'  // not working
-    then WindowState := wsMaximized else WindowState := wsNormal;
-  }
+
   BibleFile := IniFile.ReadString('Application', 'FileName', GetDefaultBible);
 
-  Height := IniFile.ReadInteger('Application', 'Height', Screen.Height - 200);
-  Width := IniFile.ReadInteger('Application', 'Width', Screen.Width - 400);
+  Height := IniFile.ReadInteger('Application', 'Height', Screen.Height - 220);
+  Width := IniFile.ReadInteger('Application', 'Width', Screen.Width - 450);
   Left := IniFile.ReadInteger('Application', 'Left', 200);
-  Top := IniFile.ReadInteger('Application', 'Top', 70);
+  Top := IniFile.ReadInteger('Application', 'Top', 80);
 
   DefaultFont.Name := IniFile.ReadString('Application', 'FontName', DefaultFont.Name);
   DefaultFont.Size := IniFile.ReadInteger('Application', 'FontSize', DefaultFont.Size);
