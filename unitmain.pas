@@ -15,11 +15,12 @@ type
     ActionCommentary: TAction;
     ActionInterline: TAction;
     IdleTimer: TIdleTimer;
+    miCommentary: TMenuItem;
     MenuItem4: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
     FontDialogNotes: TFontDialog;
-    MenuItem2: TMenuItem;
+    pmSearch: TMenuItem;
     MenuItem3: TMenuItem;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
