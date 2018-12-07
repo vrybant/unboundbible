@@ -15,7 +15,6 @@ type
     ActionCommentary: TAction;
     ActionInterline: TAction;
     IdleTimer: TIdleTimer;
-    miCommentary: TMenuItem;
     MenuItem4: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
@@ -86,6 +85,7 @@ type
     MainMenu: TMainMenu;
     miBibleFolder: TMenuItem;
     miClear: TMenuItem;
+    miCommentary: TMenuItem;
     miCompare: TMenuItem;
     miCopy: TMenuItem;
     miCopyAs: TMenuItem;
@@ -123,6 +123,7 @@ type
     N9: TMenuItem;
 
     PopupMenu: TPopupMenu;
+    pmCommentary: TMenuItem;
     pmCut: TMenuItem;
     pmCopy: TMenuItem;
     pmPaste: TMenuItem;
@@ -393,6 +394,7 @@ begin
   miHelp.Caption := T('Help');
   miSearch.Caption := T('Search');
   miCompare.Caption := T('Modules');
+  miCommentary.Caption := T('Commentary');
   miTranslate.Caption := T('Translation');
   miInterlinear.Caption := T('Interlinear');
   miPrint.Caption := T('Print');
@@ -418,6 +420,7 @@ begin
   miBibleFolder.Caption := T('Bible Folder');
   miHelpAbout.Caption := T('About');
 
+  pmCommentary.Caption := T('Commentary');
   pmCut.Caption := T('Cut');
   pmCopy.Caption := T('Copy');
   pmPaste.Caption := T('Paste');
@@ -428,7 +431,6 @@ begin
   TabSheetBible.Caption := T('Bible');
   TabSheetSearch.Caption := T('Search');
   TabSheetCompare.Caption := T('Compare');
-  TabSheetCommentary.Caption := T('Commentary');
   TabSheetNotes.Caption := T('Notes');
 
   ToolButtonNew.Hint := T('New');

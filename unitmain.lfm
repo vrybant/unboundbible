@@ -39,7 +39,7 @@ object MainForm: TMainForm
       ParentShowHint = False
     end
     object ToolSeparator2: TToolButton
-      Left = 378
+      Left = 233
       Height = 28
       Top = 0
       Caption = 'ToolSeparator2'
@@ -68,34 +68,34 @@ object MainForm: TMainForm
       Action = ActionFilePrint
     end
     object ToolButtonSearch: TToolButton
-      Left = 294
+      Left = 149
       Top = 0
       Action = ActionSearch
     end
     object ToolSeparator3: TToolButton
-      Left = 289
+      Left = 378
       Height = 28
       Top = 0
       ImageIndex = 3
       Style = tbsDivider
     end
     object ToolButtonCut: TToolButton
-      Left = 149
+      Left = 238
       Top = 0
       Action = ActionEditCut
     end
     object ToolButtonCopy: TToolButton
-      Left = 177
+      Left = 266
       Top = 0
       Action = ActionEditCopy
     end
     object ToolButtonPaste: TToolButton
-      Left = 233
+      Left = 322
       Top = 0
       Action = ActionEditPaste
     end
     object ToolButtonUndo: TToolButton
-      Left = 261
+      Left = 350
       Top = 0
       Action = ActionEditUndo
     end
@@ -108,7 +108,7 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButtonCompare: TToolButton
-      Left = 322
+      Left = 177
       Top = 0
       Action = ActionCompare
       ParentShowHint = False
@@ -182,7 +182,7 @@ object MainForm: TMainForm
       Action = ActionFont
     end
     object ToolButtonVerses: TToolButton
-      Left = 205
+      Left = 294
       Top = 0
       Action = ActionCopyVerses
       ParentShowHint = False
@@ -196,7 +196,7 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButton1: TToolButton
-      Left = 350
+      Left = 205
       Top = 0
       Action = ActionCommentary
       ImageIndex = 38
@@ -505,6 +505,47 @@ object MainForm: TMainForm
           FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
         }
       end
+      object miCommentary: TMenuItem
+        Action = ActionCommentary
+        Caption = 'Commentary'
+        Bitmap.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000FF00FF00FF00
+          FF00FF00FF00C89158FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00C7864AFFD7AA89FFFF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00C78447FFE2B27CFFDB9769FFFF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00C67F45FFF6D8B4FFE1B07CFFDB9568FFFF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00DEC4
+          AFFFD2A678FFCA9359FFFCE6CDFFFAE5C9FFE2B684FFD0A27EFFCA9054FFC990
+          54FFCA9359FFD2A678FFDEC4AFFFFF00FF00FF00FF00FF00FF00FF00FF00CE9E
+          6FFFF6F2ECFFF8F4EEFFFAFAFAFFFAFAFAFFFAFAFAFFFAFAFAFFF8F2ECFFF8F3
+          EDFFF8F4EEFFF6F2ECFFCE9E6FFFFF00FF00FF00FF00FF00FF00FF00FF00C891
+          58FFFAF6F2FFFAE0C7FFFDE7D5FFFBE1CCFFFADFC7FFF8DCC2FFF8DBC1FFFBE2
+          C9FFFAE0C7FFFAF6F2FFC89158FFFF00FF00CE9E6FFFFF00FF00FF00FF00C786
+          4AFFF8F2EBFFFEE7D6FFFDE7D6FFFDE5D3FFFCE4D1FFFCE2CDFFFCE2CDFFFBE1
+          CBFFFBE1C9FFFBF7F2FFC77F44FFFF00FF00C89158FFFF00FF00FF00FF00C784
+          47FFF8F1E8FFFEE5D5FFFDE5D3FFFCE4D1FFFCE2CEFFFCE2CCFFFCE2CCFFFBE0
+          C9FFFBE1C8FFFDFAF7FFC37940FFFF00FF00C77F44FFFF00FF00FF00FF00C37B
+          41FFF7EDE3FFF1D2B3FFFBE1CCFFFBE1CCFFFBE1CCFFFBE1CCFFFBE1CCFFFBE1
+          CCFFF1D2B3FFFBF7F4FFBD6B37FFFF00FF00C1733CFFFF00FF00FF00FF00C075
+          3EFFF5EBDFFFF1D2B3FFF1D2B3FFF1D2B3FFF1D2B3FFF1D2B3FFF1D2B3FFF1D2
+          B3FFF1D2B3FFFDFBF8FFBB6935FFFF00FF00BD6B37FFFF00FF00FF00FF00C27A
+          4BFFF7F0EAFFF7ECDFFFF6EADEFFFAF3EBFFFAF3EBFFFAF2EAFFFAF2EAFFFCF7
+          F3FFFCF8F4FFFDFDFCFFC1774AFFFF00FF00BB6935FFFF00FF00FF00FF00D9B7
+          A0FFC88962FFBF6F3EFFBC6A36FFBC6935FFBB6934FFBB6934FFBB6934FFBB68
+          34FFBC6C39FFC5865EFFDAB8A4FFFF00FF00C1774AFFFF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00C1774AFFFF00FF00FF00FF00FF00
+          FF00FF00FF00C88962FFBF6F3EFFBC6A36FFBC6935FFBC6935FFBB6934FFBB68
+          34FFBB6934FFBB6834FFBC6C39FFC5865EFFDAB8A4FFFF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        }
+        ImageIndex = 38
+      end
       object miTranslate: TMenuItem
         Action = ActionTrans
         Caption = 'Translate'
@@ -545,6 +586,7 @@ object MainForm: TMainForm
           EAFFFBF7F3FFFEFDFDFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00
         }
         ImageIndex = 35
+        Visible = False
       end
       object miInterlinear: TMenuItem
         Action = ActionInterline
@@ -2388,7 +2430,7 @@ object MainForm: TMainForm
       }
       Visible = False
     end
-    object miCommentary: TMenuItem
+    object pmCommentary: TMenuItem
       Action = ActionCommentary
       Caption = 'Commentary'
       Bitmap.Data = {
