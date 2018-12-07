@@ -23,7 +23,6 @@ type
     MenuItem3: TMenuItem;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
-    TabSheetCommentary: TTabSheet;
     ToolButton1: TToolButton;
     ToolSeparator1: TToolButton;
     ToolButtonVerses: TToolButton;
@@ -156,7 +155,6 @@ type
     ToolSeparator3: TToolButton;
     ToolSeparator4: TToolButton;
     ToolSeparator5: TToolButton;
-    MemoCommentary: TUnboundMemo;
 
     procedure CmdCommentary(Sender: TObject);
     procedure CmdAbout(Sender: TObject);
@@ -974,7 +972,6 @@ begin
     apBible      : Result := MemoBible;
     apSearch     : Result := MemoSearch;
     apCompare    : Result := MemoCompare;
-    apCommentary : Result := MemoCommentary;
     apNotes      : Result := MemoNotes;
     else
       Result := nil;
