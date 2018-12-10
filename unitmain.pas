@@ -249,8 +249,7 @@ const
   apBible      = 0; // active page
   apSearch     = 1;
   apCompare    = 2;
-  apCommentary = 3;
-  apNotes      = 4;
+  apNotes      = 3;
 
 const
   sUntitled = 'Untitled';
@@ -391,7 +390,7 @@ begin
   miNotes.Caption := T('Notes');
   miHelp.Caption := T('Help');
   miSearch.Caption := T('Search');
-  miCompare.Caption := T('Modules');
+  miCompare.Caption := T('Compare');
   miCommentary.Caption := T('Commentary');
   miTranslate.Caption := T('Translation');
   miInterlinear.Caption := T('Interlinear');
@@ -1161,7 +1160,6 @@ begin
   UnboundMemo.SetFocus;
   UnboundMemo.Repaint;
   if PageControl.ActivePageIndex = apCompare then LoadCompare;
-  if PageControl.ActivePageIndex = apCommentary then LoadCommentary;
 end;
 
 procedure TMainForm.RadioButtonClick(Sender: TObject);
