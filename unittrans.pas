@@ -28,7 +28,7 @@ uses UnitLang, UnitLib;
 
 procedure TTranslateForm.Translate;
 begin
-  Caption := ' ' + 'Комментарии'; // T('Translation');
+  Caption := ' ' + T('Translation');
 end;
 
 procedure TTranslateForm.FormCreate(Sender: TObject);

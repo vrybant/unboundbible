@@ -12,9 +12,11 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ActionModules: TAction;
     ActionCommentary: TAction;
     ActionInterline: TAction;
     IdleTimer: TIdleTimer;
+    miModules: TMenuItem;
     MenuItem4: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
@@ -156,6 +158,7 @@ type
     ToolSeparator4: TToolButton;
     ToolSeparator5: TToolButton;
 
+    procedure cmdModules(Sender: TObject);
     procedure CmdCommentary(Sender: TObject);
     procedure CmdAbout(Sender: TObject);
     procedure CmdCompare(Sender: TObject);
@@ -397,6 +400,7 @@ begin
   miTranslate.Caption := T('Translation');
   miInterlinear.Caption := T('Interlinear');
   miPrint.Caption := T('Print');
+  miModules.Caption := T('Modules');
   miOptions.Caption := T('Font…');
   miLocalization.Caption := T('Localization');
   miExit.Caption := T('Exit');
@@ -662,12 +666,13 @@ begin
   LoadCommentary;
 end;
 
-procedure TMainForm.CmdFileNew(Sender: TObject);
+procedure TMainForm.cmdModules(Sender: TObject);
 begin
   LoadModulesInfo;
+end;
 
-  EXIT; //////////////////////////////////////////////////////////////////////////////////////////
-
+procedure TMainForm.CmdFileNew(Sender: TObject);
+begin
   SelectPage(apNotes);
   if not CheckFileSave then Exit;
   NoteFileName := sUntitled;

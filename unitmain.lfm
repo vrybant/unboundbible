@@ -493,7 +493,6 @@ object MainForm: TMainForm
           EAFFFBF7F3FFFEFDFDFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00
         }
         ImageIndex = 35
-        Visible = False
       end
       object miInterlinear: TMenuItem
         Action = ActionInterline
@@ -501,6 +500,10 @@ object MainForm: TMainForm
       end
       object miPrint: TMenuItem
         Action = ActionFilePrint
+      end
+      object miModules: TMenuItem
+        Action = ActionModules
+        Caption = 'Modules'
       end
       object N5: TMenuItem
         Caption = '-'
@@ -2277,6 +2280,10 @@ object MainForm: TMainForm
     object ActionCommentary: TAction
       Caption = 'ActionCommentary'
       OnExecute = CmdCommentary
+    end
+    object ActionModules: TAction
+      Caption = 'ActionModules'
+      OnExecute = cmdModules
     end
   end
   object OpenDialog: TOpenDialog
