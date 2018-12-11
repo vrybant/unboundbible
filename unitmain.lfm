@@ -493,17 +493,15 @@ object MainForm: TMainForm
           EAFFFBF7F3FFFEFDFDFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00
         }
         ImageIndex = 35
-      end
-      object miInterlinear: TMenuItem
-        Action = ActionInterline
-        Caption = 'Interlinear'
-      end
-      object miPrint: TMenuItem
-        Action = ActionFilePrint
+        Visible = False
       end
       object miModules: TMenuItem
         Action = ActionModules
         Caption = 'Modules'
+      end
+      object miInterlinear: TMenuItem
+        Action = ActionInterline
+        Caption = 'Interlinear'
       end
       object N5: TMenuItem
         Caption = '-'
@@ -570,6 +568,9 @@ object MainForm: TMainForm
       end
       object miNoteSaveAs: TMenuItem
         Action = ActionFileSaveAs
+      end
+      object miPrint: TMenuItem
+        Action = ActionFilePrint
       end
       object N1: TMenuItem
         Caption = '-'
