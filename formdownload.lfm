@@ -1,0 +1,45 @@
+object DownloadForm: TDownloadForm
+  Left = 568
+  Height = 500
+  Top = 292
+  Width = 800
+  BorderStyle = bsDialog
+  Caption = ' Downloads'
+  ClientHeight = 500
+  ClientWidth = 800
+  Color = clBtnFace
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnShow = FormShow
+  OnShowHint = FormShowHint
+  ParentFont = True
+  Position = poScreenCenter
+  LCLVersion = '1.8.4.0'
+  object ButtonOK: TButton
+    Left = 360
+    Height = 25
+    Top = 464
+    Width = 80
+    AutoSize = True
+    Caption = 'OK'
+    Constraints.MaxWidth = 80
+    Constraints.MinWidth = 80
+    Default = True
+    ModalResult = 1
+    TabOrder = 0
+  end
+  object Grid: TStringGrid
+    Left = 8
+    Height = 440
+    Top = 8
+    Width = 784
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goSmoothScroll, goCellHints]
+    ParentShowHint = False
+    RowCount = 3
+    ShowHint = True
+    TabOrder = 1
+    OnGetCellHint = GridGetCellHint
+    OnMouseMove = GridMouseMove
+  end
+end

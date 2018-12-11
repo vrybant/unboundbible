@@ -138,12 +138,13 @@ begin
       Query.SQL.Text := 'SELECT * FROM Details';
       Query.Open;
 
-      try info      := Query.FieldByName('Information').AsString;  except end;
-      try info      := Query.FieldByName('Description').AsString;  except end;
-      try name      := Query.FieldByName('Title'      ).AsString;  except name := info; end;
-      try copyright := Query.FieldByName('Copyright'  ).AsString;  except end;
-      try language  := Query.FieldByName('Language'   ).AsString;  except end;
-      try strong    := Query.FieldByName('Strong'     ).AsBoolean; except end;
+      try info         := Query.FieldByName('Information' ).AsString;  except end;
+      try info         := Query.FieldByName('Description' ).AsString;  except end;
+      try name         := Query.FieldByName('Title'       ).AsString;  except name := info; end;
+      try abbreviation := Query.FieldByName('Abbreviation').AsString;  except end;
+      try copyright    := Query.FieldByName('Copyright'   ).AsString;  except end;
+      try language     := Query.FieldByName('Language'    ).AsString;  except end;
+      try strong       := Query.FieldByName('Strong'      ).AsBoolean; except end;
 
       connected := true;
     except

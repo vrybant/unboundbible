@@ -243,7 +243,7 @@ implementation
 
 uses
   UnitAbout, UnitNotify, UnitSearch, UnitCompare, UnitTool, UnitLang,
-  UnitShelf, UnitCopy, UnitTrans, FormCommentary, UnitLib;
+  UnitShelf, UnitCopy, UnitTrans, FormCommentary, FormDownload, UnitLib;
 
 const
   apBible      = 0; // active page
@@ -658,6 +658,10 @@ end;
 
 procedure TMainForm.CmdFileNew(Sender: TObject);
 begin
+  DownloadForm.ShowModal;
+
+  EXIT; //////////////////////////////////////////////////////////////////////////////////////////
+
   SelectPage(apNotes);
   if not CheckFileSave then Exit;
   NoteFileName := sUntitled;
