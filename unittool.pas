@@ -17,7 +17,7 @@ function Show_Message(s: string): string;
 
 implementation
 
-uses UnitMain, UnitModule, UnitShelf, UnitDictionary, UnitCommentary, UnitSearch, UnitParse, UnitLib;
+uses UnitLang, UnitModule, UnitShelf, UnitDictionary, UnitCommentary, UnitSearch, UnitParse, UnitLib;
 
 function Load_Chapter: string;
 var

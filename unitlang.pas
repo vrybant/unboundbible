@@ -8,7 +8,7 @@ uses
 type
   TLanguage = class(TIniFile)
   public
-    constructor {%H-}Create;
+    constructor Create;
   end;
 
   TLocalization = class(TStringList)
@@ -20,6 +20,18 @@ type
 var
   Localization : TLocalization;
   Language : TLanguage;
+
+const
+  ms_Commentary : string = '';
+  ms_Confirm    : string = '';
+  ms_Strong     : string = 'Словарь Стронга'; // 'Strong Dictionary'
+  ms_File       : string = '';
+  ms_Footnote   : string = '';
+  ms_Found      : string = '';
+  ms_Language   : string = '';
+  ms_Message    : string = '';
+  ms_Overwrite  : string = '';
+  ms_Save       : string = '';
 
 function  T(const id : string): string;
 
@@ -34,8 +46,6 @@ function T(const id : string): string;
 begin
   Result := Language.ReadString('Localization',id,id);
 end;
-
-//-------------------------------------------------------------------------------------------------
 
 function NativeLanguage(s: string): string;
 begin
@@ -62,14 +72,13 @@ constructor TLocalization.Create;
 var
   List : TStringArray;
   f : string;
-  i : integer;
 begin
   inherited;
 
   List := GetFileList(SharePath + LangDirectory, '*.lng');
   for f in List do self.Add(ExtractOnlyName(f));
 
-  Self.CustomSort(Comparison);
+  CustomSort(Comparison);
 end;
 
 function TLocalization.Native(index: integer): string;

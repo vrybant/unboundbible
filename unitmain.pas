@@ -243,18 +243,6 @@ type
 var
   MainForm: TMainForm;
 
-const
-  ms_Commentary : string = '';
-  ms_Confirm    : string = '';
-  ms_Strong     : string = 'Словарь Стронга'; // 'Strong Dictionary'
-  ms_File       : string = '';
-  ms_Footnote   : string = '';
-  ms_Found      : string = '';
-  ms_Language   : string = '';
-  ms_Message    : string = '';
-  ms_Overwrite  : string = '';
-  ms_Save       : string = '';
-
 implementation
 
 uses
