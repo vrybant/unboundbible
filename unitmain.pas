@@ -445,17 +445,6 @@ begin
   ToolButtonCenter.Hint := T('Center');
   ToolButtonRight.Hint := T('Align Right');
   ToolButtonBullets.Hint := T('Bullets');
-
-  ms_Commentary := T('Commentary');
-  ms_Confirm := T('Confirmation');
-  ms_File := T('File');
-  ms_Footnote := T('Footnote');
-  ms_Found := T('verses found');
-  ms_Language := T('Language');
-  ms_Overwrite := T('OK to overwrite %s?');
-  ms_Save := T('Save changes?');
-  ms_Message := T('This search returned too many results.') + ' ' +
-                T('Please narrow your search.');
 end;
 
 //-------------------------------------------------------------------------------------------------

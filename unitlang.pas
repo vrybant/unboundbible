@@ -21,17 +21,17 @@ var
   Localization : TLocalization;
   facelang : string;
 
-const
-  ms_Commentary : string = '';
-  ms_Confirm    : string = '';
-  ms_Strong     : string = 'Словарь Стронга'; // 'Strong Dictionary'
-  ms_File       : string = '';
-  ms_Footnote   : string = '';
-  ms_Found      : string = '';
-  ms_Language   : string = '';
-  ms_Message    : string = '';
-  ms_Overwrite  : string = '';
-  ms_Save       : string = '';
+var
+  ms_Commentary,
+  ms_Confirm,
+  ms_Strong,
+  ms_File,
+  ms_Footnote,
+  ms_Found,
+  ms_Language,
+  ms_Message,
+  ms_Overwrite,
+  ms_Save : string;
 
 function T(const id : string): string;
 procedure TranslateAll;
@@ -67,6 +67,21 @@ begin
   if s = 'ukrainian' then Result := 'Українська ';
 end;
 
+procedure TranslateConstants;
+begin
+  ms_Commentary := T('Commentary');
+  ms_Confirm := T('Confirmation');
+  ms_Strong := T('Strong''s Dictionary');
+  ms_File := T('File');
+  ms_Footnote := T('Footnote');
+  ms_Found := T('verses found');
+  ms_Language := T('Language');
+  ms_Overwrite := T('OK to overwrite %s?');
+  ms_Save := T('Save changes?');
+  ms_Message := T('This search returned too many results.') + ' ' +
+                T('Please narrow your search.');
+end;
+
 procedure TranslateAll;
 begin
   Language := TLanguage.Create;
@@ -79,6 +94,8 @@ begin
   TranslateForm .Translate;
   CommentaryForm.Translate;
   DownloadForm  .Translate;
+
+  TranslateConstants;
 
   Language.Free;
 end;

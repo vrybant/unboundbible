@@ -2284,6 +2284,7 @@ object MainForm: TMainForm
     end
     object ActionModules: TAction
       Caption = 'ActionModules'
+      ImageIndex = 34
       OnExecute = cmdModules
     end
   end
