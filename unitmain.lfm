@@ -195,7 +195,7 @@ object MainForm: TMainForm
       Caption = 'ToolSeparator1'
       Style = tbsDivider
     end
-    object ToolButton1: TToolButton
+    object ToolButtonCommentary: TToolButton
       Left = 205
       Top = 0
       Action = ActionCommentary

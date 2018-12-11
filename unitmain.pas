@@ -23,7 +23,7 @@ type
     MenuItem3: TMenuItem;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
-    ToolButton1: TToolButton;
+    ToolButtonCommentary: TToolButton;
     ToolSeparator1: TToolButton;
     ToolButtonVerses: TToolButton;
     ActionList: TActionList;
@@ -442,7 +442,8 @@ begin
   ToolButtonVerses.Hint := T('Copy Verses');
   ToolButtonPaste.Hint := T('Paste');
   ToolButtonUndo.Hint := T('Undo');
-  ToolButtonCompare.Hint := T('Modules');
+  ToolButtonCompare.Hint := T('Compare');
+  ToolButtonCommentary.Hint := T('Commentary');
 
   ToolButtonFont.Hint := T('Font');
   ToolButtonBold.Hint := T('Bold');
