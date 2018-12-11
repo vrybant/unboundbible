@@ -3,7 +3,7 @@ unit UnitLang;
 interface
 
 uses
-  SysUtils, Classes, Graphics, IniFiles,  ClipBrd, UnitLib, LCLProc;
+  SysUtils, Classes, Graphics, IniFiles,  ClipBrd, LCLProc;
 
 type
   TLanguage = class(TIniFile)
@@ -19,7 +19,7 @@ type
 
 var
   Localization : TLocalization;
-  Language : TLanguage;
+  facelang : string;
 
 const
   ms_Commentary : string = '';
@@ -33,9 +33,17 @@ const
   ms_Overwrite  : string = '';
   ms_Save       : string = '';
 
-function  T(const id : string): string;
+function T(const id : string): string;
+procedure TranslateAll;
 
 implementation
+
+uses
+  UnitMain, UnitAbout, UnitSearch, UnitCompare, UnitShelf, UnitCopy, UnitTrans,
+  FormCommentary, FormDownload, UnitLib;
+
+var
+  Language : TLanguage;
 
 constructor TLanguage.Create;
 begin
@@ -57,6 +65,22 @@ begin
   if s = 'italian'   then Result := 'Italiano';
   if s = 'finnish'   then Result := 'Suomi';
   if s = 'ukrainian' then Result := 'Українська ';
+end;
+
+procedure TranslateAll;
+begin
+  Language := TLanguage.Create;
+
+  MainForm      .Translate;
+  SearchForm    .Translate;
+  CompareForm   .Translate;
+  AboutBox      .Translate;
+  CopyForm      .Translate;
+  TranslateForm .Translate;
+  CommentaryForm.Translate;
+  DownloadForm  .Translate;
+
+  Language.Free;
 end;
 
 //-------------------------------------------------------------------------------------------------

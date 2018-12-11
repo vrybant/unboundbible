@@ -230,14 +230,13 @@ type
     procedure SaveIniFile;
     procedure SearchText(s: string);
     procedure SelectPage(page: integer);
-    procedure Translate;
     procedure UpdateCaption(s: string);
     procedure UpdateStatus(s, Hint: string);
     procedure UpdateActionImage;
     procedure VersesToClipboard;
     procedure ShowPopup;
   public
-    procedure TranslateAll;
+    procedure Translate;
   end;
 
 var
@@ -457,22 +456,6 @@ begin
   ms_Save := T('Save changes?');
   ms_Message := T('This search returned too many results.') + ' ' +
                 T('Please narrow your search.');
-end;
-
-procedure TMainForm.TranslateAll;
-begin
-  Language := TLanguage.Create;
-
-                 Translate;
-  SearchForm    .Translate;
-  CompareForm   .Translate;
-  AboutBox      .Translate;
-  CopyForm      .Translate;
-  TranslateForm .Translate;
-  CommentaryForm.Translate;
-  DownloadForm  .Translate;
-
-  Language.Free;
 end;
 
 //-------------------------------------------------------------------------------------------------

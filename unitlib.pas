@@ -79,7 +79,6 @@ procedure Output(n: integer); overload;
 
 var
   DefaultFont: TFont;
-  facelang : string;
 
 const
   Slash = DirectorySeparator;
