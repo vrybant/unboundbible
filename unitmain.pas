@@ -211,6 +211,7 @@ type
     procedure LangMenuInit;
     procedure LoadChapter;
     procedure LoadCompare;
+    procedure LoadModulesInfo;
     procedure LoadTranslate;
     procedure LoadCommentary;
     procedure LoadStrong(s: string);
@@ -239,6 +240,18 @@ type
 var
   MainForm: TMainForm;
 
+const
+  ms_Commentary : string = '';
+  ms_Confirm    : string = '';
+  ms_Strong     : string = 'Словарь Стронга'; // 'Strong Dictionary'
+  ms_File       : string = '';
+  ms_Footnote   : string = '';
+  ms_Found      : string = '';
+  ms_Language   : string = '';
+  ms_Message    : string = '';
+  ms_Overwrite  : string = '';
+  ms_Save       : string = '';
+
 implementation
 
 uses
@@ -254,17 +267,6 @@ const
 const
   sUntitled = 'Untitled';
   RecentMax = 10;
-
-const
-  ms_Commentary : string = '';
-  ms_Confirm    : string = '';
-//ms_Strong     : string = 'Strong Dictionary';
-  ms_Strong     : string = 'Словарь Стронга';
-  ms_Footnote   : string = '';
-  ms_Found      : string = '';
-  ms_Message    : string = '';
-  ms_Overwrite  : string = '';
-  ms_Save       : string = '';
 
 {$R *.lfm}
 
@@ -454,8 +456,10 @@ begin
 
   ms_Commentary := T('Commentary');
   ms_Confirm := T('Confirmation');
+  ms_File := T('File');
   ms_Footnote := T('Footnote');
   ms_Found := T('verses found');
+  ms_Language := T('Language');
   ms_Overwrite := T('OK to overwrite %s?');
   ms_Save := T('Save changes?');
   ms_Message := T('This search returned too many results.') + ' ' +
@@ -473,6 +477,7 @@ begin
   CopyForm      .Translate;
   TranslateForm .Translate;
   CommentaryForm.Translate;
+  DownloadForm  .Translate;
 
   Language.Free;
 end;
@@ -658,7 +663,7 @@ end;
 
 procedure TMainForm.CmdFileNew(Sender: TObject);
 begin
-  DownloadForm.ShowModal;
+  LoadModulesInfo;
 
   EXIT; //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1250,6 +1255,14 @@ begin
   if Shelf.Count = 0 then Exit;
   SelectPage(apCompare);
   MemoCompare.LoadRichText(Load_Compare);
+end;
+
+procedure TMainForm.LoadModulesInfo;
+begin
+  if Shelf.Count = 0 then Exit;
+  DownloadForm.Memo.LoadRichText(Load_ModulesInfo);
+  //DownloadForm.Repaint;
+  DownloadForm.ShowModal;
 end;
 
 procedure TMainForm.LoadTranslate;

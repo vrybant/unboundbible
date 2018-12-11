@@ -1,24 +1,21 @@
 object DownloadForm: TDownloadForm
-  Left = 568
-  Height = 500
-  Top = 292
-  Width = 800
+  Left = 576
+  Height = 400
+  Top = 290
+  Width = 550
   BorderStyle = bsDialog
-  Caption = ' Downloads'
-  ClientHeight = 500
-  ClientWidth = 800
+  Caption = ' Modules'
+  ClientHeight = 400
+  ClientWidth = 550
   Color = clBtnFace
-  OnClose = FormClose
   OnCreate = FormCreate
-  OnShow = FormShow
-  OnShowHint = FormShowHint
   ParentFont = True
   Position = poScreenCenter
   LCLVersion = '1.8.4.0'
   object ButtonOK: TButton
-    Left = 360
+    Left = 232
     Height = 25
-    Top = 464
+    Top = 367
     Width = 80
     AutoSize = True
     Caption = 'OK'
@@ -28,18 +25,16 @@ object DownloadForm: TDownloadForm
     ModalResult = 1
     TabOrder = 0
   end
-  object Grid: TStringGrid
+  object Memo: TUnboundMemo
+    Cursor = crArrow
     Left = 8
-    Height = 440
+    Height = 352
     Top = 8
-    Width = 784
-    FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goSmoothScroll, goCellHints]
-    ParentShowHint = False
-    RowCount = 3
-    ShowHint = True
+    Width = 533
+    HideSelection = False
+    ReadOnly = True
+    ScrollBars = ssAutoVertical
     TabOrder = 1
-    OnGetCellHint = GridGetCellHint
-    OnMouseMove = GridMouseMove
+    ZoomFactor = 1
   end
 end

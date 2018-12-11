@@ -7,6 +7,7 @@ uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitType;
 function Load_Chapter: string;
 function Search_Text(st: string; var count: integer): string;
 function Load_Compare: string;
+function Load_ModulesInfo: string;
 function Load_Translate: string;
 function Load_Commentary: string;
 function Load_Strong(marker: string = ''): string;
@@ -16,7 +17,7 @@ function Show_Message(s: string): string;
 
 implementation
 
-uses UnitShelf, UnitDictionary, UnitCommentary, UnitSearch, UnitParse, UnitLib;
+uses UnitMain, UnitModule, UnitShelf, UnitDictionary, UnitCommentary, UnitSearch, UnitParse, UnitLib;
 
 function Load_Chapter: string;
 var
@@ -117,6 +118,31 @@ begin
       for item in Strings do
         Result += Parse(item) + '\i0\par';
     end;
+
+  Result += rtf_close;
+end;
+
+function Load_ModulesInfo: string;
+var i : integer;
+
+  function GetInfo(const Module: TModule): string;
+  begin
+    Result := '\b ' + Module.Name;
+    if Module.Abbreviation <> '' then Result += ' - ' + Module.Abbreviation;
+    Result += '\b0\par ';
+    if Module.Info <> '' then Result += Module.Info + '\par ';
+    if Module.language <> '' then Result += ms_Language + ': ' + Module.language + '\par ';
+    Result += '\cf5 ' + ms_File + ': ' + Module.Filename + '\cf1\par ';
+    Result += '\par ';
+  end;
+
+begin
+  Result += rtf_open;
+  Result += '\f0\fs20\cf1 ';
+
+  for i:=0 to        Shelf.Count-1 do Result += GetInfo(Shelf[i]);
+  for i:=0 to Dictionaries.Count-1 do Result += GetInfo(Dictionaries[i]);
+  for i:=0 to Commentaries.Count-1 do Result += GetInfo(Commentaries[i]);
 
   Result += rtf_close;
 end;
