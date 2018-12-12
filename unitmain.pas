@@ -158,7 +158,6 @@ type
     ToolSeparator4: TToolButton;
     ToolSeparator5: TToolButton;
 
-    procedure cmdModules(Sender: TObject);
     procedure CmdCommentary(Sender: TObject);
     procedure CmdAbout(Sender: TObject);
     procedure CmdCompare(Sender: TObject);
@@ -177,6 +176,7 @@ type
     procedure CmdStyle(Sender: TObject);
     procedure CmdStyle2(Sender: TObject);
     procedure CmdTrans(Sender: TObject);
+    procedure CmdModules(Sender: TObject);
 
     procedure ComboBoxChange(Sender: TObject);
     procedure ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
@@ -213,8 +213,6 @@ type
     procedure GoToVerse(Verse: TVerse; select: boolean);
     procedure LangMenuInit;
     procedure LoadChapter;
-    procedure LoadCompare;
-    procedure LoadModulesInfo;
     procedure LoadTranslate;
     procedure LoadCommentary;
     procedure LoadStrong(s: string);
@@ -561,7 +559,11 @@ end;
 
 procedure TMainForm.CmdCompare(Sender: TObject);
 begin
-  if CompareForm.ShowModal = mrOk then LoadCompare;
+  if Shelf.Count = 0 then Exit;
+  if Sender <> PageControl then
+    if CompareForm.ShowModal <> mrOk then Exit;
+  MemoCompare.LoadRichText(Load_Compare);
+  if Sender <> PageControl then SelectPage(apCompare);
 end;
 
 procedure TMainForm.CmdInterline(Sender: TObject);
@@ -624,11 +626,6 @@ procedure TMainForm.CmdCommentary(Sender: TObject);
 begin
   CommentaryForm.Show;
   LoadCommentary;
-end;
-
-procedure TMainForm.cmdModules(Sender: TObject);
-begin
-  LoadModulesInfo;
 end;
 
 procedure TMainForm.CmdFileNew(Sender: TObject);
@@ -696,6 +693,13 @@ var
 begin
   InitPrintParams(Params{%H-});
   if PrintDialog.Execute then UnboundMemo.Print(Params);
+end;
+
+procedure TMainForm.CmdModules(Sender: TObject);
+begin
+  if Shelf.Count = 0 then Exit;
+  DownloadForm.Memo.LoadRichText(Load_ModulesInfo);
+  DownloadForm.ShowModal;
 end;
 
 procedure TMainForm.CmdExit(Sender: TObject);
@@ -1134,7 +1138,7 @@ begin
   UpdateStatus('','');
   UnboundMemo.SetFocus;
   UnboundMemo.Repaint;
-  if PageControl.ActivePageIndex = apCompare then LoadCompare;
+  if PageControl.ActivePageIndex = apCompare then CmdCompare(PageControl);
 end;
 
 procedure TMainForm.RadioButtonClick(Sender: TObject);
@@ -1214,21 +1218,6 @@ begin
   Cursor := crArrow;
   SelectPage(apSearch);
   UpdateStatus(ToStr(count) + ' ' + ms_found,'');
-end;
-
-procedure TMainForm.LoadCompare;
-begin
-  if Shelf.Count = 0 then Exit;
-  SelectPage(apCompare);
-  MemoCompare.LoadRichText(Load_Compare);
-end;
-
-procedure TMainForm.LoadModulesInfo;
-begin
-  if Shelf.Count = 0 then Exit;
-  DownloadForm.Memo.LoadRichText(Load_ModulesInfo);
-  //DownloadForm.Repaint;
-  DownloadForm.ShowModal;
 end;
 
 procedure TMainForm.LoadTranslate;
