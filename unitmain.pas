@@ -213,8 +213,6 @@ type
     procedure GoToVerse(Verse: TVerse; select: boolean);
     procedure LangMenuInit;
     procedure LoadChapter;
-    procedure LoadTranslate;
-    procedure LoadCommentary;
     procedure LoadStrong(s: string);
     procedure LoadFootnote(s: string);
     procedure MakeBookList;
@@ -618,14 +616,19 @@ end;
 
 procedure TMainForm.CmdTrans(Sender: TObject);
 begin
+  if Shelf.Count = 0 then Exit;
+  TranslateForm.Memo.LoadRichText(Load_Translate);
+  TranslateForm.Repaint;
   TranslateForm.Show;
-  LoadTranslate;
 end;
 
 procedure TMainForm.CmdCommentary(Sender: TObject);
 begin
-  CommentaryForm.Show;
-  LoadCommentary;
+  if Shelf.Count = 0 then Exit;
+  CommentaryForm.Caption := ms_Commentary + ' - ' + Bible.VerseToStr(ActiveVerse, true);
+  CommentaryForm.Memo.LoadRichText(Load_Commentary);
+  if Sender <> nil then CommentaryForm.Show;
+  CommentaryForm.Repaint;
 end;
 
 procedure TMainForm.CmdFileNew(Sender: TObject);
@@ -727,8 +730,8 @@ begin
     begin
       ActiveVerse.Number := MemoBible.ParagraphStart;
       ActiveVerse.Count  := MemoBible.ParagraphCount;
-      if TranslateForm.Visible then LoadTranslate;
-      if CommentaryForm.Visible then LoadCommentary;
+      if TranslateForm.Visible then CmdTrans(Sender);
+      if CommentaryForm.Visible then CmdCommentary(nil);
 //    Exit;
     end;
 
@@ -738,8 +741,8 @@ begin
 
       if Verse.Book > 0 then
         begin
-          if TranslateForm.Visible then LoadTranslate;
-          if CommentaryForm.Visible then LoadCommentary;
+          if TranslateForm.Visible then CmdTrans(Sender);
+          if CommentaryForm.Visible then CmdCommentary(nil);
           if (Memo = MemoSearch) or (not TranslateForm.Visible) or (ssCtrl in Shift) then
             GoToVerse(Verse, True);
         end;
@@ -1202,8 +1205,8 @@ begin
   if Shelf.Count = 0 then Exit;
   MemoBible.LoadRichText(Load_Chapter());
   MakeChapterList(Bible.ChaptersCount(ActiveVerse));
-  if TranslateForm.Visible then LoadTranslate;
-  if CommentaryForm.Visible then LoadCommentary;
+  if TranslateForm.Visible then CmdTrans(nil);
+  if CommentaryForm.Visible then CmdCommentary(nil);
   SelectPage(apBible);
 end;
 
@@ -1218,21 +1221,6 @@ begin
   Cursor := crArrow;
   SelectPage(apSearch);
   UpdateStatus(ToStr(count) + ' ' + ms_found,'');
-end;
-
-procedure TMainForm.LoadTranslate;
-begin
-  if Shelf.Count = 0 then Exit;
-  TranslateForm.Memo.LoadRichText(Load_Translate);
-  TranslateForm.Repaint;
-end;
-
-procedure TMainForm.LoadCommentary;
-begin
-  if Shelf.Count = 0 then Exit;
-  CommentaryForm.Caption := ms_Commentary + ' - ' + Bible.VerseToStr(ActiveVerse, true);
-  CommentaryForm.Memo.LoadRichText(Load_Commentary);
-  CommentaryForm.Repaint;
 end;
 
 procedure TMainForm.LoadStrong(s: string);
