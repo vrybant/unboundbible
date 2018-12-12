@@ -627,7 +627,7 @@ begin
   if Shelf.Count = 0 then Exit;
   CommentaryForm.Caption := ms_Commentary + ' - ' + Bible.VerseToStr(ActiveVerse, true);
   CommentaryForm.Memo.LoadRichText(Load_Commentary);
-  if Sender <> nil then CommentaryForm.Show;
+  if not CommentaryForm.Visible then CommentaryForm.Show;
   CommentaryForm.Repaint;
 end;
 
@@ -731,7 +731,7 @@ begin
       ActiveVerse.Number := MemoBible.ParagraphStart;
       ActiveVerse.Count  := MemoBible.ParagraphCount;
       if TranslateForm.Visible then CmdTrans(Sender);
-      if CommentaryForm.Visible then CmdCommentary(nil);
+      if CommentaryForm.Visible then CmdCommentary(Sender);
 //    Exit;
     end;
 
@@ -742,7 +742,7 @@ begin
       if Verse.Book > 0 then
         begin
           if TranslateForm.Visible then CmdTrans(Sender);
-          if CommentaryForm.Visible then CmdCommentary(nil);
+          if CommentaryForm.Visible then CmdCommentary(Sender);
           if (Memo = MemoSearch) or (not TranslateForm.Visible) or (ssCtrl in Shift) then
             GoToVerse(Verse, True);
         end;
