@@ -85,6 +85,8 @@ const
 
 implementation
 
+uses RichMemoEx; // Utf8ToRTF()
+
 // string's functions
 
 function IsNumeral(c: char): boolean;
@@ -319,7 +321,7 @@ var
      CF_RTF : Word;
 begin
   Clipboard := TClipboard.Create ;
-  CF_RTF  := RegisterClipboardFormat('Rich Text Format');
+  CF_RTF := RegisterClipboardFormat('Rich Text Format');
   Clipboard.AddFormat(CF_RTF,Stream);
   Clipboard.Free ;
 end;
@@ -328,6 +330,7 @@ procedure StringToClipboard(Source: string);
 var
   Stream : TMemoryStream;
 begin
+  Source := Utf8ToRTF(Source) + LineEnding;
   Stream := TMemoryStream.Create;
   Stream.Seek(0,soFromBeginning);
   Stream.WriteBuffer(Pointer(Source)^, Length(Source));

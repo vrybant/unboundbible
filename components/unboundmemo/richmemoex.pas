@@ -52,6 +52,8 @@ type
     property OnAttrChange: TNotifyEvent read FOnAttrChange write FOnAttrChange;
   end;
 
+function Utf8ToRTF(const s: string): string;
+
 implementation
 
 function ToStr(value: longint): string;
