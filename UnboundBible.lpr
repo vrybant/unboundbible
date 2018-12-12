@@ -6,7 +6,7 @@ uses
   Interfaces, Graphics, Forms, richmemopackage,
   UnitModule, UnitShelf, UnitCommentary, UnitDictionary,
   UnitMain, UnitLang, UnitAbout, UnitNotify, UnitSearch, UnitTool,
-  UnitCompare, UnitCopy, UnitTrans, UnitParse, FormCommentary, FormDownload;
+  UnitCompare, FormCopy, UnitTrans, UnitParse, FormCommentary, FormDownload;
 
 {$R *.res}
 

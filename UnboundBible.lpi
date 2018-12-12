@@ -110,7 +110,7 @@
         <UnitName Value="UnitCompare"/>
       </Unit8>
       <Unit9>
-        <Filename Value="unitcopy.pas"/>
+        <Filename Value="formcopy.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="CopyForm"/>
         <HasResources Value="True"/>

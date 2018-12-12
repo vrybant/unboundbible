@@ -39,7 +39,7 @@ procedure TranslateAll;
 implementation
 
 uses
-  UnitMain, UnitAbout, UnitSearch, UnitCompare, UnitShelf, UnitCopy, UnitTrans,
+  UnitMain, UnitAbout, UnitSearch, UnitCompare, UnitShelf, FormCopy, UnitTrans,
   FormCommentary, FormDownload, UnitLib;
 
 var

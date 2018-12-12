@@ -242,7 +242,7 @@ implementation
 
 uses
   UnitAbout, UnitNotify, UnitSearch, UnitCompare, UnitTool, UnitLang,
-  UnitShelf, UnitCopy, UnitTrans, FormCommentary, FormDownload, UnitLib;
+  UnitShelf, FormCopy, UnitTrans, FormCommentary, FormDownload, UnitLib;
 
 const
   apBible      = 0; // active page
