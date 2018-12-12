@@ -25,7 +25,7 @@ const
   AppName = 'Unbound Bible';
   TitleDirectory = 'titles';
   LangDirectory = 'localization';
-  VersionInfo = '2.03';
+  VersionInfo = '3 (beta)';
 
 // string's functions
 

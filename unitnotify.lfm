@@ -11,7 +11,6 @@ object NotifyForm: TNotifyForm
   FormStyle = fsStayOnTop
   OnActivate = FormActivate
   OnCreate = FormCreate
-  OnDeactivate = FormDeactivate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
   LCLVersion = '1.8.4.0'
@@ -35,10 +34,20 @@ object NotifyForm: TNotifyForm
     Lines.Strings = (
       'Memo'
     )
+    OnMouseUp = MemoMouseUp
     ParentColor = True
+    PopupMenu = PopupMenu
     ReadOnly = True
     ScrollBars = ssAutoVertical
     TabOrder = 0
     ZoomFactor = 1
+  end
+  object PopupMenu: TPopupMenu
+    left = 144
+    top = 16
+    object miCopy: TMenuItem
+      Caption = 'Copy'
+      OnClick = miCopyClick
+    end
   end
 end

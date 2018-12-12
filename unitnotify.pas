@@ -3,25 +3,30 @@ unit UnitNotify;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  PopupNotifier, UnboundMemo;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls, LCLIntf,
+  PopupNotifier, Menus, UnboundMemo;
 
 type
 
   { TNotifyForm }
 
   TNotifyForm = class(TForm)
+    miCopy: TMenuItem;
+    PopupMenu: TPopupMenu;
     Title: TLabel;
     Memo: TUnboundMemo;
     procedure FormCreate(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
-    procedure FormDeactivate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure MemoMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure miCopyClick(Sender: TObject);
   private
     btnX: TNotifierXButton;
     procedure HandleResize;
     procedure CloseForm(Sender: TObject);
+    procedure ShowPopup;
   public
     Compact: boolean;
     procedure ShowAtPos(Pos: TPoint; compact: boolean = true);
@@ -31,6 +36,8 @@ var
   NotifyForm: TNotifyForm;
 
 implementation
+
+uses UnitMain;
 
 {$R *.lfm}
 
@@ -44,6 +51,9 @@ begin
 
   Memo.BorderStyle := bsNone;
   Memo.AutoSize := False;
+
+  PopupMenu.Images := MainForm.Images;
+  miCopy.ImageIndex := 1;
 end;
 
 procedure TNotifyForm.HandleResize;
@@ -106,16 +116,30 @@ begin
   Close;
 end;
 
-procedure TNotifyForm.FormDeactivate(Sender: TObject);
-begin
-  //Close;
-end;
-
 procedure TNotifyForm.FormDestroy(Sender: TObject);
 begin
   BtnX.Free;
   inherited;
 end;
+
+procedure TNotifyForm.MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if Button = mbRight then miCopy.Enabled := Memo.SelLength > 0;
+end;
+
+procedure TNotifyForm.miCopyClick(Sender: TObject);
+begin
+  Memo.CopyToClipboard;
+end;
+
+procedure TNotifyForm.ShowPopup;
+var
+  CursorPos: TPoint;
+begin
+  GetCursorPos(CursorPos);
+  PopupMenu.Popup(CursorPos.X, CursorPos.Y);
+end;
+
 
 end.
 
