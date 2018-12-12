@@ -85,7 +85,7 @@ const
 
 implementation
 
-uses RichMemoEx; // Utf8ToRTF()
+{$ifdef windows} uses RichMemoEx; {$endif} // Utf8ToRTF()
 
 // string's functions
 
