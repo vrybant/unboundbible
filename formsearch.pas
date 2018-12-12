@@ -1,4 +1,4 @@
-unit UnitSearch;
+unit FormSearch;
 
 interface
 
@@ -99,7 +99,7 @@ end;
 
 procedure TSearchForm.EditChange(Sender: TObject);
 begin
-  OKButton.Enabled := Length(Trim(Edit.Text)) > 2;
+  OKButton.Enabled := Length(Trim(Edit.Text)) > 1;
 end;
 
 procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

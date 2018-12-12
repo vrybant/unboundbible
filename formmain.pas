@@ -1,4 +1,4 @@
-unit UnitMain;
+unit FormMain;
 
 interface
 
@@ -241,8 +241,8 @@ var
 implementation
 
 uses
-  UnitAbout, UnitNotify, UnitSearch, UnitCompare, UnitTool, UnitLang,
-  UnitShelf, FormCopy, UnitTrans, FormCommentary, FormDownload, UnitLib;
+  FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLang,
+  UnitShelf, FormCopy, FormTranslate, FormCommentary, FormDownload, UnitLib;
 
 const
   apBible      = 0; // active page

@@ -1,4 +1,4 @@
-unit UnitNotify;
+unit FormNotify;
 
 interface
 
@@ -37,7 +37,7 @@ var
 
 implementation
 
-uses UnitMain;
+uses FormMain;
 
 {$R *.lfm}
 

@@ -1,4 +1,4 @@
-unit UnitTrans;
+unit FormTranslate;
 
 interface
 

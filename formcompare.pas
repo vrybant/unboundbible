@@ -1,4 +1,4 @@
-unit UnitCompare;
+unit FormCompare;
 
 interface
 

@@ -58,12 +58,12 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="unitmain.pas"/>
+        <Filename Value="formmain.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UnitMain"/>
+        <UnitName Value="FormMain"/>
       </Unit1>
       <Unit2>
         <Filename Value="unitlib.pas"/>
@@ -81,20 +81,20 @@
         <UnitName Value="UnitLang"/>
       </Unit4>
       <Unit5>
-        <Filename Value="unitabout.pas"/>
+        <Filename Value="formabout.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AboutBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UnitAbout"/>
+        <UnitName Value="FormAbout"/>
       </Unit5>
       <Unit6>
-        <Filename Value="unitsearch.pas"/>
+        <Filename Value="formsearch.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SearchForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UnitSearch"/>
+        <UnitName Value="FormSearch"/>
       </Unit6>
       <Unit7>
         <Filename Value="unittool.pas"/>
@@ -102,12 +102,12 @@
         <UnitName Value="UnitTool"/>
       </Unit7>
       <Unit8>
-        <Filename Value="unitcompare.pas"/>
+        <Filename Value="formcompare.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="CompareForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UnitCompare"/>
+        <UnitName Value="FormCompare"/>
       </Unit8>
       <Unit9>
         <Filename Value="formcopy.pas"/>
@@ -118,12 +118,12 @@
         <UnitName Value="UnitCopy"/>
       </Unit9>
       <Unit10>
-        <Filename Value="unittrans.pas"/>
+        <Filename Value="formtranslate.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="TranslateForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UnitTrans"/>
+        <UnitName Value="FormTranslate"/>
       </Unit10>
       <Unit11>
         <Filename Value="unittype.pas"/>
@@ -146,19 +146,19 @@
         <UnitName Value="UnitParse"/>
       </Unit14>
       <Unit15>
-        <Filename Value="unitcommentary.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitCommentary"/>
-      </Unit15>
-      <Unit16>
-        <Filename Value="unitdictionary.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitDictionary"/>
-      </Unit16>
-      <Unit17>
         <Filename Value="unitmodule.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitModule"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="unitcommentary.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitCommentary"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="unitdictionary.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitDictionary"/>
       </Unit17>
       <Unit18>
         <Filename Value="unitnormalize.pas"/>
@@ -166,12 +166,12 @@
         <UnitName Value="UnitNormalize"/>
       </Unit18>
       <Unit19>
-        <Filename Value="unitnotify.pas"/>
+        <Filename Value="formnotify.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="NotifyForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UnitNotify"/>
+        <UnitName Value="FormNotify"/>
       </Unit19>
       <Unit20>
         <Filename Value="formcommentary.pas"/>

@@ -4,9 +4,9 @@ uses
   {$ifdef unix}{$ifdef UseCThreads} cthreads, {$endif}{$endif}
   {$ifdef darwin} printer4lazarus, {$endif}
   Interfaces, Graphics, Forms, richmemopackage,
-  UnitModule, UnitShelf, UnitCommentary, UnitDictionary,
-  UnitMain, UnitLang, UnitAbout, UnitNotify, UnitSearch, UnitTool,
-  UnitCompare, FormCopy, UnitTrans, UnitParse, FormCommentary, FormDownload;
+  UnitLang, UnitParse, UnitTool, UnitModule, UnitShelf, UnitCommentary, UnitDictionary,
+  FormMain, FormAbout, FormNotify, FormSearch, FormCompare, FormCopy, FormTranslate,
+  FormCommentary, FormDownload;
 
 {$R *.res}
 
