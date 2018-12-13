@@ -82,7 +82,7 @@ begin
   Result := r;
 end;
 
-function HTML(s: string): string;
+function HTML(s: string; tab: boolean): string;
 var
   r : string = '';
 begin
@@ -102,8 +102,8 @@ begin
   if s = '</b>' then r := '\cf1\b0 ';
   if s =  '<i>' then r := '\i ';
   if s = '</i>' then r := '\i0 ';
-  if s = '<br>' then r := '\par'; // \tab ';
-//if s =  '<p>' then r := '\tab ';
+  if s = '<br>' then r := '\par\tab ';
+  if s =  '<p>' then if tab then r := '\tab ';
   if s = '</p>' then r := '\par ';
   if s =  '<a>' then r := '\cf5 ';
   if s = '</a>' then r := '\cf1 ';
@@ -147,7 +147,7 @@ begin
   List := XmlToList(s);
 
   for i:=Low(List) to High(List) do
-    if Prefix('<', List[i]) then List[i] := HTML(List[i]);
+    if Prefix('<', List[i]) then List[i] := HTML(List[i],tab);
 
   Result := Trim(ListToString(List));
   if tab then Result := LeadingTab(Result) + Result;
