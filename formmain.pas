@@ -12,6 +12,8 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ActionDecrease: TAction;
+    ActionIncrease: TAction;
     ActionModules: TAction;
     ActionCommentary: TAction;
     ActionInterline: TAction;
@@ -65,7 +67,7 @@ type
     ActionOptions: TAction;
     ActionRight: TAction;
     ActionSearch: TAction;
-    ActionTrans: TAction;
+    ActionTranslate: TAction;
     ActionUnderline: TAction;
 
     ChapterBox: TListBox;
@@ -483,6 +485,9 @@ begin
 //if Sender = ActionSuper then
 //  if fp.vScriptPos = vpSuperscript then fp.vScriptPos := vpNormal
 //                                   else fp.vScriptPos := vpSuperscript;
+
+  if Sender = ActionIncrease then fp.Size += 1;
+  if Sender = ActionDecrease then fp.Size -= 1;
 
   if Sender = ActionFont then
     begin

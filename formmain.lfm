@@ -274,12 +274,12 @@ object MainForm: TMainForm
     Height = 309
     Top = 32
     Width = 595
-    ActivePage = TabSheetNotes
+    ActivePage = TabSheetBible
     Align = alClient
     Font.Color = clWindowText
     Font.Height = -13
     ParentFont = False
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 2
     OnChange = PageControlChange
     object TabSheetBible: TTabSheet
@@ -311,8 +311,8 @@ object MainForm: TMainForm
     end
     object TabSheetSearch: TTabSheet
       Caption = 'Search'
-      ClientHeight = 268
-      ClientWidth = 589
+      ClientHeight = 279
+      ClientWidth = 587
       ImageIndex = 1
       object MemoSearch: TUnboundMemo
         Cursor = crArrow
@@ -335,8 +335,8 @@ object MainForm: TMainForm
     end
     object TabSheetCompare: TTabSheet
       Caption = 'Compare'
-      ClientHeight = 268
-      ClientWidth = 589
+      ClientHeight = 279
+      ClientWidth = 587
       Font.Color = clWindowText
       Font.Height = -12
       ImageIndex = 3
@@ -454,7 +454,7 @@ object MainForm: TMainForm
         ImageIndex = 38
       end
       object miTranslate: TMenuItem
-        Action = ActionTrans
+        Action = ActionTranslate
         Caption = 'Translate'
         Bitmap.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
@@ -2063,7 +2063,6 @@ object MainForm: TMainForm
     left = 400
     top = 104
     object ActionAbout: THelpAction
-      Category = 'Help'
       Caption = 'CmdAbout'
       ImageIndex = 31
       OnExecute = CmdAbout
@@ -2176,14 +2175,16 @@ object MainForm: TMainForm
     end
     object ActionFont: TAction
       Tag = 13
-      Caption = 'CmdFont'
+      Category = 'Memo'
+      Caption = 'Font'
       Enabled = False
       ImageIndex = 13
       OnExecute = CmdStyle
     end
     object ActionBold: TAction
       Tag = 15
-      Caption = 'CmdBold'
+      Category = 'Memo'
+      Caption = 'Bold'
       Enabled = False
       ImageIndex = 15
       OnExecute = CmdStyle
@@ -2191,7 +2192,8 @@ object MainForm: TMainForm
     end
     object ActionItalic: TAction
       Tag = 17
-      Caption = 'CmdItalic'
+      Category = 'Memo'
+      Caption = 'Italic'
       Enabled = False
       ImageIndex = 17
       OnExecute = CmdStyle
@@ -2199,7 +2201,8 @@ object MainForm: TMainForm
     end
     object ActionUnderline: TAction
       Tag = 19
-      Caption = 'CmdUnderline'
+      Category = 'Memo'
+      Caption = 'Underline'
       Enabled = False
       ImageIndex = 19
       OnExecute = CmdStyle
@@ -2207,7 +2210,8 @@ object MainForm: TMainForm
     end
     object ActionLink: TAction
       Tag = 21
-      Caption = 'CmdLink'
+      Category = 'Memo'
+      Caption = 'Link'
       Enabled = False
       ImageIndex = 21
       OnExecute = CmdStyle
@@ -2215,7 +2219,8 @@ object MainForm: TMainForm
     end
     object ActionLeft: TAction
       Tag = 23
-      Caption = 'CmdAlignLeft'
+      Category = 'Memo'
+      Caption = 'AlignLeft'
       Enabled = False
       ImageIndex = 23
       OnExecute = CmdStyle2
@@ -2223,7 +2228,8 @@ object MainForm: TMainForm
     end
     object ActionCenter: TAction
       Tag = 25
-      Caption = 'CmdAlignCenter'
+      Category = 'Memo'
+      Caption = 'AlignCenter'
       Enabled = False
       ImageIndex = 25
       OnExecute = CmdStyle2
@@ -2231,7 +2237,8 @@ object MainForm: TMainForm
     end
     object ActionRight: TAction
       Tag = 27
-      Caption = 'CmdAlignRight'
+      Category = 'Memo'
+      Caption = 'AlignRight'
       Enabled = False
       ImageIndex = 27
       OnExecute = CmdStyle2
@@ -2239,13 +2246,14 @@ object MainForm: TMainForm
     end
     object ActionBullets: TAction
       Tag = 29
-      Caption = 'CmdBullets'
+      Category = 'Memo'
+      Caption = 'Bullets'
       Enabled = False
       ImageIndex = 29
       OnExecute = CmdStyle2
     end
     object ActionOptions: TAction
-      Caption = 'CmdOptions'
+      Caption = 'Options'
       OnExecute = CmdOptions
     end
     object ActionSearch: TAction
@@ -2274,7 +2282,7 @@ object MainForm: TMainForm
       Caption = 'CmdOnline'
       OnExecute = CmdInterline
     end
-    object ActionTrans: TAction
+    object ActionTranslate: TAction
       Caption = 'CmdTrans'
       OnExecute = CmdTrans
     end
@@ -2286,6 +2294,24 @@ object MainForm: TMainForm
       Caption = 'ActionModules'
       ImageIndex = 34
       OnExecute = cmdModules
+    end
+    object ActionIncrease: TAction
+      Category = 'Memo'
+      Caption = 'Increase'
+      OnExecute = CmdStyle
+      SecondaryShortCuts.Strings = (
+        'Ctrl++'
+      )
+      ShortCut = 16491
+    end
+    object ActionDecrease: TAction
+      Category = 'Memo'
+      Caption = 'Decrease'
+      OnExecute = CmdStyle
+      SecondaryShortCuts.Strings = (
+        'Ctrl+-'
+      )
+      ShortCut = 16493
     end
   end
   object OpenDialog: TOpenDialog
