@@ -9,6 +9,7 @@ object CommentaryForm: TCommentaryForm
   ClientWidth = 255
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnPaint = FormPaint
   LCLVersion = '1.8.4.0'
   object Memo: TUnboundMemo
     Cursor = crArrow
@@ -18,9 +19,19 @@ object CommentaryForm: TCommentaryForm
     Width = 255
     Align = alClient
     HideSelection = False
+    PopupMenu = PopupMenu
     ReadOnly = True
     ScrollBars = ssAutoVertical
     TabOrder = 0
     ZoomFactor = 1
+  end
+  object PopupMenu: TPopupMenu
+    OnPopup = PopupMenuPopup
+    left = 104
+    top = 64
+    object miCopy: TMenuItem
+      Caption = 'Copy'
+      OnClick = miCopyClick
+    end
   end
 end

@@ -25,7 +25,6 @@ type
     btnX: TNotifierXButton;
     procedure HandleResize;
     procedure CloseForm(Sender: TObject);
-    procedure ShowPopup;
   public
     Compact: boolean;
     procedure ShowAtPos(Pos: TPoint; compact: boolean = true);
@@ -130,15 +129,6 @@ procedure TNotifyForm.PopupMenuPopup(Sender: TObject);
 begin
   miCopy.Enabled := Memo.SelLength > 0;
 end;
-
-procedure TNotifyForm.ShowPopup;
-var
-  CursorPos: TPoint;
-begin
-  GetCursorPos(CursorPos);
-  PopupMenu.Popup(CursorPos.X, CursorPos.Y);
-end;
-
 
 end.
 

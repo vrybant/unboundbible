@@ -5,13 +5,22 @@ unit FormCommentary;
 interface
 
 uses
-  Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, IniFiles, UnboundMemo;
+  Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, Menus,
+  IniFiles, UnboundMemo;
 
 type
+
+  { TCommentaryForm }
+
   TCommentaryForm = class(TForm)
     Memo: TUnboundMemo;
+    miCopy: TMenuItem;
+    PopupMenu: TPopupMenu;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
+    procedure miCopyClick(Sender: TObject);
+    procedure PopupMenuPopup(Sender: TObject);
   private
     procedure SaveIniFile;
     procedure ReadIniFile;
@@ -24,7 +33,7 @@ var
 
 implementation
 
-uses UnitLang, UnitLib;
+uses FormMain, UnitLang, UnitLib;
 
 {$R *.lfm}
 
@@ -36,11 +45,28 @@ end;
 procedure TCommentaryForm.FormCreate(Sender: TObject);
 begin
   ReadIniFile;
+  PopupMenu.Images := MainForm.Images;
+  miCopy.ImageIndex := 1;
 end;
 
 procedure TCommentaryForm.FormDestroy(Sender: TObject);
 begin
   SaveIniFile;
+end;
+
+procedure TCommentaryForm.FormPaint(Sender: TObject);
+begin
+  {$ifdef linux} Memo.HideCursor; {$endif}
+end;
+
+procedure TCommentaryForm.miCopyClick(Sender: TObject);
+begin
+  Memo.CopyToClipboard;
+end;
+
+procedure TCommentaryForm.PopupMenuPopup(Sender: TObject);
+begin
+  miCopy.Enabled := Memo.SelLength > 0;
 end;
 
 procedure TCommentaryForm.SaveIniFile;
