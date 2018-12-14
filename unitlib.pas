@@ -44,7 +44,6 @@ function ListToArray(const List: TStringList): TStringArray;
 function ListToString(const List: TStringArray): string;
 function StringToList(ch: Char; s: string): TStringArray;
 function XmlToList(s: string): TStringArray;
-function CleanTags(s: string): string;
 procedure RemoveTags(var s: string);
 procedure PurgeTag(const List: TStringArray; StartTag, EndTag: string); overload;
 procedure PurgeTag(var line: string; StartTag, EndTag: string); overload;
@@ -182,8 +181,7 @@ function ListToString(const List: TStringArray): string;
 var s : string;
 begin
   Result := '';
-  for s in List do
-    Result := Result + s;
+  for s in List do Result += s;
 end;
 
 function StringToList(ch: Char; s: string): TStringArray;
@@ -255,33 +253,20 @@ begin
   SetLength(Result,i);
 end;
 
-function CleanTags(s: string): string;
-var
-  l : boolean = true;
-  i : integer;
-begin
-  for i:=1 to Length(s) do
-    begin
-      if s[i]='<' then l := False;
-      if not l then s[i] := ' ';
-      if s[i]='>' then l := True;
-    end;
-  Result := s;
-end;
-
 procedure RemoveTags(var s: string);
 var
-  result : string = '';
+  r : string = '';
   l : boolean = true;
   i : integer;
 begin
   for i:=1 to Length(s) do
     begin
       if s[i]='<' then l := False;
-      if l then result := result + s[i];
+      if s[i]='<' then r += ' ';
+      if l then r += s[i];
       if s[i]='>' then l := True;
     end;
-  s := result;
+  s := Trim(DelSpace1(r));
 end;
 
 procedure PurgeTag(const List: TStringArray; StartTag, EndTag: string);
