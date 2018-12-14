@@ -17,9 +17,9 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MajorVersionNr Value="2"/>
-      <RevisionNr Value="2"/>
-      <StringTable ProductVersion="2.0.0.0"/>
+      <MajorVersionNr Value="3"/>
+      <BuildNr Value="1"/>
+      <StringTable CompanyName="Vladimir Rybant" ProductName="Unbound Bible" ProductVersion="3.0"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
