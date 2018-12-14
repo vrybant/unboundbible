@@ -19,9 +19,8 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure MemoMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     procedure miCopyClick(Sender: TObject);
+    procedure PopupMenuPopup(Sender: TObject);
   private
     btnX: TNotifierXButton;
     procedure HandleResize;
@@ -122,14 +121,14 @@ begin
   inherited;
 end;
 
-procedure TNotifyForm.MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  if Button = mbRight then miCopy.Enabled := Memo.SelLength > 0;
-end;
-
 procedure TNotifyForm.miCopyClick(Sender: TObject);
 begin
   Memo.CopyToClipboard;
+end;
+
+procedure TNotifyForm.PopupMenuPopup(Sender: TObject);
+begin
+  miCopy.Enabled := Memo.SelLength > 0;
 end;
 
 procedure TNotifyForm.ShowPopup;

@@ -34,7 +34,6 @@ object NotifyForm: TNotifyForm
     Lines.Strings = (
       'Memo'
     )
-    OnMouseUp = MemoMouseUp
     ParentColor = True
     PopupMenu = PopupMenu
     ReadOnly = True
@@ -43,6 +42,7 @@ object NotifyForm: TNotifyForm
     ZoomFactor = 1
   end
   object PopupMenu: TPopupMenu
+    OnPopup = PopupMenuPopup
     left = 144
     top = 16
     object miCopy: TMenuItem
