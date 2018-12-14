@@ -85,8 +85,10 @@ end;
 function HTML(s: string; tab: boolean): string;
 var
   r : string = '';
+  t : string = '';
 begin
   s := LowerCase(s);
+  if tab then t := '\tab ';
 
   if Prefix('<p ', s) then s := '<p>';
   if Prefix('<a ', s) then s := '<a>';
@@ -98,12 +100,12 @@ begin
   if s = '</td>' then s := '<br>';
   if s = '</tr>' then s := '<br>';
 
-  if s =  '<b>' then r := '\cf8\b ' ;   // cf8
+  if s =  '<b>' then r := '\cf8\b ' ;
   if s = '</b>' then r := '\cf1\b0 ';
   if s =  '<i>' then r := '\i ';
   if s = '</i>' then r := '\i0 ';
-  if s = '<br>' then r := '\par\tab ';
-  if s =  '<p>' then if tab then r := '\tab ';
+  if s = '<br>' then r := '\par ' + t;
+  if s =  '<p>' then r := t;
   if s = '</p>' then r := '\par ';
   if s =  '<a>' then r := '\cf5 ';
   if s = '</a>' then r := '\cf1 ';
