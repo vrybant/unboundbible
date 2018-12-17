@@ -137,7 +137,7 @@ var i : integer;
   end;
 
 begin
-  Result += rtf_open;
+  Result := rtf_open;
   Result += '\f0\fs20\cf1 ';
 
   for i:=0 to        Shelf.Count-1 do Result += GetInfo(Shelf[i]);
