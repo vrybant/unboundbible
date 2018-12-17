@@ -1,4 +1,4 @@
-unit UnitNormalize;
+unit UnitPrepare;
 
 interface
 
@@ -6,7 +6,7 @@ uses
   Classes, SysUtils, UnitType, UnitLib;
 
 function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
-function Normalize(s: string; format: TFileFormat; purge: boolean = true): string;
+function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 
 implementation
 
@@ -143,7 +143,7 @@ begin
     end;
 end;
 
-function Normalize(s: string; format: TFileFormat; purge: boolean = true): string;
+function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 var
   List : TStringArray;
 begin

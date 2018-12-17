@@ -285,7 +285,7 @@ begin
       for i:=0 to Query.RecordCount-1 do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
-          Result[i] := Normalize(line, format, false);
+          Result[i] := Prepare(line, format, false);
           Query.Next;
         end;
     except
@@ -318,7 +318,7 @@ begin
       for i:=0 to Query.RecordCount-1 do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
-          Result[i] := Normalize(line, format);
+          Result[i] := Prepare(line, format);
           Query.Next;
         end;
     except
@@ -384,7 +384,7 @@ begin
           try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
           Contents[i].verse.book := DecodeID(format, Contents[i].verse.book);
-          Contents[i].text := Normalize(Contents[i].text, format);
+          Contents[i].text := Prepare(Contents[i].text, format);
           Query.Next;
         end;
     finally
@@ -470,7 +470,7 @@ begin
       text := Content.text;
       nt := IsNewTestament(Content.verse.book);
       if format = mybible then text := MybibleStrongsToUnbound(text, nt);
-      text := Normalize(text, format, not false);
+      text := Prepare(text, format, not false);
       DelDoubleSpace(text);
       write(f,Content.verse.book   ); write(f,char($09));
       write(f,Content.verse.chapter); write(f,char($09));
