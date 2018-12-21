@@ -10,6 +10,35 @@ function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 
 implementation
 
+const
+  Max = 14;
+
+var
+  Dictionary : array [1..Max,1..2] of string = (
+    (  '<J>','<FR>'),
+    ( '</J>','<Fr>'),
+    (  '<t>','<FO>'), // quote
+    ( '</t>','<Fo>'),
+    (  '<h>','<TS>'), // title
+    ( '</h>','<Ts>'),
+    (  '<f>','<RF>'), // footnote
+    ( '</f>','<Rf>'),
+    (  '<i>','<FI>'),
+    ( '</i>','<Fi>'),
+    (  '<I>','<FI>'),
+    ( '</I>','<Fi>'),
+    ( '<em>','<FI>'),
+    ('</em>','<Fi>'));
+
+procedure ReplaceTags(const List: TStringArray);
+var
+  i, j : integer;
+begin
+  for i:= Low(List) to High(List) do
+    for j:=1 to Max do
+      if List[i] = Dictionary[j,1] then List[i] :=  Dictionary[j,2];
+end;
+
 function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
 var
   List : TStringArray;
@@ -39,35 +68,6 @@ begin
     end;
 
   Result := ListToString(List);
-end;
-
-function ReplaceTag(s: string): string;
-var w : string;
-begin
-  w := LowerCase(s);
-  if s =   '<J>' then s := '<FR>';
-  if s =  '</J>' then s := '<Fr>';
-  if s =   '<t>' then s := '<FO>'; // quote
-  if s =  '</t>' then s := '<Fo>';
-  if s =   '<h>' then s := '<TS>'; // title
-  if s =  '</h>' then s := '<Ts>';
-  if s =   '<f>' then s := '<RF>'; // footnote
-  if s =  '</f>' then s := '<Rf>';
-  if w =   '<i>' then s := '<FI>';
-  if w =  '</i>' then s := '<Fi>';
-  if w =  '<em>' then s := '<FI>';
-  if w = '</em>' then s := '<Fi>';
-
-  if w = '<pb/>' then s := ''; // unused tags
-  if w = '<br/>' then s := '';
-
-  Result := s;
-end;
-
-procedure ReplaceTags(const List: TStringArray);
-var i : integer;
-begin
-  for i:= Low(List) to High(List) do List[i] := ReplaceTag(List[i]);
 end;
 
 function ExtractStrongNumber(s: string): string;
