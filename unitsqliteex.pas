@@ -33,9 +33,9 @@ end;
 
 procedure PurgeTags(var s: string);
 begin
-  if Pos('<RF',s) > 0 then PurgeTag(s,'<RF','<Rf>');
-  if Pos('<TS',s) > 0 then PurgeTag(s,'<TS','<Ts>');
-  if Pos('<h>',s) > 0 then PurgeTag(s,'<h>','</h>');
+  if Pos('<RF',s) > 0 then CutStr(s,'<RF','<Rf>');
+  if Pos('<TS',s) > 0 then CutStr(s,'<TS','<Ts>');
+  if Pos('<h>',s) > 0 then CutStr(s,'<h>','</h>');
 end;
 
 function Super(s: string): boolean;

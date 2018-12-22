@@ -40,12 +40,12 @@ function CleanString(s: string): string;
 function StringPos(subst: string; s: string): TIntegerArray;
 procedure Replace(var s: string; const oldPattern, newPattern: String);
 procedure DelDoubleSpace(var s: string);
+procedure CutStr(var s: string; StartSt, EndSt: string);
 function ListToArray(const List: TStringList): TStringArray;
 function ListToString(const List: TStringArray): string;
 function StringToList(ch: Char; s: string): TStringArray;
 function XmlToList(s: string): TStringArray;
 procedure RemoveTags(var s: string);
-procedure PurgeTag(var s: string; StartTag, EndTag: string);
 
 // сlipboard's function
 
@@ -168,6 +168,20 @@ begin
   s := DelSpace1(s);
 end;
 
+procedure CutStr(var s: string; StartSt, EndSt: string);
+var
+  x1,x2,len : integer;
+begin
+  while Pos(StartSt, s) > 0 do
+    begin
+      x1 := Pos(StartSt,s);
+      x2 := Pos(  EndSt,s);
+      if x2 < x1 then Exit;
+      len := x2-x1+Length(EndSt);
+      Delete(s, x1, len);
+    end;
+end;
+
 function ListToArray(const List: TStringList): TStringArray;
 var i : integer;
 begin
@@ -266,20 +280,6 @@ begin
       if s[i]='>' then l := True;
     end;
   s := Trim(DelSpace1(r));
-end;
-
-procedure PurgeTag(var s: string; StartTag, EndTag: string);
-var
-  x1,x2,len : integer;
-begin
-  while Pos(StartTag, s) > 0 do
-    begin
-      x1 := Pos(StartTag,s);
-      x2 := Pos(  EndTag,s);
-      if x2 < x1 then Exit;
-      len := x2-x1+Length(EndTag);
-      Delete(s, x1, len);
-    end;
 end;
 
 // сlipboard's function
