@@ -12,8 +12,6 @@ implementation
 
 const
   Max = 8;
-
-var
   Dictionary : array [1..Max,1..2] of string = (
     (  '<J>','<FR>'),
     ( '</J>','<Fr>'),
@@ -24,13 +22,10 @@ var
     (  '<f>','<RF>'), // footnote
     ( '</f>','<Rf>'));
 
-procedure ReplaceTags(const List: TStringArray);
-var
-  i, j : integer;
+procedure ReplaceTags(var s: string);
+var i : integer;
 begin
-  for i:= Low(List) to High(List) do
-    for j:=1 to Max do
-      if List[i] = Dictionary[j,1] then List[i] :=  Dictionary[j,2];
+  for i:=1 to Max do Replace(s, Dictionary[i,1], Dictionary[i,2]);
 end;
 
 function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
@@ -141,11 +136,11 @@ begin
       if Pos('<RF',s) > 0 then Footnotes(List);
     end;
 
-  if format = mybible then ReplaceTags(List);
   Result := Trim(ListToString(List));
+  if format = mybible then ReplaceTags(Result);
 
-  PurgeTag(Result,'<TS>','<Ts>');
-  if purge then PurgeTag(Result, '<RF','<Rf>');
+  CutStr(Result,'<TS>','<Ts>');
+  if purge then CutStr(Result, '<RF','<Rf>');
 
   Replace(Result,'</S><S>','</S> <S>');
 end;
