@@ -59,7 +59,7 @@ var
 const
   jColor : boolean = false;
 begin
-  //Result := '\cf7 ' + s + '\cf1 '; Exit;  // show tags
+  //Result := '\cf2 ' + s + '\cf1 '; Exit;  // show tags
 
   if jColor then color := '\cf7' else color := '\cf1';
 
@@ -79,10 +79,12 @@ begin
   if s =  '<m>' then r := '\cf9\super '; // morphology
   if s = '</m>' then r := color + '\nosupersub ';
 
-    //(  '<i>','<FI>'),
-    //( '</i>','<Fi>'),
-    //( '<em>','<FI>'),
-    //('</em>','<Fi>'));
+  s := LowerCase(s);
+
+  if s =   '<i>' then r := '\cf5\i ';
+  if s =  '<em>' then r := '\cf5\i ';
+  if s =  '</i>' then r := color + '\i0 ';
+  if s = '</em>' then r := color + '\i0 ';
 
   Result := r;
 end;
