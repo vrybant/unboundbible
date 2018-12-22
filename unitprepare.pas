@@ -59,11 +59,13 @@ begin
   Result := ListToString(List);
 end;
 
-procedure Strongs(const List: TStringArray);
+procedure Strongs(var s: string);
 var
+  List : TStringArray;
   number : string;
   i : integer;
 begin
+  List := XmlToList(s);
   for i:=Low(List) to High(List) do
     if Prefix('<W', List[i]) then
       begin
@@ -72,77 +74,58 @@ begin
         Replace(number,'>' ,'');
         List[i] := '<S>' + number + '</S>';
       end;
+  s := Trim(ListToString(List));
 end;
 
-function ExtractFootnoteMarker(s: string): string;
-var
-  x1, x2 : integer;
+procedure Footnotes(var s: string);
 begin
-  Result := s;
-  x1 := Pos('=',s); if x1 = 0 then Exit;
-  x2 := Pos('>',s); if x2 = 0 then Exit;
-  Result := Copy(s,x1+1,x2-x1-1);
+  Replace(s,'<RF>','<RF>*[~');
+  Replace(s,'<Rf>','~]<Rf>');
+   CutStr(s,'[~','~]');
 end;
 
-procedure Footnotes(const List: TStringArray);
+procedure ExtractMarkers(var s: string);
 var
-  marker : string = '';
-  l : boolean = false;
+  List : TStringArray;
+  marker : string;
   i : integer;
 begin
+  List := XmlToList(s);
   for i:=Low(List) to High(List) do
-    begin
-      if List[i] = '<RF>' then
-        begin
-          marker := '*';
-          l := true;
-          Continue;
-        end;
+    if Prefix('<q=', List[i]) then
+      begin
+        marker := List[i];
+        Replace(marker,'<q=','');
+        Replace(marker,'>' ,'');
+        List[i] := marker + '[~';
+      end;
+  s := ListToString(List);
+end;
 
-      if Prefix('<RF ', List[i]) then
-        begin
-          marker := ExtractFootnoteMarker(List[i]);
-          List[i] := '<RF>';
-          l := true;
-          Continue;
-        end;
-
-      if l and (List[i] = '<Rf>') then
-        begin
-          l := false;
-          Continue;
-        end;
-
-      if marker <> '' then
-        begin
-          List[i] := marker;
-          marker := '';
-          Continue;
-        end;
-
-      if l then List[i] := '';
-    end;
+procedure FootnotesEx(var s: string);
+begin
+  Replace(s,'<RF ','<RF><');
+  Replace(s,'<Rf>','~]<Rf>');
+  ExtractMarkers(s);
+  CutStr(s,'[~','~]');
 end;
 
 function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
-var
-  List : TStringArray;
 begin
-  List := XmlToList(s);
-
   if format = unbound then
     begin
-      if Pos('<W' ,s) > 0 then Strongs(List);
-      if Pos('<RF',s) > 0 then Footnotes(List);
+      if Pos('<W',s) > 0 then Strongs(s);
+      if not purge and (Pos('<RF>',s) > 0) then Footnotes(s);
+      if not purge and (Pos('<RF ',s) > 0) then FootnotesEx(s);
     end;
 
-  Result := Trim(ListToString(List));
-  if format = mybible then ReplaceTags(Result);
+  if format = mybible then ReplaceTags(s);
 
-  CutStr(Result,'<TS>','<Ts>');
-  if purge then CutStr(Result, '<RF','<Rf>');
+  CutStr(s,'<TS>','<Ts>');
+  if purge then CutStr(s,'<RF','<Rf>');
+  Replace(s,'</S><S>','</S> <S>');
 
-  Replace(Result,'</S><S>','</S> <S>');
+  Result := s;
 end;
 
 end.
