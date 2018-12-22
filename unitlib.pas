@@ -45,8 +45,7 @@ function ListToString(const List: TStringArray): string;
 function StringToList(ch: Char; s: string): TStringArray;
 function XmlToList(s: string): TStringArray;
 procedure RemoveTags(var s: string);
-procedure PurgeTag(const List: TStringArray; StartTag, EndTag: string); overload;
-procedure PurgeTag(var line: string; StartTag, EndTag: string); overload;
+procedure PurgeTag(var s: string; StartTag, EndTag: string);
 
 // сlipboard's function
 
@@ -269,32 +268,18 @@ begin
   s := Trim(DelSpace1(r));
 end;
 
-procedure PurgeTag(const List: TStringArray; StartTag, EndTag: string);
+procedure PurgeTag(var s: string; StartTag, EndTag: string);
 var
-  l : boolean = false;
-  i : integer;
+  x1,x2,len : integer;
 begin
-  for i:=Low(List) to High(List) do
+  while Pos(StartTag, s) > 0 do
     begin
-      if Prefix(StartTag, List[i]) then l := true;
-
-      if List[i] = EndTag then
-        begin
-          List[i] := '';
-          l := false;
-        end;
-
-      if l then List[i] := '';
+      x1 := Pos(StartTag,s);
+      x2 := Pos(  EndTag,s);
+      if x2 < x1 then Exit;
+      len := x2-x1+Length(EndTag);
+      Delete(s, x1, len);
     end;
-end;
-
-procedure PurgeTag(var line: string; StartTag, EndTag: string);
-var
-  List : TStringArray;
-begin
-  List := XmlToList(line);
-  PurgeTag(List, StartTag, EndTag);
-  line := ListToString(List);
 end;
 
 // сlipboard's function

@@ -79,6 +79,11 @@ begin
   if s =  '<m>' then r := '\cf9\super '; // morphology
   if s = '</m>' then r := color + '\nosupersub ';
 
+    //(  '<i>','<FI>'),
+    //( '</i>','<Fi>'),
+    //( '<em>','<FI>'),
+    //('</em>','<Fi>'));
+
   Result := r;
 end;
 

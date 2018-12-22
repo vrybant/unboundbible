@@ -11,7 +11,7 @@ function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 implementation
 
 const
-  Max = 14;
+  Max = 8;
 
 var
   Dictionary : array [1..Max,1..2] of string = (
@@ -22,13 +22,7 @@ var
     (  '<h>','<TS>'), // title
     ( '</h>','<Ts>'),
     (  '<f>','<RF>'), // footnote
-    ( '</f>','<Rf>'),
-    (  '<i>','<FI>'),
-    ( '</i>','<Fi>'),
-    (  '<I>','<FI>'),
-    ( '</I>','<Fi>'),
-    ( '<em>','<FI>'),
-    ('</em>','<Fi>'));
+    ( '</f>','<Rf>'));
 
 procedure ReplaceTags(const List: TStringArray);
 var
@@ -70,25 +64,17 @@ begin
   Result := ListToString(List);
 end;
 
-function ExtractStrongNumber(s: string): string;
-var
-  x1, x2 : integer;
-begin
-  Result := s;
-  x1 := Pos('<',s); if x1 = 0 then Exit;
-  x2 := Pos('>',s); if x2 = 0 then Exit;
-  Result := Copy(s,x1+2,x2-x1-2);
-end;
-
 procedure Strongs(const List: TStringArray);
 var
-  number : string = '';
+  number : string;
   i : integer;
 begin
   for i:=Low(List) to High(List) do
     if Prefix('<W', List[i]) then
       begin
-        number := ExtractStrongNumber(List[i]);
+        number := List[i];
+        Replace(number,'<W','');
+        Replace(number,'>' ,'');
         List[i] := '<S>' + number + '</S>';
       end;
 end;
@@ -151,15 +137,16 @@ begin
 
   if format = unbound then
     begin
-      Strongs(List);
-      Footnotes(List);
+      if Pos('<W' ,s) > 0 then Strongs(List);
+      if Pos('<RF',s) > 0 then Footnotes(List);
     end;
 
-  ReplaceTags(List);
-  PurgeTag(List,'<TS>','<Ts>');
-  if purge then PurgeTag(List, '<RF','<Rf>');
-
+  if format = mybible then ReplaceTags(List);
   Result := Trim(ListToString(List));
+
+  PurgeTag(Result,'<TS>','<Ts>');
+  if purge then PurgeTag(Result, '<RF','<Rf>');
+
   Replace(Result,'</S><S>','</S> <S>');
 end;
 
