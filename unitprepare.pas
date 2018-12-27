@@ -77,13 +77,6 @@ begin
   s := Trim(ListToString(List));
 end;
 
-procedure Footnotes(var s: string);
-begin
-  Replace(s,'<RF>','<RF>*[~');
-  Replace(s,'<Rf>','~]<Rf>');
-   CutStr(s,'[~','~]');
-end;
-
 procedure ExtractMarkers(var s: string);
 var
   List : TStringArray;
@@ -100,6 +93,13 @@ begin
         List[i] := marker + '[~';
       end;
   s := ListToString(List);
+end;
+
+procedure Footnotes(var s: string);
+begin
+  Replace(s,'<RF>','<RF>*[~');
+  Replace(s,'<Rf>','~]<Rf>');
+   CutStr(s,'[~','~]');
 end;
 
 procedure FootnotesEx(var s: string);

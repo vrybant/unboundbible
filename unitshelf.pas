@@ -511,16 +511,17 @@ end;
 
 function ExtractFootnotes(s: string; marker: string): string;
 var
+  tag : string;
   x : integer;
 begin
   Result := '';
-  if Prefix('*',marker) then marker := '<RF>'
-                        else marker := '<RF q=' + marker + '>';
+  if Prefix('*',marker) then tag := '<RF>'
+                        else tag := '<RF q=' + marker + '>';
 
-  while Pos(marker,s) > 0 do
+  while Pos(tag,s) > 0 do
     begin
-      x := Pos(marker,s);
-      x := x + Length(marker);
+      x := Pos(tag,s);
+      x := x + Length(tag);
       s := Copy(s, x, Length(s));
       x := Pos('<Rf>',s); if x = 0 then break;
       Result := Result + Copy(s,1,x-1) + '\par ';
