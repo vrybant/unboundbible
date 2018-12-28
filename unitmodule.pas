@@ -21,18 +21,16 @@ type
       Transaction : TSQLTransaction;
       Query : TSQLQuery;
     {$endif}
-    info         : string;
     filePath     : string;
     fileName     : string;
     format       : TFileFormat;
     {-}
     name         : string;
-    native       : string;
     abbreviation : string;
     copyright    : string;
+    info         : string;
     language     : string;
     fileType     : string;
-    note         : string;
     {-}
     FirstVerse   : TVerse;
     RightToLeft  : boolean;
@@ -78,8 +76,7 @@ begin
   self.fileName := ExtractFileName(filePath);
 
   format       := unbound;
-  name         := fileName;
-  native       := '';
+  name         := '';
   abbreviation := '';
   copyright    := '';
   language     := 'english';
@@ -184,6 +181,7 @@ begin
 
   language := LowerCase(language);
   RightToLeft := GetRightToLeft(language);
+  if name = '' then name := fileName;
   RemoveTags(info);
 end;
 
