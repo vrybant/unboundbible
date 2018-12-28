@@ -35,11 +35,10 @@ implementation
 constructor TDictionary.Create(filePath: string);
 begin
   inherited Create(filePath);
+  OpenDatabase;
   z := unboundDictionaryAlias;
   if format = mybible then z := mybibleDictionaryAlias;
-  OpenDatabase;
-  Validate(z.dictionary);
-//if self.strong then output(self.language + self.fileName + ' - ' + self.name );
+  if connected and not TableExists(z.dictionary) then connected := false;
 end;
 
 function TDictionary.GetData(num: string): string;

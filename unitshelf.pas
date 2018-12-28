@@ -84,10 +84,10 @@ constructor TBible.Create(filePath: string);
 begin
   inherited Create(filePath);
   Books := TBooks.Create;
-  z := unboundStringAlias;
   OpenDatabase;
+  z := unboundStringAlias;
   if format = mybible then z := mybibleStringAlias;
-  Validate(z.bible);
+  if connected and not TableExists(z.bible) then connected := false;
 end;
 
 function BookComparison(const Item1: TBook; const Item2: TBook): integer;

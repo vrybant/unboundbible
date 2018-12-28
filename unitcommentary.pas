@@ -36,10 +36,10 @@ implementation
 constructor TCommentary.Create(filePath: string);
 begin
   inherited Create(filePath);
-  z := unboundCommentaryAlias;
   OpenDatabase;
+  z := unboundCommentaryAlias;
   if format = mybible then z := mybibleCommentaryAlias;
-  Validate(z.commentary);
+  if connected and not TableExists(z.commentary) then connected := false;
 end;
 
 function TCommentary.GetData(Verse: TVerse): TStringArray;

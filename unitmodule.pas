@@ -44,7 +44,7 @@ type
   public
     constructor Create(filePath: string);
     procedure OpenDatabase;
-    procedure Validate(field: string);
+    function TableExists(table: string): boolean;
     destructor Destroy; override;
   end;
 
@@ -88,15 +88,14 @@ begin
   footnotes    := false;
 end;
 
-procedure TModule.Validate(field: string);
+function TModule.TableExists(table: string): boolean;
 var
-  FieldNames : TStringList;
+  TableNames : TStringList;
 begin
-  if not connected then Exit;
-  FieldNames := TStringList.Create;
-  try Connection.GetTableNames({$ifdef zeos}'',{$endif}FieldNames) except end;
-  if FieldNames.IndexOf(field) < 0 then connected := false;
-  FieldNames.Free;
+  TableNames := TStringList.Create;
+  try Connection.GetTableNames({$ifdef zeos}'',{$endif}TableNames) except end;
+  Result := TableNames.IndexOf(table) >= 0;
+  TableNames.Free;
 end;
 
 destructor TModule.Destroy;
