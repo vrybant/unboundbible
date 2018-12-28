@@ -35,7 +35,7 @@ type
     function SrtToVerse(link : string): TVerse;
     procedure SetTitles;
     function GetChapter(Verse: TVerse): TStringArray;
-    function GetRange(Verse: TVerse): TStringArray;
+    function GetRange(Verse: TVerse; preparation: boolean=true): TStringArray;
     function GoodLink(Verse: TVerse): boolean;
     function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     function GetAll: TContentArray;
@@ -296,7 +296,7 @@ begin
   end;
 end;
 
-function TBible.GetRange(Verse: TVerse): TStringArray;
+function TBible.GetRange(Verse: TVerse; preparation: boolean=true): TStringArray;
 var
   id, i : integer;
   line : string;
@@ -307,7 +307,7 @@ begin
   try
     try
       Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + ToStr(id) +
-                      ' AND ' + z.chapter + '='    + ToStr(Verse.chapter) +
+                      ' AND ' + z.chapter + ' = '  + ToStr(Verse.chapter) +
                       ' AND ' + z.verse   + ' >= ' + ToStr(Verse.number ) +
                       ' AND ' + z.verse   + ' < '  + ToStr(Verse.number + Verse.count);
       Query.Open;
@@ -318,7 +318,7 @@ begin
       for i:=0 to Query.RecordCount-1 do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
-          Result[i] := Prepare(line, format);
+          if preparation then Result[i] := Prepare(line, format) else Result[i] := line;
           Query.Next;
         end;
     except
@@ -532,26 +532,11 @@ end;
 
 function TBible.GetFootnote(Verse: TVerse; marker: string): string;
 var
-  line : string = '';
-    id : integer;
+  Range : TStringArray;
 begin
-  id := EncodeID(format, Verse.book);
-
-  try
-    try
-      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + ToStr(id) +
-                      ' AND ' + z.chapter + ' = ' + ToStr(Verse.chapter) +
-                      ' AND ' + z.verse   + ' = ' + ToStr(Verse.number)  ;
-      Query.Open;
-      try line := Query.FieldByName(z.text).AsString; except end;
-    except
-      //
-    end;
-  finally
-    Query.Close;
-  end;
-
-  Result := ExtractFootnotes(line, marker);
+  Result := '';
+  Range := GetRange(Verse, false);
+  if Length(Range) > 0 then Result := ExtractFootnotes(Range[0], marker);
 end;
 
 procedure TBible.SavePrivate(const IniFile : TIniFile);
