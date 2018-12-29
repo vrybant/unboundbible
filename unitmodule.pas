@@ -121,62 +121,64 @@ begin
       dbhandle := Connection.Handle;
     {$endif}
 
-    if  not Connection.Connected then Exit;
+    if not Connection.Connected then Exit;
     SQLite3CreateFunctions(dbhandle);
  // Connection.ExecuteDirect('PRAGMA case_sensitive_like = 1');
+    if TableExists('info') then format := mybible;
   except
     output('connection failed ' + self.fileName);
     Exit;
   end;
 
-  try
+  if format = unbound then
     try
-      Query.SQL.Text := 'SELECT * FROM Details';
-      Query.Open;
+      try
+        Query.SQL.Text := 'SELECT * FROM Details';
+        Query.Open;
 
-      try info         := Query.FieldByName('Information' ).AsString;  except end;
-      try info         := Query.FieldByName('Description' ).AsString;  except end;
-      try name         := Query.FieldByName('Title'       ).AsString;  except name := info; end;
-      try abbreviation := Query.FieldByName('Abbreviation').AsString;  except end;
-      try copyright    := Query.FieldByName('Copyright'   ).AsString;  except end;
-      try language     := Query.FieldByName('Language'    ).AsString;  except end;
-      try strong       := Query.FieldByName('Strong'      ).AsBoolean; except end;
+        try info         := Query.FieldByName('Information' ).AsString;  except end;
+        try info         := Query.FieldByName('Description' ).AsString;  except end;
+        try name         := Query.FieldByName('Title'       ).AsString;  except name := info; end;
+        try abbreviation := Query.FieldByName('Abbreviation').AsString;  except end;
+        try copyright    := Query.FieldByName('Copyright'   ).AsString;  except end;
+        try language     := Query.FieldByName('Language'    ).AsString;  except end;
+        try strong       := Query.FieldByName('Strong'      ).AsBoolean; except end;
 
-      connected := true;
-    except
-      //
+        connected := true;
+      except
+        //
+      end;
+    finally
+      Query.Close;
     end;
-  finally
-    Query.Close;
-  end;
 
-  try
+  if format = mybible then
     try
-      Query.SQL.Text := 'SELECT * FROM info';
-      Query.Open;
+      try
+        Query.SQL.Text := 'SELECT * FROM info';
+        Query.Open;
 
-      while not Query.Eof do
-        begin
-          try key   := Query.FieldByName('name' ).AsString; except end;
-          try value := Query.FieldByName('value').AsString; except end;
+        while not Query.Eof do
+          begin
+            try key   := Query.FieldByName('name' ).AsString; except end;
+            try value := Query.FieldByName('value').AsString; except end;
 
-          if key = 'description'   then name      := value;
-          if key = 'detailed_info' then info      := value;
-          if key = 'language'      then language  := value;
-          if key = 'is_strong'     then strong    := ToBoolean(value);
-          if key = 'is_footnotes'  then footnotes := ToBoolean(value);
+            if key = 'description'   then name      := value;
+            if key = 'detailed_info' then info      := value;
+            if key = 'language'      then language  := value;
+            if key = 'is_strong'     then strong    := ToBoolean(value);
+            if key = 'is_footnotes'  then footnotes := ToBoolean(value);
 
-          Query.Next;
-        end;
+            Query.Next;
+          end;
 
-      format := mybible;
-      connected := true;
-    except
-      //
+        connected := true;
+      except
+        //
+      end;
+    finally
+      Query.Close;
     end;
-  finally
-    Query.Close;
-  end;
 
   if connected then
     begin
