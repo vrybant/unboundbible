@@ -178,10 +178,13 @@ begin
     Query.Close;
   end;
 
-  language := LowerCase(language);
-  RightToLeft := GetRightToLeft(language);
-  if name = '' then name := fileName;
-  RemoveTags(info);
+  if connected then
+    begin
+      if name = '' then name := fileName;
+      language := LowerCase(language);
+      RightToLeft := GetRightToLeft(language);
+      RemoveTags(info);
+    end;
 end;
 
 end.
