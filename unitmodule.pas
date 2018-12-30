@@ -86,6 +86,8 @@ begin
   RightToLeft  := false;
   strong       := false;
   footnotes    := false;
+
+  OpenDatabase;
 end;
 
 function TModule.TableExists(table: string): boolean;

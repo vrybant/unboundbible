@@ -84,7 +84,6 @@ constructor TBible.Create(filePath: string);
 begin
   inherited Create(filePath);
   Books := TBooks.Create;
-  OpenDatabase;
   z := unboundStringAlias;
   if format = mybible then z := mybibleStringAlias;
   if connected and not TableExists(z.bible) then connected := false;

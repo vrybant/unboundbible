@@ -36,7 +36,6 @@ implementation
 constructor TCommentary.Create(filePath: string);
 begin
   inherited Create(filePath);
-  OpenDatabase;
   z := unboundCommentaryAlias;
   if format = mybible then z := mybibleCommentaryAlias;
   if connected and not TableExists(z.commentary) then connected := false;

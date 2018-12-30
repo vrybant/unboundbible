@@ -35,7 +35,6 @@ implementation
 constructor TDictionary.Create(filePath: string);
 begin
   inherited Create(filePath);
-  OpenDatabase;
   z := unboundDictionaryAlias;
   if format = mybible then z := mybibleDictionaryAlias;
   if connected and not TableExists(z.dictionary) then connected := false;
