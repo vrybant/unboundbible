@@ -79,8 +79,8 @@ constructor TDictionaries.Create;
 begin
   inherited;
   Load(GetUserDir + AppName);
-  {$ifdef windows} if Self.Count = 0 then {$endif} Load(SharePath + 'bibles');
-//Sort(Comparison);
+  {-ifdef windows} if Self.Count = 0 then {-endif} Load(SharePath + 'bibles'); // LINUX ?
+  Sort(Comparison);
 end;
 
 procedure TDictionaries.Load(path: string);

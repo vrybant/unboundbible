@@ -52,7 +52,7 @@ type
   TShelf = class(TFPGList<TBible>)
     Current : integer;
   private
-    procedure AddBibles(path: string);
+    procedure Load(path: string);
     procedure SavePrivates;
     procedure ReadPrivates;
   public
@@ -568,13 +568,13 @@ end;
 constructor TShelf.Create;
 begin
   inherited;
-  AddBibles(GetUserDir + AppName);
-  {$ifdef windows} if Self.Count = 0 then {$endif} AddBibles(SharePath + 'bibles');
+  Load(GetUserDir + AppName);
+  {$ifdef windows} if Self.Count = 0 then {$endif} Load(SharePath + 'bibles');
   Sort(Comparison);
   ReadPrivates;
 end;
 
-procedure TShelf.AddBibles(path: string);
+procedure TShelf.Load(path: string);
 var
   Item : TBible;
   List : TStringArray;
