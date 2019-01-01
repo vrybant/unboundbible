@@ -44,6 +44,8 @@ type
   public
     constructor Create(filePath: string);
     procedure OpenDatabase;
+    function EncodeID(id: integer): integer;
+    function DecodeID(id: integer): integer;
     function TableExists(table: string): boolean;
     destructor Destroy; override;
   end;
@@ -88,6 +90,29 @@ begin
   footnotes    := false;
 
   OpenDatabase;
+end;
+
+function TModule.EncodeID(id: integer): integer;
+begin
+  Result := id;
+  if format = mybible then
+    if id > 0 then
+      if id <= Length(myBibleArray) then
+        Result := myBibleArray[id];
+end;
+
+function TModule.DecodeID(id: integer): integer;
+var i : integer;
+begin
+  Result := id;
+  if format = mybible then
+    if id > 0 then
+      for i:=1 to Length(myBibleArray) do
+        if id = myBibleArray[i] then
+          begin
+            Result := i;
+            Exit;
+          end;
 end;
 
 function TModule.TableExists(table: string): boolean;

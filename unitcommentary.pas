@@ -49,7 +49,7 @@ var
 begin
   SetLength(Result,0);
 
-  id := EncodeID(format, Verse.book);
+  id := EncodeID(Verse.book);
   v_from := ToStr(Verse.number);
   v_to   := ToStr(Verse.number + Verse.count - 1);
 
@@ -85,7 +85,7 @@ var
   id : integer;
 begin
   Result := '';
-  id := EncodeID(format, Verse.book);
+  id := EncodeID(Verse.book);
 
   try
     try
