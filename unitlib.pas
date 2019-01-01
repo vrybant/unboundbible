@@ -32,6 +32,7 @@ const
 function IsNumeral(c: char): boolean;
 function IsLetter(c: char): boolean;
 function Prefix(ps, st: string): boolean;
+function Suffix(ps, st: string): boolean;
 function OneUpCase(st: string): string;
 function ToInt(s: string): integer;
 function ToBoolean(s: string): boolean;
@@ -55,6 +56,7 @@ procedure RemoveTags(var s: string);
 
 function ExtractOnlyName(s: string): string;
 function GetFileList(const Path, Mask: string) : TStringArray;
+function GetDatabaseList(const Path: string): TStringArray;
 function SharePath: string;
 function DocumentsPath: string;
 function ConfigFile: string;
@@ -100,6 +102,11 @@ end;
 function Prefix(ps, st: string): boolean;
 begin
   Result := Pos(ps, st) = 1;
+end;
+
+function Suffix(ps, st: string): boolean;
+begin
+  Result := Pos(ps, st) = Length(st) - Length(ps) + 1;
 end;
 
 function OneUpCase(st: string): string;
@@ -316,7 +323,7 @@ begin
   Result := ExtractFileName(ChangeFileExt(s,''));
 end;
 
-function GetFileList(const Path, Mask: string) : TStringArray;
+function GetFileList(const Path, Mask: string): TStringArray;
 var
   List : TStringList;
   SearchRec : TSearchRec;
@@ -336,6 +343,29 @@ begin
   SysUtils.FindClose(SearchRec);
   Result := ListToArray(List);
   List.Free;
+end;
+
+function GetDatabaseList(const Path: string): TStringArray;
+const
+  ext : array [1..5] of string = ('.unbound','.bblx','.bbli','.mybible','.SQLite3');
+var
+  List : TStringArray;
+  s, item : string;
+  index : integer;
+begin
+  List := GetFileList(Path, '*.*');
+  SetLength(Result, Length(List));
+
+  index := 0;
+  for item in List do
+    for s in ext do
+      if Suffix(s, item) then
+        begin
+          index += 1;
+          Result[index] := item;
+        end;
+
+  SetLength(Result, index);
 end;
 
 function SharePath: string;

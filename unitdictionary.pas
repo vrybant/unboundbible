@@ -89,7 +89,7 @@ var
   List : TStringArray;
   f : string;
 begin
-  List := GetFileList(path, '*.unbound');
+  List := GetDatabaseList(path);
 
   for f in List do
     begin
