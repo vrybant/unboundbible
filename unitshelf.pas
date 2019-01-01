@@ -112,7 +112,7 @@ begin
           if  x <= 0 then Continue;
 
           Book := TBook.Create;
-          n := DecodeID(format, x);
+          n := DecodeID(x);
           Book.number := n;
           Book.title := ToStr(x);
           Book.id := x;
@@ -270,7 +270,7 @@ var
   line : string;
 begin
   SetLength(Result,0);
-  id := EncodeID(format, Verse.book);
+  id := EncodeID(Verse.book);
 
   try
     try
@@ -301,7 +301,7 @@ var
   line : string;
 begin
   SetLength(Result,0);
-  id := EncodeID(format, Verse.book);
+  id := EncodeID(Verse.book);
 
   try
     try
@@ -361,8 +361,8 @@ begin
 
   if Range.from > 0 then
     begin
-      from := ToStr(EncodeID(format, Range.from));
-      till := ToStr(EncodeID(format, Range.till));
+      from := ToStr(EncodeID(Range.from));
+      till := ToStr(EncodeID(Range.till));
       queryRange := ' AND ' + z.book + ' >= ' + from + ' AND ' + z.book + ' <= ' + till;
     end;
 
@@ -382,7 +382,7 @@ begin
           try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
-          Contents[i].verse.book := DecodeID(format, Contents[i].verse.book);
+          Contents[i].verse.book := DecodeID(Contents[i].verse.book);
           Contents[i].text := Prepare(Contents[i].text, format);
           Query.Next;
         end;
@@ -417,7 +417,7 @@ begin
           try Result[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Result[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
-          Result[i].verse.book := DecodeID(format, Result[i].verse.book);
+          Result[i].verse.book := DecodeID(Result[i].verse.book);
           Query.Next;
         end;
     except
@@ -492,7 +492,7 @@ var
   id : integer;
 begin
   Result := 1;
-  id := EncodeID(format, Verse.book);
+  id := EncodeID(Verse.book);
 
   try
     try
