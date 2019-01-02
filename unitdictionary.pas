@@ -94,6 +94,7 @@ begin
   for f in List do
     begin
       if Pos('.dct.',f) + Pos('.dictionary.',f) = 0 then continue;
+      if not Suffix('.unbound',f) then continue;
       Item := TDictionary.Create(f);
       if Item.connected then Add(Item) else Item.Free;
     end;

@@ -183,7 +183,7 @@ begin
 
   Result += rtf_open;
   Result += '\f0\fs20 ';
-  Result += '\cf1 ' ; // + Bible.VerseToStr(ActiveVerse, true) + '\par ';
+  Result += '\cf1 ';
 
   for i:=0 to Commentaries.Count-1 do
     begin
