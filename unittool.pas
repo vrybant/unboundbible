@@ -10,7 +10,7 @@ function Load_Compare: string;
 function Load_ModulesInfo: string;
 function Load_Translate: string;
 function Load_Commentary: string;
-function Load_Strong(marker: string = ''): string;
+function Load_Strong(number: string = ''): string;
 function Load_Footnote(marker: string = ''): string;
 function Load_Verses: string;
 function Show_Message(s: string): string;
@@ -201,12 +201,12 @@ begin
   Result += rtf_close;
 end;
 
-function Load_Strong(marker: string = ''): string;
+function Load_Strong(number: string = ''): string;
 var s : string;
 begin
   Result := '';
   if Dictionaries.Count = 0 then Exit;
-  s := Dictionaries.GetStrong(ActiveVerse, Bible.language, marker);
+  s := Dictionaries.GetStrong(ActiveVerse, Bible.language, number);
   if s = '' then Exit;
   Result += rtf_open;
   Result += '\f0\fs18 ' + ParseHTML(s);

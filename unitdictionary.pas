@@ -3,7 +3,7 @@ unit UnitDictionary;
 interface
 
 uses
-  Classes, Fgl, SysUtils, UnitModule, UnitType, UnitLib;
+  Classes, Fgl, SysUtils, StrUtils, UnitModule, UnitType, UnitLib;
 
 type
   TDictionary = class(TModule)
@@ -11,7 +11,7 @@ type
     z : TDictionaryAlias;
   public
     constructor Create(filePath: string);
-    function GetData(num: string): string;
+    function GetData(number: string): string;
   end;
 
   TDictionaries = class(TFPGList<TDictionary>)
@@ -19,7 +19,7 @@ type
     procedure Load(path: string);
   public
     constructor Create;
-    function GetStrong(Verse: TVerse; language: string; marker: string): string;
+    function GetStrong(Verse: TVerse; language: string; number: string): string;
     destructor Destroy; override;
   end;
 
@@ -40,13 +40,13 @@ begin
   if connected and not TableExists(z.dictionary) then connected := false;
 end;
 
-function TDictionary.GetData(num: string): string;
+function TDictionary.GetData(number: string): string;
 begin
-  Result := '---';
+  Result := '';
   try
     try
       Query.SQL.Text := 'SELECT * FROM ' + z.dictionary +
-                        ' WHERE ' + z.word + ' = "' + num + '"';
+                        ' WHERE ' + z.word + ' = "' + number + '"';
       Query.Open;
       try Result := Query.FieldByName(z.data).AsString; except end;
     except
@@ -100,7 +100,7 @@ begin
     end;
 end;
 
-function TDictionaries.GetStrong(Verse: TVerse; language: string; marker: string): string;
+function TDictionaries.GetStrong(Verse: TVerse; language: string; number: string): string;
 var
   filename : string = 'strong.dct.unbound';
   i : integer;
@@ -109,15 +109,14 @@ begin
   if self.Count = 0 then Exit;
   if Prefix('ru', language) then filename := 'strongru.dct.unbound';
 
-  if not Prefix('H',marker) and not Prefix('G',marker) then
-    if IsNewTestament(Verse.book) then marker := 'G' + marker
-                                  else marker := 'H' + marker;
+  if not Prefix('H',number) and not Prefix('G',number) then
+    number := IfThen(IsNewTestament(verse.book),'G','H') + number;
 
   for i:=0 to self.Count-1 do
     begin
       if not self[i].strong then Continue;
       if self[i].filename <> filename then Continue;
-      Result := self[i].GetData(marker);
+      Result := self[i].GetData(number);
     end;
 end;
 
