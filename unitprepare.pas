@@ -90,14 +90,14 @@ begin
         marker := List[i];
         Replace(marker,'<q=','');
         Replace(marker,'>' ,'');
-        List[i] := marker + '[~';
+        List[i] := marker + ' [~';
       end;
   s := ListToString(List);
 end;
 
 procedure Footnotes(var s: string);
 begin
-  Replace(s,'<RF>','<RF>*[~');
+  Replace(s,'<RF>','<RF>✻ [~');
   Replace(s,'<Rf>','~]<Rf>');
    CutStr(s,'[~','~]');
 end;

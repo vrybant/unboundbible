@@ -514,7 +514,7 @@ var
   x : integer;
 begin
   Result := '';
-  if Prefix('*',marker) then tag := '<RF>'
+  if Prefix('✻',marker) then tag := '<RF>'
                         else tag := '<RF q=' + marker + '>';
 
   while Pos(tag,s) > 0 do
