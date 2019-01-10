@@ -97,7 +97,7 @@ end;
 
 procedure Footnotes(var s: string);
 begin
-  Replace(s,'<RF>','<RF>✻ [~');
+  Replace(s,'<RF>','<RF>✻[~');
   Replace(s,'<Rf>','~]<Rf>');
    CutStr(s,'[~','~]');
 end;
@@ -123,6 +123,7 @@ begin
 
   CutStr(s,'<TS>','<Ts>');
   if purge then CutStr(s,'<RF','<Rf>');
+  if not purge then Replace(s,'<Rf><RF>','<Rf> <RF>');
   Replace(s,'</S><S>','</S> <S>');
 
   Result := s;
