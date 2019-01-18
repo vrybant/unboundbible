@@ -357,7 +357,7 @@ begin
   SetLength(Result,0);
   queryRange := '';
 
-  SetSearchOptions(searchString, SearchOptions);
+  SetSearchOptions(searchString, SearchOptions, format);
 
   if Range.from > 0 then
     begin

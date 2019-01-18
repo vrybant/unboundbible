@@ -147,7 +147,7 @@ function CleanString(s: string): string;
 var i: integer;
 begin
   for i:=1 to Length(s) do
-    if not IsLetter(s[i]) then s[i] := ' ';
+    if not IsLetter(s[i]) and not IsNumeral(s[i]) then s[i] := ' ';
   Result := s;
 end;
 

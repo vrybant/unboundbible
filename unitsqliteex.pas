@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, LazUtf8, SQLite3, CTypes, UnitLib, UnitType;
 
-procedure SetSearchOptions(s: string; SearchOptions: TSearchOptions);
+procedure SetSearchOptions(s: string; SearchOptions: TSearchOptions; format: TFileFormat);
 procedure SQLite3CreateFunctions(const Handle: pointer);
 
 implementation
@@ -18,17 +18,27 @@ var
   SearchList : TStringArray;
   Options : TSearchOptions;
 
-procedure SetSearchOptions(s: string; SearchOptions: TSearchOptions);
-var i : integer;
+function IsStrong(s: string): boolean;
+var c : char;
+begin
+  Result := false;
+  for c in s do if IsNumeral(c) then Result := true;
+end;
+
+procedure SetSearchOptions(s: string; SearchOptions: TSearchOptions; format: TFileFormat);
+var
+  i : integer;
+  c : string;
 begin
   Options := SearchOptions;
   if not (caseSensitive in Options) then s := Utf8LowerCase(s);
 
   SearchList := StringToList(' ',s);
+  if not (wholeWords in Options) then Exit;
 
-  if wholeWords in Options then
-    for i:=Low(SearchList) to High(SearchList) do
-      SearchList[i] := ' ' + SearchList[i] + ' ';
+  if (format = unbound) and IsStrong(s) then c := '' else c := ' ';
+  for i:=Low(SearchList) to High(SearchList) do
+    SearchList[i] := c + SearchList[i] + ' ';
 end;
 
 procedure PurgeTags(var s: string);
