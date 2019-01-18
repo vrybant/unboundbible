@@ -84,7 +84,7 @@ var
 begin
   Result := rtf_open;
   ContentArray := Bible.Search(st, CurrentSearchOptions, CurrentSearchRange);
-  Count := Length(ContentArray);
+  count := Length(ContentArray);
 
   for content in ContentArray do
     begin
@@ -92,6 +92,13 @@ begin
       text := content.text;
       Highlights(text,st,CurrentSearchOptions);
       text := '\cf3 ' + link + '\cf1 ' + ' ' + Parse(text) + '\i0\par\par';
+      Result += text;
+    end;
+
+  if count = 0 then
+    begin
+      text := ms_NoResults;
+      Replace(text,'%',DoubleQuotedStr(st));
       Result += text;
     end;
 

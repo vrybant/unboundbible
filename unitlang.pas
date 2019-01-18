@@ -30,6 +30,7 @@ var
   ms_Found,
   ms_Language,
   ms_Message,
+  ms_NoResults,
   ms_Overwrite,
   ms_Save : string;
 
@@ -76,6 +77,7 @@ begin
   ms_Footnote := T('Footnote');
   ms_Found := T('verses found');
   ms_Language := T('Language');
+  ms_NoResults := T('You search for % produced no results.');
   ms_Overwrite := T('OK to overwrite %s?');
   ms_Save := T('Save changes?');
   ms_Message := T('This search returned too many results.') + ' ' +

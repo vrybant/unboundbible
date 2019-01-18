@@ -34,6 +34,7 @@ function IsLetter(c: char): boolean;
 function Prefix(ps, st: string): boolean;
 function Suffix(ps, st: string): boolean;
 function OneUpCase(st: string): string;
+function DoubleQuotedStr(s: string): string;
 function ToInt(s: string): integer;
 function ToBoolean(s: string): boolean;
 function ToStr(value: longint): string;
@@ -116,6 +117,11 @@ begin
   st_up := UpperCase(st);
   st[1] := st_up[1];
   Result := st;
+end;
+
+function DoubleQuotedStr(s: string): string;
+begin
+  Result := '"' + s + '"';
 end;
 
 function ToInt(s: string): integer;
