@@ -25,7 +25,7 @@ const
   AppName = 'Unbound Bible';
   TitleDirectory = 'titles';
   LangDirectory = 'localization';
-  VersionInfo = '3 BETA';
+  VersionInfo = '3.0';
 
 // string's functions
 
@@ -56,13 +56,14 @@ procedure RemoveTags(var s: string);
 // file's functions
 
 function ExtractOnlyName(s: string): string;
-function GetFileList(const Path, Mask: string) : TStringArray;
-function GetDatabaseList: TStringArray;
+function DataPath: string;
 function SharePath: string;
 function DocumentsPath: string;
 function ConfigFile: string;
 function TempFileName: string;
-procedure CreateDirectories;
+function GetFileList(const Path, Mask: string) : TStringArray;
+function GetDatabaseList: TStringArray;
+procedure CreateDataDirectory;
 procedure OpenFolder(path: string);
 {$ifdef darwin} procedure PrintFile(FileName : string); {$endif}
 
@@ -329,6 +330,35 @@ begin
   Result := ExtractFileName(ChangeFileExt(s,''));
 end;
 
+function DataPath: string;
+begin
+  Result := GetUserDir + AppName;
+end;
+
+function SharePath: string;
+begin
+  Result := Application.Location;
+  {$ifdef linux}
+    if Prefix('/usr',Result) then Result := '/usr/share/' + Application.Title + '/';
+  {$endif}
+end;
+
+function DocumentsPath: string;
+begin
+  {$ifdef windows} Result := GetWindowsSpecialDir(CSIDL_PERSONAL); {$endif}
+  {$ifdef unix} Result := GetUserDir + 'Documents'; {$endif}
+end;
+
+function ConfigFile: string;
+begin
+  Result := GetAppConfigDir(False) + 'config.ini';
+end;
+
+function TempFileName: string; // for printing
+begin
+  Result := GetTempDir + 'temp.rtf';
+end;
+
 function GetFileList(const Path, Mask: string): TStringArray;
 var
   List : TStringList;
@@ -356,12 +386,10 @@ const
   ext : array [1..5] of string = ('.unbound','.bblx','.bbli','.mybible','.SQLite3');
 var
   List : TStringArray;
-  Path : string;
   s, item : string;
   index : integer;
 begin
-  Path := GetUserDir + AppName;
-  List := GetFileList(Path, '*.*');
+  List := GetFileList(DataPath, '*.*');
   SetLength(Result, Length(List));
 
   index := 0;
@@ -376,48 +404,9 @@ begin
   SetLength(Result, index);
 end;
 
-function SharePath: string;
-{$ifdef darwin} var n : integer; {$endif}
+procedure CreateDataDirectory;
 begin
-  Result := Application.Location;
-
-  {$ifdef linux}
-    if Prefix('/usr',Result) then Result := '/usr/share/' + Application.Title + '/';
-  {$endif}
-
-  {$ifdef darwin}
-  n := Pos('MacOS',Result);
-  if n > 0 then Result := Copy(Result,1,n-1) + 'Resources';
-  {$endif}
-end;
-
-function DocumentsPath: string;
-begin
-  {$ifdef windows} Result := GetWindowsSpecialDir(CSIDL_PERSONAL); {$endif}
-  {$ifdef unix} Result := GetUserDir + 'Documents'; {$endif}
-end;
-
-function ConfigFile: string;
-begin
-  Result := GetAppConfigDir(False) + 'config.ini';
-end;
-
-function TempFileName: string; // for printing
-begin
-  Result := GetTempDir + 'temp.rtf';
-end;
-
-procedure CreateDirectories;
-var
-  dir : string;
-begin
-  dir := GetUserDir + AppName;
-  if not DirectoryExists(dir) then ForceDirectories(dir);
-
-  {$ifdef darwin}
-  dir := ExtractFilePath(GetAppConfigFile(False));
-  if not DirectoryExists(dir) then ForceDirectories(dir);
-  {$endif}
+  if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
 end;
 
 procedure OpenFolder(path : string);

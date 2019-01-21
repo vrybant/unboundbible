@@ -266,8 +266,7 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Caption := AppName + ' ' + VersionInfo + ' - Open Source Application';
 
-  CreateDirectories;
-
+  CreateDataDirectory;
   RecentList := TStringList.Create;
   SaveDialog.InitialDir := DocumentsPath;
 

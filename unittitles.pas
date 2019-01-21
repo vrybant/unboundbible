@@ -81,7 +81,7 @@ begin
   Result := 'english';
   language := LowerCase(language);
 
-  Path := SharePath + titleDirectory;
+  Path := SharePath + TitleDirectory;
   List := GetFileList(Path, '*.sqlite');
 
   for f in List do
