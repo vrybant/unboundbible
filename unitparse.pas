@@ -76,7 +76,7 @@ begin
   if s = '</l>' then r := '\cf1 ';
   if s =  '<n>' then r := '\cf5 ';       // note
   if s = '</n>' then r := color + ' ';
-  if s =  '<m>' then r := '\cf9\super '; // morphology
+  if s =  '<m>' then r := '\cf5\super '; // morphology
   if s = '</m>' then r := color + '\nosupersub ';
 
   s := LowerCase(s);
