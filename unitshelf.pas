@@ -52,7 +52,7 @@ type
   TShelf = class(TFPGList<TBible>)
     Current : integer;
   private
-    procedure Load(path: string);
+    procedure Load;
     procedure SavePrivates;
     procedure ReadPrivates;
   public
@@ -568,19 +568,18 @@ end;
 constructor TShelf.Create;
 begin
   inherited;
-  Load(GetUserDir + AppName);
-  {$ifdef windows} if Self.Count = 0 then {$endif} Load(SharePath + 'bibles');
+  Load;
   Sort(Comparison);
   ReadPrivates;
 end;
 
-procedure TShelf.Load(path: string);
+procedure TShelf.Load;
 var
   Item : TBible;
   List : TStringArray;
   f : string;
 begin
-  List := GetDatabaseList(path);
+  List := GetDatabaseList;
 
   for f in List do
     begin

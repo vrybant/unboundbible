@@ -16,7 +16,7 @@ type
 
   TDictionaries = class(TFPGList<TDictionary>)
   private
-    procedure Load(path: string);
+    procedure Load;
   public
     constructor Create;
     function GetStrong(Verse: TVerse; language: string; number: string): string;
@@ -78,18 +78,17 @@ end;
 constructor TDictionaries.Create;
 begin
   inherited;
-  Load(GetUserDir + AppName);
-  {-ifdef windows} if Self.Count = 0 then {-endif} Load(SharePath + 'bibles'); // LINUX ?
+  Load;
   Sort(Comparison);
 end;
 
-procedure TDictionaries.Load(path: string);
+procedure TDictionaries.Load;
 var
   Item : TDictionary;
   List : TStringArray;
   f : string;
 begin
-  List := GetDatabaseList(path);
+  List := GetDatabaseList;
 
   for f in List do
     begin

@@ -57,7 +57,7 @@ procedure RemoveTags(var s: string);
 
 function ExtractOnlyName(s: string): string;
 function GetFileList(const Path, Mask: string) : TStringArray;
-function GetDatabaseList(const Path: string): TStringArray;
+function GetDatabaseList: TStringArray;
 function SharePath: string;
 function DocumentsPath: string;
 function ConfigFile: string;
@@ -351,14 +351,16 @@ begin
   List.Free;
 end;
 
-function GetDatabaseList(const Path: string): TStringArray;
+function GetDatabaseList: TStringArray;
 const
   ext : array [1..5] of string = ('.unbound','.bblx','.bbli','.mybible','.SQLite3');
 var
   List : TStringArray;
+  Path : string;
   s, item : string;
   index : integer;
 begin
+  Path := GetUserDir + AppName;
   List := GetFileList(Path, '*.*');
   SetLength(Result, Length(List));
 
