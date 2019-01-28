@@ -100,13 +100,6 @@ begin
   if Prefix('<p ', s) then s := '<p>';
   if Prefix('<a ', s) then s := '<a>';
 
-  if s = '<br/>' then s := '<br>';
-  if s =  '<p/>' then s := '<p>';
-  if s =  '<td>' then s := '<br>';
-  if s =  '<tr>' then s := '<br>';
-  if s = '</td>' then s := '<br>';
-  if s = '</tr>' then s := '<br>';
-
   if s =  '<b>' then r := '\cf8\b ' ;
   if s = '</b>' then r := '\cf1\b0 ';
   if s =  '<i>' then r := '\i ';
@@ -126,11 +119,19 @@ end;
 
 procedure Replacement(var s: string);
 begin
+  Replace(s, '<p/>','<p>' );
+  Replace(s,'<br/>','<br>');
+  Replace(s, '<td>','<br>');
+  Replace(s, '<tr>','<br>');
+  Replace(s,'</td>','<br>');
+  Replace(s,'</tr>','<br>');
+
   Replace(s,'&nbsp;' ,' ');
   Replace(s,'&quot;' ,'"');
   Replace(s,'&ldquo;','"');
   Replace(s,'&rdquo;','"');
   Replace(s, #09,' ');
+
   DelDoubleSpace(s);
 end;
 
