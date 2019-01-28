@@ -266,7 +266,6 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Caption := AppName + ' ' + VersionInfo + ' - Open Source Application';
 
-  CreateDataDirectory;
   RecentList := TStringList.Create;
   SaveDialog.InitialDir := DocumentsPath;
 
@@ -1095,7 +1094,8 @@ end;
 
 procedure TMainForm.miBibleFolderClick(Sender: TObject);
 begin
-  OpenFolder(GetUserDir + AppName);
+  CreateDataDirectory;
+  OpenFolder(DataPath);
 end;
 
 procedure TMainForm.miHomeClick(Sender: TObject);
