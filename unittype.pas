@@ -6,7 +6,7 @@ uses
   Classes, SysUtils;
 
 type
-  TFileFormat = (unbound, mybible);
+  TFileFormat = (unbound, mysword, mybible);
 
   TSearchOption = (caseSensitive, wholeWords);
   TSearchOptions = set of TSearchOption;
