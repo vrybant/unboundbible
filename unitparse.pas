@@ -59,19 +59,17 @@ var
 const
   jColor : boolean = false;
 begin
-  //Result := '\cf2 ' + s + '\cf1 '; Exit;  // show tags
+  //Result := '\cf2 ' + s + '\cf1 '; Exit; // show tags
 
   if jColor then color := '\cf7' else color := '\cf1';
 
-  if j then if s = '<FR>' then begin r := '\cf7 '; jColor := true;  end;
-  if j then if s = '<Fr>' then begin r := '\cf1 '; jColor := false; end;
+  if j then if s =  '<J>' then begin r := '\cf7 '; jColor := true;  end;
+  if j then if s = '</J>' then begin r := '\cf1 '; jColor := false; end;
 
-  if s = '<RF>' then r := '\cf6\super ';
-  if s = '<Rf>' then r := color + '\nosupersub ';
-  if s = '<FI>' then r := '\cf5\i ';
-  if s = '<Fi>' then r := color + '\i0 ';
   if s =  '<S>' then r := '\cf8\super ';
   if s = '</S>' then r := color + '\nosupersub ';
+  if s =  '<f>' then r := '\cf6\super ';
+  if s = '</f>' then r := color + '\nosupersub ';
   if s =  '<l>' then r := '\cf2 ';
   if s = '</l>' then r := '\cf1 ';
   if s =  '<n>' then r := '\cf5 ';       // note

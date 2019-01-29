@@ -55,6 +55,8 @@ implementation
 uses UnitSQLiteEx;
 
 constructor TModule.Create(FilePath: string);
+var
+  ext : string;
 begin
   inherited Create;
 
@@ -89,7 +91,8 @@ begin
   self.FileName := ExtractFileName(FilePath);
 
   format := unbound;
-  if ExtractFileExt(FilePath) = '.mybible' then format := mysword;
+  ext := ExtractFileExt(FilePath);
+  if  (ext = '.mybible') or (ext = '.bblx') or (ext = '.bbli') then format := mysword;
 
   OpenDatabase;
 end;

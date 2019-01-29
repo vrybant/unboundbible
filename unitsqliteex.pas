@@ -36,7 +36,7 @@ begin
   SearchList := StringToList(' ',s);
   if not (wholeWords in Options) then Exit;
 
-  if (format = unbound) and IsStrong(s) then c := '' else c := ' ';
+  if (format = mysword) and IsStrong(s) then c := '' else c := ' ';
   for i:=Low(SearchList) to High(SearchList) do
     SearchList[i] := c + SearchList[i] + ' ';
 end;
@@ -44,6 +44,7 @@ end;
 procedure PurgeTags(var s: string);
 begin
   if Pos('<RF',s) > 0 then CutStr(s,'<RF','<Rf>');
+  if Pos('<f' ,s) > 0 then CutStr(s,'<f' ,'</f>');
   if Pos('<TS',s) > 0 then CutStr(s,'<TS','<Ts>');
   if Pos('<h>',s) > 0 then CutStr(s,'<h>','</h>');
 end;

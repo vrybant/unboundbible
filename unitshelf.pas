@@ -24,6 +24,7 @@ type
     z : TBibleAlias;
     function SortingIndex(number: integer): integer;
     function RankContents(const Contents: TContentArray): TContentArray;
+    function ExtractFootnotes(s: string; marker: string): string;
   public
     compare : boolean;
     constructor Create(filePath: string);
@@ -39,7 +40,7 @@ type
     function GoodLink(Verse: TVerse): boolean;
     function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     function GetAll: TContentArray;
-    procedure CheckTags;
+    procedure ShowTags;
     procedure Extract;
     procedure GetTitles(var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
@@ -135,6 +136,7 @@ begin
   end;
 
 //Output(self.fileName + ' loaded');
+//ShowTags;
 end;
 
 procedure TBible.SetTitles;
@@ -428,28 +430,24 @@ begin
   end;
 end;
 
-procedure TBible.CheckTags;
+procedure TBible.ShowTags;
 var
   Contents : TContentArray;
   Content : TContent;
-  List : TStringList;
-  tags : TStringArray;
-  s : string;
+  List : TStringArray;
+  item : string;
+  r : string = '';
 begin
-  List := TStringList.Create;
-
   Contents := GetAll;
   for Content in Contents do
     begin
-      tags := XmlToList(Content.text);
-      for s in tags do
-        if Prefix('<',s) then
-          if not Prefix('<W',s) then
-            if List.IndexOf(s) < 0 then List.Add(s);
+      List := XmlToList(Content.text);
+      for item in List do
+        if Prefix('<', item) then
+          if not Prefix('<W', item) then
+            if Pos(item, r) = 0 then r += item;
     end;
-
-  for s in List do output(s);
-  List.Free;
+  output(r);
 end;
 
 procedure TBible.Extract;
@@ -469,7 +467,7 @@ begin
       text := Content.text;
       nt := IsNewTestament(Content.verse.book);
       if format = mybible then text := MybibleStrongsToUnbound(text, nt);
-      text := Prepare(text, format, not false);
+      text := Prepare(text, format);
       DelDoubleSpace(text);
       write(f,Content.verse.book   ); write(f,char($09));
       write(f,Content.verse.chapter); write(f,char($09));
@@ -508,21 +506,28 @@ begin
   end;
 end;
 
-function ExtractFootnotes(s: string; marker: string): string;
+function TBible.ExtractFootnotes(s: string; marker: string): string;
 var
   tag : string;
   x : integer;
 begin
   Result := '';
-  if Prefix('✻',marker) then tag := '<RF>'
-                        else tag := '<RF q=' + marker + '>';
+
+  if format = mysword then
+    begin
+      Replace(s,'<RF' , '<f' );
+      Replace(s,'<Rf>','</f>');
+    end;
+
+  if Prefix('✻',marker) then tag := '<f>'
+                        else tag := '<f q=' + marker + '>';
 
   while Pos(tag,s) > 0 do
     begin
       x := Pos(tag,s);
       x := x + Length(tag);
       s := Copy(s, x, Length(s));
-      x := Pos('<Rf>',s); if x = 0 then break;
+      x := Pos('</f>',s); if x = 0 then break;
       Result := Result + Copy(s,1,x-1) + '\par ';
     end;
 
@@ -628,8 +633,7 @@ end;
 destructor TShelf.Destroy;
 var i : integer;
 begin
-  // Self[Current].CheckTags;
-  // Self[Current].Extract;
+  //Self[Current].Extract;
 
   SavePrivates;
   for i:=0 to Count-1 do Items[i].Free;

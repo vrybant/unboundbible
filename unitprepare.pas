@@ -11,18 +11,21 @@ function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 implementation
 
 const
-  Max = 8;
+  Max = 11;
   Dictionary : array [1..Max,1..2] of string = (
-    (  '<J>','<FR>'),
-    ( '</J>','<Fr>'),
-    (  '<t>','<FO>'), // quote
-    ( '</t>','<Fo>'),
-    (  '<h>','<TS>'), // title
-    ( '</h>','<Ts>'),
-    (  '<f>','<RF>'), // footnote
-    ( '</f>','<Rf>'));
+    ('<FR>', '<J>'),
+    ('<Fr>','</J>'),
+    ('<FI>', '<i>'), // italic
+    ('<Fi>','</i>'),
+    ('<FO>', '<t>'), // quote
+    ('<Fo>','</t>'),
+    ('<TS>', '<h>'), // title
+    ('<Ts>','</h>'),
+    ('<RF>', '<f>'), // footnote
+    ('<RF ', '<f '),
+    ('<Rf>','</f>'));
 
-procedure ReplaceTags(var s: string);
+procedure ReplaceMyswordTags(var s: string);
 var i : integer;
 begin
   for i:=1 to Max do Replace(s, Dictionary[i,1], Dictionary[i,2]);
@@ -40,20 +43,15 @@ begin
     begin
       if List[i] = '<S>' then
         begin
-          List[i] := '<';
           l := true;
           Continue;
         end;
 
-      if List[i] = '</S>' then
-        begin
-          List[i] := '>';
-          l := false;
-        end;
+      if List[i] = '</S>' then l := false;
 
       if l then
-        if NewTestament then List[i] := 'WG' + List[i]
-                        else List[i] := 'WH' + List[i];
+        if NewTestament then List[i] := 'G' + List[i]
+                        else List[i] := 'H' + List[i];
     end;
 
   Result := ListToString(List);
@@ -97,33 +95,36 @@ end;
 
 procedure Footnotes(var s: string);
 begin
-  Replace(s,'<RF>','<RF>✻[~');
-  Replace(s,'<Rf>','~]<Rf>');
+  Replace(s, '<f>','<f>✻[~');
+  Replace(s,'</f>','~]</f>');
    CutStr(s,'[~','~]');
 end;
 
 procedure FootnotesEx(var s: string);
 begin
-  Replace(s,'<RF ','<RF><');
-  Replace(s,'<Rf>','~]<Rf>');
+  Replace(s, '<f ','<f><'  );
+  Replace(s,'</f>','~]</f>');
   ExtractMarkers(s);
   CutStr(s,'[~','~]');
 end;
 
 function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 begin
-  if format = unbound then
+  if format = mysword then
     begin
       if Pos('<W',s) > 0 then Strongs(s);
-      if not purge and (Pos('<RF>',s) > 0) then Footnotes(s);
-      if not purge and (Pos('<RF ',s) > 0) then FootnotesEx(s);
+      ReplaceMyswordTags(s);
     end;
 
-  if format = mybible then ReplaceTags(s);
+  if format in [unbound, mysword] then
+    begin
+      if not purge and (Pos('<f>',s) > 0) then Footnotes(s);
+      if not purge and (Pos('<f ',s) > 0) then FootnotesEx(s);
+    end;
 
-  CutStr(s,'<TS>','<Ts>');
-  if purge then CutStr(s,'<RF','<Rf>');
-  if not purge then Replace(s,'<Rf><RF>','<Rf> <RF>');
+  CutStr(s,'<h>','</h>');
+  if purge then CutStr(s,'<f','</f>');
+  if not purge then Replace(s,'</f><f>','</f> <f>');
   Replace(s,'</S><S>','</S> <S>');
 
   Result := s;
