@@ -387,18 +387,17 @@ const
 var
   List : TStringArray;
   s, item : string;
-  index : integer;
+  index : integer = 0;
 begin
   List := GetFileList(DataPath, '*.*');
   SetLength(Result, Length(List));
 
-  index := 0;
   for item in List do
     for s in ext do
       if Suffix(s, item) then
         begin
-          index += 1;
           Result[index] := item;
+          index += 1;
         end;
 
   SetLength(Result, index);
