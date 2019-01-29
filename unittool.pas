@@ -224,8 +224,8 @@ function Load_Footnote(marker: string = ''): string;
 var s : string;
 begin
   Result := '';
-  if Bible.format = unbound then s := Bible.GetFootnote(ActiveVerse, marker);
-  if Bible.format = mybible then s := Commentaries.GetFootnote(Bible.fileName, ActiveVerse, marker);
+  if Bible.format = mybible then s := Commentaries.GetFootnote(Bible.fileName, ActiveVerse, marker)
+                            else s := Bible.GetFootnote(ActiveVerse, marker);
   if s = '' then Exit;
   Result += rtf_open;
   Result += '\f0\fs18 ' + ParseHTML(s);

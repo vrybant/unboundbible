@@ -42,7 +42,7 @@ type
     strong       : boolean;
     footnotes    : boolean;
   public
-    constructor Create(filePath: string);
+    constructor Create(FilePath: string);
     procedure OpenDatabase;
     function EncodeID(id: integer): integer;
     function DecodeID(id: integer): integer;
@@ -54,30 +54,26 @@ implementation
 
 uses UnitSQLiteEx;
 
-constructor TModule.Create(filePath: string);
+constructor TModule.Create(FilePath: string);
 begin
   inherited Create;
 
   {$ifdef zeos}
     Connection := TZConnection.Create(nil);
     Query := TZReadOnlyQuery.Create(nil);
-    Connection.Database := filePath;
+    Connection.Database := FilePath;
     Connection.Protocol := 'sqlite-3';
     Query.Connection := Connection;
   {$else}
     Connection := TSQLite3Connection.Create(nil);
     Connection.CharSet := 'UTF8';
-    Connection.DatabaseName := filePath;
+    Connection.DatabaseName := FilePath;
     Transaction := TSQLTransaction.Create(Connection);
     Connection.Transaction := Transaction;
     Query := TSQLQuery.Create(nil);
     Query.DataBase := Connection;
   {$endif}
 
-  self.filePath := filePath;
-  self.fileName := ExtractFileName(filePath);
-
-  format       := unbound;
   name         := '';
   abbreviation := '';
   copyright    := '';
@@ -88,6 +84,12 @@ begin
   RightToLeft  := false;
   strong       := false;
   footnotes    := false;
+
+  self.FilePath := FilePath;
+  self.FileName := ExtractFileName(FilePath);
+
+  format := unbound;
+  if ExtractFileExt(FilePath) = '.mybible' then format := mysword;
 
   OpenDatabase;
 end;
@@ -157,7 +159,7 @@ begin
     Exit;
   end;
 
-  if format = unbound then
+  if format in [unbound, mysword] then
     try
       try
         Query.SQL.Text := 'SELECT * FROM Details';
