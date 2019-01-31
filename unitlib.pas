@@ -383,7 +383,7 @@ end;
 
 function GetDatabaseList: TStringArray;
 const
-  ext : array [1..5] of string = ('.unbound','.bblx','.bbli','.mybible','.SQLite3');
+  ext : array [1..4] of string = ('.unbound','.bbli','.mybible','.SQLite3');
 var
   List : TStringArray;
   s, item : string;
