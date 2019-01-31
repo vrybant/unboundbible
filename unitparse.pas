@@ -11,7 +11,7 @@ const
 
 function rtf_open: string;
 function Parse(s: string; jtag: boolean = false): string;
-function ParseHTML(s: string; tab: boolean = false): string;
+function HTML(s: string): string;
 
 implementation
 
@@ -41,17 +41,6 @@ begin
     + '\fs' + ToStr(DefaultFont.Size * 2);
 end;
 
-function LeadingTab(s: string): string;
-var x : integer;
-begin
-  Result := '\tab ';
-  x := Pos('\par',s);
-  if x = 0 then Exit;
-  s := Copy(s,1,x);
-  x := Pos('\tab',s);
-  if x > 0 then Result := '';
-end;
-
 function ParseString(s: string; j: boolean): string;
 var
   r : string = '';
@@ -65,6 +54,8 @@ begin
 
   if j then if s =  '<J>' then begin r := '\cf7 '; jColor := true;  end;
   if j then if s = '</J>' then begin r := '\cf1 '; jColor := false; end;
+
+  if Prefix('<a ', s) then s := '<a>';
 
   if s =  '<S>' then r := '\cf8\super ';
   if s = '</S>' then r := color + '\nosupersub ';
@@ -83,40 +74,49 @@ begin
   if s =  '<em>' then r := '\cf5\i ';
   if s =  '</i>' then r := color + '\i0 ';
   if s = '</em>' then r := color + '\i0 ';
+  if s =   '<a>' then r := '\cf5 ';
+  if s =  '</a>' then r := '\cf1 ';
+  if s =   '<b>' then r := '\cf8\b ' ;
+  if s =  '</b>' then r := '\cf1\b0 ';
+  if s =  '</p>' then r := '\par ';
 
   Result := r;
 end;
 
-function HTML(s: string; tab: boolean): string;
+function ParseHTML(s: string): string;
 var
   r : string = '';
-  t : string = '';
 begin
   s := LowerCase(s);
-  if tab then t := '\tab ';
 
   if Prefix('<p ', s) then s := '<p>';
   if Prefix('<a ', s) then s := '<a>';
 
-  if s =  '<b>' then r := '\cf8\b ' ;
-  if s = '</b>' then r := '\cf1\b0 ';
-  if s =  '<i>' then r := '\i ';
-  if s = '</i>' then r := '\i0 ';
-  if s = '<br>' then r := '\par ' + t;
-  if s =  '<p>' then r := t;
-  if s = '</p>' then r := '\par ';
   if s =  '<a>' then r := '\cf5 ';
   if s = '</a>' then r := '\cf1 ';
-  if s =  '<strong>' then r := '\b ' ;
-  if s = '</strong>' then r := '\b0 ';
+  if s =  '<i>' then r := '\i ';
+  if s = '</i>' then r := '\i0 ';
+  if s =  '<b>' then r := '\cf8\b ' ;
+  if s = '</b>' then r := '\cf1\b0 ';
+  if s = '<br>' then r := '\par\tab ';
+  if s =  '<em>' then r := '\i ';
+  if s = '</em>' then r := '\i0 ';
   if s =  '<sup>' then r := '\super ';
   if s = '</sup>' then r := '\nosupersub ';
+  if s =  '<strong>' then r := '\cf8\b ' ;
+  if s = '</strong>' then r := '\cf1\b0 ';
 
   Result := r;
 end;
 
 procedure Replacement(var s: string);
 begin
+  Replace(s,'&nbsp;' ,' ');
+  Replace(s,'&quot;' ,'"');
+  Replace(s,'&ldquo;','«');
+  Replace(s,'&rdquo;','»');
+  Replace(s, #09     ,' ');
+
   Replace(s, '<p/>','<p>' );
   Replace(s,'<br/>','<br>');
   Replace(s, '<td>','<br>');
@@ -124,11 +124,8 @@ begin
   Replace(s,'</td>','<br>');
   Replace(s,'</tr>','<br>');
 
-  Replace(s,'&nbsp;' ,' ');
-  Replace(s,'&quot;' ,'"');
-  Replace(s,'&ldquo;','"');
-  Replace(s,'&rdquo;','"');
-  Replace(s, #09,' ');
+  if Pos('</p>',s) = 0 then Replace(s,'<p>','<br>');
+  Replace(s,'</p>','<br>');
 
   DelDoubleSpace(s);
 end;
@@ -146,7 +143,7 @@ begin
   Result := Trim(ListToString(List));
 end;
 
-function ParseHTML(s: string; tab: boolean = false): string;
+function HTML(s: string): string;
 var
   List : TStringArray;
   i : integer;
@@ -155,10 +152,10 @@ begin
   List := XmlToList(s);
 
   for i:=Low(List) to High(List) do
-    if Prefix('<', List[i]) then List[i] := HTML(List[i],tab);
+    if Prefix('<', List[i]) then List[i] := ParseHTML(List[i]);
 
   Result := Trim(ListToString(List));
-  if tab then Result := LeadingTab(Result) + Result;
+  Result := '\tab ' + Result;
 end;
 
 end.

@@ -202,7 +202,7 @@ begin
         Result += '\par\cf3 ' + Commentaries[i].Name + '\par\par\cf1 ';
 
       for item in Strings  do
-        Result += ParseHTML(item, true) + '\par';
+        Result += HTML(item) + '\par';
     end;
 
   Result += rtf_close;
@@ -216,7 +216,7 @@ begin
   s := Dictionaries.GetStrong(ActiveVerse, Bible.language, number);
   if s = '' then Exit;
   Result += rtf_open;
-  Result += '\f0\fs18 ' + ParseHTML(s);
+  Result += '\f0\fs18 ' + Parse(s);
   Result += rtf_close;
 end;
 
@@ -228,7 +228,7 @@ begin
                             else s := Bible.GetFootnote(ActiveVerse, marker);
   if s = '' then Exit;
   Result += rtf_open;
-  Result += '\f0\fs18 ' + ParseHTML(s);
+  Result += '\f0\fs18 ' + Parse(s);
   Result += rtf_close;
 end;
 
