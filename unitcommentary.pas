@@ -46,6 +46,7 @@ var
   v_from, v_to : string;
   line : string;
   i, id : integer;
+  count : integer;
 begin
   SetLength(Result,0);
 
@@ -66,12 +67,19 @@ begin
         SetLength(Result, Query.RecordCount);
         Query.First;
 
+        count := 0;
         for i:=0 to Query.RecordCount-1 do
-          begin
-            try line := Query.FieldByName(z.data).AsString; except line := '' end;
-            Result[i] := line;
+          try
+            line := Query.FieldByName(z.data).AsString;
+            if line <> '' then
+               begin
+                 Result[count] := line;
+                 count += 1;
+               end;
+          finally
             Query.Next;
           end;
+        SetLength(Result, count);
     except
       //
     end;
