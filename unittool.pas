@@ -182,13 +182,10 @@ end;
 function Load_Commentary: string;
 var
   Strings : TStringArray;
-  item : string;
+  item, s : string;
   i : integer;
 begin
-  Result := '';
-  if Commentaries.Count = 0 then Exit;
-
-  Result += rtf_open;
+  Result := rtf_open;
   Result += '\f0\fs20 ';
   Result += '\cf1 ';
 
@@ -203,6 +200,15 @@ begin
 
       for item in Strings  do
         Result += HTML(item) + '\par';
+    end;
+
+  if Commentaries.Count = 0 then
+    begin
+      s := ms_MoreInfo;
+      Replace(s, '%', ms_Downloads);
+      Result += '\fs22 ';
+      Result += '\par  ' + ms_NoModules;
+      Result += '\par  ' + s;
     end;
 
   Result += rtf_close;

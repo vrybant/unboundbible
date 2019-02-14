@@ -24,12 +24,15 @@ var
 var
   ms_Commentary,
   ms_Confirm,
+  ms_Downloads,
   ms_Strong,
   ms_File,
   ms_Footnote,
   ms_Found,
   ms_Language,
   ms_Message,
+  ms_MoreInfo,
+  ms_NoModules,
   ms_NoResults,
   ms_Overwrite,
   ms_Save : string;
@@ -72,11 +75,14 @@ procedure TranslateConstants;
 begin
   ms_Commentary := T('Commentary');
   ms_Confirm := T('Confirmation');
+  ms_Downloads := T('Module Downloads');
   ms_Strong := T('Strong''s Dictionary');
   ms_File := T('File');
   ms_Footnote := T('Footnote');
   ms_Found := T('verses found');
   ms_Language := T('Language');
+  ms_MoreInfo := T('For more information, choose Menu > Help, then click «%».');
+  ms_NoModules := T('You don''t have any commentary modules.');
   ms_NoResults := T('You search for % produced no results.');
   ms_Overwrite := T('OK to overwrite %s?');
   ms_Save := T('Save changes?');
