@@ -402,7 +402,7 @@ begin
   miRecent.Caption := T('Open Recent');
 
   miHome.Caption := T('Home Page');
-  miDownload.Caption := T('Bible Downloads');
+  miDownload.Caption := T('Module Downloads');
   miBibleFolder.Caption := T('Bible Folder');
   miHelpAbout.Caption := T('About');
 
