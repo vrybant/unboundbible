@@ -182,7 +182,7 @@ end;
 function Load_Commentary: string;
 var
   Strings : TStringArray;
-  item, s : string;
+  item : string;
   i : integer;
 begin
   Result := rtf_open;
@@ -204,11 +204,9 @@ begin
 
   if Commentaries.Count = 0 then
     begin
-      s := ms_MoreInfo;
-      Replace(s, '%', ms_Downloads);
       Result += '\fs22 ';
       Result += '\par  ' + ms_NoModules;
-      Result += '\par  ' + s;
+      Result += '\par  ' + ms_MoreInfo;
     end;
 
   Result += rtf_close;
