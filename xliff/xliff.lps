@@ -9,8 +9,8 @@
         <Filename Value="xliff.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="31"/>
-        <CursorPos X="59" Y="51"/>
+        <TopLine Value="46"/>
+        <CursorPos X="47" Y="52"/>
         <UsageCount Value="33"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -20,8 +20,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitLib"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="287"/>
-        <CursorPos X="57" Y="292"/>
+        <TopLine Value="328"/>
+        <CursorPos X="29" Y="330"/>
         <UsageCount Value="33"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -53,11 +53,23 @@
         <UsageCount Value="10"/>
       </Unit4>
     </Units>
-    <JumpHistory Count="1">
+    <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
         <Filename Value="..\unitlib.pas"/>
         <Caret Line="258" Column="24" TopLine="253"/>
       </Position1>
+      <Position2>
+        <Filename Value="xliff.lpr"/>
+        <Caret Line="88" Column="49" TopLine="54"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\unitlib.pas"/>
+        <Caret Line="58" Column="10" TopLine="38"/>
+      </Position3>
+      <Position4>
+        <Filename Value="xliff.lpr"/>
+        <Caret Line="88" Column="54" TopLine="54"/>
+      </Position4>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>
