@@ -72,7 +72,7 @@ end;
 
 procedure TranslateConstants;
 begin
-  ms_Commentary := T('Commentary');
+  ms_Commentary := T('Commentaries');
   ms_Confirm := T('Confirmation');
   ms_Strong := T('Strong''s Dictionary');
   ms_File := T('File');

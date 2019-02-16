@@ -39,7 +39,7 @@ uses FormMain, UnitLang, UnitLib;
 
 procedure TCommentaryForm.Translate;
 begin
-  Caption := ' ' + T('Commentary');
+  Caption := ' ' + T('Commentaries');
 end;
 
 procedure TCommentaryForm.FormCreate(Sender: TObject);

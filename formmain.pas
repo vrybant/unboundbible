@@ -379,7 +379,7 @@ begin
   miHelp.Caption := T('Help');
   miSearch.Caption := T('Search');
   miCompare.Caption := T('Compare');
-  miCommentary.Caption := T('Commentary');
+  miCommentary.Caption := T('Commentaries');
   miTranslate.Caption := T('Translation');
   miInterlinear.Caption := T('Interlinear');
   miPrint.Caption := T('Print');
@@ -406,7 +406,7 @@ begin
   miBibleFolder.Caption := T('Bible Folder');
   miHelpAbout.Caption := T('About');
 
-  pmCommentary.Caption := T('Commentary');
+  pmCommentary.Caption := T('Commentaries');
   pmCut.Caption := T('Cut');
   pmCopy.Caption := T('Copy');
   pmPaste.Caption := T('Paste');
@@ -430,7 +430,7 @@ begin
   ToolButtonPaste.Hint := T('Paste');
   ToolButtonUndo.Hint := T('Undo');
   ToolButtonCompare.Hint := T('Compare');
-  ToolButtonCommentary.Hint := T('Commentary');
+  ToolButtonCommentary.Hint := T('Commentaries');
 
   ToolButtonFont.Hint := T('Font');
   ToolButtonBold.Hint := T('Bold');
