@@ -80,13 +80,11 @@ end;
 
 procedure Execute;
 var
-  List : TStringList;
-  i : integer;
+  List : TStringArray;
+  item : string;
 begin
-  List := TStringList.Create;
-  GetFileList(LangPath + '*.lng', List, True);
-  for i:=0 to List.Count-1 do Localizate(List[i]);
-  List.Free;
+  List := GetFileList(LangPath, '*.lng');
+  for item in List do Localizate(ExtractOnlyName(item));
 end;
 
 begin
