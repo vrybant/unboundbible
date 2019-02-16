@@ -1,8 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd">
-  <file original="Unbound Bible/Base.lproj/Main.storyboard" source-language="en" datatype="plaintext">
+  <file original="Unbound Bible.iOS/Base.lproj/Main.storyboard" datatype="plaintext" source-language="en">
     <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="9.2" build-num="9C40b"/>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="10.1" build-num="10B61"/>
+    </header>
+    <body>
+      <trans-unit id="cF2-Le-7mQ.text">
+        <source>Label</source>
+        <note>Class = "UILabel"; text = "Label"; ObjectID = "cF2-Le-7mQ";</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="Unbound Bible.iOS/en.lproj/InfoPlist.strings" datatype="plaintext" source-language="en">
+    <header>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="10.1" build-num="10B61"/>
+    </header>
+    <body>
+      <trans-unit id="CFBundleName">
+        <source>$(PRODUCT_NAME)</source>
+        <note>Bundle name</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="Unbound Bible.macOS/Base.lproj/Main.storyboard" datatype="plaintext" source-language="en">
+    <header>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="10.1" build-num="10B61"/>
     </header>
     <body>
       <trans-unit id="0l1-Da-iy5.title">
@@ -20,6 +42,10 @@
       <trans-unit id="1zZ-nN-0oB.title">
         <source>Interlinear</source>
         <note>Class = "NSMenuItem"; title = "Interlinear"; ObjectID = "1zZ-nN-0oB";</note>
+      </trans-unit>
+      <trans-unit id="2Y6-x3-4Kt.title">
+        <source>Commentaries</source>
+        <note>Class = "NSMenuItem"; title = "Commentaries"; ObjectID = "2Y6-x3-4Kt";</note>
       </trans-unit>
       <trans-unit id="2js-1q-k61.title">
         <source>Bible</source>
@@ -92,6 +118,10 @@
       <trans-unit id="Cz5-qR-NMX.title">
         <source>Writing Direction</source>
         <note>Class = "NSMenu"; title = "Writing Direction"; ObjectID = "Cz5-qR-NMX";</note>
+      </trans-unit>
+      <trans-unit id="DDy-DZ-1dG.title">
+        <source>Commentaries</source>
+        <note>Class = "NSMenuItem"; title = "Commentaries"; ObjectID = "DDy-DZ-1dG";</note>
       </trans-unit>
       <trans-unit id="DMf-m0-n8l.title">
         <source>Close</source>
@@ -431,28 +461,41 @@
       </trans-unit>
     </body>
   </file>
-  <file original="Unbound Bible/Info.plist" source-language="en" datatype="plaintext">
+  <file original="Unbound Bible.macOS/en.lproj/FMDB.strings" datatype="plaintext" source-language="en">
     <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="9.2" build-num="9C40b"/>
-    </header>
-    <body>
-      <trans-unit id="CFBundleName">
-        <source>Unbound Bible</source>
-      </trans-unit>
-      <trans-unit id="NSHumanReadableCopyright">
-        <source>Copyright © 2018 Vladimir Rybant</source>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="Unbound Bible/Localizable.strings" source-language="en" datatype="plaintext">
-    <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="9.2" build-num="9C40b"/>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="10.1" build-num="10B61"/>
     </header>
     <body>
       <trans-unit id="Application ID functions require SQLite 3.7.17">
         <source>Application ID functions require SQLite 3.7.17</source>
         <note>No comment provided by engineer.</note>
       </trans-unit>
+      <trans-unit id="Save point functions require SQLite 3.7">
+        <source>Save point functions require SQLite 3.7</source>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="Unbound Bible.macOS/en.lproj/InfoPlist.strings" datatype="plaintext" source-language="en">
+    <header>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="10.1" build-num="10B61"/>
+    </header>
+    <body>
+      <trans-unit id="CFBundleName">
+        <source>Unbound Bible</source>
+        <note>Bundle name</note>
+      </trans-unit>
+      <trans-unit id="NSHumanReadableCopyright">
+        <source>Copyright © 2018 Vladimir Rybant</source>
+        <note>Copyright (human-readable)</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="Unbound Bible.macOS/en.lproj/Localizable.strings" datatype="plaintext" source-language="en">
+    <header>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="10.1" build-num="10B61"/>
+    </header>
+    <body>
       <trans-unit id="Cancel">
         <source>Cancel</source>
         <note>No comment provided by engineer.</note>
@@ -463,6 +506,10 @@
       </trans-unit>
       <trans-unit id="Clear Menu">
         <source>Clear Menu</source>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Commentaries">
+        <source>Commentaries</source>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="Do you want to save the changes?">
@@ -483,6 +530,10 @@
       </trans-unit>
       <trans-unit id="Font">
         <source>Font</source>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="For more information, choose Menu &gt; Help, then click «Unbound Bible Help».">
+        <source>For more information, choose Menu &gt; Help, then click «Unbound Bible Help».</source>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="Interlinear">
@@ -509,10 +560,6 @@
         <source>Save</source>
         <note>No comment provided by engineer.</note>
       </trans-unit>
-      <trans-unit id="Save point functions require SQLite 3.7">
-        <source>Save point functions require SQLite 3.7</source>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
       <trans-unit id="Save…">
         <source>Save…</source>
         <note>No comment provided by engineer.</note>
@@ -531,6 +578,10 @@
       </trans-unit>
       <trans-unit id="Update to the stable version.">
         <source>Update to the stable version.</source>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="You don't have any commentary modules.">
+        <source>You don't have any commentary modules.</source>
         <note>No comment provided by engineer.</note>
       </trans-unit>
       <trans-unit id="You search for % produced no results.">
