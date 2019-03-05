@@ -219,8 +219,8 @@ type
     procedure LoadFootnote(s: string);
     procedure MakeBookList;
     procedure MakeChapterList(n: integer);
-    procedure OnLangClick(Sender: TObject);
     procedure OnRecentClick(Sender: TObject);
+    procedure OnLangClick(Sender: TObject);
     procedure PerformFileOpen(const FileName: string);
     procedure ReadIniFile;
     procedure RebuildRecentList;
@@ -893,19 +893,6 @@ begin
   end;
 end;
 
-procedure TMainForm.OnLangClick(Sender: TObject);
-var
-  i: integer;
-begin
-  facelang := LowerCase((Sender as TMenuItem).Hint);
-
-  for i := 0 to miLocalization.Count - 1 do
-    miLocalization.Items[i].Checked := False;
-  (Sender as TMenuItem).Checked := True;
-
-  TranslateAll;
-end;
-
 procedure TMainForm.OnRecentClick(Sender: TObject);
 var i: integer;
 begin
@@ -915,21 +902,34 @@ begin
         PerformFileOpen(RecentList[i]);
 end;
 
+procedure TMainForm.OnLangClick(Sender: TObject);
+var
+  i: integer;
+begin
+  LocalLang := (Sender as TMenuItem).Hint;
+
+  for i := 0 to miLocalization.Count - 1 do
+    miLocalization.Items[i].Checked := False;
+  (Sender as TMenuItem).Checked := True;
+
+  TranslateAll;
+end;
+
 procedure TMainForm.LangMenuInit;
 var
+  Local : TLocal;
   MenuItem : TMenuItem;
-  i : integer;
 begin
-  for i := 0 to Localization.Count-1 do
+  for Local in Localization do
   begin
     MenuItem := TMenuItem.Create(MainMenu);
 
-    MenuItem.Caption := Localization.Native(i);
-    MenuItem.Hint    := Localization[i];
-    MenuItem.Checked := (Localization[i] = FaceLang);
+    MenuItem.Caption := Local.language;
+    MenuItem.Hint := Local.id;
+    MenuItem.Checked := Local.id = LocalLang;
     MenuItem.OnClick := OnLangClick;
 
-    miLocalization.Insert(i, MenuItem);
+    miLocalization.Add(MenuItem);
   end;
 end;
 
@@ -1100,14 +1100,14 @@ end;
 
 procedure TMainForm.miHomeClick(Sender: TObject);
 begin
-  if (facelang = 'russian') or (facelang = 'ukrainian')
+  if (LocalLang = 'russian') or (LocalLang = 'ukrainian')
     then OpenURL('http://vladimirrybant.org/ru')
     else OpenURL('http://vladimirrybant.org');
 end;
 
 procedure TMainForm.miDownloadClick(Sender: TObject);
 begin
-  if (facelang = 'russian') or (facelang = 'ukrainian')
+  if (LocalLang = 'russian') or (LocalLang = 'ukrainian')
     then OpenURL('http://vladimirrybant.org/goto/ubdownloadru.php')
     else OpenURL('http://vladimirrybant.org/goto/ubdownload.php');
 end;
@@ -1312,7 +1312,7 @@ begin
   IniFile.WriteString('Application', 'FontName', DefaultFont.Name);
   IniFile.WriteInteger('Application', 'FontSize', DefaultFont.Size);
   IniFile.WriteInteger('Application', 'Splitter', PanelLeft.Width);
-  IniFile.WriteString('Application', 'Interface', FaceLang);
+  IniFile.WriteString('Application', 'Interface', LocalLang);
   IniFile.WriteBool('Application', 'ShortLink', ShortLink);
   IniFile.WriteBool('Application', 'FBPage', FBPageVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
@@ -1335,8 +1335,8 @@ end;
 function GetDefaultBible: string;
 begin
   Result := 'kjv.unbound';
-  if GetDefaultLanguage = 'russian'   then Result := 'rstw.unbound';
-  if GetDefaultLanguage = 'ukrainian' then Result := 'ubio.unbound';
+  if GetDefaultLanguage = 'ru' then Result := 'rstw.unbound';
+  if GetDefaultLanguage = 'uk' then Result := 'ubio.unbound';
 end;
 
 procedure TMainForm.ReadIniFile;
@@ -1357,7 +1357,7 @@ begin
   DefaultFont.Name := IniFile.ReadString('Application', 'FontName', DefaultFont.Name);
   DefaultFont.Size := IniFile.ReadInteger('Application', 'FontSize', DefaultFont.Size);
   PanelLeft.Width := IniFile.ReadInteger('Application', 'Splitter', 270);
-  FaceLang := IniFile.ReadString('Application', 'Interface', GetDefaultLanguage);
+  LocalLang := IniFile.ReadString('Application', 'Interface', GetDefaultLanguage);
   ShortLink := IniFile.ReadBool('Application', 'ShortLink', True);
   FBPageVisited := IniFile.ReadBool('Application', 'FBPage', False);
   Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);

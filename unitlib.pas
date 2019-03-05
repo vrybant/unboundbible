@@ -70,7 +70,7 @@ procedure OpenFolder(path: string);
 // language functions
 
 function GetDefaultLanguage: string;
-function GetRightToLeft(language: string): boolean;
+function IsRightToLeft(language: string): boolean;
 function Orthodox(language: string): boolean;
 
 // system's functions
@@ -449,40 +449,23 @@ end;
 
 function GetDefaultLanguage: string;
 begin
-  Result := 'english';
-
-  {$ifdef windows}
-  case Lo(GetUserDefaultLangID) of
-    LANG_RUSSIAN   : Result := 'russian';
-    LANG_SPANISH   : Result := 'spanish';
-    LANG_ITALIAN   : Result := 'italian';
-    LANG_FINNISH   : Result := 'finnish';
-//  LANG_POLISH    : Result := 'polish';
-//  LANG_FRENCH    : Result := 'french';
-//  LANG_GERMAN    : Result := 'german';
-    LANG_UKRAINIAN : Result := 'ukrainian';
-  end;
-  {$endif}
-
-  {$ifdef unix}
-    {$ifdef RussianEdition} Result := 'russian'; {$endif}
-  {$endif}
+  LazGetShortLanguageID(Result); // if unknown language ?
 end;
 
-function GetRightToLeft(language: string): boolean;
+function IsRightToLeft(language: string): boolean;
 begin
    Result := false;
-   if Prefix('he' ,language) or
-      Prefix('ara',language) or
-      Prefix('fa' ,language) then Result := true;
+   if Prefix('he',language) or
+      Prefix('ar',language) or
+      Prefix('fa',language) then Result := true;
 end;
 
 function Orthodox(language: string): boolean;
 begin
    Result := false;
-   if Prefix('ru'  ,language) or
-      Prefix('uk'  ,language) or
-      Prefix('bulg',language) then Result := true;
+   if Prefix('ru',language) or
+      Prefix('uk',language) or
+      Prefix('bg',language) then Result := true;
 end;
 
 // system's functions

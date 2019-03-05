@@ -79,7 +79,7 @@ begin
   name         := '';
   abbreviation := '';
   copyright    := '';
-  language     := 'english';
+  language     := 'en';
   filetype     := '';
   connected    := false;
   loaded       := false;
@@ -215,8 +215,7 @@ begin
   if connected then
     begin
       if name = '' then name := fileName;
-      language := LowerCase(language);
-      RightToLeft := GetRightToLeft(language);
+      RightToLeft := IsRightToLeft(language);
       RemoveTags(info);
     end;
 end;

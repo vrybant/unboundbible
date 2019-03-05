@@ -3,23 +3,26 @@ unit UnitLang;
 interface
 
 uses
-  SysUtils, Classes, Graphics, IniFiles,  ClipBrd, LCLProc;
+  SysUtils, Classes, Fgl, Graphics, IniFiles,  ClipBrd, LCLProc;
 
 type
-  TLanguage = class(TIniFile)
-  public
-    constructor Create;
+  TLocal = class
+    filename : string;
+    language : string;
+    id : string;
   end;
 
-  TLocalization = class(TStringList)
+  TLocalization = class(TFPGList<TLocal>)
+  private
+    function GetFileName(id: string): string;
   public
     constructor Create;
-    function Native(index: integer): string;
+    destructor Destroy; override;
   end;
 
 var
   Localization : TLocalization;
-  facelang : string;
+  LocalLang : string;
 
 var
   ms_Commentary,
@@ -46,28 +49,11 @@ uses
   FormCommentary, FormDownload, UnitLib;
 
 var
-  Language : TLanguage;
-
-constructor TLanguage.Create;
-begin
-  inherited Create(SharePath + Slash + LangDirectory + Slash + LowerCase(facelang) + '.lng');
-end;
+  IniFile : TIniFile;
 
 function T(const id : string): string;
 begin
-  Result := Language.ReadString('Localization',id,id);
-end;
-
-function NativeLanguage(s: string): string;
-begin
-  s := LowerCase(s);
-  Result := OneUpCase(s);
-
-  if s = 'russian'   then Result := 'Русский';
-  if s = 'spanish'   then Result := 'Español';
-  if s = 'italian'   then Result := 'Italiano';
-  if s = 'finnish'   then Result := 'Suomi';
-  if s = 'ukrainian' then Result := 'Українська ';
+  Result := IniFile.ReadString('Localization',id,id);
 end;
 
 procedure TranslateConstants;
@@ -89,8 +75,12 @@ begin
 end;
 
 procedure TranslateAll;
+var
+  filename : string;
 begin
-  Language := TLanguage.Create;
+  filename := Localization.GetFileName(LocalLang);
+  if filename = '' then Exit;
+  IniFile := TIniFile.Create(filename);
 
   MainForm      .Translate;
   SearchForm    .Translate;
@@ -103,34 +93,57 @@ begin
 
   TranslateConstants;
 
-  Language.Free;
+  IniFile.Free;
 end;
 
 //-------------------------------------------------------------------------------------------------
 //                                       TLocalization
 //-------------------------------------------------------------------------------------------------
 
-function Comparison(List: TStringList; index1, index2: integer): integer;
+function Comparison(const Item1: TLocal; const Item2: TLocal): integer;
 begin
-  Result := CompareText(NativeLanguage(List[index1]), NativeLanguage(List[index2]));
+  Result := CompareText(Item1.language, Item2.language);
 end;
 
 constructor TLocalization.Create;
 var
+  Item : TLocal;
   List : TStringArray;
   f : string;
 begin
   inherited;
-
   List := GetFileList(SharePath + LangDirectory, '*.lng');
-  for f in List do self.Add(ExtractOnlyName(f));
 
-  CustomSort(Comparison);
+  for f in List do
+    begin
+      Item := TLocal.Create;
+      Item.filename := f;
+
+      IniFile := TIniFile.Create(f);
+      Item.language := IniFile.ReadString('Details','Language','--');
+      Item.id := IniFile.ReadString('Details','LangID','--');
+      IniFile.Free;
+
+      Add(Item);
+    end;
+
+  Sort(Comparison);
 end;
 
-function TLocalization.Native(index: integer): string;
+function TLocalization.GetFileName(id: string): string;
+var
+  Item : TLocal;
 begin
-  Result := NativeLanguage(self[index]);
+  Result := '';
+  for Item in Self do
+    if Item.id = id then Result := Item.filename;
+end;
+
+destructor TLocalization.Destroy;
+var i : integer;
+begin
+  for i:=0 to Count-1 do Items[i].Free;
+  inherited Destroy;
 end;
 
 initialization
