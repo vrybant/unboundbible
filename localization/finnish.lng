@@ -12,6 +12,11 @@
 *                                                                          *
 ****************************************************************************
 
+[Details]
+
+Language = Suomi
+LangID = fi
+
 [Localization]
 
 Abbreviation = Lyhenne

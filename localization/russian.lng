@@ -12,6 +12,11 @@
 *                                                                          *
 ****************************************************************************
 
+[Details]
+
+Language = Русский
+LangID = ru
+
 [Localization]
 
 Abbreviation = Короткая ссылка
@@ -111,7 +116,7 @@ You don't have any commentary modules. = У вас не установлено �
 For more information, choose Menu > Help, then click «Module Downloads». = Для дополнительной информации выберите в меню «Справка» > «Скачать модуль».
 For more information, choose Menu &gt; Help, then click «Unbound Bible Help». = Для дополнительной информации выберите в строке меню «Справка» &gt; «Справка Unbound Bible».
 
-// macOS
+[macOS]
 
 About Unbound Bible = О Unbound Bible
 Align Left = Влево
@@ -169,5 +174,3 @@ Update to the stable version. = Обновите программу до ста�
 verses was found = найдено стихов
 You search for % produced no results. = По запросу % ничего не найдено.
 Your changes will be lost if you don't save them. = Ваши изменения будут потеряны, если вы не сохраните их.
-
-LanguageID = ru

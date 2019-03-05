@@ -12,6 +12,11 @@
 *                                                                          *
 ****************************************************************************
 
+[Details]
+
+Language = Español
+LangID = es
+
 [Localization]
 
 Abbreviation = Abreviatura

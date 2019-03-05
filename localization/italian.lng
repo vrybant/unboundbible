@@ -12,6 +12,11 @@
 *                                                                          *
 ****************************************************************************
 
+[Details]
+
+Language = Italiano
+LangID = it
+
 [Localization]
 
 Abbreviation = Abbreviazione
