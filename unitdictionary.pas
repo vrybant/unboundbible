@@ -3,7 +3,7 @@ unit UnitDictionary;
 interface
 
 uses
-  Classes, Fgl, SysUtils, StrUtils, UnitModule, UnitType, UnitLib;
+  Classes, Fgl, SysUtils, StrUtils, UnitModule, UnitType;
 
 type
   TDictionary = class(TModule)
@@ -27,6 +27,8 @@ var
   Dictionaries : TDictionaries;
 
 implementation
+
+uses UnitLang, UnitLib;
 
 //========================================================================================
 //                                     TDictionary
@@ -66,7 +68,7 @@ var
   s1 : string = '';
   s2 : string = '';
 begin
-  if Orthodox(GetDefaultLanguage) then
+  if Orthodox(GetLanguageID) then
     begin
       if Orthodox(Item1.language) then s1 := ' ';
       if Orthodox(Item2.language) then s2 := ' ';

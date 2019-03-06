@@ -69,7 +69,7 @@ procedure OpenFolder(path: string);
 
 // language functions
 
-function GetDefaultLanguage: string;
+function GetLanguageID: string;
 function IsRightToLeft(language: string): boolean;
 function Orthodox(language: string): boolean;
 
@@ -447,9 +447,9 @@ end;
 
 // language functions
 
-function GetDefaultLanguage: string;
+function GetLanguageID: string;
 begin
-  LazGetShortLanguageID(Result); // if unknown language ?
+  LazGetShortLanguageID(Result{%H-});
 end;
 
 function IsRightToLeft(language: string): boolean;

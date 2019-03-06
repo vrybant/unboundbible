@@ -22,10 +22,11 @@ type
 
 var
   Localization : TLocalization;
-  LocalLang : string;
+  InterfaceLang : string;
 
 function T(const id : string): string;
 procedure TranslateAll;
+function GetDefaultLanguage: string;
 
 implementation
 
@@ -39,28 +40,6 @@ var
 function T(const id : string): string;
 begin
   Result := IniFile.ReadString('Localization',id,id);
-end;
-
-procedure TranslateAll;
-var
-  f : string;
-begin
-  f := Localization.GetFileName(LocalLang);
-  if f = '' then Exit;
-  IniFile := TIniFile.Create(f);
-
-  MainForm      .Translate;
-  SearchForm    .Translate;
-  CompareForm   .Translate;
-  AboutBox      .Translate;
-  CopyForm      .Translate;
-  TranslateForm .Translate;
-  CommentaryForm.Translate;
-  DownloadForm  .Translate;
-
-  Translate_Tools;
-
-  IniFile.Free;
 end;
 
 //-------------------------------------------------------------------------------------------------
@@ -102,8 +81,7 @@ var
   Item : TLocal;
 begin
   Result := '';
-  for Item in Self do
-    if Item.id = id then Result := Item.filename;
+  for Item in Self do if Item.id = id then Result := Item.filename;
 end;
 
 destructor TLocalization.Destroy;
@@ -111,6 +89,41 @@ var i : integer;
 begin
   for i:=0 to Count-1 do Items[i].Free;
   inherited Destroy;
+end;
+
+//-------------------------------------------------------------------------------------------------
+
+procedure TranslateAll;
+var
+  f : string;
+begin
+  f := Localization.GetFileName(InterfaceLang);
+  if f = '' then Exit;
+  IniFile := TIniFile.Create(f);
+
+  MainForm      .Translate;
+  SearchForm    .Translate;
+  CompareForm   .Translate;
+  AboutBox      .Translate;
+  CopyForm      .Translate;
+  TranslateForm .Translate;
+  CommentaryForm.Translate;
+  DownloadForm  .Translate;
+
+  Translate_Tools;
+
+  IniFile.Free;
+end;
+
+function GetDefaultLanguage: string;
+var
+  Item : TLocal;
+  id : string;
+begin
+  Result := 'en';
+  id := GetLanguageID;
+  for Item in Localization do
+    if Item.id = id then Result := Item.id;
 end;
 
 initialization

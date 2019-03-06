@@ -29,6 +29,8 @@ var
 
 implementation
 
+uses UnitLang;
+
 //========================================================================================
 //                                     TCommentary
 //========================================================================================
@@ -121,7 +123,7 @@ var
   s1 : string = '';
   s2 : string = '';
 begin
-  if Orthodox(GetDefaultLanguage) then
+  if Orthodox(GetLanguageID) then
     begin
       if Orthodox(Item1.language) then s1 := ' ';
       if Orthodox(Item2.language) then s2 := ' ';

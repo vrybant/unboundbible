@@ -918,7 +918,7 @@ procedure TMainForm.OnLangClick(Sender: TObject);
 var
   i: integer;
 begin
-  LocalLang := (Sender as TMenuItem).Hint;
+  InterfaceLang := (Sender as TMenuItem).Hint;
 
   for i := 0 to miLocalization.Count - 1 do
     miLocalization.Items[i].Checked := False;
@@ -938,7 +938,7 @@ begin
 
     MenuItem.Caption := Local.language;
     MenuItem.Hint := Local.id;
-    MenuItem.Checked := Local.id = LocalLang;
+    MenuItem.Checked := Local.id = InterfaceLang;
     MenuItem.OnClick := OnLangClick;
 
     miLocalization.Add(MenuItem);
@@ -1112,14 +1112,14 @@ end;
 
 procedure TMainForm.miHomeClick(Sender: TObject);
 begin
-  if (LocalLang = 'russian') or (LocalLang = 'ukrainian')
+  if (InterfaceLang = 'ru') or (InterfaceLang = 'uk')
     then OpenURL('http://vladimirrybant.org/ru')
     else OpenURL('http://vladimirrybant.org');
 end;
 
 procedure TMainForm.miDownloadClick(Sender: TObject);
 begin
-  if (LocalLang = 'russian') or (LocalLang = 'ukrainian')
+  if (InterfaceLang = 'ru') or (InterfaceLang = 'uk')
     then OpenURL('http://vladimirrybant.org/goto/ubdownloadru.php')
     else OpenURL('http://vladimirrybant.org/goto/ubdownload.php');
 end;
@@ -1324,7 +1324,7 @@ begin
   IniFile.WriteString('Application', 'FontName', DefaultFont.Name);
   IniFile.WriteInteger('Application', 'FontSize', DefaultFont.Size);
   IniFile.WriteInteger('Application', 'Splitter', PanelLeft.Width);
-  IniFile.WriteString('Application', 'Interface', LocalLang);
+  IniFile.WriteString('Application', 'Interface', InterfaceLang);
   IniFile.WriteBool('Application', 'ShortLink', ShortLink);
   IniFile.WriteBool('Application', 'FBPage', FBPageVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
@@ -1347,8 +1347,8 @@ end;
 function GetDefaultBible: string;
 begin
   Result := 'kjv.unbound';
-  if GetDefaultLanguage = 'ru' then Result := 'rstw.unbound';
-  if GetDefaultLanguage = 'uk' then Result := 'ubio.unbound';
+  if GetLanguageID = 'ru' then Result := 'rstw.unbound';
+  if GetLanguageID = 'uk' then Result := 'ubio.unbound';
 end;
 
 procedure TMainForm.ReadIniFile;
@@ -1369,7 +1369,7 @@ begin
   DefaultFont.Name := IniFile.ReadString('Application', 'FontName', DefaultFont.Name);
   DefaultFont.Size := IniFile.ReadInteger('Application', 'FontSize', DefaultFont.Size);
   PanelLeft.Width := IniFile.ReadInteger('Application', 'Splitter', 270);
-  LocalLang := IniFile.ReadString('Application', 'Interface', GetDefaultLanguage);
+  InterfaceLang := IniFile.ReadString('Application', 'Interface', GetDefaultLanguage);
   ShortLink := IniFile.ReadBool('Application', 'ShortLink', True);
   FBPageVisited := IniFile.ReadBool('Application', 'FBPage', False);
   Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
