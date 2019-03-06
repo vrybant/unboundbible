@@ -71,7 +71,7 @@ procedure OpenFolder(path: string);
 
 function GetLanguageID: string;
 function IsRightToLeft(language: string): boolean;
-function Orthodox(language: string): boolean;
+function Cyrillic(language: string): boolean;
 
 // system's functions
 
@@ -460,7 +460,7 @@ begin
       Prefix('fa',language) then Result := true;
 end;
 
-function Orthodox(language: string): boolean;
+function Cyrillic(language: string): boolean;
 begin
    Result := false;
    if Prefix('ru',language) or

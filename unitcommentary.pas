@@ -123,10 +123,10 @@ var
   s1 : string = '';
   s2 : string = '';
 begin
-  if Orthodox(GetLanguageID) then
+  if Cyrillic(GetLanguageID) then
     begin
-      if Orthodox(Item1.language) then s1 := ' ';
-      if Orthodox(Item2.language) then s2 := ' ';
+      if Cyrillic(Item1.language) then s1 := ' ';
+      if Cyrillic(Item2.language) then s2 := ' ';
     end;
 
   Result := CompareText(s1 + Item1.Name, s2 + Item2.Name);

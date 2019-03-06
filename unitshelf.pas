@@ -162,7 +162,7 @@ var
 begin
   Result := 100;
   if number <= 0 then Exit;
-  l := Orthodox(language);
+  l := Cyrillic(language);
 
   for i:=1 to Length(sortArrayEN) do
     if (not l and (number = sortArrayEN[i])) or
