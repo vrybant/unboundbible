@@ -113,6 +113,7 @@ Version = Version
 Whole Words = Whole Words
 
 You don't have any commentary modules. = You don't have any commentary modules.
+You search for % produced no results. = You search for % produced no results. 
 For more information, choose Menu > Help, then click «Module Downloads». = For more information, choose Menu > Help, then click «Module Downloads».
 For more information, choose Menu > Help, then click «Unbound Bible Help». = For more information, choose Menu &gt; Help, then click «Unbound Bible Help».
 
@@ -172,7 +173,4 @@ The document % could not be opened. = The document % could not be opened.
 Update = Update
 Update to the stable version. = Update to the stable version.
 verses was found = verses was found 
-You search for % produced no results. = You search for % produced no results. 
 Your changes will be lost if you don't save them. = Your changes will be lost if you don't save them. 
-
-LanguageID = en

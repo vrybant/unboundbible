@@ -113,6 +113,7 @@ Version = Версiя
 Whole Words = Слова цілком
 
 You don't have any commentary modules. = У вас не встановлено жодного модуля коментарів. 
+You search for % produced no results. = За запитом % нічого не знайдено.
 For more information, choose Menu > Help, then click «Module Downloads». = Для додаткової інформації виберіть у меню «Довідка» > «Завантажити модуль».
 For more information, choose Menu &gt; Help, then click «Unbound Bible Help». = Для додаткової інформації виберіть у рядку меню «Довідка» &gt; «Довiдка Unbound Bible».
 
@@ -172,7 +173,4 @@ The document % could not be opened. = Неможливо відкрити док
 Update = Оновити
 Update to the stable version. = Обновіть програму до стабільної версії.
 verses was found = знайдено віршів
-You search for % produced no results. = За запитом % нічого не знайдено.
 Your changes will be lost if you don't save them. = Ваші зміни будуть втрачені, якщо ви не збережете їх.
-
-LanguageID = uk
