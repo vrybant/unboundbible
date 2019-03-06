@@ -24,21 +24,6 @@ var
   Localization : TLocalization;
   LocalLang : string;
 
-var
-  ms_Commentary,
-  ms_Confirm,
-  ms_Strong,
-  ms_File,
-  ms_Footnote,
-  ms_Found,
-  ms_Language,
-  ms_Message,
-  ms_MoreInfo,
-  ms_NoModules,
-  ms_NoResults,
-  ms_Overwrite,
-  ms_Save : string;
-
 function T(const id : string): string;
 procedure TranslateAll;
 
@@ -46,7 +31,7 @@ implementation
 
 uses
   FormMain, FormAbout, FormSearch, FormCompare, UnitShelf, FormCopy, FormTranslate,
-  FormCommentary, FormDownload, UnitLib;
+  FormCommentary, FormDownload, UnitTool, UnitLib;
 
 var
   IniFile : TIniFile;
@@ -56,31 +41,13 @@ begin
   Result := IniFile.ReadString('Localization',id,id);
 end;
 
-procedure TranslateConstants;
-begin
-  ms_Commentary := T('Commentaries');
-  ms_Confirm := T('Confirmation');
-  ms_Strong := T('Strong''s Dictionary');
-  ms_File := T('File');
-  ms_Footnote := T('Footnote');
-  ms_Found := T('verses found');
-  ms_Language := T('Language');
-  ms_MoreInfo := T('For more information, choose Menu > Help, then click «Module downloads».');
-  ms_NoModules := T('You don''t have any commentary modules.');
-  ms_NoResults := T('You search for % produced no results.');
-  ms_Overwrite := T('OK to overwrite %s?');
-  ms_Save := T('Save changes?');
-  ms_Message := T('This search returned too many results.') + ' ' +
-                T('Please narrow your search.');
-end;
-
 procedure TranslateAll;
 var
-  filename : string;
+  f : string;
 begin
-  filename := Localization.GetFileName(LocalLang);
-  if filename = '' then Exit;
-  IniFile := TIniFile.Create(filename);
+  f := Localization.GetFileName(LocalLang);
+  if f = '' then Exit;
+  IniFile := TIniFile.Create(f);
 
   MainForm      .Translate;
   SearchForm    .Translate;
@@ -91,7 +58,7 @@ begin
   CommentaryForm.Translate;
   DownloadForm  .Translate;
 
-  TranslateConstants;
+  Translate_Tools;
 
   IniFile.Free;
 end;

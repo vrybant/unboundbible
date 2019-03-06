@@ -4,6 +4,8 @@ interface
 
 uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitType;
 
+procedure Translate_Tools;
+
 function Load_Chapter: string;
 function Search_Text(st: string; var count: integer): string;
 function Load_Compare: string;
@@ -18,6 +20,17 @@ function Show_Message(s: string): string;
 implementation
 
 uses UnitLang, UnitModule, UnitShelf, UnitDictionary, UnitCommentary, FormSearch, UnitParse, UnitLib;
+
+var ms_File, ms_Language, ms_MoreInfo, ms_NoModules, ms_NoResults : string;
+
+procedure Translate_Tools;
+begin
+  ms_File := T('File');
+  ms_Language := T('Language');
+  ms_MoreInfo := T('For more information, choose Menu > Help, then click «Module downloads».');
+  ms_NoModules := T('You don''t have any commentary modules.');
+  ms_NoResults := T('You search for % produced no results.');
+end;
 
 function Load_Chapter: string;
 var

@@ -201,6 +201,8 @@ type
     procedure RadioButtonClick(Sender: TObject);
     procedure ToolButtonFBClick(Sender: TObject);
   private
+    ms_Commentary, ms_Confirm, ms_Strong : string;
+    ms_Footnote, ms_Found, ms_Message, ms_Overwrite, ms_Save : string;
     NoteFileName: string;
     RecentList: TStringList;
     ShortLink: boolean;
@@ -247,13 +249,13 @@ uses
   UnitShelf, FormCopy, FormTranslate, FormCommentary, FormDownload, UnitLib;
 
 const
-  apBible      = 0; // active page
-  apSearch     = 1;
-  apCompare    = 2;
-  apNotes      = 3;
+  apBible   = 0; // active page
+  apSearch  = 1;
+  apCompare = 2;
+  apNotes   = 3;
 
 const
-  sUntitled = 'Untitled';
+  Untitled = 'Untitled';
   RecentMax = 10;
 
 {$R *.lfm}
@@ -269,7 +271,7 @@ begin
   RecentList := TStringList.Create;
   SaveDialog.InitialDir := DocumentsPath;
 
-  NoteFileName := sUntitled;
+  NoteFileName := Untitled;
 
   ReadIniFile;
   ComboBoxInit;
@@ -294,7 +296,7 @@ begin
     ActionCopyAs .Enabled := False; // ??
   end;
 
-  NoteFileName := sUntitled;
+  NoteFileName := Untitled;
   MemoNotes.Lines.Clear;
   MemoNotes.Font.Size := DefaultFont.Size;
   ToolButtonFB.Visible := not FBPageVisited;
@@ -441,6 +443,16 @@ begin
   ToolButtonCenter.Hint := T('Center');
   ToolButtonRight.Hint := T('Align Right');
   ToolButtonBullets.Hint := T('Bullets');
+
+  ms_Commentary := T('Commentaries');
+  ms_Confirm := T('Confirmation');
+  ms_Strong := T('Strong''s Dictionary');
+  ms_Footnote := T('Footnote');
+  ms_Found := T('verses found');
+  ms_Overwrite := T('OK to overwrite %s?');
+  ms_Save := T('Save changes?');
+  ms_Message := T('This search returned too many results.') + ' ' +
+                T('Please narrow your search.');
 end;
 
 //-------------------------------------------------------------------------------------------------
@@ -638,7 +650,7 @@ procedure TMainForm.CmdFileNew(Sender: TObject);
 begin
   SelectPage(apNotes);
   if not CheckFileSave then Exit;
-  NoteFileName := sUntitled;
+  NoteFileName := Untitled;
   MemoNotes.Lines.Clear;
   MemoNotes.Modified := False;
   UpdateCaption(NoteFileName);
@@ -658,7 +670,7 @@ procedure TMainForm.CmdFileSave(Sender: TObject);
 begin
   SelectPage(apNotes);
   if not MemoNotes.Modified then Exit;
-  if NoteFileName = sUntitled then
+  if NoteFileName = Untitled then
     CmdFileSaveAs(Sender)
   else
   begin
@@ -671,8 +683,8 @@ procedure TMainForm.CmdFileSaveAs(Sender: TObject);
 begin
   SelectPage(apNotes);
 
-  if NoteFileName = sUntitled then SaveDialog.InitialDir := DocumentsPath
-                              else SaveDialog.InitialDir := ExtractFilePath(NoteFileName);
+  if NoteFileName = Untitled then SaveDialog.InitialDir := DocumentsPath
+                             else SaveDialog.InitialDir := ExtractFilePath(NoteFileName);
 
   if SaveDialog.Execute then
   begin
