@@ -94,12 +94,8 @@ end;
 //-------------------------------------------------------------------------------------------------
 
 procedure TranslateAll;
-var
-  f : string;
 begin
-  f := Localization.GetFileName(InterfaceLang);
-  if f = '' then Exit;
-  IniFile := TIniFile.Create(f);
+  IniFile := TIniFile.Create(Localization.GetFileName(InterfaceLang));
 
   MainForm      .Translate;
   SearchForm    .Translate;
