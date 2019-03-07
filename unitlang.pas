@@ -37,6 +37,18 @@ uses
 var
   IniFile : TIniFile;
 
+function GetDefaultLanguage: string;
+var
+  List : TStringArray;
+  f : string;
+begin
+  Result := 'en';
+  List := GetFileList(SharePath + LangDirectory, '*.lng');
+
+  for f in List do
+    if ExtractOnlyName(f) = GetLanguageID then Result := GetLanguageID;
+end;
+
 function T(const id : string): string;
 begin
   Result := IniFile.ReadString('Localization',id,id);
@@ -60,6 +72,7 @@ begin
   inherited;
   List := GetFileList(SharePath + LangDirectory, '*.lng');
 
+  output(SharePath);
   for f in List do
     begin
       Item := TLocal.Create;
@@ -94,8 +107,11 @@ end;
 //-------------------------------------------------------------------------------------------------
 
 procedure TranslateAll;
+var
+  filename : string;
 begin
-  IniFile := TIniFile.Create(Localization.GetFileName(InterfaceLang));
+  filename := SharePath + Slash + LangDirectory + Slash + InterfaceLang + '.lng';
+  IniFile := TIniFile.Create(filename);
 
   MainForm      .Translate;
   SearchForm    .Translate;
@@ -109,17 +125,6 @@ begin
   Translate_Tools;
 
   IniFile.Free;
-end;
-
-function GetDefaultLanguage: string;
-var
-  Item : TLocal;
-  id : string;
-begin
-  Result := 'en';
-  id := GetLanguageID;
-  for Item in Localization do
-    if Item.id = id then Result := Item.id;
 end;
 
 initialization
