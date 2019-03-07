@@ -28,7 +28,7 @@ var
 
 implementation
 
-uses UnitLang, UnitLib;
+uses UnitLib;
 
 //========================================================================================
 //                                     TDictionary

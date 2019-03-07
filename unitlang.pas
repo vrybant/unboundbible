@@ -7,14 +7,11 @@ uses
 
 type
   TLocal = class
-    filename : string;
     language : string;
     id : string;
   end;
 
   TLocalization = class(TFPGList<TLocal>)
-  private
-    function GetFileName(id: string): string;
   public
     constructor Create;
     destructor Destroy; override;
@@ -76,25 +73,14 @@ begin
   for f in List do
     begin
       Item := TLocal.Create;
-      Item.filename := f;
-
       IniFile := TIniFile.Create(f);
       Item.language := IniFile.ReadString('Details','Language','--');
       Item.id := IniFile.ReadString('Details','LangID','--');
       IniFile.Free;
-
       Add(Item);
     end;
 
   Sort(Comparison);
-end;
-
-function TLocalization.GetFileName(id: string): string;
-var
-  Item : TLocal;
-begin
-  Result := '';
-  for Item in Self do if Item.id = id then Result := Item.filename;
 end;
 
 destructor TLocalization.Destroy;
