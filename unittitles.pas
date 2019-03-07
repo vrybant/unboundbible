@@ -41,8 +41,8 @@ var
 begin
   inherited Create;
 
-  FileName := GetFileName(language);
-  FilePath := SharePath + TitleDirectory + Slash + FileName + '.sqlite';
+  FileName := GetFileName(language) + '.sqlite';
+  FilePath := SharePath + TitleDirectory + Slash + FileName;
 
   {$ifdef zeos}
     Connection := TZConnection.Create(nil);
@@ -75,19 +75,19 @@ end;
 function TTitles.GetFileName(language: string): string;
 var
   List : TStringArray;
-  Path, FileName : string;
+  path, name : string;
   f : string;
 begin
-  Result := 'english';
+  Result := 'en';
   language := LowerCase(language);
 
-  Path := SharePath + TitleDirectory;
-  List := GetFileList(Path, '*.sqlite');
+  path := SharePath + TitleDirectory;
+  List := GetFileList(path, '*.sqlite');
 
   for f in List do
     begin
-      FileName := ExtractOnlyName(f);
-      if Prefix(language, FileName) then Result := FileName;
+      name := ExtractOnlyName(f);
+      if language = name then Result := name;
     end;
 end;
 
