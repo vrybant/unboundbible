@@ -297,7 +297,7 @@ end;
 
 function Show_Message(s: string): string;
 begin
-  Result := rtf_open + '\cf1  ' + s + '\par ' + rtf_close;
+  Result := rtf_open + '\par\cf1\i  ' + s + '\par ' + rtf_close;
 end;
 
 end.

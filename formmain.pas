@@ -183,6 +183,7 @@ type
     procedure ComboBoxChange(Sender: TObject);
     procedure ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
     procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -333,6 +334,11 @@ end;
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
   if ChapterBox.Items.Count = 0 then GoToVerse(ActiveVerse,(ActiveVerse.number > 1)); // first time
+end;
+
+procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  {$ifdef linux} MemoSearch.Clear; {$endif}
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1227,13 +1233,16 @@ begin
 end;
 
 procedure TMainForm.SearchText(s: string);
-var count : integer = 0;
-{$ifdef linux} const max = 200; {$endif}
+var
+  richtext : string;
+  count : integer = 0;
+{$ifdef linux} const max = 500; {$endif}
 begin
   if Shelf.Count = 0 then Exit;
-  {$ifdef linux} if count > max then Show_Message('\i\par  ' + ms_Message); {$endif}
   Cursor := crHourGlass;
-  MemoSearch.LoadRichText(Search_Text(s, count));
+  richtext := Search_Text(s, count);
+  {$ifdef linux} if count > max then richtext := Show_Message(ms_Message); {$endif}
+  MemoSearch.LoadRichText(richtext);
   Cursor := crArrow;
   SelectPage(apSearch);
   UpdateStatus(ToStr(count) + ' ' + ms_found,'');
