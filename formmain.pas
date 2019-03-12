@@ -626,7 +626,10 @@ end;
 
 procedure TMainForm.CmdCopyVerses(Sender: TObject);
 begin
+  // saving selection because of strange bug in the gtk2's richmemo
+  {$ifdef linux} MemoBible.SaveSelection; {$endif}
   VersesToClipboard;
+  {$ifdef linux} MemoBible.RestoreSelection; {$endif}
 end;
 
 procedure TMainForm.CmdSearch(Sender: TObject);
@@ -1279,31 +1282,18 @@ begin
 end;
 {$endif}
 
-{$ifdef unix}
+{$ifdef linux}
 procedure TMainForm.VersesToClipboard;
 var
   MemoPreview : TUnboundMemo;
 begin
   MemoPreview := TUnboundMemo.Create(self);
-
-  with MemoPreview do
-    begin
-      Parent := MainForm;
-      Left   := 0;
-      Top    := 0;
-      Height := 100;
-      Width  := 100;
-    end;
-
-  {$ifdef linux} MemoBible.SaveSelection; {$endif}
-  // saving selection because of strange bug in the gtk2's richmemo
-
+  MemoPreview.Parent := MainForm;
   MemoPreview.LoadRichText(Load_Verses());
   MemoPreview.SelectAll;
   MemoPreview.CopyToClipboard;
-
-  {$ifdef linux} MemoBible.RestoreSelection; {$endif}
-  MemoPreview.Free;
+  MemoPreview.Visible := false;
+  MemoPreview.FreeOnRelease;
 end;
 {$endif}
 

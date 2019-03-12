@@ -114,7 +114,7 @@
         <ComponentName Value="CopyForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UnitCopy"/>
+        <UnitName Value="FormCopy"/>
       </Unit9>
       <Unit10>
         <Filename Value="formtranslate.pas"/>
