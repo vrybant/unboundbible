@@ -1,13 +1,14 @@
 object MainForm: TMainForm
-  Left = 463
+  Left = 399
   Height = 384
-  Top = 360
+  Top = 330
   Width = 795
   Caption = 'Unbound Bible'
   ClientHeight = 364
   ClientWidth = 795
   Menu = MainMenu
   OnActivate = FormActivate
+  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -311,8 +312,8 @@ object MainForm: TMainForm
     end
     object TabSheetSearch: TTabSheet
       Caption = 'Search'
-      ClientHeight = 279
-      ClientWidth = 587
+      ClientHeight = 268
+      ClientWidth = 589
       ImageIndex = 1
       object MemoSearch: TUnboundMemo
         Cursor = crArrow
@@ -335,8 +336,8 @@ object MainForm: TMainForm
     end
     object TabSheetCompare: TTabSheet
       Caption = 'Compare'
-      ClientHeight = 279
-      ClientWidth = 587
+      ClientHeight = 268
+      ClientWidth = 589
       Font.Color = clWindowText
       Font.Height = -12
       ImageIndex = 3
@@ -362,8 +363,8 @@ object MainForm: TMainForm
     end
     object TabSheetNotes: TTabSheet
       Caption = 'Notes'
-      ClientHeight = 279
-      ClientWidth = 587
+      ClientHeight = 268
+      ClientWidth = 589
       ImageIndex = 2
       object MemoNotes: TUnboundMemo
         Cursor = crArrow

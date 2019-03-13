@@ -338,7 +338,12 @@ end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  {$ifdef linux} MemoSearch.Clear; {$endif}
+  {$ifdef linux}
+    MemoBible  .Clear;
+    MemoSearch .Clear;
+    MemoCompare.Clear;
+    MemoNotes  .Clear;
+  {$endif}
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
