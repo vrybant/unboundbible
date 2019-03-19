@@ -14,7 +14,8 @@ lib/*
 *.lintian
 backup/*
 titles/text/*
-components/zeosdbo/*
+components/zeosdbo/packages/lazarus/lib/*
+components/zeosdbo/examples/*
 components/richmemo/lib/*
 components/unboundmemo/lib/*
 components/unboundmemo/backup/*
