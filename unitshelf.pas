@@ -283,7 +283,7 @@ begin
       SetLength(Result, Query.RecordCount);
       Query.First;
 
-      for i:=0 to Query.RecordCount-1 do
+      for i:=Low(Result) to High(Result) do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
           Result[i] := Prepare(line, format, false);
@@ -316,7 +316,7 @@ begin
       SetLength(Result, Query.RecordCount);
       Query.First;
 
-      for i:=0 to Query.RecordCount-1 do
+      for i:=Low(Result) to High(Result) do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
           if preparation then Result[i] := Prepare(line, format) else Result[i] := line;
@@ -377,7 +377,7 @@ begin
       SetLength(Contents,Query.RecordCount);
       Query.First;
 
-      for i:=0 to Query.RecordCount-1 do
+      for i:=Low(Result) to High(Result) do
         begin
           Contents[i].verse := noneVerse;
           try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
@@ -412,7 +412,7 @@ begin
       SetLength(Result,Query.RecordCount);
       Query.First;
 
-      for i:=0 to Query.RecordCount-1 do
+      for i:=Low(Result) to High(Result) do
         begin
           Result[i].verse := noneVerse;
           try Result[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
