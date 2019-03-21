@@ -5,7 +5,7 @@ interface
 uses
   {$ifdef windows} Windows, RichEdit, Printers, OSPrinters, {$endif}
   {$ifdef linux} Gtk2, Glib2, Gdk2, {$endif}
-  Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo, LazUTF8;
+   LCLVersion, Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo, LazUTF8;
 
 type
 
@@ -72,7 +72,11 @@ begin
   Result := '';
   p := PChar(s);
   repeat
-    unicode := UTF8CodepointToUnicode(p,CharLen);
+    {$if lcl_major >= 2}
+      unicode := UTF8CodepointToUnicode(p,CharLen);
+    {$else}
+      unicode := UTF8CharacterToUnicode(p,CharLen);
+    {$endif}
     if unicode = 0 then Continue;
     if unicode < $80 then Result := Result + char(unicode)
                      else Result := Result + '\u' + ToStr(unicode) + endchar;
