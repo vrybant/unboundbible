@@ -377,7 +377,7 @@ begin
       SetLength(Contents,Query.RecordCount);
       Query.First;
 
-      for i:=Low(Result) to High(Result) do
+      for i:=Low(Contents) to High(Contents) do
         begin
           Contents[i].verse := noneVerse;
           try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
