@@ -24,7 +24,7 @@ type
   { TCocoaWSCustomRichMemo }
 
   TCocoaWSCustomRichMemo = class(TWSCustomRichMemo)
-  public
+  published
     class function CreateHandle(const AWinControl: TWinControl; const AParams: TCreateParams): TLCLIntfHandle; override;
 
     class function GetTextAttributes(const AWinControl: TWinControl; TextStart: Integer;
@@ -52,6 +52,7 @@ type
     class procedure InDelText(const AWinControl: TWinControl;
       const TextUTF8: String; DstStart, DstLen: Integer); override;
     class function LoadRichText(const AWinControl: TWinControl; Source: TStream): Boolean; override;
+    class function SaveRichText(const AWinControl: TWinControl; Dest: TStream): Boolean; override;
   end;
 
 implementation
@@ -597,6 +598,44 @@ begin
     txt.replaceCharactersInRange_withRTF(rng, data);
     data.release;
   end;
+  Result:=true;
+end;
+
+class function TCocoaWSCustomRichMemo.SaveRichText(
+  const AWinControl: TWinControl; Dest: TStream): Boolean;
+var
+  rng : NSRange;
+  txt : TCocoaTextView;
+  rtf : NSData;
+  sz  : NSUInteger;
+  dt  : PByteArray;
+  i   : NSUInteger;
+  chsz : Integer; // chunk size
+begin
+  //todo: avoid copying data.
+  Result:=false;
+  if not Assigned(Dest) or not Assigned(AWinControl) or (AWinControl.Handle=0) then Exit;
+
+  txt:=MemoTextView(AWinControl);
+
+  rng.length:=txt.textStorage.string_.length;
+  rng.location:=0;
+  rtf:=txt.RTFFromRange(rng);
+  sz :=rtf.length;
+  if (sz>0) then begin
+    dt:=PByteArray(rtf.bytes);
+    i:=0;
+    // have to do all of that, because Stream.Write(,  Int32);
+    // while size can be > 2Gb
+    while sz>0 do begin
+      if sz>MaxInt then chsz:=MaxInt
+      else chsz := sz;
+      Dest.Write(dt[i], chsz);
+      dec(sz, chsz);
+      inc(i, chsz);
+    end;
+  end;
+
   Result:=true;
 end;
 
