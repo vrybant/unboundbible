@@ -351,7 +351,8 @@ begin
   case Msg of
     WM_PAINT : begin
       //todo: LCL WM_PAINT handling prevents richedit from drawing correctly
-      Result := CallDefaultWindowProc(Window, Msg, WParam, LParam);
+      Result := CallDefaultWindowProc(Window, Msg, WParam, LParam)
+      //Result := WindowProc(Window, Msg, WParam, LParam)
 
       WindowInfo := GetWin32WindowInfo(Window);
       if WindowInfo^.WinControl is TCustomRichMemo then
@@ -675,7 +676,7 @@ begin
   RichEditManager.GetScroll(AWinControl.Handle, pt);
   eventmask := RichEditManager.SetEventMask(AWinControl.Handle, 0);
 
-  // LockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle);
+//LockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle);
 
   RichEditManager.GetSelRange(AWinControl.Handle, Orig);
 
@@ -684,7 +685,7 @@ begin
 
   RichEditManager.SetSelRange(AWinControl.Handle, Orig);
   RichEditManager.SetScroll(AWinControl.Handle, pt);
-  // UnlockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle, false);
+//UnlockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle, false);
 
   RichEditManager.SetEventMask(AWinControl.Handle,eventmask);
 end;
