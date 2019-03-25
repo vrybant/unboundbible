@@ -351,7 +351,7 @@ begin
   case Msg of
     WM_PAINT : begin
       //todo: LCL WM_PAINT handling prevents richedit from drawing correctly
-      Result := CallDefaultWindowProc(Window, Msg, WParam, LParam)
+      Result := CallDefaultWindowProc(Window, Msg, WParam, LParam);
       //Result := WindowProc(Window, Msg, WParam, LParam)
 
       WindowInfo := GetWin32WindowInfo(Window);
