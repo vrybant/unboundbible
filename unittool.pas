@@ -217,9 +217,9 @@ begin
 
   if Commentaries.Count = 0 then
     begin
-      Result += '\fs22 ';
-      Result += '\par  ' + ms_NoModules;
-      Result += '\par  ' + ms_MoreInfo;
+      {$ifdef windows} Result += '\fs22'; {$endif}
+      Result += '\par\tab ' + ms_NoModules;
+      Result += '\par\par\tab ' + ms_MoreInfo;
     end;
 
   Result += rtf_close;
