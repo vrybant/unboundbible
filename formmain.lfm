@@ -251,9 +251,6 @@ object MainForm: TMainForm
       Font.Color = clWindowText
       Font.Height = -13
       ItemHeight = 17
-      Items.Strings = (
-        'Russian Sinoidal Bible'
-      )
       OnChange = ComboBoxChange
       OnDrawItem = ComboBoxDrawItem
       ParentFont = False
