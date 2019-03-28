@@ -275,7 +275,7 @@ const
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
-  Version := IniFile.ReadString('Application', 'Version', '***');
+  Version := IniFile.ReadString('Application', 'Version', '');
   ApplicationUpdate := ApplicationVersion <> Version;
   DefaultFont.Name := IniFile.ReadString('Application', 'FontName', DefaultFontName);
   DefaultFont.Size := IniFile.ReadInteger('Application', 'FontSize', DefaultFontSize);
