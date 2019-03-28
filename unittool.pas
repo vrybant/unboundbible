@@ -2,7 +2,7 @@ unit UnitTool;
 
 interface
 
-uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitType;
+uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitData;
 
 procedure Translate_Tools;
 

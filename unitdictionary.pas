@@ -3,7 +3,7 @@ unit UnitDictionary;
 interface
 
 uses
-  Classes, Fgl, SysUtils, StrUtils, UnitModule, UnitType;
+  Classes, Fgl, SysUtils, StrUtils, UnitModule, UnitData;
 
 type
   TDictionary = class(TModule)

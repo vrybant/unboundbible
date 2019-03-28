@@ -3,7 +3,7 @@ unit UnitSQLiteEx;
 interface
 
 uses
-  Classes, SysUtils, LazUtf8, SQLite3, CTypes, UnitLib, UnitType;
+  Classes, SysUtils, LazUtf8, SQLite3, CTypes, UnitData, UnitLib;
 
 procedure SetSearchOptions(s: string; SearchOptions: TSearchOptions; format: TFileFormat);
 procedure SQLite3CreateFunctions(const Handle: pointer);

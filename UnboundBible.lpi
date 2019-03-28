@@ -124,9 +124,9 @@
         <UnitName Value="FormTranslate"/>
       </Unit10>
       <Unit11>
-        <Filename Value="unittype.pas"/>
+        <Filename Value="unitdata.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitType"/>
+        <UnitName Value="UnitData"/>
       </Unit11>
       <Unit12>
         <Filename Value="unittitles.pas"/>

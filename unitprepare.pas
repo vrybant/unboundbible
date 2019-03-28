@@ -3,7 +3,7 @@ unit UnitPrepare;
 interface
 
 uses
-  Classes, SysUtils, UnitType, UnitLib;
+  Classes, SysUtils, UnitData, UnitLib;
 
 function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
 function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
