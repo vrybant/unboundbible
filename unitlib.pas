@@ -1,15 +1,14 @@
 unit UnitLib;
 
-{$define debugmode}
 {$ifdef unix} {$undef RussianEdition} {$endif}
 
 interface
 
 uses
   {$ifdef windows} Windows, Windirs, {$endif}
-  {$ifdef debugmode and linux} LazLogger, {$endif}
-  SysUtils, StrUtils, Classes, Graphics, Controls, Forms, Dialogs, Buttons,
-  FileUtil, LazUtf8, LCLProc, ExtCtrls, ClipBrd, Process;
+  {$ifdef linux} LazLogger, {$endif}
+  SysUtils, StrUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LazUtf8, LCLProc, ExtCtrls, ClipBrd, Process;
 
 type
   TStringArray  = array of string;
@@ -19,16 +18,6 @@ type
     from : integer;
     till : integer;
   end;
-
-const
-  ApplicationName = 'Unbound Bible';
-  ApplicationVersion = '3.0';
-  BibleDirectory = 'bibles';
-  TitleDirectory = 'titles';
-  LangDirectory = 'localization';
-
-var
-  ApplicationUpdate : boolean = false;
 
 // string's functions
 
@@ -59,15 +48,11 @@ procedure RemoveTags(var s: string);
 // file's functions
 
 function ExtractOnlyName(s: string): string;
-function DataPath: string;
 function SharePath: string;
 function DocumentsPath: string;
-function ConfigFile: string;
+function LocalAppDataPath: string;
 function TempFileName: string;
 function GetFileList(const Path, Mask: string) : TStringArray;
-function GetDatabaseList: TStringArray;
-procedure CreateDataDirectory;
-procedure CopyDefaultsFiles;
 procedure OpenFolder(path: string);
 {$ifdef darwin} procedure PrintFile(FileName : string); {$endif}
 
@@ -79,12 +64,9 @@ function Cyrillic(language: string): boolean;
 
 // system's functions
 
-function WidthInPixels(s: string): integer;
+function WidthInPixels(Font: TFont; s: string): integer;
 procedure Output(s: string); overload;
 procedure Output(n: integer); overload;
-
-var
-  DefaultFont: TFont;
 
 const
   Slash = DirectorySeparator;
@@ -334,11 +316,6 @@ begin
   Result := ExtractFileName(ChangeFileExt(s,''));
 end;
 
-function DataPath: string;
-begin
-  Result := GetUserDir + ApplicationName;
-end;
-
 function SharePath: string;
 begin
   Result := Application.Location;
@@ -353,9 +330,9 @@ begin
   {$ifdef unix} Result := GetUserDir + 'Documents'; {$endif}
 end;
 
-function ConfigFile: string;
+function LocalAppDataPath: string;
 begin
-  Result := GetAppConfigDir(False) + 'config.ini';
+  {$ifdef windows} Result := GetWindowsSpecialDir(CSIDL_LOCAL_APPDATA); {$endif}
 end;
 
 function TempFileName: string; // for printing
@@ -383,43 +360,6 @@ begin
   SysUtils.FindClose(SearchRec);
   Result := ListToArray(List);
   List.Free;
-end;
-
-function GetDatabaseList: TStringArray;
-const
-  ext : array [1..4] of string = ('.unbound','.bbli','.mybible','.SQLite3');
-var
-  List : TStringArray;
-  s, item : string;
-  index : integer = 0;
-begin
-  List := GetFileList(DataPath, '*.*');
-  SetLength(Result, Length(List));
-
-  for item in List do
-    for s in ext do
-      if Suffix(s, item) then
-        begin
-          Result[index] := item;
-          index += 1;
-        end;
-
-  SetLength(Result, index);
-end;
-
-procedure CreateDataDirectory;
-begin
-  if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
-end;
-
-procedure CopyDefaultsFiles;
-var
-  SourcePath : string;
-begin
-  if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
-  SourcePath := SharePath + BibleDirectory;
-  if not ApplicationUpdate and (Length(GetDatabaseList) > 0) then Exit;
-  CopyDirTree(SourcePath, DataPath, [cffOverwriteFile]);
 end;
 
 procedure OpenFolder(path : string);
@@ -484,13 +424,13 @@ end;
 
 // system's functions
 
-function WidthInPixels(s: string): integer;
+function WidthInPixels(Font: TFont; s: string): integer;
 var
   Bitmap: TBitmap;
 begin
   Bitmap := TBitmap.Create;
   try
-    Bitmap.Canvas.Font := DefaultFont;
+    Bitmap.Canvas.Font := Font;
     Result := Bitmap.Canvas.TextWidth(s);
   finally
     Bitmap.Free;
@@ -499,24 +439,14 @@ end;
 
 procedure Output(s: string);
 begin
-  {$ifdef debugmode}
-    {$ifdef windows} OutputDebugString(PChar(s)); {$endif}
-    {$ifdef linux} DebugLn(s); {$endif}
-  {$endif}
+  {$ifdef windows} OutputDebugString(PChar(s)); {$endif}
+  {$ifdef linux} DebugLn(s); {$endif}
 end;
 
 procedure Output(n: integer);
 begin
   Output(ToStr(n));
 end;
-
-initialization
-  DefaultFont := TFont.Create;
-  DefaultFont.Name := {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
-  DefaultFont.Size := 12;
-
-finalization
-  DefaultFont.Free;
 
 end.
 
