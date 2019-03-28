@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Fgl, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
-  UnitLib, UnitModule, UnitTitles, UnitType, UnitPrepare;
+  UnitLib, UnitModule, UnitTitles, UnitData, UnitPrepare;
 
 type
   TBook = class
@@ -641,9 +641,9 @@ begin
 end;
 
 initialization
-  //Shelf := TShelf.Create;
+  Shelf := TShelf.Create;
 
 finalization
-  //Shelf.Free;
+  Shelf.Free;
 
 end.

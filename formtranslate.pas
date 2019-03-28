@@ -22,7 +22,7 @@ var
 
 implementation
 
-uses UnitLang, UnitLib;
+uses UnitLang, UnitData;
 
 {$R *.lfm}
 

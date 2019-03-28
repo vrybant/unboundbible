@@ -2,8 +2,7 @@ unit FormAbout;
 
 interface
 
-uses Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, SysUtils,
-     LCLIntf;
+uses Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, SysUtils, LCLIntf;
 
 type
 
@@ -28,7 +27,7 @@ var
 
 implementation
 
-uses UnitLib, UnitLang;
+uses UnitData, UnitLang;
 
 {$R *.lfm}
 

@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
-  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitType;
+  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitData;
 
 type
 
@@ -207,7 +207,6 @@ type
     DefaultCurrent: string;
     NoteFileName: string;
     RecentList: TStringList;
-    ShortLink: boolean;
     FBPageVisited: boolean;
     {$ifdef linux} IdleMessage : string; {$endif}
     function UnboundMemo: TUnboundMemo;
@@ -226,10 +225,10 @@ type
     procedure OnRecentClick(Sender: TObject);
     procedure OnLangClick(Sender: TObject);
     procedure PerformFileOpen(const FileName: string);
-    procedure ReadIniFile;
+    procedure ReadConfig;
     procedure RebuildRecentList;
     procedure RecentMenuInit;
-    procedure SaveIniFile;
+    procedure SaveConfig;
     procedure SearchText(s: string);
     procedure SelectPage(page: integer);
     procedure UpdateCaption(s: string);
@@ -274,10 +273,7 @@ begin
   RecentList := TStringList.Create;
   SaveDialog.InitialDir := DocumentsPath;
   NoteFileName := Untitled;
-
-  ReadIniFile;
-  CopyDefaultsFiles;
-  Shelf := TShelf.Create;
+  ReadConfig;
 
   if Shelf.Count > 0 then
   begin
@@ -332,9 +328,8 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  SaveIniFile;
+  SaveConfig;
   RecentList.Free;
-  Shelf.Free;
 end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
@@ -373,7 +368,7 @@ begin
   BookBox.Height := PanelLeft.Height - BookBox.Top - BookBox.Left;
   ChapterBox.Height := BookBox.Height;
 
-  ChapterBox.Width := WidthInPixels('150') + 30;
+  ChapterBox.Width := WidthInPixels(DefaultFont,'150') + 30;
   BookBox.Width := PanelLeft.Width - BookBox.Left - BookBox.Left - ChapterBox.Width - Streak;
   ChapterBox.Left := PanelLeft.Width - ChapterBox.Width - Streak;
 end;
@@ -1310,43 +1305,33 @@ end;
 
 //-------------------------------------------------------------------------------------------------
 
-procedure TMainForm.SaveIniFile;
+procedure TMainForm.SaveConfig;
 var
   IniFile: TIniFile;
   i: integer;
 begin
-  if Shelf.Count = 0 then Exit;
-
   IniFile := TIniFile.Create(ConfigFile);
 
   if WindowState = wsNormal then
   begin
-    IniFile.WriteInteger('Application', 'Left',   Left);
-    IniFile.WriteInteger('Application', 'Top',    Top);
-    IniFile.WriteInteger('Application', 'Width',  Width);
-    IniFile.WriteInteger('Application', 'Height', Height);
+    IniFile.WriteInteger('Window', 'Left',   Left);
+    IniFile.WriteInteger('Window', 'Top',    Top);
+    IniFile.WriteInteger('Window', 'Width',  Width);
+    IniFile.WriteInteger('Window', 'Height', Height);
   end;
 
-  if WindowState = wsMaximized then IniFile.WriteString('Application', 'State', 'Maximized')
-                               else IniFile.WriteString('Application', 'State', 'Normal');
+  if WindowState = wsMaximized then IniFile.WriteString('Window', 'State', 'Maximized')
+                               else IniFile.WriteString('Window', 'State', 'Normal');
 
-  IniFile.WriteString('Application', 'Version', ApplicationVersion);
   IniFile.WriteString('Application', 'FileName', Bible.FileName);
-  IniFile.WriteString('Application', 'FontName', DefaultFont.Name);
-  IniFile.WriteInteger('Application', 'FontSize', DefaultFont.Size);
   IniFile.WriteInteger('Application', 'Splitter', PanelLeft.Width);
   IniFile.WriteString('Application', 'Interface', InterfaceLang);
-  IniFile.WriteBool('Application', 'ShortLink', ShortLink);
   IniFile.WriteBool('Application', 'FBPage', FBPageVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
   IniFile.WriteBool('Options', 'Enumerated', Options.cvEnumerated);
   IniFile.WriteBool('Options', 'Guillemets', Options.cvGuillemets);
   IniFile.WriteBool('Options', 'Parentheses', Options.cvParentheses);
   IniFile.WriteBool('Options', 'End', Options.cvEnd);
-  IniFile.WriteInteger('Verse', 'Book', ActiveVerse.book);
-  IniFile.WriteInteger('Verse', 'Chapter', ActiveVerse.chapter);
-  IniFile.WriteInteger('Verse', 'Number', ActiveVerse.number);
-  IniFile.WriteInteger('Verse', 'Count', ActiveVerse.count);
   IniFile.WriteInteger('Recent', 'Count', RecentList.Count);
 
   for i := 0 to RecentList.Count - 1 do
@@ -1362,39 +1347,28 @@ begin
   if GetLanguageID = 'uk' then Result := 'ubio.unbound';
 end;
 
-procedure TMainForm.ReadIniFile;
+procedure TMainForm.ReadConfig;
 var
   IniFile: TIniFile;
-  Version: string;
   i, max: integer;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
-  Version := IniFile.ReadString('Application', 'Version', '');
-  ApplicationUpdate := ApplicationVersion <> Version;
-
   DefaultCurrent := IniFile.ReadString('Application', 'FileName', GetDefaultBible);
 
-  Height := IniFile.ReadInteger('Application', 'Height', Screen.Height - 220);
-  Width := IniFile.ReadInteger('Application', 'Width', Screen.Width - 450);
-  Left := IniFile.ReadInteger('Application', 'Left', 200);
-  Top := IniFile.ReadInteger('Application', 'Top', 80);
+  Height := IniFile.ReadInteger('Window', 'Height', Screen.Height - 220);
+  Width := IniFile.ReadInteger('Window', 'Width', Screen.Width - 450);
+  Left := IniFile.ReadInteger('Window', 'Left', 200);
+  Top := IniFile.ReadInteger('Window', 'Top', 80);
 
-  DefaultFont.Name := IniFile.ReadString('Application', 'FontName', DefaultFont.Name);
-  DefaultFont.Size := IniFile.ReadInteger('Application', 'FontSize', DefaultFont.Size);
   PanelLeft.Width := IniFile.ReadInteger('Application', 'Splitter', 270);
   InterfaceLang := IniFile.ReadString('Application', 'Interface', GetDefaultLanguage);
-  ShortLink := IniFile.ReadBool('Application', 'ShortLink', True);
   FBPageVisited := IniFile.ReadBool('Application', 'FBPage', False);
   Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
   Options.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);
   Options.cvGuillemets := IniFile.ReadBool('Options', 'Guillemets', False);
   Options.cvParentheses := IniFile.ReadBool('Options', 'Parentheses', False);
   Options.cvEnd := IniFile.ReadBool('Options', 'End', False);
-  ActiveVerse.book := IniFile.ReadInteger('Verse', 'Book', 0);
-  ActiveVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);
-  ActiveVerse.number := IniFile.ReadInteger('Verse', 'Number', 0);
-  ActiveVerse.count := IniFile.ReadInteger('Verse', 'Count', 0);
   Max := IniFile.ReadInteger('Recent', 'Count', RecentList.Count);
 
   for i := 0 to Max - 1 do

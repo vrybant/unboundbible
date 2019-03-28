@@ -3,7 +3,7 @@ unit UnitParse;
 interface
 
 uses
-  Classes, SysUtils, UnitLib;
+  Classes, SysUtils, UnitData, UnitLib;
 
 const
   rtf_rtl = '\rtlpar\qr ';

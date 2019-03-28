@@ -29,7 +29,7 @@ implementation
 
 uses
   FormMain, FormAbout, FormSearch, FormCompare, UnitShelf, FormCopy, FormTranslate,
-  FormCommentary, FormDownload, UnitTool, UnitLib;
+  FormCommentary, FormDownload, UnitTool, UnitData, UnitLib;
 
 var
   IniFile : TIniFile;

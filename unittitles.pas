@@ -8,8 +8,7 @@ interface
 
 uses
   Classes, SysUtils, DB, SQLdb,
-  {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn,  IBConnection, {$endif}
-  UnitLib;
+  {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite; {$else} SQLite3conn,  IBConnection; {$endif}
 
 type
   TTitles = class
@@ -33,6 +32,9 @@ type
 
 
 implementation
+
+uses
+  UnitData, UnitLib;
 
 constructor TTitles.Create(language: string);
 var

@@ -3,7 +3,18 @@ unit UnitData;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, Graphics, FileUtil, IniFiles, UnitLib;
+
+const
+  ApplicationName = 'Unbound Bible';
+  ApplicationVersion = '3.0';
+  BibleDirectory = 'bibles';
+  TitleDirectory = 'titles';
+  LangDirectory = 'localization';
+
+var
+  ApplicationUpdate : boolean = false;
+  DefaultFont: TFont;
 
 type
   TFileFormat = (unbound, mysword, mybible);
@@ -167,6 +178,11 @@ function IsNewTestament(n: integer): boolean;
 function IsOldTestament(n: integer): boolean;
 function IsApocrypha(n: integer): boolean;
 
+procedure CreateDataDirectory;
+function ConfigFile: string;
+function DataPath: string;
+function GetDatabaseList: TStringArray;
+
 implementation
 
 function IsNewTestament(n: integer): boolean;
@@ -183,6 +199,102 @@ function IsApocrypha(n: integer): boolean;
 begin
   Result := n > 66;
 end;
+
+function DataPath: string;
+begin
+  Result := GetUserDir + ApplicationName;
+end;
+
+procedure CreateDataDirectory;
+begin
+  if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
+end;
+
+function GetDatabaseList: TStringArray;
+const
+  ext : array [1..4] of string = ('.unbound','.bbli','.mybible','.SQLite3');
+var
+  List : TStringArray;
+  s, item : string;
+  index : integer = 0;
+begin
+  List := GetFileList(DataPath, '*.*');
+  SetLength(Result, Length(List));
+
+  for item in List do
+    for s in ext do
+      if Suffix(s, item) then
+        begin
+          Result[index] := item;
+          index += 1;
+        end;
+
+  SetLength(Result, index);
+end;
+
+procedure CopyDefaultsFiles;
+var
+  SourcePath : string;
+begin
+  if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
+  SourcePath := SharePath + BibleDirectory;
+  if not ApplicationUpdate and (Length(GetDatabaseList) > 0) then Exit;
+  CopyDirTree(SourcePath, DataPath, [cffOverwriteFile]);
+end;
+
+function ConfigFile: string;
+begin
+  {$ifdef windows} Result := LocalAppDataPath + ApplicationName + Slash; {$endif}
+  {$ifdef unix} Result := GetAppConfigDir(False); {$endif}
+  Result += 'config.ini';
+end;
+
+procedure SaveConfig;
+var IniFile: TIniFile;
+begin
+  IniFile := TIniFile.Create(ConfigFile);
+
+  IniFile.WriteString('Application', 'Version', ApplicationVersion);
+  IniFile.WriteString('Application', 'FontName', DefaultFont.Name);
+  IniFile.WriteInteger('Application', 'FontSize', DefaultFont.Size);
+  IniFile.WriteInteger('Verse', 'Book', ActiveVerse.book);
+  IniFile.WriteInteger('Verse', 'Chapter', ActiveVerse.chapter);
+  IniFile.WriteInteger('Verse', 'Number', ActiveVerse.number);
+  IniFile.WriteInteger('Verse', 'Count', ActiveVerse.count);
+
+  IniFile.Free;
+end;
+
+procedure ReadConfig;
+var
+  IniFile: TIniFile;
+  Version: string;
+const
+  DefaultFontName = {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
+  DefaultFontSize = 12;
+begin
+  IniFile := TIniFile.Create(ConfigFile);
+
+  Version := IniFile.ReadString('Application', 'Version', '***');
+  ApplicationUpdate := ApplicationVersion <> Version;
+  DefaultFont.Name := IniFile.ReadString('Application', 'FontName', DefaultFontName);
+  DefaultFont.Size := IniFile.ReadInteger('Application', 'FontSize', DefaultFontSize);
+  ActiveVerse.book := IniFile.ReadInteger('Verse', 'Book', 0);
+  ActiveVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);
+  ActiveVerse.number := IniFile.ReadInteger('Verse', 'Number', 0);
+  ActiveVerse.count := IniFile.ReadInteger('Verse', 'Count', 0);
+
+  IniFile.Free;
+end;
+
+initialization
+  DefaultFont := TFont.Create;
+  ReadConfig;
+  CopyDefaultsFiles;
+
+finalization
+  SaveConfig;
+  DefaultFont.Free;
 
 end.
 

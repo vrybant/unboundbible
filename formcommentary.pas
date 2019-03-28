@@ -33,7 +33,7 @@ var
 
 implementation
 
-uses FormMain, UnitLang, UnitLib;
+uses FormMain, UnitLang, UnitData;
 
 {$R *.lfm}
 

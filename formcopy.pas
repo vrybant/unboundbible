@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls, UnboundMemo, UnitData, UnitLib;
+  StdCtrls, ExtCtrls, UnboundMemo, UnitData;
 
 type
 
