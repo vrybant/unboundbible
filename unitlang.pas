@@ -69,7 +69,6 @@ begin
   inherited;
   List := GetFileList(SharePath + LangDirectory, '*.lng');
 
-  output(SharePath);
   for f in List do
     begin
       Item := TLocal.Create;

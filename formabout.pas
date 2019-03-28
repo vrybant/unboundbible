@@ -47,7 +47,7 @@ begin
   if InterfaceLang = 'uk' then Developer := 'Володимир Рiбант';
 
   Caption := ' ' + T('About');
-  LabelVersion.Caption := T('Version') + ' ' + VersionInfo;
+  LabelVersion.Caption := T('Version') + ' ' + ApplicationVersion;
   LabelTeam.Caption := T('Developer') + ': ' + Developer;
 end;
 
