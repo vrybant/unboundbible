@@ -9,8 +9,7 @@ uses
   {$ifdef windows} Windows, Windirs, {$endif}
   {$ifdef debugmode and linux} LazLogger, {$endif}
   SysUtils, StrUtils, Classes, Graphics, Controls, Forms, Dialogs, Buttons,
-  { FileUtil depreciated } LazFileUtils, LazUtf8, LCLProc,
-  ExtCtrls, ClipBrd, Process;
+  FileUtil, LazUtf8, LCLProc, ExtCtrls, ClipBrd, Process;
 
 type
   TStringArray  = array of string;
@@ -22,10 +21,14 @@ type
   end;
 
 const
-  AppName = 'Unbound Bible';
+  ApplicationName = 'Unbound Bible';
+  ApplicationVersion = '3.0';
+  BibleDirectory = 'bibles';
   TitleDirectory = 'titles';
   LangDirectory = 'localization';
-  VersionInfo = '3.0';
+
+var
+  ApplicationUpdate : boolean = false;
 
 // string's functions
 
@@ -64,6 +67,7 @@ function TempFileName: string;
 function GetFileList(const Path, Mask: string) : TStringArray;
 function GetDatabaseList: TStringArray;
 procedure CreateDataDirectory;
+procedure CopyDefaultsFiles;
 procedure OpenFolder(path: string);
 {$ifdef darwin} procedure PrintFile(FileName : string); {$endif}
 
@@ -332,7 +336,7 @@ end;
 
 function DataPath: string;
 begin
-  Result := GetUserDir + AppName;
+  Result := GetUserDir + ApplicationName;
 end;
 
 function SharePath: string;
@@ -406,6 +410,16 @@ end;
 procedure CreateDataDirectory;
 begin
   if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
+end;
+
+procedure CopyDefaultsFiles;
+var
+  SourcePath : string;
+begin
+  if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
+  SourcePath := SharePath + BibleDirectory;
+  if not ApplicationUpdate and (Length(GetDatabaseList) > 0) then Exit;
+  CopyDirTree(SourcePath, DataPath, [cffOverwriteFile]);
 end;
 
 procedure OpenFolder(path : string);

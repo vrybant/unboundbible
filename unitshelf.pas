@@ -458,7 +458,7 @@ var
   filepath, text : string;
   nt : boolean;
 begin
-  filepath := GetUserDir + AppName + Slash + 'out.txt';
+  filepath := GetUserDir + ApplicationName + Slash + 'out.txt';
   AssignFile(f,filepath); Rewrite(f);
 
   Contents := GetAll;
@@ -641,9 +641,9 @@ begin
 end;
 
 initialization
-  Shelf := TShelf.Create;
+  //Shelf := TShelf.Create;
 
 finalization
-  Shelf.Free;
+  //Shelf.Free;
 
 end.

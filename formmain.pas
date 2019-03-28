@@ -204,6 +204,7 @@ type
   private
     ms_Commentary, ms_Confirm, ms_Strong : string;
     ms_Footnote, ms_Found, ms_Message, ms_Overwrite, ms_Save : string;
+    DefaultCurrent: string;
     NoteFileName: string;
     RecentList: TStringList;
     ShortLink: boolean;
@@ -267,20 +268,21 @@ const
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  Caption := AppName + ' ' + VersionInfo {$ifdef windows} + ' - Open Source Application' {$endif};
+  Caption := ApplicationName + ' ' + ApplicationVersion
+    {$ifdef windows} + ' - Open Source Application' {$endif};
 
   RecentList := TStringList.Create;
   SaveDialog.InitialDir := DocumentsPath;
-
   NoteFileName := Untitled;
 
   ReadIniFile;
-  ComboBoxInit;
-  LangMenuInit;
-  RecentMenuInit;
+  CopyDefaultsFiles;
+  Shelf := TShelf.Create;
 
   if Shelf.Count > 0 then
   begin
+    Shelf.SetCurrent(DefaultCurrent);
+    ComboBoxInit;
     MakeBookList;
     if not Bible.GoodLink(ActiveVerse) then ActiveVerse := Bible.FirstVerse;
     UpdateStatus(Bible.Info, Bible.fileName);
@@ -294,8 +296,11 @@ begin
     ActionSearch .Enabled := False;
     ActionOptions.Enabled := False;
     ActionCompare.Enabled := False;
-    ActionCopyAs .Enabled := False; // ??
+    ActionCopyAs .Enabled := False;
   end;
+
+  LangMenuInit;
+  RecentMenuInit;
 
   NoteFileName := Untitled;
   MemoNotes.Lines.Clear;
@@ -329,6 +334,7 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   SaveIniFile;
   RecentList.Free;
+  Shelf.Free;
 end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
@@ -840,7 +846,7 @@ end;
 
 procedure TMainForm.UpdateCaption(s: string);
 begin
-  Caption := AppName + ' ' + VersionInfo + ' - ' + s;
+  Caption := ApplicationName + ' ' + ApplicationVersion + ' - ' + s;
 end;
 
 procedure TMainForm.UpdateStatus(s, Hint: string);
@@ -1324,6 +1330,7 @@ begin
   if WindowState = wsMaximized then IniFile.WriteString('Application', 'State', 'Maximized')
                                else IniFile.WriteString('Application', 'State', 'Normal');
 
+  IniFile.WriteString('Application', 'Version', ApplicationVersion);
   IniFile.WriteString('Application', 'FileName', Bible.FileName);
   IniFile.WriteString('Application', 'FontName', DefaultFont.Name);
   IniFile.WriteInteger('Application', 'FontSize', DefaultFont.Size);
@@ -1358,12 +1365,15 @@ end;
 procedure TMainForm.ReadIniFile;
 var
   IniFile: TIniFile;
-  BibleFile: string;
+  Version: string;
   i, max: integer;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
-  BibleFile := IniFile.ReadString('Application', 'FileName', GetDefaultBible);
+  Version := IniFile.ReadString('Application', 'Version', '');
+  ApplicationUpdate := ApplicationVersion <> Version;
+
+  DefaultCurrent := IniFile.ReadString('Application', 'FileName', GetDefaultBible);
 
   Height := IniFile.ReadInteger('Application', 'Height', Screen.Height - 220);
   Width := IniFile.ReadInteger('Application', 'Width', Screen.Width - 450);
@@ -1389,8 +1399,6 @@ begin
 
   for i := 0 to Max - 1 do
     RecentList.Add(IniFile.ReadString('Recent', 'File_' + ToStr(i), ''));
-
-  Shelf.SetCurrent(BibleFile);
 
   IniFile.Free;
 end;
