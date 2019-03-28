@@ -1310,6 +1310,7 @@ var
   IniFile: TIniFile;
   i: integer;
 begin
+  if Shelf.Count = 0 then Exit;
   IniFile := TIniFile.Create(ConfigFile);
 
   if WindowState = wsNormal then
@@ -1323,8 +1324,8 @@ begin
   if WindowState = wsMaximized then IniFile.WriteString('Window', 'State', 'Maximized')
                                else IniFile.WriteString('Window', 'State', 'Normal');
 
+  IniFile.WriteInteger('Window', 'Splitter', PanelLeft.Width);
   IniFile.WriteString('Application', 'FileName', Bible.FileName);
-  IniFile.WriteInteger('Application', 'Splitter', PanelLeft.Width);
   IniFile.WriteString('Application', 'Interface', InterfaceLang);
   IniFile.WriteBool('Application', 'FBPage', FBPageVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
@@ -1361,7 +1362,7 @@ begin
   Left := IniFile.ReadInteger('Window', 'Left', 200);
   Top := IniFile.ReadInteger('Window', 'Top', 80);
 
-  PanelLeft.Width := IniFile.ReadInteger('Application', 'Splitter', 270);
+  PanelLeft.Width := IniFile.ReadInteger('Window', 'Splitter', 270);
   InterfaceLang := IniFile.ReadString('Application', 'Interface', GetDefaultLanguage);
   FBPageVisited := IniFile.ReadBool('Application', 'FBPage', False);
   Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
