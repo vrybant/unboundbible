@@ -1,7 +1,5 @@
 unit UnitLib;
 
-{$ifdef unix} {$undef RussianEdition} {$endif}
-
 interface
 
 uses
@@ -50,7 +48,7 @@ procedure RemoveTags(var s: string);
 function ExtractOnlyName(s: string): string;
 function SharePath: string;
 function DocumentsPath: string;
-function LocalAppDataPath: string;
+{$ifdef windows} function LocalAppDataPath: string; {$endif}
 function TempFileName: string;
 function GetFileList(const Path, Mask: string) : TStringArray;
 procedure OpenFolder(path: string);
@@ -330,10 +328,12 @@ begin
   {$ifdef unix} Result := GetUserDir + 'Documents'; {$endif}
 end;
 
+{$ifdef windows}
 function LocalAppDataPath: string;
 begin
-  {$ifdef windows} Result := GetWindowsSpecialDir(CSIDL_LOCAL_APPDATA); {$endif}
+  Result := GetWindowsSpecialDir(CSIDL_LOCAL_APPDATA);
 end;
+{$endif}
 
 function TempFileName: string; // for printing
 begin
