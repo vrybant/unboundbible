@@ -57,8 +57,6 @@ begin
 
   if Prefix('<a ', s) then s := '<a>';
 
-  if s =  '<S>' then r := '\cf8\super ';
-  if s = '</S>' then r := color + '\nosupersub ';
   if s =  '<f>' then r := '\cf6\super ';
   if s = '</f>' then r := color + '\nosupersub ';
   if s =  '<l>' then r := '\cf2 ';
@@ -67,6 +65,11 @@ begin
   if s = '</n>' then r := color + ' ';
   if s =  '<m>' then r := '\cf5\super '; // morphology
   if s = '</m>' then r := color + '\nosupersub ';
+
+  {$ifndef linux}
+    if s =  '<S>' then r := '\cf8\super ';
+    if s = '</S>' then r := color + '\nosupersub ';
+  {$endif}
 
   s := LowerCase(s);
 

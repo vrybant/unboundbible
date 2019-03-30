@@ -125,7 +125,12 @@ begin
   CutStr(s,'<h>','</h>');
   if purge then CutStr(s,'<f','</f>');
   if not purge then Replace(s,'</f><f>','</f> <f>');
-  Replace(s,'</S><S>','</S> <S>');
+
+  {$ifdef linux}
+    Replace(s,'<S>',' <S>');
+  {$else}
+    Replace(s,'</S><S>','</S> <S>');
+  {$endif}
 
   Result := s;
 end;
