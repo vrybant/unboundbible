@@ -6,6 +6,7 @@ __history
 *.drc
 *.map
 *.exe
+*.deb
 *.dll
 bin/*
 lib/*
@@ -19,5 +20,4 @@ components/zeosdbo/examples/*
 components/richmemo/lib/*
 components/unboundmemo/lib/*
 components/unboundmemo/backup/*
-UnboundBibleTools
-UnboundBible
+unboundbible
