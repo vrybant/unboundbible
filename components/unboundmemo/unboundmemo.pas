@@ -17,11 +17,10 @@ type
     FParagraphic : boolean;
     SelStartTemp  : integer;
     SelLengthTemp : integer;
-    function  Colored: boolean;
+    {$ifdef unix} function  Colored: boolean; {$endif}
     function  GetColorLink: string;
-    {$ifdef linux} function  GetTextLink: string; {$endif}
-    {$ifdef linux} procedure FixStrongLink(var s: string); {$endif}
-    {$ifdef linux} function  IsStrongLink(s: string): boolean; {$endif}
+    {$ifdef linux} function  IsStrong: boolean; {$endif}
+    {$ifdef linux} function  GetStrongLink: string; {$endif}
     function  GetLink: string;
     function  GetParagraphNumber(Pos: integer; select: boolean): integer;
     procedure GetParagraphRange;
@@ -31,6 +30,7 @@ type
     Hyperlink : string;
     ParagraphStart : integer;
     ParagraphCount : integer;
+    {$ifdef linux} strongmode : boolean; {$endif}
     constructor Create(AOwner: TComponent); override;
     function Foreground: integer;
     procedure SelectParagraph(n : integer);
@@ -52,11 +52,6 @@ const
 procedure Register;
 
 implementation
-
-function IsNumeral(c: char): boolean;
-begin
-  Result := c in ['0'..'9'];
-end;
 
 function ToInt(s: string): integer;
 var v, r : integer;
@@ -86,6 +81,7 @@ begin
   SelStartTemp := 0;
   SelLengthTemp := 0;
   Cursor := crArrow;
+  {$ifdef linux} strongmode := false; {$endif}
 end;
 
 function TUnboundMemo.Foreground: integer;
@@ -102,10 +98,12 @@ begin
 
 end;
 
+{$ifdef unix}
 function TUnboundMemo.Colored: boolean;
 begin
   Result := Foreground = fgLink;
 end;
+{$endif}
 
 function TUnboundMemo.GetColorLink: string;
 var
@@ -141,28 +139,36 @@ begin
 end;
 
 {$ifdef linux}
-function TUnboundMemo.GetTextLink: string;
+function TUnboundMemo.IsStrong: boolean;
+var c : char;
+begin
+  Result := false;
+  if SelLength <> 1 then Exit;
+  c := SelText[1];
+  Result := (c in ['0'..'9']) or (c in ['H','9']);
+end;
+
+function TUnboundMemo.GetStrongLink: string;
 var
   x1,x2,x0 : integer;
   n1,n2 : integer;
-  txt : string;
+  quit : boolean;
 begin
   Result := '';
   if SelLength > 0 then Exit;
 
-  SelLength := 1; txt := SelText;
-  SelLength := 0;
-// OutputDebugString(PChar(txt)); // проверить в linux конец строки
-  if txt = ' ' then Exit;
-
   GetSel(n1{%H-},n2{%H-});
+  SetSel(n1, n2+1);
+  quit := not IsStrong;
+  SetSel(n1, n2);
+  if quit then Exit;
 
   x0 := SelStart;
   x1 := x0;
   repeat
     dec(x1);
     SetSel(x1, x1+1);
-  until (SelText = ' ') or (x1 < 0);
+  until not IsStrong or (x1 < 0);
 
   inc(x1);
   if x1 < 0 then inc(x1);
@@ -171,43 +177,18 @@ begin
   repeat
     inc(x2);
     SetSel(x2, x2+1);
-  until (SelText = ' ') or (SelText = '');
+  until not IsStrong;
 
   SetSel(x1, x2); Result := RemoveCRLF(SelText);
   SetSel(n1, n2); Result := Trim(Result);
-end;
-
-procedure TUnboundMemo.FixStrongLink(var s: string);
-var n : integer;
-begin
-  n := Length(s);
-  if n = 0 then Exit;
-  if IsNumeral(s[n]) then Exit;
-  s[n] := ' ';
-  s := Trim(s);
-end;
-
-function TUnboundMemo.IsStrongLink(s: string): boolean;
-var i : integer;
-begin
-  Result := False;
-  for i:=1 to Length(s) do
-    if IsNumeral(s[i]) then Result := True;
 end;
 {$endif}
 
 function TUnboundMemo.GetLink: string;
 begin
   if Foreground <> fgText then Result := GetColorLink;
-
   {$ifdef linux}
-    if Foreground = fgText then
-      begin
-        Result := GetTextLink;
-        if IsStrongLink(Result) then FixStrongLink(Result) else Result := '';
-      end;
-
-    OutputDebugString(PChar(Result));
+    if strongmode and (Foreground = fgText) then Result := GetStrongLink;
   {$endif}
 end;
 
@@ -232,7 +213,7 @@ procedure TUnboundMemo.KeyUp(var Key: Word; Shift: TShiftState);
 begin
   inherited;
   {$ifdef windows}
-  if Linkable and not ReadOnly and (Key = VK_CONTROL) then ShowCaret(Handle);
+    if Linkable and not ReadOnly and (Key = VK_CONTROL) then ShowCaret(Handle);
   {$endif}
 end;
 

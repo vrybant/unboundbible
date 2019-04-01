@@ -323,6 +323,11 @@ begin
   ToolSeparator5.Visible := False;
   {$endif}
 
+  {$ifdef linux}
+  MemoBible.strongmode := true;
+  MemoCompare.strongmode := true;
+  {$endif}
+
   UpdateActionImage;
 end;
 
@@ -755,15 +760,15 @@ begin
   if Button = mbRight then ShowPopup;
   if Button <> mbLeft then Exit;
 
-//if Memo.hyperlink = '' then
   if Memo = MemoBible then
     begin
       ActiveVerse.Number := MemoBible.ParagraphStart;
       ActiveVerse.Count  := MemoBible.ParagraphCount;
       if TranslateForm.Visible then CmdTrans(Sender);
       if CommentaryForm.Visible then CmdCommentary(Sender);
-//    Exit;
     end;
+
+  if Memo.hyperlink = '' then Exit;
 
   if Memo.Foreground = fgLink then
     begin
@@ -779,10 +784,11 @@ begin
     end;
 
   if Memo = MemoBible then
-    if Memo.Foreground = fgFootnote then LoadFootnote(Memo.Hyperlink);
+    if Memo.Foreground = fgFootnote then LoadFootnote(Memo.hyperlink);
 
   if (Memo = MemoBible) or (Memo = MemoCompare) then
-    if Memo.Foreground = fgStrong then LoadStrong(Memo.Hyperlink);
+    if Memo.Foreground = {$ifdef linux} fgText {$else} fgStrong {$endif} then
+      LoadStrong(Memo.hyperlink);
 end;
 
 procedure TMainForm.MemoAttrChange(Sender: TObject);
