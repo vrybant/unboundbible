@@ -39,6 +39,11 @@ uses FormMain;
 
 {$R *.lfm}
 
+{$ifdef linux}
+const
+  InfoColor = TColor($CDFAFF); // Elementary OS bug fixed
+{$endif}
+
 procedure TNotifyForm.FormCreate(Sender: TObject);
 begin
   Compact := true;
@@ -52,6 +57,8 @@ begin
 
   PopupMenu.Images := MainForm.Images;
   miCopy.ImageIndex := 1;
+
+  {$ifdef linux} Color := InfoColor; {$endif}
 end;
 
 procedure TNotifyForm.HandleResize;
