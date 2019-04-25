@@ -786,7 +786,7 @@ begin
   if Memo = MemoBible then
     if Memo.Foreground = fgFootnote then LoadFootnote(Memo.hyperlink);
 
-  if (Memo = MemoBible) or (Memo = MemoCompare) then
+  if Memo <> MemoNotes then
     if Memo.Foreground = {$ifdef linux} fgText {$else} fgStrong {$endif} then
       LoadStrong(Memo.hyperlink);
 end;
