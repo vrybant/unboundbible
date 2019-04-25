@@ -2,13 +2,13 @@
 ; -- unboundbible.iss --
                              
 #define MyAppName "Unbound Bible"
-#define MyAppVerName "Unbound Bible 3 BETA"
-#define MyAppVersion "3 BETA"
+#define MyAppVerName "Unbound Bible 3"
+#define MyAppVersion "3.0"
 #define MyAppCopyright "GNU GPL"
 #define MyAppPublisher "Vladimir Rybant"
 #define MyAppURL "http://vladimirrybant.org"
-#define MyAppExeName "UnboundBible.exe"
-#define MyAppOutput "Unbound_Bible_Installer"
+#define MyAppExeName "unboundbible.exe"
+#define MyAppOutput "unboundbible"
 
 [Setup]
  AppName={#MyAppName}
@@ -20,13 +20,12 @@
  AppSupportURL={#MyAppURL}
  AppUpdatesURL={#MyAppURL}
 
-
  DefaultDirName={pf}\{#MyAppName}
  DefaultGroupName={#MyAppName}
  DisableWelcomePage=no
  DisableStartupPrompt=yes
  DisableProgramGroupPage=yes
- OutputBaseFilename={#MyAppOutput}
+ OutputBaseFilename={#MyAppOutput}_{#MyAppVersion}
  UninstallDisplayIcon={app}\{#MyAppExeName}
  OutputDir=. 
              
@@ -38,7 +37,7 @@
 
 [Files]
 ;Source: "bibles\*"           ; DestDir: "{%USERPROFILE}\{#MyAppName}"
-;Source: "bibles\kjv.unbound" ; DestDir: "{app}\bibles"
+ Source: "bibles\*"           ; DestDir: "{app}\bibles"
  Source: "localization\*"     ; DestDir: "{app}\localization"
  Source: "titles\*"           ; DestDir: "{app}\titles" 
  Source: "{#MyAppExeName}"    ; DestDir: "{app}" ; Flags: ignoreversion
@@ -54,10 +53,14 @@
  Filename: "{app}\{#MyAppExeName}" ; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: postinstall nowait skipifsilent
 
 [UninstallDelete]
- Type: files          ; Name: "{userdocs}\{#MyAppName}\kjv.unbound"
- Type: files          ; Name: "{userdocs}\{#MyAppName}\rstw.unbound"
- Type: files          ; Name: "{userdocs}\{#MyAppName}\ubio.unbound"
- Type: dirifempty     ; Name: "{userdocs}\{#MyAppName}"
+ Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\kjv.unbound"
+ Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\kjv+.unbound"
+ Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\rst+.unbound"
+ Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\rstw.unbound"
+ Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\ubio.unbound"
+ Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\strong.dct.unbound"
+ Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\strongru.dct.unbound"
+ Type: dirifempty     ; Name: "{%USERPROFILE}\{#MyAppName}"
  Type: filesandordirs ; Name: "{localappdata}\{#MyAppName}"
  Type: dirifempty     ; Name: "{app}"
 
