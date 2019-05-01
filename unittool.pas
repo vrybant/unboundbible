@@ -19,7 +19,8 @@ function Show_Message(s: string): string;
 
 implementation
 
-uses UnitLang, UnitModule, UnitShelf, UnitDictionary, UnitCommentary, FormSearch, UnitLib;
+uses
+  UnitLang, UnitModule, UnitShelf, UnitDictionary, UnitCommentary, FormSearch, UnitLib;
 
 var ms_File, ms_Language, ms_MoreInfo, ms_NoModules, ms_NoResults : string;
 

@@ -247,7 +247,8 @@ implementation
 
 uses
   FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLang,
-  UnitShelf, FormCopy, FormTranslate, FormCommentary, FormDownload, UnitLib;
+  UnitShelf, FormCopy, FormTranslate, FormCommentary, FormDownload,
+  {$ifdef windows} ParseWin, {$endif} UnitLib;
 
 const
   apBible   = 0; // active page
@@ -1290,7 +1291,7 @@ end;
 {$ifdef windows}
 procedure TMainForm.VersesToClipboard;
 begin
-  StringToClipboard(Load_Verses());
+  StringToClipboard(Parse(Load_Verses()));
 end;
 {$endif}
 

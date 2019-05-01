@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, StrUtils, Graphics;
 
-function Parse(s: string; jtag: boolean; html: boolean): string;
+function Parse(s: string; jtag: boolean = false; html: boolean = false): string;
 
 var DefaultFont: TFont;
 
@@ -216,7 +216,7 @@ begin
   DelDoubleSpace(s);
 end;
 
-function Parse(s: string; jtag: boolean; html: boolean): string;
+function Parse(s: string; jtag: boolean = false; html: boolean = false): string;
 var
   List : TStringArray;
   i : integer;
