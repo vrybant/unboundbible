@@ -38,6 +38,8 @@ type
     procedure SelectAll;
     procedure SaveSelection;
     procedure RestoreSelection;
+    procedure LoadText(Source: string; jtag: boolean = false; html: boolean = false);
+    procedure LoadHtml(Source: string);
   published
     property Linkable    : boolean read FLinkable    write FLinkable    default False;
     property Paragraphic : boolean read FParagraphic write FParagraphic default False;
@@ -52,6 +54,8 @@ const
 procedure Register;
 
 implementation
+
+uses ParseWin;
 
 function ToInt(s: string): integer;
 var v, r : integer;
@@ -391,6 +395,16 @@ procedure TUnboundMemo.RestoreSelection;
 begin
   SelStart  := SelStartTemp;
   SelLength := SelLengthTemp;
+end;
+
+procedure TUnboundMemo.LoadText(Source: string; jtag: boolean = false; html: boolean = false);
+begin
+  LoadRichText(Parse(Source, jtag, html));
+end;
+
+procedure TUnboundMemo.LoadHtml(Source: string);
+begin
+  LoadRichText(Parse(Source, false, true));
 end;
 
 procedure Register;

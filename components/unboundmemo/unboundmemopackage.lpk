@@ -14,7 +14,7 @@
     </CompilerOptions>
     <Description Value="UnboundMemo control."/>
     <License Value="LGPL"/>
-    <Files Count="3">
+    <Files Count="4">
       <Item1>
         <Filename Value="unboundmemo.pas"/>
         <HasRegisterProc Value="True"/>
@@ -29,6 +29,10 @@
         <Filename Value="unboundmemoicon.lrs"/>
         <Type Value="LRS"/>
       </Item3>
+      <Item4>
+        <Filename Value="parsewin.pas"/>
+        <UnitName Value="ParseWin"/>
+      </Item4>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
