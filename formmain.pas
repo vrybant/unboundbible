@@ -592,7 +592,7 @@ begin
   if Shelf.Count = 0 then Exit;
   if Sender <> PageControl then
     if CompareForm.ShowModal <> mrOk then Exit;
-  MemoCompare.LoadRichText(Load_Compare);
+  MemoCompare.LoadText(Load_Compare);
   if Sender <> PageControl then SelectPage(apCompare);
 end;
 
@@ -652,7 +652,7 @@ end;
 procedure TMainForm.CmdTrans(Sender: TObject);
 begin
   if Shelf.Count = 0 then Exit;
-  TranslateForm.Memo.LoadRichText(Load_Translate);
+  TranslateForm.Memo.LoadText(Load_Translate);
   TranslateForm.Repaint;
   TranslateForm.Show;
 end;
@@ -661,7 +661,7 @@ procedure TMainForm.CmdCommentary(Sender: TObject);
 begin
   if Shelf.Count = 0 then Exit;
   CommentaryForm.Caption := ms_Commentary + ' - ' + Bible.VerseToStr(ActiveVerse, true);
-  CommentaryForm.Memo.LoadRichText(Load_Commentary);
+  CommentaryForm.Memo.LoadHTML(Load_Commentary);
   if not CommentaryForm.Visible then CommentaryForm.Show;
   CommentaryForm.Repaint;
 end;
@@ -736,7 +736,7 @@ end;
 procedure TMainForm.CmdModules(Sender: TObject);
 begin
   if Shelf.Count = 0 then Exit;
-  DownloadForm.Memo.LoadRichText(Load_ModulesInfo);
+  DownloadForm.Memo.LoadText(Load_ModulesInfo);
   DownloadForm.ShowModal;
 end;
 
@@ -1240,7 +1240,7 @@ end;
 procedure TMainForm.LoadChapter;
 begin
   if Shelf.Count = 0 then Exit;
-  MemoBible.LoadRichText(Load_Chapter());
+  MemoBible.LoadText(Load_Chapter, true);
   MakeChapterList(Bible.ChaptersCount(ActiveVerse));
   if TranslateForm.Visible then CmdTrans(nil);
   if CommentaryForm.Visible then CmdCommentary(nil);
@@ -1257,7 +1257,7 @@ begin
   Cursor := crHourGlass;
   richtext := Search_Text(s, count);
   {$ifdef linux} if count > max then richtext := Show_Message(ms_Message); {$endif}
-  MemoSearch.LoadRichText(richtext);
+  MemoSearch.LoadText(richtext);
   Cursor := crArrow;
   SelectPage(apSearch);
   UpdateStatus(ToStr(count) + ' ' + ms_found,'');
@@ -1270,7 +1270,7 @@ begin
   if text = '' then Exit;
   NotifyForm.Title.Caption := ms_Strong;
   NotifyForm.Compact := True;
-  NotifyForm.Memo.LoadRichText(text);
+  NotifyForm.Memo.LoadText(text);
   NotifyForm.ShowAtPos(Mouse.CursorPos);
   Self.SetFocus;
 end;
@@ -1282,7 +1282,7 @@ begin
   if text = '' then Exit;
   NotifyForm.Title.Caption := ms_Footnote;
   NotifyForm.Compact := False;
-  NotifyForm.Memo.LoadRichText(text);
+  NotifyForm.Memo.LoadText(text);
   NotifyForm.ShowAtPos(Mouse.CursorPos);
   Self.SetFocus;
 end;
@@ -1301,7 +1301,7 @@ var
 begin
   MemoPreview := TUnboundMemo.Create(self);
   MemoPreview.Parent := MainForm;
-  MemoPreview.LoadRichText(Load_Verses());
+  MemoPreview.LoadText(Load_Verses());
   MemoPreview.SelectAll;
   MemoPreview.CopyToClipboard;
   MemoPreview.Visible := false;

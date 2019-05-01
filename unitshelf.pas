@@ -528,7 +528,7 @@ begin
       x := x + Length(tag);
       s := Copy(s, x, Length(s));
       x := Pos('</f>',s); if x = 0 then break;
-      Result := Result + Copy(s,1,x-1) + '\par ';
+      Result := Result + Copy(s,1,x-1) + '<br>';
     end;
 
   Result := Trim(Result);

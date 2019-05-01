@@ -19,7 +19,7 @@ function Show_Message(s: string): string;
 
 implementation
 
-uses UnitLang, UnitModule, UnitShelf, UnitDictionary, UnitCommentary, FormSearch, UnitParse, UnitLib;
+uses UnitLang, UnitModule, UnitShelf, UnitDictionary, UnitCommentary, FormSearch, UnitLib;
 
 var ms_File, ms_Language, ms_MoreInfo, ms_NoModules, ms_NoResults : string;
 
@@ -38,18 +38,16 @@ var
   text : string;
   i : integer;
 begin
-  Result := rtf_open;
-  if Bible.RightToLeft then Result += rtf_rtl;
+  Result := '';
+  if Bible.RightToLeft then Result += '<rtl>';
   Strings := Bible.GetChapter(ActiveVerse);
 
   for i:=Low(Strings) to High(Strings) do
     begin
-      text := Parse(Strings[i], true);
-      text := '\cf3 ' + ' ' + ToStr(i+1) + '\cf1 ' + ' ' + text + '\i0\par';
+      text := Strings[i];
+      text := '<l> ' + ToStr(i+1) + '</l> ' + text + '<br>';
       Result += text;
     end;
-
-  Result += rtf_close;
 end;
 
 procedure Highlight(var s: string; target: string; Options: TSearchOptions);
@@ -57,9 +55,6 @@ var
   Arr : TIntegerArray;
   t : string;
   i,len : integer;
-const
-  before =  '<l>';
-  after  = '</l>';
 begin
   t := s;
   len := Length(target);
@@ -72,8 +67,8 @@ begin
 
   for i:= High(Arr) downto Low(Arr) do
     begin
-      Insert(after,  s, Arr[i] + len);
-      Insert(before, s, Arr[i]);
+      Insert('</r>', s, Arr[i] + len);
+      Insert( '<r>', s, Arr[i]);
     end;
 end;
 
@@ -84,9 +79,7 @@ var
 begin
   if not (caseSensitive in Options) then searchString := Utf8LowerCase(searchString);
   List := StringToList(' ', searchString);
-
-  for item in List do
-    Highlight(s, item, Options);
+  for item in List do Highlight(s, item, Options);
 end;
 
 function Search_Text(st: string; var count: integer): string;
@@ -95,7 +88,7 @@ var
   content : TContent;
   link, text : string;
 begin
-  Result := rtf_open;
+  Result := '';
   ContentArray := Bible.Search(st, CurrentSearchOptions, CurrentSearchRange);
   count := Length(ContentArray);
 
@@ -104,7 +97,7 @@ begin
       link := Bible.VerseToStr(content.verse,true);
       text := content.text;
       Highlights(text,st,CurrentSearchOptions);
-      text := '\cf3 ' + link + '\cf1 ' + ' ' + Parse(text) + '\i0\par\par';
+      text := '<l>' + link + '</l>' + ' ' + text + '<br><br>';
       Result += text;
     end;
 
@@ -114,8 +107,6 @@ begin
       Replace(text,'%',DoubleQuotedStr(st));
       Result += text;
     end;
-
-  Result += rtf_close;
 end;
 
 function Load_Compare: string;
@@ -124,8 +115,7 @@ var
   item : string;
   i : integer;
 begin
-  Result := rtf_open;
-  Result += '\cf1 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
+  Result := Bible.VerseToStr(ActiveVerse, true) + '<br> ';
 
   for i:=0 to Shelf.Count-1 do
     begin
@@ -133,13 +123,10 @@ begin
       Strings := Shelf[i].GetRange(ActiveVerse);
 
       if Length(Strings) > 0 then
-        Result += '\par\cf3 ' + Shelf[i].Name + '\par\cf1 ';
+        Result += '<br><l>' + Shelf[i].Name + '</l><br>';
 
-      for item in Strings do
-        Result += Parse(item) + '\i0\par';
+      for item in Strings do Result += item + '<br>';
     end;
-
-  Result += rtf_close;
 end;
 
 function Load_ModulesInfo: string;
@@ -147,24 +134,21 @@ var i : integer;
 
   function GetInfo(const Module: TModule): string;
   begin
-    Result := '\b ' + Module.Name;
+    Result := '<h>' + Module.Name;
     if Module.Abbreviation <> '' then Result += ' - ' + Module.Abbreviation;
-    Result += '\b0\par ';
-    if Module.Info <> '' then Result += Module.Info + '\par ';
-    if Module.language <> '' then Result += ms_Language + ': ' + Module.language + '\par ';
-    Result += '\cf5 ' + ms_File + ': ' + Module.Filename + '\cf1\par ';
-    Result += '\par ';
+    Result += '</h><br>';
+    if Module.Info <> '' then Result += Module.Info + '<br>';
+    if Module.language <> '' then Result += ms_Language + ': ' + Module.language + '<br>';
+    Result += '<n>' + ms_File + ': ' + Module.Filename + '</n><br>';
+    Result += '<br>';
   end;
 
 begin
-  Result := rtf_open;
-  Result += '\f0\fs20\cf1 ';
+  Result := '<small>';
 
   for i:=0 to        Shelf.Count-1 do Result += GetInfo(Shelf[i]);
   for i:=0 to Dictionaries.Count-1 do Result += GetInfo(Dictionaries[i]);
   for i:=0 to Commentaries.Count-1 do Result += GetInfo(Commentaries[i]);
-
-  Result += rtf_close;
 end;
 
 function Load_Translate: string;
@@ -173,23 +157,18 @@ var
   item : string;
   i : integer;
 begin
-  Result := rtf_open;
-  Result += '\cf3 ' + Bible.VerseToStr(ActiveVerse, true) + '\par ';
+  Result := Bible.VerseToStr(ActiveVerse, true) + '<br> ';
 
   for i:=0 to Shelf.Count-1 do
     begin
       if not Shelf[i].Compare then Continue;
-
       Strings := Shelf[i].GetRange(ActiveVerse);
 
       if Length(Strings) > 0 then
-        Result += '\par\cf4 ' + Shelf[i].Name + '\par\par\cf1 ';
+        Result += '<br><l>' + Shelf[i].Name + '</l><br><br>';
 
-      for item in Strings do
-        Result += Parse(item) + '\i0\par';
+      for item in Strings do Result += item + '<br>';
     end;
-
-  Result += rtf_close;
 end;
 
 function Load_Commentary: string;
@@ -198,31 +177,24 @@ var
   item : string;
   i : integer;
 begin
-  Result := rtf_open;
-  Result += '\f0\fs20 ';
-  Result += '\cf1 ';
+  Result := '<small>';
 
   for i:=0 to Commentaries.Count-1 do
     begin
       if Commentaries[i].footnotes then Continue;
-
       Strings := Commentaries[i].GetData(ActiveVerse);
 
       if Length(Strings) > 0 then
-        Result += '\par\cf3 ' + Commentaries[i].Name + '\par\par\cf1 ';
+        Result += '<br><h>' + Commentaries[i].Name + '</h><br><br>';
 
-      for item in Strings  do
-        Result += HTML(item) + '\par';
+      for item in Strings  do Result += '<tab>' + item + '<br>';
     end;
 
   if Commentaries.Count = 0 then
     begin
-      {$ifdef windows} Result += '\fs22'; {$endif}
-      Result += '\par\tab ' + ms_NoModules;
-      Result += '\par\par\tab ' + ms_MoreInfo;
+      Result += '<br> ' + ms_NoModules;
+      Result += '<br><br> ' + ms_MoreInfo;
     end;
-
-  Result += rtf_close;
 end;
 
 function Load_Strong(number: string = ''): string;
@@ -232,9 +204,7 @@ begin
   if Dictionaries.Count = 0 then Exit;
   s := Dictionaries.GetStrong(ActiveVerse, Bible.language, number);
   if s = '' then Exit;
-  Result += rtf_open;
-  Result += '\f0\fs18 ' + Parse(s);
-  Result += rtf_close;
+  Result += '<small>' + s;
 end;
 
 function Load_Footnote(marker: string = ''): string;
@@ -244,9 +214,7 @@ begin
   if Bible.format = mybible then s := Commentaries.GetFootnote(Bible.fileName, ActiveVerse, marker)
                             else s := Bible.GetFootnote(ActiveVerse, marker);
   if s = '' then Exit;
-  Result += rtf_open;
-  Result += '\f0\fs18 ' + Parse(s);
-  Result += rtf_close;
+  Result += '<small>' + s;
 end;
 
 function Load_Verses: string;
@@ -259,7 +227,7 @@ var
   function Link: string;
   begin
     Result := Bible.VerseToStr(ActiveVerse,not Options.cvAbbreviate);
-    Result := '\cf3 ' + Result + '\cf1 ';
+    Result := '<l>' + Result + '</l>';
     if Options.cvParentheses then Result := '(' + Result + ')';
   end;
 
@@ -280,24 +248,22 @@ begin
           if (i>0) or ((i=0) and Options.cvEnd) then
             q := q + '(' + ToStr(ActiveVerse.Number + i) + ') ';
 
-      q := q + Parse(Strings[i]) + ' ';
+      q := q + Strings[i] + ' ';
     end;
 
   q := Trim(q);
-  s := '\cf1 ';
+  s := '';
 
   if Options.cvGuillemets then q := '«' + q + '»';
   if Options.cvEnd then s := q + ' '+ Link else s := Link + ' ' + q;
 
-  Result := rtf_open;
-  if Bible.RightToLeft then Result += rtf_rtl;
-  Result += s + '\par ';
-  Result += rtf_close;
+  if Bible.RightToLeft then Result += '<rtl>';
+  Result += s + '<br> ';
 end;
 
 function Show_Message(s: string): string;
 begin
-  Result := rtf_open + '\par\cf1\i  ' + s + '\par ' + rtf_close;
+  Result := '<br><i> ' + s + '</i><br> ';
 end;
 
 end.

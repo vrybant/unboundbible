@@ -86,7 +86,7 @@ end;
 
 procedure TCopyForm.LoadText;
 begin
-  Memo.LoadRichText(Load_Verses());
+  Memo.LoadText(Load_Verses());
 end;
 
 procedure TCopyForm.CopyToClipboard;
