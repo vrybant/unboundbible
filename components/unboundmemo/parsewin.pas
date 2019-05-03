@@ -101,14 +101,14 @@ end;
 
 function ParseString(s: string; j: boolean): string;
 var
+  color : string = '\cf1';
   r : string = '';
-  color : string;
 const
   jColor : boolean = false;
 begin
   // Result := '\cf2 ' + s + '\cf1 '; Exit; // show tags
 
-  if jColor then color := '\cf7' else color := '\cf1';
+  if jColor then color := '\cf7';
 
   if j then if s =  '<J>' then begin r := '\cf7 '; jColor := true;  end;
   if j then if s = '</J>' then begin r := '\cf1 '; jColor := false; end;
