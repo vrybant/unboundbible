@@ -86,7 +86,7 @@ begin
   SelLengthTemp := 0;
   Cursor := crArrow;
 
-  {$ifdef windows} Font.Name := 'Tahoma'; {$endif}
+  {$ifdef windows} if Font.Name = 'default' then Font.Name := 'Tahoma'; {$endif}
   {$ifdef linux} strongmode := false; {$endif}
 end;
 
