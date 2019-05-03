@@ -38,7 +38,7 @@ type
     procedure SelectAll;
     procedure SaveSelection;
     procedure RestoreSelection;
-    procedure LoadText(Source: string; jtag: boolean = false; html: boolean = false);
+    procedure LoadText(Source: string; jtag: boolean = false);
     procedure LoadHtml(Source: string);
   published
     property Linkable    : boolean read FLinkable    write FLinkable    default False;
@@ -397,14 +397,14 @@ begin
   SelLength := SelLengthTemp;
 end;
 
-procedure TUnboundMemo.LoadText(Source: string; jtag: boolean = false; html: boolean = false);
+procedure TUnboundMemo.LoadText(Source: string; jtag: boolean = false);
 begin
-  LoadRichText(Parse(Source, jtag, html));
+  LoadRichText(Parse(Source, Font, jtag, false));
 end;
 
 procedure TUnboundMemo.LoadHtml(Source: string);
 begin
-  LoadRichText(Parse(Source, false, true));
+  LoadRichText(Parse(Source, Font, false, true));
 end;
 
 procedure Register;

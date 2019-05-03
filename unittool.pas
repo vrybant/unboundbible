@@ -145,8 +145,7 @@ var i : integer;
   end;
 
 begin
-  Result := '<small>';
-
+  Result := '';
   for i:=0 to        Shelf.Count-1 do Result += GetInfo(Shelf[i]);
   for i:=0 to Dictionaries.Count-1 do Result += GetInfo(Dictionaries[i]);
   for i:=0 to Commentaries.Count-1 do Result += GetInfo(Commentaries[i]);
@@ -178,7 +177,7 @@ var
   item : string;
   i : integer;
 begin
-  Result := '<small>';
+  Result := '';
 
   for i:=0 to Commentaries.Count-1 do
     begin
@@ -199,23 +198,17 @@ begin
 end;
 
 function Load_Strong(number: string = ''): string;
-var s : string;
 begin
   Result := '';
   if Dictionaries.Count = 0 then Exit;
-  s := Dictionaries.GetStrong(ActiveVerse, Bible.language, number);
-  if s = '' then Exit;
-  Result += '<small>' + s;
+  Result := Dictionaries.GetStrong(ActiveVerse, Bible.language, number);
 end;
 
 function Load_Footnote(marker: string = ''): string;
-var s : string;
 begin
-  Result := '';
-  if Bible.format = mybible then s := Commentaries.GetFootnote(Bible.fileName, ActiveVerse, marker)
-                            else s := Bible.GetFootnote(ActiveVerse, marker);
-  if s = '' then Exit;
-  Result += '<small>' + s;
+  if Bible.format = mybible
+    then Result := Commentaries.GetFootnote(Bible.fileName, ActiveVerse, marker)
+    else Result := Bible.GetFootnote(ActiveVerse, marker);
 end;
 
 function Load_Verses: string;

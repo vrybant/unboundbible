@@ -5,9 +5,7 @@ interface
 uses
   Classes, SysUtils, StrUtils, Graphics;
 
-function Parse(s: string; jtag: boolean = false; html: boolean = false): string;
-
-var DefaultFont: TFont;
+function Parse(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
 
 implementation
 
@@ -77,13 +75,13 @@ begin
   SetLength(Result,i);
 end;
 
-function rtf_open: string;
+function rtf_open(Font: TFont): string;
 begin
   Result :=
       '{\rtf1\ansi\ansicpg1251\cocoartf1187 '
     + '{\fonttbl'
     + '{\f0 default;}'
-    + '{\f1 ' + DefaultFont.Name + ';}'
+    + '{\f1 ' + Font.Name + ';}'
     + '}'
     + '{\colortbl;'
     + '\red0\green0\blue0;'        // 1 black
@@ -97,7 +95,8 @@ begin
     + '\red139\green69\blue19;'    // 9 saddlebrown
     + '\red128\green0\blue128;'    // 10 purple
     + '}'
-    + '\f1\cf1';
+    + '\f1\fs' + ToStr(Font.Size * 2)
+    + '\cf1 ';
 end;
 
 function ParseString(s: string; j: boolean): string;
@@ -151,8 +150,6 @@ begin
   if s = '<rtl>' then r := '\rtlpar\qr ';
   if s = '<ltr>' then r := '\ltrpar\qr ';
 
-  if s = '<small>' then r := '\fs18 ';
-
   Result := r;
 end;
 
@@ -184,8 +181,6 @@ begin
   if s =  '<sup>' then r := '\super ';
   if s = '</sup>' then r := '\nosupersub ';
 
-  if s = '<small>' then r := '\fs20 ';
-
   Result := r;
 end;
 
@@ -197,11 +192,11 @@ begin
   Replace(s,'&rdquo;','»');
   Replace(s, #09     ,' ');
 
-  Replace(s,  '<em>', '<i>' );
-  Replace(s, '</em>','</i>' );
+  Replace(s, '<em>', '<i>' );
+  Replace(s,'</em>','</i>' );
 
-  Replace(s,  '<strong>', '<b>' );
-  Replace(s, '</strong>','</b>' );
+  Replace(s, '<strong>', '<b>' );
+  Replace(s,'</strong>','</b>' );
 
   Replace(s, '<p/>','<p>' );
   Replace(s,'<br/>','<br><tab>');
@@ -216,7 +211,7 @@ begin
   DelDoubleSpace(s);
 end;
 
-function Parse(s: string; jtag: boolean = false; html: boolean = false): string;
+function Parse(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
 var
   List : TStringArray;
   i : integer;
@@ -233,16 +228,8 @@ begin
       end;
 
   Result := Trim(ListToString(List));
-  Result := rtf_open + Result + rtf_close;
+  Result := rtf_open(Font) + Result + rtf_close;
 end;
-
-initialization
-  DefaultFont := TFont.Create;
-  DefaultFont.Name := {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
-  DefaultFont.Size := 12;
-
-finalization
-  DefaultFont.Free;
 
 end.
 

@@ -13,7 +13,7 @@ object NotifyForm: TNotifyForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.0.0.4'
   object Title: TLabel
     Left = 5
     Height = 15
@@ -30,11 +30,14 @@ object NotifyForm: TNotifyForm
     Height = 106
     Top = 32
     Width = 285
+    Font.Height = -12
+    Font.Name = 'Tahoma'
     HideSelection = False
     Lines.Strings = (
       'Memo'
     )
     ParentColor = True
+    ParentFont = False
     PopupMenu = PopupMenu
     ReadOnly = True
     ScrollBars = ssAutoVertical

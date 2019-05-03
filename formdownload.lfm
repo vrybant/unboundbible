@@ -11,7 +11,7 @@ object DownloadForm: TDownloadForm
   OnCreate = FormCreate
   ParentFont = True
   Position = poScreenCenter
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.0.0.4'
   object ButtonOK: TButton
     Left = 232
     Height = 25
@@ -31,7 +31,10 @@ object DownloadForm: TDownloadForm
     Height = 352
     Top = 8
     Width = 533
+    Font.Height = -13
+    Font.Name = 'Tahoma'
     HideSelection = False
+    ParentFont = False
     ReadOnly = True
     ScrollBars = ssAutoVertical
     TabOrder = 1

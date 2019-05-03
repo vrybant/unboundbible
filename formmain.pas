@@ -593,6 +593,7 @@ begin
   if Shelf.Count = 0 then Exit;
   if Sender <> PageControl then
     if CompareForm.ShowModal <> mrOk then Exit;
+  MemoCompare.Font.Assign(DefaultFont);
   MemoCompare.LoadText(Load_Compare);
   if Sender <> PageControl then SelectPage(apCompare);
 end;
@@ -653,6 +654,7 @@ end;
 procedure TMainForm.CmdTrans(Sender: TObject);
 begin
   if Shelf.Count = 0 then Exit;
+  TranslateForm.Memo.Font.Assign(DefaultFont);
   TranslateForm.Memo.LoadText(Load_Translate);
   TranslateForm.Repaint;
   TranslateForm.Show;
@@ -1241,6 +1243,7 @@ end;
 procedure TMainForm.LoadChapter;
 begin
   if Shelf.Count = 0 then Exit;
+  MemoBible.Font.Assign(DefaultFont);
   MemoBible.LoadText(Load_Chapter, true);
   MakeChapterList(Bible.ChaptersCount(ActiveVerse));
   if TranslateForm.Visible then CmdTrans(nil);
@@ -1258,6 +1261,7 @@ begin
   Cursor := crHourGlass;
   richtext := Search_Text(s, count);
   {$ifdef linux} if count > max then richtext := Show_Message(ms_Message); {$endif}
+  MemoSearch.Font.Assign(DefaultFont);
   MemoSearch.LoadText(richtext);
   Cursor := crArrow;
   SelectPage(apSearch);
@@ -1291,7 +1295,7 @@ end;
 {$ifdef windows}
 procedure TMainForm.VersesToClipboard;
 begin
-  StringToClipboard(Parse(Load_Verses()));
+  StringToClipboard(Parse(Load_Verses(), DefaultFont));
 end;
 {$endif}
 
@@ -1302,7 +1306,8 @@ var
 begin
   MemoPreview := TUnboundMemo.Create(self);
   MemoPreview.Parent := MainForm;
-  MemoPreview.LoadText(Load_Verses());
+  MemoPreview.Font.Assign(DefaultFont);
+  MemoPreview.LoadText(Load_Verses);
   MemoPreview.SelectAll;
   MemoPreview.CopyToClipboard;
   MemoPreview.Visible := false;
