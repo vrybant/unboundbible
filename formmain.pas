@@ -665,7 +665,7 @@ begin
   if Shelf.Count = 0 then Exit;
   CommentaryForm.Caption := ms_Commentary + ' - ' + Bible.VerseToStr(ActiveVerse, true);
   CommentaryForm.Memo.LoadHTML(Load_Commentary);
-  if not CommentaryForm.Visible then CommentaryForm.Show;
+  if Sender = ActionCommentary then CommentaryForm.Show;
   CommentaryForm.Repaint;
 end;
 
