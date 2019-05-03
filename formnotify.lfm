@@ -31,7 +31,6 @@ object NotifyForm: TNotifyForm
     Top = 32
     Width = 285
     Font.Height = -12
-    Font.Name = 'Tahoma'
     HideSelection = False
     Lines.Strings = (
       'Memo'

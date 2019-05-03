@@ -19,7 +19,6 @@ object CommentaryForm: TCommentaryForm
     Width = 255
     Align = alClient
     Font.Height = -13
-    Font.Name = 'Tahoma'
     HideSelection = False
     ParentFont = False
     PopupMenu = PopupMenu

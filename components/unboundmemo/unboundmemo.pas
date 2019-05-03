@@ -85,6 +85,8 @@ begin
   SelStartTemp := 0;
   SelLengthTemp := 0;
   Cursor := crArrow;
+
+  {$ifdef windows} Font.Name := 'Tahoma'; {$endif}
   {$ifdef linux} strongmode := false; {$endif}
 end;
 

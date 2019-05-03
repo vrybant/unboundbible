@@ -1,10 +1,10 @@
 object MainForm: TMainForm
   Left = 399
-  Height = 384
-  Top = 330
+  Height = 385
+  Top = 329
   Width = 795
   Caption = 'Unbound Bible'
-  ClientHeight = 364
+  ClientHeight = 365
   ClientWidth = 795
   Menu = MainMenu
   OnActivate = FormActivate
@@ -205,11 +205,11 @@ object MainForm: TMainForm
   end
   object PanelLeft: TPanel
     Left = 0
-    Height = 309
+    Height = 310
     Top = 32
     Width = 195
     Align = alLeft
-    ClientHeight = 309
+    ClientHeight = 310
     ClientWidth = 195
     Font.CharSet = GREEK_CHARSET
     Font.Color = clWindowText
@@ -261,7 +261,7 @@ object MainForm: TMainForm
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 341
+    Top = 342
     Width = 795
     Panels = <>
     ParentShowHint = False
@@ -269,20 +269,20 @@ object MainForm: TMainForm
   end
   object PageControl: TPageControl
     Left = 200
-    Height = 309
+    Height = 310
     Top = 32
     Width = 595
-    ActivePage = TabSheetNotes
+    ActivePage = TabSheetBible
     Align = alClient
     Font.Color = clWindowText
     Font.Height = -13
     ParentFont = False
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 2
     OnChange = PageControlChange
     object TabSheetBible: TTabSheet
       Caption = 'Bible'
-      ClientHeight = 279
+      ClientHeight = 280
       ClientWidth = 587
       Font.Color = clWindowText
       Font.Height = -12
@@ -290,7 +290,7 @@ object MainForm: TMainForm
       object MemoBible: TUnboundMemo
         Cursor = crArrow
         Left = 0
-        Height = 279
+        Height = 280
         Top = 0
         Width = 587
         Align = alClient
@@ -395,7 +395,7 @@ object MainForm: TMainForm
   end
   object Splitter: TSplitter
     Left = 195
-    Height = 309
+    Height = 310
     Top = 32
     Width = 5
   end

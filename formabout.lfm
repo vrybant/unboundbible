@@ -32,7 +32,6 @@ object AboutBox: TAboutBox
     Font.CharSet = RUSSIAN_CHARSET
     Font.Color = clBlack
     Font.Height = -11
-    Font.Name = 'Tahoma'
     ParentColor = False
     ParentFont = False
   end
@@ -45,7 +44,6 @@ object AboutBox: TAboutBox
     Font.CharSet = RUSSIAN_CHARSET
     Font.Color = clBlack
     Font.Height = -11
-    Font.Name = 'Tahoma'
     ParentColor = False
     ParentFont = False
   end

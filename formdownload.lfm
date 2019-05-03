@@ -32,7 +32,6 @@ object DownloadForm: TDownloadForm
     Top = 8
     Width = 533
     Font.Height = -13
-    Font.Name = 'Tahoma'
     HideSelection = False
     ParentFont = False
     ReadOnly = True
