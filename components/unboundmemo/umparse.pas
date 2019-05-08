@@ -3,9 +3,10 @@ unit UmParse;
 interface
 
 uses
+  {$ifdef linux} LazLogger, {$endif}
   Classes, SysUtils, StrUtils, Graphics, RichMemo, RichMemoEx;
 
-procedure Parse(Memo: TRichMemoEx; Source: string; jtag: boolean = false; html: boolean = false);
+procedure Parse(Memo: TRichMemoEx; Source: string);
 
 implementation
 
@@ -74,7 +75,7 @@ begin
     Result := false;
 end;
 
-procedure Parse(Memo: TRichMemoEx; Source: string; jtag: boolean = false; html: boolean = false);
+procedure Parse(Memo: TRichMemoEx; Source: string);
 var
   fp,fp0: TFontParams;
   StOrig : UnicodeString;

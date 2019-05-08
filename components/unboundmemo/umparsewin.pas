@@ -3,9 +3,9 @@ unit UmParseWin;
 interface
 
 uses
-  Classes, SysUtils, Graphics, RichMemo, RichMemoEx, UmLib;
+  Classes, SysUtils, Graphics, UmLib;
 
-function Parse(Memo: TRichMemoEx; Source: string; jtag: boolean = false; html: boolean = false): string;
+function Parse(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
 
 implementation
 
@@ -145,13 +145,13 @@ begin
   DelDoubleSpace(s);
 end;
 
-function Parse(Memo: TRichMemoEx; Source: string; jtag: boolean = false; html: boolean = false): string;
+function Parse(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
 var
   List : TStringArray;
   i : integer;
 begin
-  if html then HtmlReplacement(Source);
-  List := XmlToList(Source);
+  if html then HtmlReplacement(s);
+  List := XmlToList(s);
 
   for i:=Low(List) to High(List) do
     if Prefix('<', List[i]) then
@@ -162,7 +162,7 @@ begin
       end;
 
   Result := Trim(ListToString(List));
-  Result := rtf_open(Memo.Font) + Result + rtf_close;
+  Result := rtf_open(Font) + Result + rtf_close;
 end;
 
 end.
