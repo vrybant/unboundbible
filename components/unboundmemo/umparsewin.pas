@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, Graphics, UmLib;
 
-function Parse(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
+function ParseWin(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
 
 implementation
 
@@ -145,7 +145,7 @@ begin
   DelDoubleSpace(s);
 end;
 
-function Parse(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
+function ParseWin(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
 var
   List : TStringArray;
   i : integer;
