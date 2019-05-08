@@ -1,79 +1,18 @@
-unit ParseWin;
+unit UmParseWin;
 
 interface
 
 uses
   Classes, SysUtils, StrUtils, Graphics;
 
-function Parse(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
+function ParseRichText(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
 
 implementation
 
+uses UmLib;
+
 const
   rtf_close = '}';
-
-function Prefix(ps, st: string): boolean;
-begin
-  Result := Pos(ps, st) = 1;
-end;
-
-function ToStr(value: longint): string;
-begin
- System.Str(value, Result);
-end;
-
-procedure Replace(var s: string; const oldPattern, newPattern: string);
-begin
-  s := StringReplace(s, oldPattern, newPattern, [rfReplaceAll]);
-end;
-
-procedure DelDoubleSpace(var s: string);
-begin
-  s := DelSpace1(s);
-end;
-
-function ListToString(const List: TStringArray): string;
-var s : string;
-begin
-  Result := '';
-  for s in List do Result += s;
-end;
-
-function XmlToList(s: string): TStringArray;
-var
-  temp : string = '';
-  i : integer = 0;
-  c : char;
-begin
-  SetLength(Result,Length(s)+1);
-
-  for c in s do
-    begin
-      if c = '<' then
-        begin
-          Result[i] := temp;
-          inc(i);
-          temp := '';
-        end;
-
-      temp := temp + c;
-
-      if c = '>' then
-        begin
-          Result[i] := temp;
-          inc(i);
-          temp := '';
-        end;
-    end;
-
-  if temp <> '' then
-    begin
-      Result[i] := temp;
-      inc(i);
-    end;
-
-  SetLength(Result,i);
-end;
 
 function rtf_open(Font: TFont): string;
 begin
@@ -125,11 +64,8 @@ begin
   if s = '</n>' then r := color + ' ';
   if s =  '<m>' then r := '\cf5\super '; // morphology
   if s = '</m>' then r := color + '\nosupersub ';
-
-  {$ifndef linux}
-    if s =  '<S>' then r := '\cf8\super ';
-    if s = '</S>' then r := color + '\nosupersub ';
-  {$endif}
+  if s =  '<S>' then r := '\cf8\super ';
+  if s = '</S>' then r := color + '\nosupersub ';
 
   s := LowerCase(s);
 
@@ -211,7 +147,7 @@ begin
   DelDoubleSpace(s);
 end;
 
-function Parse(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
+function ParseRichText(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
 var
   List : TStringArray;
   i : integer;

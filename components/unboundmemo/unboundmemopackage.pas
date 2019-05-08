@@ -7,7 +7,7 @@ unit unboundmemopackage;
 interface
 
 uses
-  UnboundMemo, ParseWin, LazarusPackageIntf;
+  UnboundMemo, UmParseWin, UmLib, LazarusPackageIntf;
 
 implementation
 

@@ -14,7 +14,7 @@
     </CompilerOptions>
     <Description Value="UnboundMemo control."/>
     <License Value="LGPL"/>
-    <Files Count="4">
+    <Files Count="6">
       <Item1>
         <Filename Value="unboundmemo.pas"/>
         <HasRegisterProc Value="True"/>
@@ -30,9 +30,18 @@
         <Type Value="LRS"/>
       </Item3>
       <Item4>
-        <Filename Value="parsewin.pas"/>
-        <UnitName Value="ParseWin"/>
+        <Filename Value="umparsewin.pas"/>
+        <UnitName Value="UmParseWin"/>
       </Item4>
+      <Item5>
+        <Filename Value="umparse.pas"/>
+        <AddToUsesPkgSection Value="False"/>
+        <UnitName Value="UmParse"/>
+      </Item5>
+      <Item6>
+        <Filename Value="umlib.pas"/>
+        <UnitName Value="UmLib"/>
+      </Item6>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
