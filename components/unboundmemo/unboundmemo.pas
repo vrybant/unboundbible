@@ -2,12 +2,11 @@ unit UnboundMemo;
 
 interface
 
-{ $define gtk}
-
 uses
-  {$ifdef windows} Windows, {$endif} Forms, SysUtils, LResources,
-  Classes, Graphics, Controls, ExtCtrls, LCLProc, LCLType, LazUTF8,
-  RichMemo, RichMemoEx;
+  {$ifndef windows} UmParseWin, {$else} UmParse, {$endif }
+  {$ifdef windows} Windows, {$endif}
+  Forms, SysUtils, LResources, Classes, Graphics, Controls, ExtCtrls,
+  LCLProc, LCLType, LazUTF8, RichMemo, RichMemoEx, UmLib;
 
 type
   TUnboundMemo = class(TRichMemoEx)
@@ -56,9 +55,6 @@ const
 procedure Register;
 
 implementation
-
-uses
-  UmLib, {$ifdef gtk} UmParse; {$else} UmParseWin; {$endif }
 
 constructor TUnboundMemo.Create(AOwner: TComponent);
 begin
@@ -384,17 +380,19 @@ end;
 
 procedure TUnboundMemo.LoadText(Source: string; jtag: boolean = false);
 begin
-  {$ifdef gtk}
-    Parse(Self, Source);
+  {$ifndef windows}
+    LoadRichText(Parse(Self, Source, jtag, false));
   {$else}
-    LoadRichText(Parse(Source, Font, jtag, false));
+    Parse(Self, Source, jtag, false);
   {$endif}
 end;
 
 procedure TUnboundMemo.LoadHtml(Source: string);
 begin
-  {$ifndef gtk}
-    LoadRichText(Parse(Source, Font, false, true));
+  {$ifndef windows}
+    LoadRichText(Parse(Self, Source, false, true));
+  {$else}
+    Parse(Self, Source, false, true);
   {$endif}
 end;
 

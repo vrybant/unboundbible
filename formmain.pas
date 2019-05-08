@@ -1294,7 +1294,7 @@ end;
 {$ifdef windows}
 procedure TMainForm.VersesToClipboard;
 begin
-  StringToClipboard(Parse(Load_Verses(), DefaultFont));
+  StringToClipboard(Parse(UnboundMemo, Load_Verses));
 end;
 {$endif}
 
