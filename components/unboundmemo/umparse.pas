@@ -3,7 +3,6 @@ unit UmParse;
 interface
 
 uses
-  {$ifdef linux} LazLogger, {$endif}
   Classes, SysUtils, StrUtils, Graphics, RichMemo, RichMemoEx, UmLib;
 
 procedure Parse(Memo: TRichMemoEx; Source: string; html: boolean = false);
@@ -117,9 +116,6 @@ begin
 
   Replace(Source,'<br>',char($0A));
   Replace(Source,'</p>',char($0A));
-
-  //Replace(Source,'<br>',LineEnding);
-  //Replace(Source,'</p>',LineEnding);
 
   StOrig := UnicodeString(Source);
   Memo.Clear;
