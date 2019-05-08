@@ -3,7 +3,7 @@ unit UnitPrepare;
 interface
 
 uses
-  Classes, SysUtils, UnitData, UnitLib;
+  Classes, SysUtils, UnitData, UmLib, UnitLib;
 
 function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
 function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
@@ -127,7 +127,8 @@ begin
   if not purge then Replace(s,'</f><f>','</f> <f>');
 
   {$ifdef linux}
-    Replace(s,'<S>',' <S>');
+//  Replace(s,'<S>',' <S>');
+    Replace(s,'</S><S>','</S>  <S>'); // ?
   {$else}
     Replace(s,'</S><S>','</S> <S>');
   {$endif}

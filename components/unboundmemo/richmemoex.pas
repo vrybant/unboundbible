@@ -5,7 +5,7 @@ interface
 uses
   {$ifdef windows} Windows, RichEdit, Printers, OSPrinters, {$endif}
   {$ifdef linux} Gtk2, Glib2, Gdk2, {$endif}
-   LCLVersion, Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo, LazUTF8;
+   Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo, LazUTF8;
 
 type
 
@@ -52,37 +52,13 @@ type
     property OnAttrChange: TNotifyEvent read FOnAttrChange write FOnAttrChange;
   end;
 
-function Utf8ToRTF(const s: string): string;
-
 implementation
+
+uses UmLib;
 
 function ToStr(value: longint): string;
 begin
  System.Str(value, Result);
-end;
-
-function Utf8ToRTF(const s: string): string;
-var
-  p: PChar;
-  unicode: Cardinal;
-  CharLen: integer;
-const
-  endchar = {$ifdef linux} ' ' {$else} '?' {$endif};
-begin
-  Result := '';
-  p := PChar(s);
-  repeat
-    {$if lcl_major >= 2}
-      unicode := UTF8CodepointToUnicode(p,CharLen);
-    {$else}
-      unicode := UTF8CharacterToUnicode(p,CharLen);
-    {$endif}
-    if unicode = 0 then Continue;
-    if unicode < $80 then Result := Result + char(unicode)
-                     else Result := Result + '\u' + ToStr(unicode) + endchar;
-
-    inc(p,CharLen);
-  until (CharLen=0) or (unicode=0);
 end;
 
 constructor TRichMemoEx.Create(AOwner: TComponent);
@@ -126,7 +102,7 @@ end;
 function TRichMemoEx.GetTextRange(Pos, Length: Integer): string;
 var
   TextRange : RichEdit.TEXTRANGEW;
-  w : WideString;
+  w : UnicodeString;
   res : LResult;
 begin
   FillChar(TextRange{%H-}, sizeof(TextRange), 0);

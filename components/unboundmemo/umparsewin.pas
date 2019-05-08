@@ -3,13 +3,11 @@ unit UmParseWin;
 interface
 
 uses
-  Classes, SysUtils, StrUtils, Graphics;
+  Classes, SysUtils, Graphics, UmLib;
 
-function ParseRichText(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
+function Parse(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
 
 implementation
-
-uses UmLib;
 
 const
   rtf_close = '}';
@@ -147,7 +145,7 @@ begin
   DelDoubleSpace(s);
 end;
 
-function ParseRichText(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
+function Parse(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
 var
   List : TStringArray;
   i : integer;

@@ -6,26 +6,30 @@ uses
   {$ifdef windows} Windows, Windirs, {$endif}
   {$ifdef linux} LazLogger, {$endif}
   SysUtils, StrUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  LazUtf8, LCLProc, ExtCtrls, ClipBrd, Process;
+   LCLVersion, LazUtf8, LCLProc, ExtCtrls, ClipBrd;
 
 type
   TStringArray  = array of string;
+  TIntegerArray = array of integer;
 
 // string's functions
 
 function Prefix(ps, st: string): boolean;
+function Suffix(ps, st: string): boolean;
 function ToInt(s: string): integer;
 function ToStr(value: longint): string;
+function ToBoolean(s: string): boolean;
 procedure Replace(var s: string; const oldPattern, newPattern: string);
 procedure DelDoubleSpace(var s: string);
 function RemoveTags(s: string): string;
 function RemoveCRLF(s: string): string;
 function ListToString(const List: TStringArray): string;
+function ListToArray(const List: TStringList): TStringArray;
 function XmlToList(s: string): TStringArray;
 
-// сlipboard's function
+// unicode
 
-//{$ifdef windows} procedure StringToClipboard(Source: string); {$endif}
+function Utf8ToRTF(const s: string): string;
 
 // system's functions
 
@@ -44,6 +48,11 @@ begin
   Result := Pos(ps, st) = 1;
 end;
 
+function Suffix(ps, st: string): boolean;
+begin
+  Result := Pos(ps, st) = Length(st) - Length(ps) + 1;
+end;
+
 function ToInt(s: string): integer;
 var v, r : integer;
 begin
@@ -55,6 +64,13 @@ end;
 function ToStr(value: longint): string;
 begin
  System.Str(value, Result);
+end;
+
+function ToBoolean(s: string): boolean;
+var v : boolean;
+begin
+  Result := false;
+  if TryStrToBool(s,v) then Result := v;
 end;
 
 procedure Replace(var s: string; const oldPattern, newPattern: string);
@@ -95,6 +111,14 @@ begin
   for s in List do Result += s;
 end;
 
+function ListToArray(const List: TStringList): TStringArray;
+var i : integer;
+begin
+  SetLength(Result, List.Count);
+  for i:=0 to List.Count-1 do
+    Result[i] := List[i];
+end;
+
 function XmlToList(s: string): TStringArray;
 var
   temp : string = '';
@@ -129,6 +153,30 @@ begin
     end;
 
   SetLength(Result,i);
+end;
+
+function Utf8ToRTF(const s: string): string;
+var
+  p: PChar;
+  unicode: Cardinal;
+  CharLen: integer;
+const
+  endchar = {$ifdef linux} ' ' {$else} '?' {$endif};
+begin
+  Result := '';
+  p := PChar(s);
+  repeat
+    {$if lcl_major >= 2}
+      unicode := UTF8CodepointToUnicode(p,CharLen);
+    {$else}
+      unicode := UTF8CharacterToUnicode(p,CharLen);
+    {$endif}
+    if unicode = 0 then Continue;
+    if unicode < $80 then Result := Result + char(unicode)
+                     else Result := Result + '\u' + ToStr(unicode) + endchar;
+
+    inc(p,CharLen);
+  until (CharLen=0) or (unicode=0);
 end;
 
 procedure Output(s: string);

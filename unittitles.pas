@@ -7,7 +7,7 @@ unit UnitTitles;
 interface
 
 uses
-  Classes, SysUtils, DB, SQLdb,
+  Classes, SysUtils, DB, SQLdb, UmLib, UnitLib,
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite; {$else} SQLite3conn,  IBConnection; {$endif}
 
 type
@@ -34,7 +34,7 @@ type
 implementation
 
 uses
-  UnitData, UnitLib;
+  UnitData;
 
 constructor TTitles.Create(language: string);
 var

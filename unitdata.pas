@@ -3,11 +3,11 @@ unit UnitData;
 interface
 
 uses
-  Classes, SysUtils, Graphics, FileUtil, IniFiles, UnitLib;
+  Classes, SysUtils, Graphics, FileUtil, IniFiles, UmLib, UnitLib;
 
 const
   ApplicationName = 'Unbound Bible';
-  ApplicationVersion = {$ifdef windows}'3.0'{$else}'3.2'{$endif};
+  ApplicationVersion = {$ifdef windows}'3.1'{$else}'3.3'{$endif};
   BibleDirectory = 'bibles';
   TitleDirectory = 'titles';
   LangDirectory = 'localization';
@@ -21,6 +21,12 @@ type
 
   TSearchOption = (caseSensitive, wholeWords);
   TSearchOptions = set of TSearchOption;
+
+type
+  TRange = record
+    from : integer;
+    till : integer;
+  end;
 
 type
   TBibleAlias = record

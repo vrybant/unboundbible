@@ -2,7 +2,7 @@ unit UnitTool;
 
 interface
 
-uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitData;
+uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UmLib, UnitLib;
 
 procedure Translate_Tools;
 
@@ -20,7 +20,7 @@ function Show_Message(s: string): string;
 implementation
 
 uses
-  UnitLang, UnitModule, UnitShelf, UnitDictionary, UnitCommentary, FormSearch, UnitLib;
+  UnitData, UnitLang, UnitModule, UnitShelf, UnitDictionary, UnitCommentary, FormSearch;
 
 var ms_File, ms_Language, ms_MoreInfo, ms_NoModules, ms_NoResults : string;
 

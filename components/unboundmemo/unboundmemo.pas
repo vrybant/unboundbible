@@ -2,6 +2,8 @@ unit UnboundMemo;
 
 interface
 
+{ $define gtk}
+
 uses
   {$ifdef windows} Windows, {$endif} Forms, SysUtils, LResources,
   Classes, Graphics, Controls, ExtCtrls, LCLProc, LCLType, LazUTF8,
@@ -19,8 +21,8 @@ type
     SelLengthTemp : integer;
     {$ifdef unix} function  Colored: boolean; {$endif}
     function  GetColorLink: string;
-    {$ifdef linux} function  IsStrong: boolean; {$endif}
-    {$ifdef linux} function  GetStrongLink: string; {$endif}
+    //{$ifdef linux} function  IsStrong: boolean; {$endif}
+    //{$ifdef linux} function  GetStrongLink: string; {$endif}
     function  GetLink: string;
     function  GetParagraphNumber(Pos: integer; select: boolean): integer;
     procedure GetParagraphRange;
@@ -55,25 +57,8 @@ procedure Register;
 
 implementation
 
-uses ParseWin;
-
-function ToInt(s: string): integer;
-var v, r : integer;
-begin
-  s := Trim(s);
-  Val(s, v, r);
-  if r=0 then Result := v else Result := 0;
-end;
-
-function RemoveCRLF(s: string): string;
-const
-  CharLF = #10; // line feed
-  CharCR = #13; // carriage return
-begin
-  s := StringReplace(s, CharLF, '', [rfReplaceAll]);
-  s := StringReplace(s, CharCR, '', [rfReplaceAll]);
-  Result := s;
-end;
+uses
+  UmLib, {$ifdef gtk} UmParse; {$else} UmParseWin; {$endif }
 
 constructor TUnboundMemo.Create(AOwner: TComponent);
 begin
@@ -91,8 +76,6 @@ begin
 end;
 
 function TUnboundMemo.Foreground: integer;
-const
-  clBrown = TColor($336699); // apple brown
 begin
   Result := fgText;
 
@@ -145,56 +128,56 @@ begin
 end;
 
 {$ifdef linux}
-function TUnboundMemo.IsStrong: boolean;
-var c : char;
-begin
-  Result := false;
-  if SelLength <> 1 then Exit;
-  c := SelText[1];
-  Result := (c in ['0'..'9']) or (c in ['H','9']);
-end;
-
-function TUnboundMemo.GetStrongLink: string;
-var
-  x1,x2,x0 : integer;
-  n1,n2 : integer;
-  quit : boolean;
-begin
-  Result := '';
-  if SelLength > 0 then Exit;
-
-  GetSel(n1{%H-},n2{%H-});
-  SetSel(n1, n2+1);
-  quit := not IsStrong;
-  SetSel(n1, n2);
-  if quit then Exit;
-
-  x0 := SelStart;
-  x1 := x0;
-  repeat
-    dec(x1);
-    SetSel(x1, x1+1);
-  until not IsStrong or (x1 < 0);
-
-  inc(x1);
-  if x1 < 0 then inc(x1);
-
-  x2 := x0;
-  repeat
-    inc(x2);
-    SetSel(x2, x2+1);
-  until not IsStrong;
-
-  SetSel(x1, x2); Result := RemoveCRLF(SelText);
-  SetSel(n1, n2); Result := Trim(Result);
-end;
+//function TUnboundMemo.IsStrong: boolean;
+//var c : char;
+//begin
+//  Result := false;
+//  if SelLength <> 1 then Exit;
+//  c := SelText[1];
+//  Result := (c in ['0'..'9']) or (c in ['H','9']);
+//end;
+//
+//function TUnboundMemo.GetStrongLink: string;
+//var
+//  x1,x2,x0 : integer;
+//  n1,n2 : integer;
+//  quit : boolean;
+//begin
+//  Result := '';
+//  if SelLength > 0 then Exit;
+//
+//  GetSel(n1{%H-},n2{%H-});
+//  SetSel(n1, n2+1);
+//  quit := not IsStrong;
+//  SetSel(n1, n2);
+//  if quit then Exit;
+//
+//  x0 := SelStart;
+//  x1 := x0;
+//  repeat
+//    dec(x1);
+//    SetSel(x1, x1+1);
+//  until not IsStrong or (x1 < 0);
+//
+//  inc(x1);
+//  if x1 < 0 then inc(x1);
+//
+//  x2 := x0;
+//  repeat
+//    inc(x2);
+//    SetSel(x2, x2+1);
+//  until not IsStrong;
+//
+//  SetSel(x1, x2); Result := RemoveCRLF(SelText);
+//  SetSel(n1, n2); Result := Trim(Result);
+//end;
 {$endif}
 
 function TUnboundMemo.GetLink: string;
 begin
   if Foreground <> fgText then Result := GetColorLink;
   {$ifdef linux}
-    if strongmode and (Foreground = fgText) then Result := GetStrongLink;
+    //if strongmode and (Foreground = fgText) then Result := GetStrongLink;
   {$endif}
 end;
 
@@ -401,12 +384,18 @@ end;
 
 procedure TUnboundMemo.LoadText(Source: string; jtag: boolean = false);
 begin
-  LoadRichText(Parse(Source, Font, jtag, false));
+  {$ifdef gtk}
+    Parse(Self, Source);
+  {$else}
+    LoadRichText(Parse(Source, Font, jtag, false));
+  {$endif}
 end;
 
 procedure TUnboundMemo.LoadHtml(Source: string);
 begin
-  LoadRichText(Parse(Source, Font, false, true));
+  {$ifndef gtk}
+    LoadRichText(Parse(Source, Font, false, true));
+  {$endif}
 end;
 
 procedure Register;

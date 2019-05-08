@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ExtCtrls, LCLType, UnitData, UnitLib;
+  Buttons, ExtCtrls, LCLType, UnitData;
 
 type
   TSearchForm = class(TForm)

@@ -3,7 +3,7 @@ unit UnitCommentary;
 interface
 
 uses
-  Classes, Fgl, SysUtils, UnitModule, UnitData, UnitLib;
+  Classes, Fgl, SysUtils, UnitModule, UnitData, UmLib, UnitLib;
 
 type
   TCommentary = class(TModule)

@@ -6,7 +6,7 @@ uses
   {$ifdef linux} LazLogger, {$endif}
   Classes, SysUtils, StrUtils, Graphics, RichMemo, RichMemoEx;
 
-procedure ParseRichText(Memo: TRichMemoEx; Source: string);
+procedure Parse(Memo: TRichMemoEx; Source: string);
 
 implementation
 
@@ -75,7 +75,7 @@ begin
     Result := false;
 end;
 
-procedure ParseRichText(Memo: TRichMemoEx; Source: string);
+procedure Parse(Memo: TRichMemoEx; Source: string);
 var
   fp,fp0: TFontParams;
   StOrig : UnicodeString;

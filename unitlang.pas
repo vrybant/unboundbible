@@ -3,7 +3,7 @@ unit UnitLang;
 interface
 
 uses
-  SysUtils, Classes, Fgl, Graphics, IniFiles,  ClipBrd, LCLProc;
+  SysUtils, Classes, Fgl, Graphics, IniFiles,  ClipBrd, LCLProc, UnitLib;
 
 type
   TLocal = class
@@ -29,7 +29,7 @@ implementation
 
 uses
   FormMain, FormAbout, FormSearch, FormCompare, UnitShelf, FormCopy, FormTranslate,
-  FormCommentary, FormDownload, UnitTool, UnitData, UnitLib;
+  FormCommentary, FormDownload, UnitTool, UnitData;
 
 var
   IniFile : TIniFile;

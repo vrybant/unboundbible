@@ -1,5 +1,5 @@
 object AboutBox: TAboutBox
-  Left = 1150
+  Left = 1070
   Height = 193
   Top = 424
   Width = 364
@@ -9,12 +9,12 @@ object AboutBox: TAboutBox
   Color = clWhite
   OnCreate = FormCreate
   Position = poDesktopCenter
-  LCLVersion = '1.6.4.0'
+  LCLVersion = '1.8.4.0'
   object LabelName: TLabel
     Left = 186
-    Height = 27
+    Height = 28
     Top = 24
-    Width = 145
+    Width = 148
     Caption = 'Unbound Bible'
     Font.CharSet = RUSSIAN_CHARSET
     Font.Color = clNavy
@@ -25,9 +25,9 @@ object AboutBox: TAboutBox
   end
   object LabelTeam: TLabel
     Left = 188
-    Height = 13
+    Height = 16
     Top = 113
-    Width = 136
+    Width = 150
     Caption = '  Developer: Vladimir Rybant'
     Font.CharSet = RUSSIAN_CHARSET
     Font.Color = clBlack
@@ -37,9 +37,9 @@ object AboutBox: TAboutBox
   end
   object LabelVersion: TLabel
     Left = 232
-    Height = 13
+    Height = 16
     Top = 89
-    Width = 54
+    Width = 58
     Caption = 'Version 2.0'
     Font.CharSet = RUSSIAN_CHARSET
     Font.Color = clBlack
@@ -323,17 +323,20 @@ object AboutBox: TAboutBox
   end
   object LabelGPL: TLabel
     Left = 192
-    Height = 15
+    Height = 16
     Top = 64
-    Width = 132
+    Width = 130
     Caption = 'Open Source Application'
+    Font.Color = clBlack
+    Font.Height = -11
     ParentColor = False
+    ParentFont = False
   end
   object LabelFB: TLabel
     Left = 209
-    Height = 15
+    Height = 17
     Top = 149
-    Width = 56
+    Width = 58
     Caption = 'Like us on '
     ParentColor = False
   end

@@ -3,41 +3,20 @@ unit UnitLib;
 interface
 
 uses
-  {$ifdef windows} Windows, Windirs, {$endif}
-  {$ifdef linux} LazLogger, {$endif}
-  SysUtils, StrUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  LazUtf8, LCLProc, ExtCtrls, ClipBrd, Process;
-
-type
-  TStringArray  = array of string;
-  TIntegerArray = array of integer;
-
-  TRange = record
-    from : integer;
-    till : integer;
-  end;
+  {$ifdef windows} Windirs, {$endif}
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LazUtf8, LCLProc, ExtCtrls, ClipBrd, Process, UmLib;
 
 // string's functions
 
 function IsNumeral(c: char): boolean;
 function IsLetter(c: char): boolean;
-function Prefix(ps, st: string): boolean;
-function Suffix(ps, st: string): boolean;
 function OneUpCase(st: string): string;
 function DoubleQuotedStr(s: string): string;
-function ToInt(s: string): integer;
-function ToBoolean(s: string): boolean;
-function ToStr(value: longint): string;
 function CleanString(s: string): string;
 function StringPos(subst: string; s: string): TIntegerArray;
-procedure Replace(var s: string; const oldPattern, newPattern: String);
-procedure DelDoubleSpace(var s: string);
 procedure CutStr(var s: string; StartSt, EndSt: string);
-function ListToArray(const List: TStringList): TStringArray;
-function ListToString(const List: TStringArray): string;
 function StringToList(ch: Char; s: string): TStringArray;
-function XmlToList(s: string): TStringArray;
-procedure RemoveTags(var s: string);
 
 // сlipboard's function
 
@@ -63,15 +42,11 @@ function Cyrillic(language: string): boolean;
 // system's functions
 
 function WidthInPixels(Font: TFont; s: string): integer;
-procedure Output(s: string); overload;
-procedure Output(n: integer); overload;
 
 const
   Slash = DirectorySeparator;
 
 implementation
-
-{$ifdef windows} uses RichMemoEx; {$endif} // Utf8ToRTF()
 
 // string's functions
 
@@ -83,16 +58,6 @@ end;
 function IsLetter(c: char): boolean;
 begin
   Result := ord(c) > 64;  // A-65
-end;
-
-function Prefix(ps, st: string): boolean;
-begin
-  Result := Pos(ps, st) = 1;
-end;
-
-function Suffix(ps, st: string): boolean;
-begin
-  Result := Pos(ps, st) = Length(st) - Length(ps) + 1;
 end;
 
 function OneUpCase(st: string): string;
@@ -107,25 +72,6 @@ end;
 function DoubleQuotedStr(s: string): string;
 begin
   Result := '"' + s + '"';
-end;
-
-function ToInt(s: string): integer;
-var v, r : integer;
-begin
-  Val(s, v, r);
-  if r=0 then Result := v else Result := 0;
-end;
-
-function ToBoolean(s: string): boolean;
-var v : boolean;
-begin
-  Result := false;
-  if TryStrToBool(s,v) then Result := v;
-end;
-
-function ToStr(value: longint): string;
-begin
- System.Str(value, Result);
 end;
 
 function CleanString(s: string): string;
@@ -156,16 +102,6 @@ begin
   SetLength(Result,k);
 end;
 
-procedure Replace(var s: string; const oldPattern, newPattern: string);
-begin
-  s := StringReplace(s, oldPattern, newPattern, [rfReplaceAll]);
-end;
-
-procedure DelDoubleSpace(var s: string);
-begin
-  s := DelSpace1(s);
-end;
-
 procedure CutStr(var s: string; StartSt, EndSt: string);
 var
   x1,x2,len : integer;
@@ -178,21 +114,6 @@ begin
       len := x2-x1+Length(EndSt);
       Delete(s, x1, len);
     end;
-end;
-
-function ListToArray(const List: TStringList): TStringArray;
-var i : integer;
-begin
-  SetLength(Result, List.Count);
-  for i:=0 to List.Count-1 do
-    Result[i] := List[i];
-end;
-
-function ListToString(const List: TStringArray): string;
-var s : string;
-begin
-  Result := '';
-  for s in List do Result += s;
 end;
 
 function StringToList(ch: Char; s: string): TStringArray;
@@ -226,58 +147,6 @@ begin
     end;
 
   SetLength(Result,index);
-end;
-
-function XmlToList(s: string): TStringArray;
-var
-  temp : string = '';
-  i : integer = 0;
-  c : char;
-begin
-  SetLength(Result,Length(s)+1);
-
-  for c in s do
-    begin
-      if c = '<' then
-        begin
-          Result[i] := temp;
-          inc(i);
-          temp := '';
-        end;
-
-      temp := temp + c;
-
-      if c = '>' then
-        begin
-          Result[i] := temp;
-          inc(i);
-          temp := '';
-        end;
-    end;
-
-  if temp <> '' then
-    begin
-      Result[i] := temp;
-      inc(i);
-    end;
-
-  SetLength(Result,i);
-end;
-
-procedure RemoveTags(var s: string);
-var
-  r : string = '';
-  l : boolean = true;
-  i : integer;
-begin
-  for i:=1 to Length(s) do
-    begin
-      if s[i]='<' then l := False;
-      if s[i]='<' then r += ' ';
-      if l then r += s[i];
-      if s[i]='>' then l := True;
-    end;
-  s := Trim(DelSpace1(r));
 end;
 
 // сlipboard's function
@@ -435,17 +304,6 @@ begin
   finally
     Bitmap.Free;
   end;
-end;
-
-procedure Output(s: string);
-begin
-  {$ifdef windows} OutputDebugString(PChar(s)); {$endif}
-  {$ifdef linux} DebugLn(s); {$endif}
-end;
-
-procedure Output(n: integer);
-begin
-  Output(ToStr(n));
 end;
 
 end.

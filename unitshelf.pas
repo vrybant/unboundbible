@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Fgl, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
-  UnitLib, UnitModule, UnitTitles, UnitData, UnitPrepare;
+  UnitModule, UnitTitles, UnitData, UnitPrepare, UmLib, UnitLib;
 
 type
   TBook = class

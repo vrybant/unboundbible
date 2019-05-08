@@ -4,8 +4,8 @@ interface
 
 uses
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
-  ClipBrd, StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitData;
+  Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList, ClipBrd,
+  StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitData, UmLib, UnitLib;
 
 type
 
@@ -246,9 +246,9 @@ var
 implementation
 
 uses
+  {$ifdef windows} UmParseWin, {$endif}
   FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLang,
-  UnitShelf, FormCopy, FormTranslate, FormCommentary, FormDownload,
-  {$ifdef windows} ParseWin, {$endif} UnitLib;
+  UnitShelf, FormCopy, FormTranslate, FormCommentary, FormDownload;
 
 const
   apBible   = 0; // active page
@@ -790,8 +790,7 @@ begin
     if Memo.Foreground = fgFootnote then LoadFootnote(Memo.hyperlink);
 
   if Memo <> MemoNotes then
-    if Memo.Foreground = {$ifdef linux} fgText {$else} fgStrong {$endif} then
-      LoadStrong(Memo.hyperlink);
+    if Memo.Foreground = fgStrong then LoadStrong(Memo.hyperlink);
 end;
 
 procedure TMainForm.MemoAttrChange(Sender: TObject);
