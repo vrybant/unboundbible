@@ -6,7 +6,7 @@ uses
   {$ifdef linux} LazLogger, {$endif}
   Classes, SysUtils, StrUtils, Graphics, RichMemo, RichMemoEx, UmLib;
 
-procedure Parse(Memo: TRichMemoEx; Source: string; jtag: boolean = false; html: boolean = false);
+procedure Parse(Memo: TRichMemoEx; Source: string; html: boolean = false);
 
 implementation
 
@@ -73,7 +73,7 @@ begin
     Result := false;
 end;
 
-procedure Parse(Memo: TRichMemoEx; Source: string; jtag: boolean = false; html: boolean = false);
+procedure Parse(Memo: TRichMemoEx; Source: string; html: boolean = false);
 var
   fp,fp0: TFontParams;
   StOrig : UnicodeString;

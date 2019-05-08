@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, Graphics, UmLib;
 
-function ParseWin(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
+function ParseWin(s: string; Font: TFont; html: boolean = false): string;
 
 implementation
 
@@ -36,7 +36,7 @@ begin
     + '\cf1 ';
 end;
 
-function ParseString(s: string; j: boolean): string;
+function ParseString(s: string): string;
 var
   color : string = '\cf1';
   r : string = '';
@@ -47,8 +47,8 @@ begin
 
   if jColor then color := '\cf7';
 
-  if j then if s =  '<J>' then begin r := '\cf7 '; jColor := true;  end;
-  if j then if s = '</J>' then begin r := '\cf1 '; jColor := false; end;
+  if s =  '<J>' then begin r := '\cf7 '; jColor := true;  end;
+  if s = '</J>' then begin r := '\cf1 '; jColor := false; end;
 
   if s =  '<f>' then r := '\cf6\super ';
   if s = '</f>' then r := color + '\nosupersub ';
@@ -145,7 +145,7 @@ begin
   DelDoubleSpace(s);
 end;
 
-function ParseWin(s: string; Font: TFont; jtag: boolean = false; html: boolean = false): string;
+function ParseWin(s: string; Font: TFont; html: boolean = false): string;
 var
   List : TStringArray;
   i : integer;
@@ -156,7 +156,7 @@ begin
   for i:=Low(List) to High(List) do
     if Prefix('<', List[i]) then
       begin
-        if not html then List[i] := ParseString(List[i], jtag);
+        if not html then List[i] := ParseString(List[i]);
         List[i] := ParseHtml(List[i]);
         if Prefix('<', List[i]) then List[i] := '';
       end;

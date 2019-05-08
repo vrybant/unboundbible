@@ -5,9 +5,10 @@ interface
 {$define winmode}
 
 uses
-  {$ifdef windows} Windows, {$endif} Forms, SysUtils, LResources,
-  Classes, Graphics, Controls, ExtCtrls, LCLProc, LCLType, LazUTF8,
-  RichMemo, RichMemoEx, UmLib;
+  {$ifdef windows} Windows, {$endif}
+  Forms, SysUtils, LResources, Classes, Graphics, Controls, ExtCtrls,
+  LCLProc, LCLType, LazUTF8, RichMemo, RichMemoEx, UmLib,
+  {$ifdef winmode} UmParseWin; {$else} UmParse; {$endif }
 
 type
   TUnboundMemo = class(TRichMemoEx)
@@ -56,9 +57,6 @@ const
 procedure Register;
 
 implementation
-
-uses
-  {$ifdef winmode} UmParseWin; {$else} UmParse; {$endif }
 
 constructor TUnboundMemo.Create(AOwner: TComponent);
 begin
@@ -384,8 +382,13 @@ end;
 
 procedure TUnboundMemo.LoadText(Source: string; jtag: boolean = false);
 begin
+  if not jtag then
+    begin
+      Replace(Source, '<J>','');
+      Replace(Source,'</J>','');
+    end;
   {$ifdef winmode}
-    LoadRichText(ParseWin(Source, Font, jtag, false));
+    LoadRichText(ParseWin(Source, Font));
   {$else}
     Parse(Self, Source);
   {$endif}
@@ -394,9 +397,9 @@ end;
 procedure TUnboundMemo.LoadHtml(Source: string);
 begin
   {$ifdef winmode}
-    LoadRichText(ParseWin(Source, Font, false, true));
+    LoadRichText(ParseWin(Source, Font, true));
   {$else}
-    Parse(Self, Source);
+    Parse(Self, Source, true);
   {$endif}
 end;
 
