@@ -9,6 +9,8 @@ function ParseWin(s: string; Font: TFont; html: boolean = false): string;
 
 implementation
 
+uses UmParse;
+
 const
   rtf_close = '}';
 
@@ -89,7 +91,7 @@ end;
 
 function ParseHtml(s: string): string;
 var
-  r : string = '';
+  r : string;
 begin
   r := s;
   s := LowerCase(s);
@@ -116,33 +118,6 @@ begin
   if s = '</sup>' then r := '\nosupersub ';
 
   Result := r;
-end;
-
-procedure HtmlReplacement(var s: string);
-begin
-  Replace(s,'&nbsp;' ,' ');
-  Replace(s,'&quot;' ,'"');
-  Replace(s,'&ldquo;','«');
-  Replace(s,'&rdquo;','»');
-  Replace(s, #09     ,' ');
-
-  Replace(s, '<em>', '<i>' );
-  Replace(s,'</em>','</i>' );
-
-  Replace(s, '<strong>', '<b>' );
-  Replace(s,'</strong>','</b>' );
-
-  Replace(s, '<p/>','<p>' );
-  Replace(s,'<br/>','<br><tab>');
-  Replace(s, '<td>','<br><tab>');
-  Replace(s, '<tr>','<br><tab>');
-  Replace(s,'</td>','<br><tab>');
-  Replace(s,'</tr>','<br><tab>');
-
-  if Pos('</p>',s) = 0 then Replace(s,'<p>','<br><tab>');
-  Replace(s,'</p>','<br><tab>');
-
-  DelDoubleSpace(s);
 end;
 
 function ParseWin(s: string; Font: TFont; html: boolean = false): string;

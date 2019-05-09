@@ -6,6 +6,7 @@ uses
   Classes, SysUtils, StrUtils, Graphics, RichMemo, RichMemoEx, UmLib;
 
 procedure Parse(Memo: TRichMemoEx; Source: string; html: boolean = false);
+procedure HtmlReplacement(var s: string);
 
 implementation
 

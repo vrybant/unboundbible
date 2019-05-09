@@ -1,8 +1,8 @@
 unit UnitModule;
 
-{$ifdef linux}
-  {$define zeos}
-{$endif}
+  {$ifdef linux}
+    {$define zeos}
+  {$endif}
 
 interface
 

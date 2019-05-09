@@ -1,8 +1,10 @@
 unit UnboundMemo;
 
-interface
+{$ifdef windows}
+  {$define winmode}
+{$endif}
 
-{$define winmode}
+interface
 
 uses
   {$ifdef windows} Windows, {$endif}
