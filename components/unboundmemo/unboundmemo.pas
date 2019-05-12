@@ -1,7 +1,7 @@
 unit UnboundMemo;
 
 {$ifdef windows}
-  {$define winmode}
+  { $define winmode}
 {$endif}
 
 interface
@@ -15,17 +15,15 @@ uses
 type
   TUnboundMemo = class(TRichMemoEx)
   protected
-    procedure MouseUp  (Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure KeyUp  (var Key: Word; Shift: TShiftState); override;
+    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure KeyUp(var Key: Word; Shift: TShiftState); override;
   private
     FLinkable : boolean;
     FParagraphic : boolean;
-    SelStartTemp  : integer;
+    SelStartTemp : integer;
     SelLengthTemp : integer;
     {$ifdef unix} function  Colored: boolean; {$endif}
     function  GetColorLink: string;
-    //{$ifdef linux} function  IsStrong: boolean; {$endif}
-    //{$ifdef linux} function  GetStrongLink: string; {$endif}
     function  GetLink: string;
     function  GetParagraphNumber(Pos: integer; select: boolean): integer;
     procedure GetParagraphRange;
@@ -35,7 +33,6 @@ type
     Hyperlink : string;
     ParagraphStart : integer;
     ParagraphCount : integer;
-    {$ifdef linux} strongmode : boolean; {$endif}
     constructor Create(AOwner: TComponent); override;
     function Foreground: integer;
     procedure SelectParagraph(n : integer);
@@ -72,7 +69,6 @@ begin
   Cursor := crArrow;
 
   {$ifdef windows} if Font.Name = 'default' then Font.Name := 'Tahoma'; {$endif}
-  {$ifdef linux} strongmode := false; {$endif}
 end;
 
 function TUnboundMemo.Foreground: integer;
@@ -127,58 +123,9 @@ begin
   SetSel(n1, n2); Result := Trim(Result);
 end;
 
-{$ifdef linux}
-//function TUnboundMemo.IsStrong: boolean;
-//var c : char;
-//begin
-//  Result := false;
-//  if SelLength <> 1 then Exit;
-//  c := SelText[1];
-//  Result := (c in ['0'..'9']) or (c in ['H','9']);
-//end;
-//
-//function TUnboundMemo.GetStrongLink: string;
-//var
-//  x1,x2,x0 : integer;
-//  n1,n2 : integer;
-//  quit : boolean;
-//begin
-//  Result := '';
-//  if SelLength > 0 then Exit;
-//
-//  GetSel(n1{%H-},n2{%H-});
-//  SetSel(n1, n2+1);
-//  quit := not IsStrong;
-//  SetSel(n1, n2);
-//  if quit then Exit;
-//
-//  x0 := SelStart;
-//  x1 := x0;
-//  repeat
-//    dec(x1);
-//    SetSel(x1, x1+1);
-//  until not IsStrong or (x1 < 0);
-//
-//  inc(x1);
-//  if x1 < 0 then inc(x1);
-//
-//  x2 := x0;
-//  repeat
-//    inc(x2);
-//    SetSel(x2, x2+1);
-//  until not IsStrong;
-//
-//  SetSel(x1, x2); Result := RemoveCRLF(SelText);
-//  SetSel(n1, n2); Result := Trim(Result);
-//end;
-{$endif}
-
 function TUnboundMemo.GetLink: string;
 begin
   if Foreground <> fgText then Result := GetColorLink;
-  {$ifdef linux}
-    //if strongmode and (Foreground = fgText) then Result := GetStrongLink;
-  {$endif}
 end;
 
 procedure TUnboundMemo.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

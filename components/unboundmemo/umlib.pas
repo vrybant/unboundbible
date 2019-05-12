@@ -6,7 +6,7 @@ uses
   {$ifdef windows} Windows, Windirs, {$endif}
   {$ifdef linux} LazLogger, {$endif}
   SysUtils, StrUtils, Classes, Graphics, Controls, Forms, Dialogs,
-   LCLVersion, LazUtf8, LCLProc, ExtCtrls, ClipBrd;
+  LCLVersion, LazUtf8, LCLProc, ExtCtrls, ClipBrd;
 
 type
   TStringArray  = array of string;

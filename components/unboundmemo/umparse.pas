@@ -3,7 +3,7 @@ unit UmParse;
 interface
 
 uses
-  Classes, SysUtils, StrUtils, Graphics, RichMemo, RichMemoEx, UmLib;
+  Classes, SysUtils, Graphics, RichMemo, RichMemoEx, UmLib;
 
 procedure Parse(Memo: TRichMemoEx; Source: string; html: boolean = false);
 procedure HtmlReplacement(var s: string);
@@ -38,39 +38,27 @@ begin
 end;
 
 function Apply(Tag: UnicodeString; var fp: TFontParams): boolean;
+var t : UnicodeString;
 begin
+  t := LowerCase(Tag);
   Result := true;
 
-  if Tag = '<l>' then
-    begin
-      fp.Color := clNavy;
-    end
+  if Tag = '<J>' then fp.Color := clMaroon else
+  if Tag = '<l>' then fp.Color := clNavy   else
+  if Tag = '<r>' then fp.Color := clRed    else
+  if Tag = '<n>' then fp.Color := clGray   else
 
-  else if Tag = '<J>' then
-    begin
-      fp.Color := clMaroon;
-    end
+  if Tag = '<f>' then begin fp.Color := clTeal;  fp.VScriptPos := vpSuperScript end else
+  if Tag = '<m>' then begin fp.Color := clGray;  fp.VScriptPos := vpSuperScript end else
+  if Tag = '<S>' then begin fp.Color := clBrown; fp.VScriptPos := vpSuperScript end else
 
-  else if Tag = '<b>' then
-    begin
-      fp.Style := fp.Style + [fsBold];
-      fp.Color := clBrown;
-    end
+  if t =  '<i>' then begin fp.Color := clGray;  fp.Style += [fsItalic] end else
+  if t = '<em>' then begin fp.Color := clGray;  fp.Style += [fsItalic] end else
+  if t =  '<a>' then begin fp.Color := clGray                          end else
+  if t =  '<b>' then begin fp.Color := clBrown; fp.Style += [fsBold]   end else
+  if t =  '<h>' then begin fp.Color := clBrown; fp.Style += [fsBold]   end else
 
-  else if Tag = '<i>' then
-    begin
-      fp.Style := fp.Style + [fsItalic];
-      fp.Color := clGray;
-    end
-
-  else if Tag = '<S>' then
-    begin
-      fp.Color := clBrown;
-      fp.VScriptPos := TVScriptPos.vpSuperScript;
-    end
-
-  else
-    Result := false;
+  Result := false;
 end;
 
 procedure Parse(Memo: TRichMemoEx; Source: string; html: boolean = false);
@@ -94,16 +82,16 @@ var
     for n := i to Length(StOrig) do
       begin
         if StOrig[n] = '<' then IsTag := True;
-
-        if IsTag then SubTag := SubTag + StOrig[n]
-                 else Inc(Result);
+        if IsTag then SubTag := SubTag + StOrig[n];
 
         if StOrig[n] = '>' then
           begin
             if SubTag = ClosedTag then Exit;
             IsTag := False;
             SubTag := '';
-          end;
+          end
+        else
+          if not IsTag then Inc(Result);
       end;
 
     Result := 0;

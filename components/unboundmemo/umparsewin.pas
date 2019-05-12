@@ -49,19 +49,17 @@ begin
 
   if jColor then color := '\cf7';
 
-  if s =  '<J>' then begin r := '\cf7 '; jColor := true;  end;
-  if s = '</J>' then begin r := '\cf1 '; jColor := false; end;
+  if s =  '<J>' then begin r := '\cf7 '; jColor := true  end;
+  if s = '</J>' then begin r := '\cf1 '; jColor := false end;
 
-  if s =  '<f>' then r := '\cf6\super ';
-  if s = '</f>' then r := color + '\nosupersub ';
-  if s =  '<i>' then r := '\cf5\i ';
-  if s = '</i>' then r := color + '\i0 ';
   if s =  '<l>' then r := '\cf3 ';
   if s = '</l>' then r := '\cf1 ';
   if s =  '<r>' then r := '\cf2 ';
   if s = '</r>' then r := '\cf1 ';
   if s =  '<n>' then r := '\cf5 ';       // note
   if s = '</n>' then r := color + ' ';
+  if s =  '<f>' then r := '\cf6\super ';
+  if s = '</f>' then r := color + '\nosupersub ';
   if s =  '<m>' then r := '\cf5\super '; // morphology
   if s = '</m>' then r := color + '\nosupersub ';
   if s =  '<S>' then r := '\cf8\super ';
@@ -79,9 +77,9 @@ begin
   if s =  '</b>' then r := '\cf1\b0 ';
   if s =   '<h>' then r := '\b ';
   if s =  '</h>' then r := '\b0 ';
+
   if s =  '</p>' then r := '\par ';
   if s =  '<br>' then r := '\par ';
-
   if s = '<tab>' then r := '\tab ';
   if s = '<rtl>' then r := '\rtlpar\qr ';
   if s = '<ltr>' then r := '\ltrpar\qr ';
@@ -131,8 +129,8 @@ begin
   for i:=Low(List) to High(List) do
     if Prefix('<', List[i]) then
       begin
-        if not html then List[i] := ParseString(List[i]);
-        List[i] := ParseHtml(List[i]);
+        if not html then List[i] := ParseString(List[i])
+                    else List[i] := ParseHtml(List[i]);
         if Prefix('<', List[i]) then List[i] := '';
       end;
 

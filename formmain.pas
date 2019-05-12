@@ -324,11 +324,6 @@ begin
   ToolSeparator5.Visible := False;
   {$endif}
 
-  {$ifdef linux}
-  MemoBible.strongmode := true;
-  MemoCompare.strongmode := true;
-  {$endif}
-
   UpdateActionImage;
 end;
 
