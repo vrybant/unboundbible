@@ -63,7 +63,7 @@ end;
 
 procedure Parse(Memo: TRichMemoEx; Source: string; html: boolean = false);
 var
-  fp,fp0: TFontParams;
+  fp, fp0: TFontParams;
   StOrig : UnicodeString;
   Tag : UnicodeString = '';
   idx : integer = 0;
@@ -98,16 +98,13 @@ var
   end;
 
 begin
+  Memo.Clear;
   fp0 := Memo.SelAttributes;
-  fp0.Style := [];
-  fp0.Color := clBlack;
-  fp0.VScriptPos := TVScriptPos.vpNormal;
 
   Replace(Source,'<br>',char($0A));
   Replace(Source,'</p>',char($0A));
 
   StOrig := UnicodeString(Source);
-  Memo.Clear;
   Memo.Text := String(RemoveTags(Source));
 
   for i := 1 to Length(StOrig) do
