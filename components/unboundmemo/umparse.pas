@@ -37,7 +37,7 @@ begin
   DelDoubleSpace(s);
 end;
 
-function Apply(Tag: UnicodeString; var fp: TFontParams): boolean;
+function ApplyString(Tag: UnicodeString; var fp: TFontParams): boolean;
 var t : UnicodeString;
 begin
   t := LowerCase(Tag);
@@ -59,6 +59,31 @@ begin
   if t =  '<h>' then begin fp.Color := clBrown; fp.Style += [fsBold]   end else
 
   Result := false;
+end;
+
+function ApplyHtml(Tag: UnicodeString; var fp: TFontParams): boolean;
+var t : UnicodeString;
+begin
+  t := LowerCase(Tag);
+  Result := true;
+
+  if Prefix('<a ', t{%H-}) then t := '<a>';
+
+  if t =  '<i>' then fp.Style += [fsItalic] else
+  if t = '<em>' then fp.Style += [fsItalic] else
+  if t =  '<a>' then fp.Color := clGray     else
+  if t =  '<h>' then fp.Color := clNavy     else
+
+  if t = '<b>' then begin fp.Color := clBrown; fp.Style += [fsBold] end else
+  if t = '<sup>' then fp.VScriptPos := vpSuperScript else
+
+  Result := false;
+end;
+
+function Apply(Tag: UnicodeString; var fp: TFontParams; html: boolean): boolean;
+begin
+  if html then Result := ApplyHtml(Tag, fp)
+          else Result := ApplyString(Tag, fp);
 end;
 
 procedure Parse(Memo: TRichMemoEx; Source: string; html: boolean = false);
@@ -101,8 +126,9 @@ begin
   Memo.Clear;
   fp0 := Memo.SelAttributes;
 
-  Replace(Source,'<br>',char($0A));
-  Replace(Source,'</p>',char($0A));
+  Replace(Source, '<br>',char($0A));
+  Replace(Source, '</p>',char($0A));
+  Replace(Source,'<tab>',char($09));
 
   StOrig := UnicodeString(Source);
   Memo.Text := String(RemoveTags(Source));
@@ -117,7 +143,7 @@ begin
       if StOrig[i] = '>' then
         begin
           fp := fp0;
-          if Apply(Tag, fp) then Memo.SetTextAttributes(idx, iLength(Tag), fp);
+          if Apply(Tag, fp, html) then Memo.SetTextAttributes(idx, iLength(Tag), fp);
           IsTag := False;
           Tag := '';
         end;

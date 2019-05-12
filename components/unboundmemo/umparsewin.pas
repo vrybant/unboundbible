@@ -68,8 +68,8 @@ begin
   s := LowerCase(s);
 
   if s =   '<i>' then r := '\cf5\i ';
-  if s =  '<em>' then r := '\cf5\i ';
   if s =  '</i>' then r := color + '\i0 ';
+  if s =  '<em>' then r := '\cf5\i ';
   if s = '</em>' then r := color + '\i0 ';
   if s =   '<a>' then r := '\cf5 ';
   if s =  '</a>' then r := '\cf1 ';
@@ -95,18 +95,19 @@ begin
   s := LowerCase(s);
 
   if Prefix('<a ', s) then s := '<a>';
-  if Prefix('<p ', s) then s := '<p>';
 
-  if s =  '<i>' then r := '\i ';
-  if s = '</i>' then r := '\i0 ';
-  if s =  '<a>' then r := '\cf5 ';
-  if s = '</a>' then r := '\cf1 ';
-  if s =  '<b>' then r := '\cf8\b ' ;
-  if s = '</b>' then r := '\cf1\b0 ';
-  if s = '</p>' then r := '\par ';
-  if s =  '<h>' then r := '\cf3 ';
-  if s = '</h>' then r := '\cf1 ';
-  if s = '<br>' then r := '\par ';
+  if s =   '<i>' then r := '\i ';
+  if s =  '</i>' then r := '\i0 ';
+  if s =  '<em>' then r := '\i ';
+  if s = '</em>' then r := '\i0 ';
+  if s =   '<a>' then r := '\cf5 ';
+  if s =  '</a>' then r := '\cf1 ';
+  if s =   '<b>' then r := '\cf8\b ' ;
+  if s =  '</b>' then r := '\cf1\b0 ';
+  if s =   '<h>' then r := '\cf3 ';
+  if s =  '</h>' then r := '\cf1 ';
+  if s =  '</p>' then r := '\par ';
+  if s =  '<br>' then r := '\par ';
 
   if s = '<tab>' then r := '\tab ';
   if s = '<rtl>' then r := '\rtlpar\qr ';
