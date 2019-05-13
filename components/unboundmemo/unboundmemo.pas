@@ -1,7 +1,7 @@
 unit UnboundMemo;
 
 {$ifdef windows}
-  { $define winmode}
+  {$define winmode}
 {$endif}
 
 interface

@@ -116,7 +116,7 @@ var
   end;
 
 begin
-  if html then HtmlReplacement(s);
+  if html then HtmlReplacement(Source);
 
   Replace(Source, '<br>',char($0A));
   Replace(Source, '</p>',char($0A));

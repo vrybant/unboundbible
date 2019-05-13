@@ -38,90 +38,79 @@ begin
     + '\cf1 ';
 end;
 
-function ParseString(s: string): string;
+function ApplyString(Tag: string; out r: string): boolean;
 var
   color : string = '\cf1';
-  r : string = '';
 const
   jColor : boolean = false;
 begin
-  // Result := '\cf2 ' + s + '\cf1 '; Exit; // show tags
+  r := '';
+//r := '\cf2 ' + Tag + '\cf1 '; Result := true; exit; // show tags
 
   if jColor then color := '\cf7';
 
-  if s =  '<J>' then begin r := '\cf7 '; jColor := true  end;
-  if s = '</J>' then begin r := '\cf1 '; jColor := false end;
+  if Tag =  '<J>' then begin r := '\cf7 '; jColor := true  end;
+  if Tag = '</J>' then begin r := '\cf1 '; jColor := false end;
 
-  if s =  '<l>' then r := '\cf3 ';
-  if s = '</l>' then r := '\cf1 ';
-  if s =  '<r>' then r := '\cf2 ';
-  if s = '</r>' then r := '\cf1 ';
-  if s =  '<n>' then r := '\cf5 ';       // note
-  if s = '</n>' then r := color + ' ';
-  if s =  '<f>' then r := '\cf6\super ';
-  if s = '</f>' then r := color + '\nosupersub ';
-  if s =  '<m>' then r := '\cf5\super '; // morphology
-  if s = '</m>' then r := color + '\nosupersub ';
-  if s =  '<S>' then r := '\cf8\super ';
-  if s = '</S>' then r := color + '\nosupersub ';
+  if Tag =  '<l>' then r := '\cf3 ';
+  if Tag = '</l>' then r := '\cf1 ';
+  if Tag =  '<r>' then r := '\cf2 ';
+  if Tag = '</r>' then r := '\cf1 ';
+  if Tag =  '<n>' then r := '\cf5 ';       // note
+  if Tag = '</n>' then r := color + ' ';
+  if Tag =  '<f>' then r := '\cf6\super ';
+  if Tag = '</f>' then r := color + '\nosupersub ';
+  if Tag =  '<m>' then r := '\cf5\super '; // morphology
+  if Tag = '</m>' then r := color + '\nosupersub ';
+  if Tag =  '<S>' then r := '\cf8\super ';
+  if Tag = '</S>' then r := color + '\nosupersub ';
+  if Tag =  '<i>' then r := '\cf5\i ';
+  if Tag = '</i>' then r := color + '\i0 ';
 
-  s := LowerCase(s);
-
-  if s =   '<i>' then r := '\cf5\i ';
-  if s =  '</i>' then r := color + '\i0 ';
-  if s =  '<em>' then r := '\cf5\i ';
-  if s = '</em>' then r := color + '\i0 ';
-  if s =   '<a>' then r := '\cf5 ';
-  if s =  '</a>' then r := '\cf1 ';
-  if s =   '<b>' then r := '\cf8\b ' ;
-  if s =  '</b>' then r := '\cf1\b0 ';
-  if s =   '<h>' then r := '\b ';
-  if s =  '</h>' then r := '\b0 ';
-
-  if s =  '</p>' then r := '\par ';
-  if s =  '<br>' then r := '\par ';
-  if s = '<tab>' then r := '\tab ';
-  if s = '<rtl>' then r := '\rtlpar\qr ';
-  if s = '<ltr>' then r := '\ltrpar\qr ';
-
-  Result := r;
+  Result := r <> '';
 end;
 
-function ParseHtml(s: string): string;
-var
-  r : string;
+function ApplyHtml(Tag: string; out r: string): boolean;
 begin
-  r := s;
-  s := LowerCase(s);
+  Tag := LowerCase(Tag);
+  r := '';
 
-  if Prefix('<a ', s) then s := '<a>';
+  if Prefix('<a ', Tag) then Tag := '<a>';
 
-  if s =   '<i>' then r := '\i ';
-  if s =  '</i>' then r := '\i0 ';
-  if s =  '<em>' then r := '\i ';
-  if s = '</em>' then r := '\i0 ';
-  if s =   '<a>' then r := '\cf5 ';
-  if s =  '</a>' then r := '\cf1 ';
-  if s =   '<b>' then r := '\cf8\b ' ;
-  if s =  '</b>' then r := '\cf1\b0 ';
-  if s =   '<h>' then r := '\cf3 ';
-  if s =  '</h>' then r := '\cf1 ';
-  if s =  '</p>' then r := '\par ';
-  if s =  '<br>' then r := '\par ';
+  if Tag =   '<i>' then r := '\i ';
+  if Tag =  '</i>' then r := '\i0 ';
+  if Tag =  '<em>' then r := '\i ';
+  if Tag = '</em>' then r := '\i0 ';
+  if Tag =   '<a>' then r := '\cf5 ';
+  if Tag =  '</a>' then r := '\cf1 ';
+  if Tag =   '<b>' then r := '\cf8\b ' ;
+  if Tag =  '</b>' then r := '\cf1\b0 ';
+  if Tag =   '<h>' then r := '\cf3 ';
+  if Tag =  '</h>' then r := '\cf1 ';
+  if Tag =  '</p>' then r := '\par ';
+  if Tag =  '<br>' then r := '\par ';
 
-  if s = '<tab>' then r := '\tab ';
-  if s = '<rtl>' then r := '\rtlpar\qr ';
-  if s = '<ltr>' then r := '\ltrpar\qr ';
+  if Tag = '<tab>' then r := '\tab ';
+  if Tag = '<rtl>' then r := '\rtlpar\qr ';
+  if Tag = '<ltr>' then r := '\ltrpar\qr ';
 
-  if s =  '<sup>' then r := '\super ';
-  if s = '</sup>' then r := '\nosupersub ';
+  if Tag =  '<sup>' then r := '\super ';
+  if Tag = '</sup>' then r := '\nosupersub ';
 
-  Result := r;
+  Result := r <> '';
+end;
+
+function Apply(Tag: string; out r: string; html: boolean): boolean;
+begin
+  Result := false;
+  if not html then Result := ApplyString(Tag, r);
+  if not Result then Result := ApplyHtml(Tag, r);
 end;
 
 function ParseWin(s: string; Font: TFont; html: boolean = false): string;
 var
   List : TStringArray;
+  r : string;
   i : integer;
 begin
   if html then HtmlReplacement(s);
@@ -129,11 +118,8 @@ begin
 
   for i:=Low(List) to High(List) do
     if Prefix('<', List[i]) then
-      begin
-        if not html then List[i] := ParseString(List[i])
-                    else List[i] := ParseHtml(List[i]);
-        if Prefix('<', List[i]) then List[i] := '';
-      end;
+      if Apply(List[i], r, html) then List[i] := r
+                                 else List[i] := '';
 
   Result := Trim(ListToString(List));
   Result := rtf_open(Font) + Result + rtf_close;
