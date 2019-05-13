@@ -1249,7 +1249,7 @@ procedure TMainForm.SearchText(s: string);
 var
   richtext : string;
   count : integer = 0;
-{$ifdef linux} const max = 500; {$endif}
+{$ifdef linux} const max = 2000; {$endif}
 begin
   if Shelf.Count = 0 then Exit;
   Cursor := crHourGlass;

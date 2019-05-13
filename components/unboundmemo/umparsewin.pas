@@ -38,15 +38,14 @@ begin
     + '\cf1 ';
 end;
 
-function ApplyString(Tag: string; out r: string): boolean;
+function ApplyString(Tag: string): string;
 var
   color : string = '\cf1';
+  r : string = '';
 const
   jColor : boolean = false;
 begin
-  r := '';
 //r := '\cf2 ' + Tag + '\cf1 '; Result := true; exit; // show tags
-
   if jColor then color := '\cf7';
 
   if Tag =  '<J>' then begin r := '\cf7 '; jColor := true  end;
@@ -67,14 +66,14 @@ begin
   if Tag =  '<i>' then r := '\cf5\i ';
   if Tag = '</i>' then r := color + '\i0 ';
 
-  Result := r <> '';
+  Result := r;
 end;
 
-function ApplyHtml(Tag: string; out r: string): boolean;
+function ApplyHtml(Tag: string): string;
+var
+  r : string = '';
 begin
   Tag := LowerCase(Tag);
-  r := '';
-
   if Prefix('<a ', Tag) then Tag := '<a>';
 
   if Tag =   '<i>' then r := '\i ';
@@ -97,20 +96,19 @@ begin
   if Tag =  '<sup>' then r := '\super ';
   if Tag = '</sup>' then r := '\nosupersub ';
 
-  Result := r <> '';
+  Result := r;
 end;
 
-function Apply(Tag: string; out r: string; html: boolean): boolean;
+function Apply(Tag: string; html: boolean): string;
 begin
-  Result := false;
-  if not html then Result := ApplyString(Tag, r);
-  if not Result then Result := ApplyHtml(Tag, r);
+  Result := '';
+  if not html then Result := ApplyString(Tag);
+  if Result = '' then Result := ApplyHtml(Tag);
 end;
 
 function ParseWin(s: string; Font: TFont; html: boolean = false): string;
 var
   List : TStringArray;
-  r : string;
   i : integer;
 begin
   if html then HtmlReplacement(s);
@@ -118,8 +116,7 @@ begin
 
   for i:=Low(List) to High(List) do
     if Prefix('<', List[i]) then
-      if Apply(List[i], r, html) then List[i] := r
-                                 else List[i] := '';
+      List[i] := Apply(List[i], html);
 
   Result := Trim(ListToString(List));
   Result := rtf_open(Font) + Result + rtf_close;
