@@ -18,14 +18,12 @@ begin
   Replace(s,'&rdquo;','»');
   Replace(s, #09     ,' ');
 
-  Replace(s, '<em>', '<i>' );
-  Replace(s,'</em>','</i>' );
-
-  Replace(s, '<strong>', '<b>' );
-  Replace(s,'</strong>','</b>' );
+  Replace(s, '<strong>', '<b>');
+  Replace(s,'</strong>','</b>');
 
   Replace(s, '<p/>','<p>' );
-  Replace(s,'<br/>','<br><tab>');
+  Replace(s,'<br/>','<br>');
+
   Replace(s, '<td>','<br><tab>');
   Replace(s, '<tr>','<br><tab>');
   Replace(s,'</td>','<br><tab>');
@@ -37,18 +35,29 @@ begin
   DelDoubleSpace(s);
 end;
 
+procedure Replacement(var s: string);
+begin
+  Replace(s, '<br>',char($0A));
+  Replace(s, '</p>',char($0A));
+  Replace(s,'<tab>',char($09));
+
+  Replace(s, '<S><r>' , '<R>');
+  Replace(s,'</r></S>','</R>');
+end;
+
 function ApplyString(Tag: UnicodeString; var fp: TFontParams): boolean;
 begin
   Result := true;
 
   if Tag = '<J>' then fp.Color := clMaroon else
   if Tag = '<l>' then fp.Color := clNavy   else
-  if Tag = '<r>' then fp.Color := clRed    else
   if Tag = '<n>' then fp.Color := clGray   else
+  if Tag = '<r>' then fp.Color := clRed    else
 
   if Tag = '<f>' then begin fp.Color := clTeal;  fp.VScriptPos := vpSuperScript end else
   if Tag = '<m>' then begin fp.Color := clGray;  fp.VScriptPos := vpSuperScript end else
   if Tag = '<S>' then begin fp.Color := clBrown; fp.VScriptPos := vpSuperScript end else
+  if Tag = '<R>' then begin fp.Color := clRed;   fp.VScriptPos := vpSuperScript end else
 
   Result := false;
 end;
@@ -60,8 +69,8 @@ begin
 
   if Prefix('<a ', Tag{%H-}) then Tag := '<a>';
 
-  if Tag =  '<a>' then fp.Color := clGray else
-  if Tag =  '<h>' then fp.Color := clNavy else
+  if Tag = '<a>' then fp.Color := clGray else
+  if Tag = '<h>' then fp.Color := clNavy else
 
   if Tag = '<b>' then begin fp.Color := clBrown; fp.Style += [fsBold]   end else
   if Tag = '<i>' then begin fp.Color := clGray;  fp.Style += [fsItalic] end else
@@ -116,10 +125,7 @@ var
 
 begin
   if html then HtmlReplacement(Source);
-
-  Replace(Source, '<br>',char($0A));
-  Replace(Source, '</p>',char($0A));
-  Replace(Source,'<tab>',char($09));
+  Replacement(Source);
 
   Memo.Clear;
   fp0 := Memo.SelAttributes;
