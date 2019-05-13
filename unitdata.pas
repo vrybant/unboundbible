@@ -7,7 +7,7 @@ uses
 
 const
   ApplicationName = 'Unbound Bible';
-  ApplicationVersion = {$ifdef windows}'3.1'{$else}'3.3'{$endif};
+  ApplicationVersion = '3.3';
   BibleDirectory = 'bibles';
   TitleDirectory = 'titles';
   LangDirectory = 'localization';
