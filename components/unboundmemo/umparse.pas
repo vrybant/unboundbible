@@ -38,9 +38,7 @@ begin
 end;
 
 function ApplyString(Tag: UnicodeString; var fp: TFontParams): boolean;
-var t : UnicodeString;
 begin
-  t := LowerCase(Tag);
   Result := true;
 
   if Tag = '<J>' then fp.Color := clMaroon else
@@ -52,44 +50,39 @@ begin
   if Tag = '<m>' then begin fp.Color := clGray;  fp.VScriptPos := vpSuperScript end else
   if Tag = '<S>' then begin fp.Color := clBrown; fp.VScriptPos := vpSuperScript end else
 
-  if t =  '<i>' then begin fp.Color := clGray;  fp.Style += [fsItalic] end else
-  if t = '<em>' then begin fp.Color := clGray;  fp.Style += [fsItalic] end else
-  if t =  '<a>' then begin fp.Color := clGray                          end else
-  if t =  '<b>' then begin fp.Color := clBrown; fp.Style += [fsBold]   end else
-  if t =  '<h>' then begin fp.Color := clBrown; fp.Style += [fsBold]   end else
-
   Result := false;
 end;
 
 function ApplyHtml(Tag: UnicodeString; var fp: TFontParams): boolean;
-var t : UnicodeString;
 begin
-  t := LowerCase(Tag);
+  Tag := LowerCase(Tag);
   Result := true;
 
-  if Prefix('<a ', t{%H-}) then t := '<a>';
+  if Prefix('<a ', Tag{%H-}) then Tag := '<a>';
 
-  if t =  '<i>' then fp.Style += [fsItalic] else
-  if t = '<em>' then fp.Style += [fsItalic] else
-  if t =  '<a>' then fp.Color := clGray     else
-  if t =  '<h>' then fp.Color := clNavy     else
+  if Tag =  '<a>' then fp.Color := clGray else
+  if Tag =  '<h>' then fp.Color := clNavy else
 
-  if t = '<b>' then begin fp.Color := clBrown; fp.Style += [fsBold] end else
-  if t = '<sup>' then fp.VScriptPos := vpSuperScript else
+  if Tag =  '<b>' then begin fp.Color := clBrown; fp.Style += [fsBold]   end else
+  if Tag =  '<i>' then begin fp.Color := clGray;  fp.Style += [fsItalic] end else
+  if Tag = '<em>' then begin fp.Color := clGray;  fp.Style += [fsItalic] end else
+
+  if Tag = '<sup>' then fp.VScriptPos := vpSuperScript else
 
   Result := false;
 end;
 
 function Apply(Tag: UnicodeString; var fp: TFontParams; html: boolean): boolean;
 begin
-  if html then Result := ApplyHtml(Tag, fp)
-          else Result := ApplyString(Tag, fp);
+  Result := false;
+  if not html then Result := ApplyString(Tag, fp);
+  if not Result then Result := ApplyHtml(Tag, fp);
 end;
 
 procedure Parse(Memo: TRichMemoEx; Source: string; html: boolean = false);
 var
   fp, fp0: TFontParams;
-  StOrig : UnicodeString;
+  Original : UnicodeString;
   Tag : UnicodeString = '';
   idx : integer = 0;
   IsTag : boolean = false;
@@ -104,12 +97,12 @@ var
     Result := 0;
     Insert('/', ClosedTag, 2);
 
-    for n := i to Length(StOrig) do
+    for n := i to Length(Original) do
       begin
-        if StOrig[n] = '<' then IsTag := True;
-        if IsTag then SubTag := SubTag + StOrig[n];
+        if Original[n] = '<' then IsTag := True;
+        if IsTag then SubTag := SubTag + Original[n];
 
-        if StOrig[n] = '>' then
+        if Original[n] = '>' then
           begin
             if SubTag = ClosedTag then Exit;
             IsTag := False;
@@ -123,24 +116,25 @@ var
   end;
 
 begin
-  Memo.Clear;
-  fp0 := Memo.SelAttributes;
+  if html then HtmlReplacement(s);
 
   Replace(Source, '<br>',char($0A));
   Replace(Source, '</p>',char($0A));
   Replace(Source,'<tab>',char($09));
 
-  StOrig := UnicodeString(Source);
+  Memo.Clear;
+  fp0 := Memo.SelAttributes;
+  Original := UnicodeString(Source);
   Memo.Text := String(RemoveTags(Source));
 
-  for i := 1 to Length(StOrig) do
+  for i := 1 to Length(Original) do
     begin
-      if StOrig[i] = '<' then IsTag := True;
+      if Original[i] = '<' then IsTag := True;
 
-      if IsTag then Tag := Tag + StOrig[i]
+      if IsTag then Tag := Tag + Original[i]
                else inc(idx);
 
-      if StOrig[i] = '>' then
+      if Original[i] = '>' then
         begin
           fp := fp0;
           if Apply(Tag, fp, html) then Memo.SetTextAttributes(idx, iLength(Tag), fp);
