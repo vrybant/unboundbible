@@ -63,9 +63,8 @@ begin
   if Tag =  '<a>' then fp.Color := clGray else
   if Tag =  '<h>' then fp.Color := clNavy else
 
-  if Tag =  '<b>' then begin fp.Color := clBrown; fp.Style += [fsBold]   end else
-  if Tag =  '<i>' then begin fp.Color := clGray;  fp.Style += [fsItalic] end else
-  if Tag = '<em>' then begin fp.Color := clGray;  fp.Style += [fsItalic] end else
+  if Tag = '<b>' then begin fp.Color := clBrown; fp.Style += [fsBold]   end else
+  if Tag = '<i>' then begin fp.Color := clGray;  fp.Style += [fsItalic] end else
 
   if Tag = '<sup>' then fp.VScriptPos := vpSuperScript else
 
@@ -74,9 +73,9 @@ end;
 
 function Apply(Tag: UnicodeString; var fp: TFontParams; html: boolean): boolean;
 begin
-  Result := false;
-  if not html then Result := ApplyString(Tag, fp);
-  if not Result then Result := ApplyHtml(Tag, fp);
+  Result := ApplyHtml(Tag, fp);
+  if html then Exit;
+  if not Result then Result := ApplyString(Tag, fp);
 end;
 
 procedure Parse(Memo: TRichMemoEx; Source: string; html: boolean = false);

@@ -76,10 +76,8 @@ begin
   Tag := LowerCase(Tag);
   if Prefix('<a ', Tag) then Tag := '<a>';
 
-  if Tag =   '<i>' then r := '\i ';
-  if Tag =  '</i>' then r := '\i0 ';
-  if Tag =  '<em>' then r := '\i ';
-  if Tag = '</em>' then r := '\i0 ';
+  if Tag =   '<i>' then r := '\cf5\i ';
+  if Tag =  '</i>' then r := '\cf1\i0 ';
   if Tag =   '<a>' then r := '\cf5 ';
   if Tag =  '</a>' then r := '\cf1 ';
   if Tag =   '<b>' then r := '\cf8\b ' ;

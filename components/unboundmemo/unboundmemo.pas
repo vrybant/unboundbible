@@ -10,7 +10,7 @@ uses
   {$ifdef windows} Windows, {$endif}
   Forms, SysUtils, LResources, Classes, Graphics, Controls, ExtCtrls,
   LCLProc, LCLType, LazUTF8, RichMemo, RichMemoEx, UmLib,
-  {$ifdef winmode} UmParseWin; {$else} UmParse; {$endif }
+  {$ifdef winmode} UmParseWin; {$else} UmParse; {$endif}
 
 type
   TUnboundMemo = class(TRichMemoEx)
