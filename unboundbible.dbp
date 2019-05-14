@@ -1,7 +1,7 @@
 [DEBREATE-0.7.13-dev16]
 <<CTRL>>
 Package: unboundbible
-Version: 3.2
+Version: 3.3
 Maintainer: Vladimir Rybant <vrybant@gmail.com>
 Section: text
 Homepage: http://vladimirrybant.org
@@ -13,11 +13,11 @@ Description: Open Source Bible Application
 <</CTRL>>
 <<FILES>>
 1
-/home/vladimir/Dropbox/Unbound-Bible/unboundbible* -> unboundbible -> /usr/bin
-/home/vladimir/Dropbox/Unbound-Bible/unboundbible.png -> unboundbible.png -> /usr/share/pixmaps
-/home/vladimir/Dropbox/Unbound-Bible/bibles -> bibles -> /usr/share/unboundbible
-/home/vladimir/Dropbox/Unbound-Bible/titles -> titles -> /usr/share/unboundbible
 /home/vladimir/Dropbox/Unbound-Bible/localization -> localization -> /usr/share/unboundbible
+/home/vladimir/Dropbox/Unbound-Bible/titles -> titles -> /usr/share/unboundbible
+/home/vladimir/Dropbox/Unbound-Bible/bibles -> bibles -> /usr/share/unboundbible
+/home/vladimir/Dropbox/Unbound-Bible/unboundbible.png -> unboundbible.png -> /usr/share/pixmaps
+/home/vladimir/Dropbox/Unbound-Bible/unboundbible* -> unboundbible -> /usr/bin
 <</FILES>>
 <<SCRIPTS>>
 <<PREINST>>
@@ -35,6 +35,13 @@ Description: Open Source Bible Application
 <</SCRIPTS>>
 <<CHANGELOG>>
 <<DEST>>DEFAULT<</DEST>>
+unboundbible (3.3) ; urgency=high
+
+  * Subscripted strong's nimbers.
+
+ -- Vladimir Rybant <vrybant@gmail.com>  May 2019 
+
+
 unboundbible (3.2) ; urgency=high
 
   * One bug fixed.
