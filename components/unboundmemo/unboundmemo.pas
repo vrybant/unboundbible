@@ -340,8 +340,8 @@ begin
     LoadRichText(ParseWin(Source, Font));
   {$else}
     Parse(Self, Source);
+    if ReadOnly then HideCursor;
   {$endif}
-  if ReadOnly then HideCursor;
 end;
 
 procedure TUnboundMemo.LoadHtml(Source: string);
@@ -350,8 +350,8 @@ begin
     LoadRichText(ParseWin(Source, Font, true));
   {$else}
     Parse(Self, Source, true);
+    if ReadOnly then HideCursor;
   {$endif}
-  if ReadOnly then HideCursor;
 end;
 
 procedure Register;
