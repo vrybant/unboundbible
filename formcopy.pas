@@ -65,6 +65,8 @@ end;
 
 procedure TCopyForm.FormActivate(Sender: TObject);
 begin
+  Memo.Font.Assign(DefaultFont);
+
   {$ifdef linux}
   ButtonCancel.Top := 255;
   CheckBox.Top := 290;

@@ -10,7 +10,7 @@ object CopyForm: TCopyForm
   OnActivate = FormActivate
   OnClose = FormClose
   Position = poDesktopCenter
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.0.0.4'
   object Memo: TUnboundMemo
     Cursor = crArrow
     Left = 8
@@ -18,7 +18,9 @@ object CopyForm: TCopyForm
     Top = 8
     Width = 400
     Color = clWhite
+    Font.Height = -16
     HideSelection = True
+    ParentFont = False
     ReadOnly = True
     ScrollBars = ssAutoVertical
     TabOrder = 0
