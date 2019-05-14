@@ -341,6 +341,7 @@ begin
   {$else}
     Parse(Self, Source);
   {$endif}
+  if ReadOnly then HideCursor;
 end;
 
 procedure TUnboundMemo.LoadHtml(Source: string);
@@ -350,6 +351,7 @@ begin
   {$else}
     Parse(Self, Source, true);
   {$endif}
+  if ReadOnly then HideCursor;
 end;
 
 procedure Register;
