@@ -11,13 +11,20 @@ uses
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite; {$else} SQLite3conn,  IBConnection; {$endif}
 
 type
+  TTitle = record
+    name    : string;
+    abbr    : string;
+    number  : integer;
+    sorting : integer;
+  end;
+
+type
   TTitles = class
   public
     constructor Create(language: string);
-    function GetTitle(n: integer): string;
-    function GetAbbr(n: integer): string;
-    destructor Destroy; override;
+    function GetTitle(n: integer; out Title: TTitle): boolean;
   private
+    Data : array of TTitle;
     {$ifdef zeos}
       Connection : TZConnection;
       Query : TZReadOnlyQuery;
@@ -26,8 +33,8 @@ type
       Transaction : TSQLTransaction;
       Query : TSQLQuery;
     {$endif}
+    procedure LoadData;
     function GetFileName(language: string): string;
-    function GetTitleEx(n: integer; abbreviation: boolean): string;
   end;
 
 
@@ -35,6 +42,14 @@ implementation
 
 uses
   UnitData;
+
+const
+  noneTitle : TTitle = (
+    name    : '';
+    abbr    : '';
+    number  : 0;
+    sorting : 0;
+    );
 
 constructor TTitles.Create(language: string);
 var
@@ -45,6 +60,7 @@ begin
 
   FileName := GetFileName(language) + '.sqlite';
   FilePath := SharePath + TitleDirectory + Slash + FileName;
+  SetLength(Data,0);
 
   {$ifdef zeos}
     Connection := TZConnection.Create(nil);
@@ -69,9 +85,14 @@ begin
       Connection.Open;
       Transaction.Active := True;
     {$endif}
+    LoadData;
   except
     Output('Failed connection to title database');
   end;
+
+  Query.Free;
+  {$ifndef zeos} Transaction.Free; {$endif}
+  Connection.Free;
 end;
 
 function TTitles.GetFileName(language: string): string;
@@ -93,51 +114,51 @@ begin
     end;
 end;
 
-function TTitles.GetTitleEx(n: integer; abbreviation: boolean): string;
+procedure TTitles.LoadData;
 var
-  name, abbr : string;
+  T : TTitle;
+  k : integer = 0;
 begin
-  name := '';
-  abbr := '';
+  SetLength(Data,100);
 
   try
     try
-      Query.SQL.Text := 'SELECT * FROM Books WHERE Number=' + ToStr(n);
+      Query.SQL.Text := 'SELECT * FROM Books';
       Query.Open;
 
-      try name := Query.FieldByName('Name').AsString; except end;
-      try abbr := Query.FieldByName('Abbreviation').AsString; except end;
+      while not Query.Eof do
+        begin
+          T := noneTitle;
+          try T.name := Query.FieldByName('Name').AsString; except end;
+          try T.abbr := Query.FieldByName('Abbreviation').AsString; except end;
+          try T.number := Query.FieldByName('Number').AsInteger; except end;
+
+          if T.abbr = '' then T.abbr := T.name;
+          T.sorting := k;
+          Data[k] := T;
+          inc(k);
+
+          Query.Next;
+        end;
+
     except
       //
     end;
   finally
     Query.Close;
-    if name = '' then name := ToStr(n);
-    if abbr = '' then abbr := name;
+    SetLength(Data,k);
   end;
-
-  if abbreviation then Result := abbr else Result := name;
 end;
 
-function TTitles.GetTitle(n : integer): string;
+function TTitles.GetTitle(n: integer; out Title: TTitle): boolean;
+var
+  i : integer;
 begin
-  Result := GetTitleEx(n, false);
+  Title := noneTitle;
+  for i:=0 to Length(Data)-1 do
+    if Data[i].number = n then Title := Data[i];
+  Result := Title.name <> '';
 end;
-
-function TTitles.GetAbbr(n : integer): string;
-begin
-  Result := GetTitleEx(n, true);
-end;
-
-destructor TTitles.Destroy;
-begin
-  Query.Free;
-  {$ifndef zeos} Transaction.Free; {$endif}
-  Connection.Free;
-
-  inherited Destroy;
-end;
-
 
 end.
 

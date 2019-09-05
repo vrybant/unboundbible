@@ -22,7 +22,6 @@ type
   private
     Books : TBooks;
     z : TBibleAlias;
-    function SortingIndex(number: integer): integer;
     function RankContents(const Contents: TContentArray): TContentArray;
     function ExtractFootnotes(s: string; marker: string): string;
   public
@@ -98,9 +97,9 @@ end;
 procedure TBible.LoadDatabase;
 var
   Book : TBook;
-  x, n : integer;
+  id : integer;
 begin
-  if loaded then exit;
+  if loaded then Exit;
 
   try
     try
@@ -109,15 +108,14 @@ begin
 
       while not Query.Eof do
         begin
-          try x := Query.FieldByName(z.book).AsInteger; except x := 0 end;
-          if  x <= 0 then Continue;
+          try id := Query.FieldByName(z.book).AsInteger; except id := 0 end;
+          if  id <= 0 then Continue;
 
           Book := TBook.Create;
-          n := DecodeID(x);
-          Book.number := n;
-          Book.title := ToStr(x);
-          Book.id := x;
-          Book.sorting := SortingIndex(n);
+          Book.number := DecodeID(id);
+          Book.title := ToStr(id);
+          Book.id := id;
+          Book.sorting := 99;
           Books.Add(Book);
           Query.Next;
         end;
@@ -142,35 +140,20 @@ end;
 procedure TBible.SetTitles;
 var
   Titles : TTitles;
+  Title  : TTitle;
   i : integer;
 begin
   Titles := TTitles.Create(Language);
 
   for i:=0 to Books.Count-1 do
-    begin
-      Books[i].title := Titles.getTitle(Books[i].number);
-      Books[i].abbr  := Titles.getAbbr(Books[i].number);
-    end;
+    if Titles.GetTitle(Books[i].number, Title) then
+      begin
+        Books[i].title := Title.name;
+        Books[i].abbr := Title.abbr;
+        Books[i].sorting := Title.sorting;
+      end;
 
   Titles.Free;
-end;
-
-function TBible.SortingIndex(number: integer): integer;
-var
-  i : integer;
-  l : boolean;
-begin
-  Result := 100;
-  if number <= 0 then Exit;
-  l := Cyrillic(language);
-
-  for i:=1 to Length(sortArrayEN) do
-    if (not l and (number = sortArrayEN[i])) or
-           (l and (number = sortArrayRU[i])) then
-      begin
-        Result := i;
-        Exit;
-      end;
 end;
 
 function TBible.MinBook: integer;
