@@ -100,24 +100,13 @@ end;
 function TModule.EncodeID(id: integer): integer;
 begin
   Result := id;
-  if format = mybible then
-    if id > 0 then
-      if id <= Length(myBibleArray) then
-        Result := myBibleArray[id];
+  if format = mybible then Result := unbound2mybible(id);
 end;
 
 function TModule.DecodeID(id: integer): integer;
-var i : integer;
 begin
   Result := id;
-  if format = mybible then
-    if id > 0 then
-      for i:=1 to Length(myBibleArray) do
-        if id = myBibleArray[i] then
-          begin
-            Result := i;
-            Exit;
-          end;
+  if format = mybible then Result := mybible2unbound(id);
 end;
 
 function TModule.TableExists(table: string): boolean;

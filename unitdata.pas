@@ -167,6 +167,9 @@ var
     'james','1_peter','2_peter','1_john','2_john','3_john','jude','revelation'
     );
 
+function unbound2mybible(id: integer): integer;
+function mybible2unbound(id: integer): integer;
+
 function IsNewTestament(n: integer): boolean;
 
 procedure CreateDataDirectory;
@@ -175,6 +178,25 @@ function DataPath: string;
 function GetDatabaseList: TStringArray;
 
 implementation
+
+function unbound2mybible(id: integer): integer;
+begin
+  Result := id;
+  if (id > 0) and (id <= Length(myBibleArray)) then Result := myBibleArray[id];
+end;
+
+function mybible2unbound(id: integer): integer;
+var i : integer;
+begin
+  Result := id;
+  if id = 0 then Exit;
+  for i:=1 to Length(myBibleArray) do
+    if id = myBibleArray[i] then
+      begin
+        Result := i;
+        Exit;
+      end;
+end;
 
 function IsNewTestament(n: integer): boolean;
 begin
