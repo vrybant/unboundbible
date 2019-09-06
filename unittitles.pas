@@ -35,6 +35,7 @@ type
     {$endif}
     procedure LoadData;
     function GetFileName(language: string): string;
+    procedure Extract;
   end;
 
 
@@ -158,6 +159,27 @@ begin
   for i:=0 to Length(Data)-1 do
     if Data[i].number = n then Title := Data[i];
   Result := Title.name <> '';
+end;
+
+procedure TTitles.Extract;
+var
+  f : System.Text;
+  Title : TTitle;
+  filepath : string;
+  i : integer;
+begin
+  filepath := GetUserDir + ApplicationName + Slash + 'out.txt';
+  AssignFile(f,filepath); Rewrite(f);
+
+  for i:=0 to Length(Data)-1 do
+    begin
+      Title := Data[i];
+      write(f,Title.number ); write(f,char($09));
+      write(f,Title.name   ); write(f,char($09));
+      write(f,Title.abbr   ); writeln(f);
+    end;
+
+  CloseFile(f);
 end;
 
 end.
