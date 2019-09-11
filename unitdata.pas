@@ -189,7 +189,7 @@ function mybible2unbound(id: integer): integer;
 var i : integer;
 begin
   Result := id;
-  if id <= 0 then Exit;
+  if id = 0 then Exit;
   for i:=1 to Length(myBibleArray) do
     if id = myBibleArray[i] then
       begin
