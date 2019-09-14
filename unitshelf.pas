@@ -107,16 +107,15 @@ begin
       Query.Open;
 
       while not Query.Eof do
-        begin
-          try id := Query.FieldByName(z.book).AsInteger; except id := 0 end;
-          if  id <= 0 then Continue;
-
+        try
+          id := Query.FieldByName(z.book).AsInteger;
           Book := TBook.Create;
           Book.number := DecodeID(id);
           Book.title := ToStr(id);
           Book.id := id;
           Book.sorting := 99;
           Books.Add(Book);
+        finally
           Query.Next;
         end;
 

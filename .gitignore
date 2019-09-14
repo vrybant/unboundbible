@@ -13,6 +13,7 @@ lib/*
 *.sh
 *.backup
 *.lintian
+*.xlsx
 backup/*
 titles/text/*
 components/zeosdbo/packages/lazarus/lib/*
