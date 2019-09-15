@@ -111,9 +111,7 @@ begin
           id := Query.FieldByName(z.book).AsInteger;
           Book := TBook.Create;
           Book.number := DecodeID(id);
-          Book.title := ToStr(id);
           Book.id := id;
-          Book.sorting := 99;
           Books.Add(Book);
         finally
           Query.Next;
@@ -150,6 +148,12 @@ begin
         Books[i].title := Title.name;
         Books[i].abbr := Title.abbr;
         Books[i].sorting := Title.sorting;
+      end
+    else
+      begin
+        Books[i].title := 'Apocrypha ' + ToStr(Books[i].id);
+        Books[i].abbr := Books[i].title;
+        Books[i].sorting := 99;
       end;
 
   Titles.Free;
