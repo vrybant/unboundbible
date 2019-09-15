@@ -3,7 +3,7 @@
                              
 #define MyAppName "Unbound Bible"
 #define MyAppVerName "Unbound Bible 3"
-#define MyAppVersion "3.0"
+#define MyAppVersion "3.4"
 #define MyAppCopyright "GNU GPL"
 #define MyAppPublisher "Vladimir Rybant"
 #define MyAppURL "http://vladimirrybant.org"
