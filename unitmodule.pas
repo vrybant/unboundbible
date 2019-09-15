@@ -92,7 +92,7 @@ begin
 
   format := unbound;
   ext := ExtractFileExt(FilePath);
-  if  (ext = '.mybible') or (ext = '.bblx') or (ext = '.bbli') then format := mysword;
+  if  (ext = '.mybible') or (ext = '.bbli') then format := mysword;
 
   OpenDatabase;
 end;
