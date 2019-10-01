@@ -1,7 +1,7 @@
-[DEBREATE-0.7.13-dev16]
+[DEBREATE-0.7.13]
 <<CTRL>>
 Package: unboundbible
-Version: 3.3
+Version: 3.4
 Maintainer: Vladimir Rybant <vrybant@gmail.com>
 Section: text
 Homepage: http://vladimirrybant.org
@@ -10,6 +10,7 @@ Priority: standard
 Depends: libc6 (>=2.4), libsqlite3-0 (>=3.5.9), libgtk2.0-0 (>=2.6.0)
 Description: Open Source Bible Application
  Unbound Bible is an open source and free, multilingual Bible-reader program.
+
 <</CTRL>>
 <<FILES>>
 1
@@ -35,6 +36,13 @@ Description: Open Source Bible Application
 <</SCRIPTS>>
 <<CHANGELOG>>
 <<DEST>>DEFAULT<</DEST>>
+unboundbible (3.4) ; urgency=medium
+
+  * Best support for apocryphal books.
+
+ -- Vladimir Rybant <vrybant@gmail.com>  September 2019 
+
+
 unboundbible (3.3) ; urgency=high
 
   * Subscripted strong's nimbers.
