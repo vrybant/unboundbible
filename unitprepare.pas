@@ -57,13 +57,14 @@ begin
   Result := ListToString(List);
 end;
 
-procedure Strongs(var s: string);
+function MyswordStrongsToUnbound(var s: string): string;
 var
   List : TStringArray;
   number : string;
   i : integer;
 begin
   List := XmlToList(s);
+
   for i:=Low(List) to High(List) do
     if Prefix('<W', List[i]) then
       begin
@@ -72,7 +73,8 @@ begin
         Replace(number,'>' ,'');
         List[i] := '<S>' + number + '</S>';
       end;
-  s := Trim(ListToString(List));
+
+  Result := Trim(ListToString(List));
 end;
 
 procedure ExtractMarkers(var s: string);
@@ -112,7 +114,7 @@ function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 begin
   if format = mysword then
     begin
-      if Pos('<W',s) > 0 then Strongs(s);
+      if Pos('<W',s) > 0 then s := MyswordStrongsToUnbound(s);
       ReplaceMyswordTags(s);
     end;
 
