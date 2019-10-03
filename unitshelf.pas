@@ -443,6 +443,8 @@ var
   Content : TContent;
   filepath, text : string;
   nt : boolean;
+const
+  tab = char(09);
 begin
   filepath := GetUserDir + ApplicationName + Slash + 'out.txt';
   AssignFile(f,filepath); Rewrite(f);
@@ -452,12 +454,10 @@ begin
     begin
       text := Content.text;
       nt := IsNewTestament(Content.verse.book);
-      if format = mybible then text := MybibleStrongsToUnbound(text, nt);
-      text := Prepare(text, format);
-      DelDoubleSpace(text);
-      write(f,Content.verse.book   ); write(f,char($09));
-      write(f,Content.verse.chapter); write(f,char($09));
-      write(f,Content.verse.number ); write(f,char($09));
+      text := Convert(text, format, nt);
+      write(f,Content.verse.book   ); write(f, tab);
+      write(f,Content.verse.chapter); write(f, tab);
+      write(f,Content.verse.number ); write(f, tab);
       write(f,text                 ); writeln(f);
     end;
 
@@ -619,7 +619,7 @@ end;
 destructor TShelf.Destroy;
 var i : integer;
 begin
-  //Self[Current].Extract;
+//Self[Current].Extract;
 
   SavePrivates;
   for i:=0 to Count-1 do Items[i].Free;

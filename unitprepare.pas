@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, UnitData, UmLib, UnitLib;
 
-function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
+function Convert(s: string; format: TFileFormat; nt: boolean): string;
 function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 
 implementation
@@ -108,6 +108,30 @@ begin
   Replace(s,'</f>','~]</f>');
   ExtractMarkers(s);
   CutStr(s,'[~','~]');
+end;
+
+function Convert(s: string; format: TFileFormat; nt: boolean): string;
+begin
+  if format = mysword then
+    begin
+      if Pos('<W',s) > 0 then s := MyswordStrongsToUnbound(s);
+      ReplaceMyswordTags(s);
+    end;
+
+  if format = mybible then
+    begin
+      if Pos('<S>',s) > 0 then s := MybibleStrongsToUnbound(s, nt);
+      CutStr(s,'<f','</f>');
+      Replace(s,'<t>',' ');
+      Replace(s,'</t>',' ');
+      Replace(s,'<pb/>',' ');
+      Replace(s,'<br/>',' ');
+    end;
+
+//CutStr(s,'<S>','</S>');
+  DelDoubleSpace(s);
+
+  Result := Trim(s);
 end;
 
 function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
