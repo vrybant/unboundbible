@@ -57,6 +57,8 @@ begin
   if Tag = '</r>' then r := '\cf1 ';
   if Tag =  '<n>' then r := '\cf5 ';       // note
   if Tag = '</n>' then r := color + ' ';
+  if Tag =  '<v>' then r := '\cf5 ';
+  if Tag = '</v>' then r := color + ' ';
   if Tag =  '<f>' then r := '\cf6\super ';
   if Tag = '</f>' then r := color + '\nosupersub ';
   if Tag =  '<m>' then r := '\cf5\super '; // morphology
