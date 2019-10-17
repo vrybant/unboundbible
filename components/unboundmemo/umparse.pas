@@ -71,6 +71,7 @@ begin
 
   if Tag = '<a>' then fp.Color := clGray else
   if Tag = '<h>' then fp.Color := clNavy else
+  if Tag = '<v>' then fp.Color := clGray else
 
   if Tag = '<b>' then begin fp.Color := clBrown; fp.Style += [fsBold]   end else
   if Tag = '<i>' then begin fp.Color := clGray;  fp.Style += [fsItalic] end else
