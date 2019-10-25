@@ -3,7 +3,7 @@
                              
 #define MyAppName "Unbound Bible"
 #define MyAppVerName "Unbound Bible 3"
-#define MyAppVersion "3.4"
+#define MyAppVersion "3.5"
 #define MyAppCopyright "GNU GPL"
 #define MyAppPublisher "Vladimir Rybant"
 #define MyAppURL "http://vladimirrybant.org"
@@ -20,7 +20,7 @@
  AppSupportURL={#MyAppURL}
  AppUpdatesURL={#MyAppURL}
 
- DefaultDirName={pf}\{#MyAppName}
+ DefaultDirName={commonpf}\{#MyAppName}
  DefaultGroupName={#MyAppName}
  DisableWelcomePage=no
  DisableStartupPrompt=yes
@@ -79,7 +79,7 @@
  Name: fl; MessagesFile: "compiler:Languages\Finnish.isl"
  Name: fr; MessagesFile: "compiler:Languages\French.isl"
  Name: de; MessagesFile: "compiler:Languages\German.isl"
- Name: gr; MessagesFile: "compiler:Languages\Greek.isl"
+;Name: gr; MessagesFile: "compiler:Languages\Greek.isl"
  Name: il; MessagesFile: "compiler:Languages\Hebrew.isl"
 ;Name: hu; MessagesFile: "compiler:Languages\Hungarian.isl"
  Name: it; MessagesFile: "compiler:Languages\Italian.isl"
