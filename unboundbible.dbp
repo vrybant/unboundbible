@@ -1,7 +1,7 @@
 [DEBREATE-0.7.13]
 <<CTRL>>
 Package: unboundbible
-Version: 3.4
+Version: 3.5
 Maintainer: Vladimir Rybant <vrybant@gmail.com>
 Section: text
 Homepage: http://vladimirrybant.org
@@ -36,31 +36,38 @@ Description: Open Source Bible Application
 <</SCRIPTS>>
 <<CHANGELOG>>
 <<DEST>>DEFAULT<</DEST>>
+unboundbible (3.5) ; urgency=medium
+
+  * Russian module updated.
+  * One bug fixed.
+
+ -- Vladimir Rybant <vrybant@gmail.com> October 2019
+
 unboundbible (3.4) ; urgency=medium
 
   * Best support for apocryphal books.
 
- -- Vladimir Rybant <vrybant@gmail.com>  September 2019 
+ -- Vladimir Rybant <vrybant@gmail.com> September 2019 
 
 
 unboundbible (3.3) ; urgency=high
 
   * Subscripted strong's nimbers.
 
- -- Vladimir Rybant <vrybant@gmail.com>  May 2019 
+ -- Vladimir Rybant <vrybant@gmail.com> May 2019 
 
 
 unboundbible (3.2) ; urgency=high
 
   * One bug fixed.
 
- -- Vladimir Rybant <vrybant@gmail.com>  April 2019 
+ -- Vladimir Rybant <vrybant@gmail.com> April 2019 
 
 unboundbible (3.1) ; urgency=high
 
   * Quick strong's nimbers.
 
- -- Vladimir Rybant <vrybant@gmail.com>  April 2019 
+ -- Vladimir Rybant <vrybant@gmail.com> April 2019 
 
 unboundbible (3.0) ; urgency=medium
 

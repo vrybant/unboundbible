@@ -2,7 +2,7 @@
 ; -- unboundbible.iss --
                              
 #define MyAppName "Unbound Bible"
-#define MyAppVerName "Unbound Bible 3"
+#define MyAppVerName "Unbound Bible 3.5"
 #define MyAppVersion "3.5"
 #define MyAppCopyright "GNU GPL"
 #define MyAppPublisher "Vladimir Rybant"
