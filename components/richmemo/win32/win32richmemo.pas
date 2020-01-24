@@ -300,6 +300,11 @@ begin
           if Assigned(AWinControl) and (AWinControl is TCustomRichMemo) then
             TIntCustomRichMemo(AWinControl).Change;
           Result:=true;
+          if IsIconic( GetAncestor(AWinControl.Handle, GA_ROOTOWNER)) then
+            // hack: the RichMemo has problems repainting itself
+            //       if changes were done while the root window was minimized
+            //       see #34391
+            GetWin32WindowInfo(AWinControl.Handle)^.TrackValid:=true;
         end;
       end;
     end;
@@ -347,18 +352,28 @@ function RichEditProc(Window: HWnd; Msg: UInt; WParam: Windows.WParam;
 var
   WindowInfo : PWin32WindowInfo;
   NcHandled  : Boolean; // NCPaint has painted by itself
+  r: TRect;
+  PrevWndProc: Windows.WNDPROC;
 begin
   case Msg of
     WM_PAINT : begin
       //todo: LCL WM_PAINT handling prevents richedit from drawing correctly
       Result := CallDefaultWindowProc(Window, Msg, WParam, LParam);
       //Result := WindowProc(Window, Msg, WParam, LParam)
-
-      WindowInfo := GetWin32WindowInfo(Window);
-      if WindowInfo^.WinControl is TCustomRichMemo then
-        if (WindowInfo^.WinControl as TCustomRichMemo).ReadOnly then HideCaret(Window);
-
+      // hack: the RichMemo has problems repainting itself
+      //       if changes were done while the root window was minimized
+      //       see #34391
+      if GetWin32WindowInfo(Window)^.TrackValid then begin
+        Windows.GetWindowRect(Window, r);
+        OffsetRect(r, -r.left, -r.top);
+        r.Left:=-r.Right;
+        r.Top:=-r.Bottom;
+        InvalidateRect(Window, @r, false);
+        PrevWndProc := GetWin32WindowInfo(Window)^.DefWndProc;
+        Windows.CallWindowProcW(PrevWndProc, Window, Msg, WParam, LParam);
+        GetWin32WindowInfo(Window)^.TrackValid:=false;
       end;
+    end;
       //When theming is enabled, and the component should have a border around it,
     WM_NCPAINT: begin
       if Assigned(NCPaint) then begin
@@ -436,6 +451,7 @@ end;
 destructor TWin32Inline.Destroy;
 begin
   rminline.Free;
+  canvas.free;
   inherited Destroy;
 end;
 
@@ -676,7 +692,7 @@ begin
   RichEditManager.GetScroll(AWinControl.Handle, pt);
   eventmask := RichEditManager.SetEventMask(AWinControl.Handle, 0);
 
-//LockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle);
+  LockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle);
 
   RichEditManager.GetSelRange(AWinControl.Handle, Orig);
 
@@ -685,7 +701,7 @@ begin
 
   RichEditManager.SetSelRange(AWinControl.Handle, Orig);
   RichEditManager.SetScroll(AWinControl.Handle, pt);
-//UnlockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle, false);
+  UnlockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle, false);
 
   RichEditManager.SetEventMask(AWinControl.Handle,eventmask);
 end;

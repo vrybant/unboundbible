@@ -29,6 +29,11 @@ type
 
     class function GetTextAttributes(const AWinControl: TWinControl; TextStart: Integer;
       var Params: TIntFontParams): Boolean; override;
+          { Returns True if passed text styles are indentical }
+    class function FPisEqual(const FP, FPRef : TFontParams) : boolean;
+          { Returns with the range (in 0 based bytes) of the style that TextStart is in }
+    class function GetStyleRange(const AWinControl: TWinControl; TextStart: Integer;
+                                       var RangeStart, RangeLen: Integer): Boolean; override;
     class procedure SetTextAttributes(const AWinControl: TWinControl; TextStart, TextLen: Integer;
       const Params: TIntFontParams); override;
 
@@ -216,7 +221,7 @@ begin
   txt.setFrame(nr);
   txt.textContainer.setLineFragmentPadding(0);
 
-  txt.callback := TLCLCommonCallback.Create(txt, AWinControl);
+  txt.callback := TLCLCommonCallback.Create(txt, AWinControl, scr);
   ns := NSStringUtf8(AParams.Caption);
   txt.setString(ns);
   ns.release;
@@ -260,6 +265,44 @@ begin
   Params.HasBkClr:=Assigned(prm.backColor);
   if Params.HasBkClr then
     Params.BkColor:=NSColorToColorRef(prm.backColor);
+  Result:=true;
+end;
+
+
+class function TCocoaWSCustomRichMemo.FPisEqual(const FP, FPRef : TFontParams) : boolean;
+begin                        // DRB - an addition function to help GetStyleRange()
+  Result := false;
+  if (FP.name = FPRef.name) and (FP.size = FPRef.size) and (FP.style = FPRef.style)
+        and (FP.bkColor = FPRef.bkcolor) and (FP.HasBkClr = FPRef.HasBkClr)
+        and (FP.VScriptPos = FPRef.VScriptPos) then
+  Result := true
+end;
+
+class function TCocoaWSCustomRichMemo.GetStyleRange(const AWinControl: TWinControl;
+                              TextStart: Integer; var RangeStart, RangeLen: Integer): Boolean;
+var
+  txt : TCocoaTextView;
+  TextLength : integer;       // all text, in bytes (2 byte line endings)
+  FPRef, FP : TIntFontParams;
+begin                         // DRB - new method to implement GetStypeRange() on Cocoa.
+  Result := False;
+  txt:=MemoTextView(AWinControl);
+  TextLength := txt.textStorage.string_.length;
+  if (TextStart < 0) or (TextStart >= TextLength) then exit;
+  if not GetTextAttributes(AWinControl, TextStart, FPRef) then exit;
+  RangeStart := TextStart;
+  repeat
+        dec(RangeStart);
+        if RangeStart <= 0 then break;
+        if not GetTextAttributes(AWinControl, RangeStart, FP) then exit;
+  until not FPisEqual(FP, FPRef);
+  inc(RangeStart);
+  RangeLen := TextStart - RangeStart;
+  repeat
+        if RangeStart + RangeLen >= TextLength then break;
+        inc(RangeLen);
+        if not GetTextAttributes(AWinControl, RangeStart + RangeLen, FP) then exit;
+  until not FPisEqual(FP, FPRef);
   Result:=true;
 end;
 
