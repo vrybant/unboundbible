@@ -1066,27 +1066,6 @@ begin
           else TAction(Actions[i]).ImageIndex := TAction(Actions[i]).Tag + 1;
 end;
 
-{$ifdef darwin}
-procedure TMainForm.UpdateShortCut;
-begin
-  ActionSearch    .ShortCut := ShortCut(VK_F, [ssMeta]);
-  ActionEditUndo  .ShortCut := ShortCut(VK_Z, [ssMeta]);
-  ActionEditCut   .ShortCut := ShortCut(VK_X, [ssModifier]);
-  ActionEditCopy  .ShortCut := ShortCut(VK_C, [ssMeta]);
-  ActionCopyVerses.ShortCut := ShortCut(VK_R, [ssMeta]);
-  ActionEditPaste .ShortCut := ShortCut(VK_V, [ssMeta]);
-  ActionEditSelAll.ShortCut := ShortCut(VK_A, [ssMeta]);
-  ActionFileNew   .ShortCut := ShortCut(VK_N, [ssMeta]);
-  ActionFileOpen  .ShortCut := ShortCut(VK_O, [ssMeta]);
-  ActionFileSave  .ShortCut := ShortCut(VK_S, [ssMeta]);
-  ActionFilePrint .ShortCut := ShortCut(VK_P, [ssMeta]);
-  ActionBold      .ShortCut := ShortCut(VK_B, [ssMeta]);
-  ActionItalic    .ShortCut := ShortCut(VK_I, [ssMeta]);
-  ActionUnderline .ShortCut := ShortCut(VK_U, [ssMeta]);
-  ActionLink      .ShortCut := ShortCut(VK_K, [ssMeta]);
-end;
-{$endif}
-
 procedure TMainForm.RebuildRecentList;
 var
   i: integer;
@@ -1306,6 +1285,13 @@ begin
   MemoPreview.CopyToClipboard;
   MemoPreview.Visible := false;
   MemoPreview.FreeOnRelease;
+end;
+{$endif}
+
+{$ifdef darwin}
+procedure TMainForm.VersesToClipboard;
+begin
+  //
 end;
 {$endif}
 

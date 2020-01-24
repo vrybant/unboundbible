@@ -1,10 +1,10 @@
 object MainForm: TMainForm
-  Left = 399
+  Left = 359
   Height = 385
-  Top = 329
+  Top = 279
   Width = 795
   Caption = 'Unbound Bible'
-  ClientHeight = 365
+  ClientHeight = 385
   ClientWidth = 795
   Menu = MainMenu
   OnActivate = FormActivate
@@ -13,7 +13,7 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
-  LCLVersion = '2.0.0.4'
+  LCLVersion = '2.0.6.0'
   object StandardToolBar: TToolBar
     Left = 0
     Height = 30
@@ -205,11 +205,11 @@ object MainForm: TMainForm
   end
   object PanelLeft: TPanel
     Left = 0
-    Height = 310
+    Height = 335
     Top = 32
     Width = 195
     Align = alLeft
-    ClientHeight = 310
+    ClientHeight = 335
     ClientWidth = 195
     Font.CharSet = GREEK_CHARSET
     Font.Color = clWindowText
@@ -226,7 +226,6 @@ object MainForm: TMainForm
       ItemHeight = 0
       OnClick = BookBoxClick
       ParentFont = False
-      ScrollWidth = 132
       TabOrder = 0
     end
     object ChapterBox: TListBox
@@ -239,29 +238,29 @@ object MainForm: TMainForm
       ItemHeight = 0
       OnClick = ChapterBoxClick
       ParentFont = False
-      ScrollWidth = 43
       TabOrder = 1
     end
     object ComboBox: TComboBox
       Left = 4
-      Height = 25
+      Height = 20
       Top = 2
       Width = 185
       DropDownCount = 12
       Font.Color = clWindowText
       Font.Height = -13
-      ItemHeight = 17
+      ItemHeight = 26
       OnChange = ComboBoxChange
       OnDrawItem = ComboBoxDrawItem
       ParentFont = False
       Style = csDropDownList
       TabOrder = 2
+      Text = '0'
     end
   end
   object StatusBar: TStatusBar
     Left = 0
-    Height = 23
-    Top = 342
+    Height = 18
+    Top = 367
     Width = 795
     Panels = <>
     ParentShowHint = False
@@ -269,7 +268,7 @@ object MainForm: TMainForm
   end
   object PageControl: TPageControl
     Left = 200
-    Height = 310
+    Height = 335
     Top = 32
     Width = 595
     ActivePage = TabSheetBible
@@ -282,21 +281,22 @@ object MainForm: TMainForm
     OnChange = PageControlChange
     object TabSheetBible: TTabSheet
       Caption = 'Bible'
-      ClientHeight = 280
-      ClientWidth = 587
+      ClientHeight = 305
+      ClientWidth = 589
       Font.Color = clWindowText
       Font.Height = -12
       ParentFont = False
       object MemoBible: TUnboundMemo
         Cursor = crArrow
         Left = 0
-        Height = 280
+        Height = 305
         Top = 0
-        Width = 587
+        Width = 589
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
         HideSelection = False
+        Lines.Strings = (        )
         OnContextPopup = MemoContextPopup
         OnMouseLeave = MemoMouseLeave
         OnMouseUp = MemoMouseUp
@@ -325,6 +325,7 @@ object MainForm: TMainForm
         Font.Color = clWindowText
         Font.Height = -16
         HideSelection = False
+        Lines.Strings = (        )
         OnContextPopup = MemoContextPopup
         OnMouseLeave = MemoMouseLeave
         OnMouseUp = MemoMouseUp
@@ -355,6 +356,7 @@ object MainForm: TMainForm
         Font.Color = clWindowText
         Font.Height = -16
         HideSelection = False
+        Lines.Strings = (        )
         OnContextPopup = MemoContextPopup
         OnMouseLeave = MemoMouseLeave
         OnMouseUp = MemoMouseUp
@@ -382,6 +384,7 @@ object MainForm: TMainForm
         Font.Color = clWindowText
         Font.Height = -16
         HideSelection = False
+        Lines.Strings = (        )
         OnContextPopup = MemoContextPopup
         OnMouseUp = MemoMouseUp
         ParentFont = False
@@ -395,7 +398,7 @@ object MainForm: TMainForm
   end
   object Splitter: TSplitter
     Left = 195
-    Height = 310
+    Height = 335
     Top = 32
     Width = 5
   end
