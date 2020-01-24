@@ -373,6 +373,11 @@ begin
         Windows.CallWindowProcW(PrevWndProc, Window, Msg, WParam, LParam);
         GetWin32WindowInfo(Window)^.TrackValid:=false;
       end;
+
+      WindowInfo := GetWin32WindowInfo(Window);
+      if WindowInfo^.WinControl is TCustomRichMemo then
+        if (WindowInfo^.WinControl as TCustomRichMemo).ReadOnly then HideCaret(Window);
+	  
     end;
       //When theming is enabled, and the component should have a border around it,
     WM_NCPAINT: begin
@@ -692,7 +697,7 @@ begin
   RichEditManager.GetScroll(AWinControl.Handle, pt);
   eventmask := RichEditManager.SetEventMask(AWinControl.Handle, 0);
 
-  LockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle);
+//LockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle);
 
   RichEditManager.GetSelRange(AWinControl.Handle, Orig);
 
@@ -701,7 +706,7 @@ begin
 
   RichEditManager.SetSelRange(AWinControl.Handle, Orig);
   RichEditManager.SetScroll(AWinControl.Handle, pt);
-  UnlockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle, false);
+//UnlockRedraw(TCustomRichMemo(AWinControl), AWinControl.Handle, false);
 
   RichEditManager.SetEventMask(AWinControl.Handle,eventmask);
 end;
