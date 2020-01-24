@@ -47,9 +47,16 @@ Unit ZOleDB;
 //  Imported oledb on 08.11.2014 00:47:46 from oledb.tlb of http://py-com-tools.googlecode.com/svn/trunk/sdk-tlbs/
 
 interface
-{$I ZPlain.inc}
-{$IFDEF ENABLE_ADO}
 
+{$I ZPlain.inc}
+
+{$IF not defined(MSWINDOWS) or (defined(ZEOS_DISABLE_ADO) and defined(ZEOS_DISABLE_OLEDB))}
+  {$DEFINE ZEOS_DISABLE_OLEDB}
+{$ELSE}
+  {$UNDEF ZEOS_DISABLE_OLEDB}
+{$IFEND}
+
+{$IFNDEF ZEOS_DISABLE_OLEDB}
 {$IFDEF WIN64}
 {$ALIGN 8}
 {$ELSE}
@@ -60,7 +67,7 @@ interface
 // Dependency: stdole v2 (stdole2.pas)
 //  Warning: renamed method 'Reset' in IDBBinderProperties to 'Reset_'
 Uses
-  Windows,ActiveX,Classes,Variants, ZCompatibility;//,stdole2;
+  Windows, ActiveX, Classes, Variants, ZCompatibility;
 Const
   IID_IColumnsInfo : TGUID = '{0C733A11-2A1C-11CE-ADE5-00AA0044773D}';
 
@@ -436,40 +443,40 @@ const
 type
   DBTYPEENUM = TOleEnum;
 const
-  DBTYPE_EMPTY	= 0;
-  DBTYPE_NULL	= 1;
-	DBTYPE_I2	= 2;
-	DBTYPE_I4	= 3;
-	DBTYPE_R4	= 4;
-	DBTYPE_R8	= 5;
-	DBTYPE_CY	= 6;
-	DBTYPE_DATE	= 7;
-	DBTYPE_BSTR	= 8;
-	DBTYPE_IDISPATCH	= 9;
-	DBTYPE_ERROR	= 10;
-	DBTYPE_BOOL	= 11;
-	DBTYPE_VARIANT	= 12;
-	DBTYPE_IUNKNOWN	= 13;
-	DBTYPE_DECIMAL	= 14;
-	DBTYPE_UI1	= 17;
-  DBTYPE_ARRAY = $00002000;
-  DBTYPE_BYREF = $00004000;
-	DBTYPE_I1	= 16;
-	DBTYPE_UI2	= 18;
-	DBTYPE_UI4	= 19;
-	DBTYPE_I8	= 20;
-	DBTYPE_UI8	= 21;
-	DBTYPE_GUID	= 72;
-  DBTYPE_VECTOR = $00001000;
-  DBTYPE_RESERVED = $00008000;
-	DBTYPE_BYTES	= 128;
-	DBTYPE_STR	= 129;
-	DBTYPE_WSTR	= 130;
-	DBTYPE_NUMERIC	= 131;
-	DBTYPE_UDT	= 132;
-	DBTYPE_DBDATE	= 133;
-	DBTYPE_DBTIME	= 134;
-	DBTYPE_DBTIMESTAMP	= 135;
+  DBTYPE_EMPTY      = 0;
+  DBTYPE_NULL       = 1;
+  DBTYPE_I2         = 2;
+  DBTYPE_I4         = 3;
+  DBTYPE_R4         = 4;
+  DBTYPE_R8         = 5;
+  DBTYPE_CY         = 6;
+  DBTYPE_DATE       = 7;
+  DBTYPE_BSTR       = 8;
+  DBTYPE_IDISPATCH  = 9;
+  DBTYPE_ERROR      = 10;
+  DBTYPE_BOOL       = 11;
+  DBTYPE_VARIANT    = 12;
+  DBTYPE_IUNKNOWN   = 13;
+  DBTYPE_DECIMAL    = 14;
+  DBTYPE_I1         = 16;
+  DBTYPE_UI1        = 17;
+  DBTYPE_ARRAY      = $00002000;
+  DBTYPE_BYREF      = $00004000;
+  DBTYPE_UI2        = 18;
+  DBTYPE_UI4        = 19;
+  DBTYPE_I8         = 20;
+  DBTYPE_UI8        = 21;
+  DBTYPE_GUID       = 72;
+  DBTYPE_VECTOR     = $00001000;
+  DBTYPE_RESERVED   = $00008000;
+  DBTYPE_BYTES      = 128;
+  DBTYPE_STR        = 129;
+  DBTYPE_WSTR       = 130;
+  DBTYPE_NUMERIC    = 131;
+  DBTYPE_UDT        = 132;
+  DBTYPE_DBDATE     = 133;
+  DBTYPE_DBTIME     = 134;
+  DBTYPE_DBTIMESTAMP= 135;
 
 // DBTYPEENUM15 constants from oledb.h
 //@@@+ V1.5
@@ -483,30 +490,30 @@ const
 type
   DBTYPEENUM20 = TOleEnum;
 const
-  DBTYPE_FILETIME	= 64;
-	DBTYPE_PROPVARIANT	= 138;
-	DBTYPE_VARNUMERIC	= 139;
+  DBTYPE_FILETIME   = 64;
+  DBTYPE_PROPVARIANT= 138;
+  DBTYPE_VARNUMERIC = 139;
 
 type
   DBACCESSORFLAGSENUM = TOleEnum;
 const
-  DBACCESSOR_INVALID = 0;
-  DBACCESSOR_PASSBYREF	= $1;
-	DBACCESSOR_ROWDATA = $2;
-	DBACCESSOR_PARAMETERDATA = $4;
-	DBACCESSOR_OPTIMIZED	= $8;
-	DBACCESSOR_INHERITED	= $10;
+  DBACCESSOR_INVALID       = 0;
+  DBACCESSOR_PASSBYREF     = $1;
+  DBACCESSOR_ROWDATA       = $2;
+  DBACCESSOR_PARAMETERDATA = $4;
+  DBACCESSOR_OPTIMIZED     = $8;
+  DBACCESSOR_INHERITED     = $10;
 
 type
   DBBINDSTATUSENUM = TOleEnum;
 const
-  DBBINDSTATUS_OK	= 0;
-	DBBINDSTATUS_BADORDINAL	= $1;
-	DBBINDSTATUS_UNSUPPORTEDCONVERSION	= $2;
-	DBBINDSTATUS_BADBINDINFO	= $3;
-	DBBINDSTATUS_BADSTORAGEFLAGS	= $4;
-	DBBINDSTATUS_NOINTERFACE	= $5;
-	DBBINDSTATUS_MULTIPLESTORAGE	= $6;
+  DBBINDSTATUS_OK = 0;
+  DBBINDSTATUS_BADORDINAL = $1;
+  DBBINDSTATUS_UNSUPPORTEDCONVERSION = $2;
+  DBBINDSTATUS_BADBINDINFO = $3;
+  DBBINDSTATUS_BADSTORAGEFLAGS = $4;
+  DBBINDSTATUS_NOINTERFACE = $5;
+  DBBINDSTATUS_MULTIPLESTORAGE = $6;
 
 type
   DBPARTENUM = TOleEnum;
@@ -916,6 +923,11 @@ const
   DBPROPVAL_DF_INITIALLY_IMMEDIATE = $02;
   DBPROPVAL_DF_NOT_DEFERRABLE = $03;
 
+
+  { errors from oledberr.h }
+  DB_E_PARAMUNAVAILABLE = HRESULT($80040E51); //cannot derive parameter information and SetParameterInfo has not been called
+  DB_E_ERRORSOCCURRED = HRESULT($80040E21); //Multiple-step OLE DB operation generated errors. Check each OLE DB status value, if available. No work was done.
+  DB_S_ERRORSOCCURRED = HRESULT($00040EDA); //Multiple-step OLE DB operation generated errors. Check each OLE DB status value, if available.
 type
   DBPROPENUM = TOleEnum;
 const
@@ -1247,6 +1259,7 @@ type
 //Map CoClass to its default interface
 
 //from oledb.h
+  ULONG = LongWord;
   // Length of a non-character object, size
   PDBLENGTH = ^DBLENGTH;
   DBLENGTH = NativeUInt; //ULONGLONG
@@ -3107,11 +3120,11 @@ type
 //CoClasses
 
 //CoClasses
-{$IFDEF MISS_VARIANTCLEAR}
+{$IF NOT DECLARED(VariantClear)}
 function VariantClear(var varg: OleVariant): HResult; stdcall; external 'oleaut32.dll' name 'VariantClear';
-{$ENDIF}
+{$IFEND}
 
-{$ENDIF ENABLE_ADO}
+{$ENDIF ZEOS_DISABLE_OLEDB}
 implementation
 
 end.

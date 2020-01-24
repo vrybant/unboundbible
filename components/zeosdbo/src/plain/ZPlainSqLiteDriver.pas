@@ -55,6 +55,8 @@ interface
 
 {$I ZPlain.inc}
 
+{$IFNDEF ZEOS_DISABLE_SQLITE}
+
 uses SysUtils, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF}
   {$IFDEF OLDFPC}ZClasses,{$ENDIF} ZCompatibility, ZPlainDriver;
 
@@ -189,7 +191,8 @@ type
   IZSQLitePlainDriver = interface (IZPlainDriver)
     ['{B931C952-3076-4ECB-9630-D900E8DB9869}']
 
-    function Open(const filename: PAnsiChar): Psqlite;
+    function CompiledWith_SQLITE_ENABLE_COLUMN_METADATA: Boolean;
+    function Open(const filename: PAnsiChar; var Handle: Psqlite): Integer;
     function Close(db: Psqlite): Integer;
     function Execute(db: Psqlite; const sql: PAnsiChar;
       sqlite_callback: Tsqlite_callback; arg: Pointer;
@@ -198,8 +201,10 @@ type
     function Changes(db: Psqlite): Integer;
     function LastStatementChanges(db: Psqlite): Integer;
     function ErrorString(db: Psqlite; code: Integer): RawByteString;
+    function ErrorMessage(db: Psqlite): RawByteString;
     procedure Interrupt(db: Psqlite);
     function Complete(const sql: PAnsiChar): Integer;
+    function Has_sqlite3_column_table_name: Boolean;
 
     procedure BusyHandler(db: Psqlite; callback: Tsqlite_busy_callback;
       ptr: Pointer);
@@ -284,6 +289,12 @@ type
 
     function ReKey(db: Psqlite; const pKey: Pointer; nKey: Integer): Integer;
     function Key(db: Psqlite; const pKey: Pointer; nKey: Integer): Integer;
+
+    function backup_init(pDest: Psqlite; const zDestName: PAnsiChar; pSource: Psqlite; const zSourceName: PAnsiChar):Pointer;
+    function backup_step(p: Psqlite; nPage: Integer): Integer;
+    function backup_finish(p: Psqlite): Integer;
+    function backup_remaining(p: Psqlite): Integer;
+    function backup_pagecount(p: Psqlite): Integer;
   end;
 
   {** Implements a base driver for SQLite}
@@ -356,6 +367,7 @@ type
 
     sqlite3_finalize: function(pStmt: Psqlite3_stmt): Integer; cdecl;
     sqlite3_reset: function(pStmt: Psqlite3_stmt): Integer; cdecl;
+    sqlite3_enable_load_extension: function(db: Psqlite; OnOff: Integer): Integer; cdecl;
 
     sqlite3_column_blob: function(Stmt: Psqlite3_stmt; iCol:integer): Pointer; cdecl;
     sqlite3_column_bytes: function(Stmt: Psqlite3_stmt; iCol: Integer): integer; cdecl;
@@ -370,8 +382,11 @@ type
 
     sqlite3_exec: function(db: Psqlite; const sql: PAnsiChar; sqlite_callback: Tsqlite_callback;
       arg: Pointer; var errmsg: PAnsiChar): Integer; cdecl;
+
     sqlite3_errmsg: function(db: Psqlite): PAnsiChar; cdecl;
     sqlite3_errstr: function(code: Integer): PAnsiChar; cdecl;
+    sqlite3_extended_errcode: function(db: Psqlite): integer; cdecl;
+
     sqlite3_last_insert_rowid: function(db: Psqlite): Int64; cdecl;
     sqlite3_changes: function(db: Psqlite): Integer; cdecl;
     sqlite3_interrupt: procedure(db: Psqlite); cdecl;
@@ -395,13 +410,20 @@ type
     sqlite3_commit_hook: function(db: Psqlite; callback: Tsqlite_simple_callback; ptr: Pointer): Pointer; cdecl;
     sqlite3_rekey: function(db: Psqlite; const pKey: Pointer; nKey: Integer): Integer; cdecl;
     sqlite3_key: function(db: Psqlite; const pKey: Pointer; nKey: Integer): Integer; cdecl;
+
+    sqlite3_backup_init: function(pDest: Psqlite; const zDestName: PAnsiChar; pSource: Psqlite; const zSourceName: PAnsiChar):Pointer; cdecl;
+    sqlite3_backup_step: function(p: Psqlite; nPage: Integer): Integer; cdecl;
+    sqlite3_backup_finish: function(p: Psqlite): Integer; cdecl;
+    sqlite3_backup_remaining: function(p: Psqlite): Integer; cdecl;
+    sqlite3_backup_pagecount: function(p: Psqlite): Integer; cdecl;
   protected
     function GetUnicodeCodePageName: String; override;
     procedure LoadCodePages; override;
   public
     constructor Create;
 
-    function Open(const filename: PAnsiChar): Psqlite;
+    function CompiledWith_SQLITE_ENABLE_COLUMN_METADATA: Boolean;
+    function Open(const filename: PAnsiChar; var Handle: Psqlite): Integer;
     function Close(db: Psqlite): Integer;
     function Execute(db: Psqlite; const sql: PAnsiChar;
       sqlite_callback: Tsqlite_callback; arg: Pointer;
@@ -410,6 +432,7 @@ type
     function Changes(db: Psqlite): Integer;
     function LastStatementChanges({%H-}db: Psqlite): Integer;
     function ErrorString(db: Psqlite; code: Integer): RawByteString;
+    function ErrorMessage(db: Psqlite): RawByteString;
     procedure Interrupt(db: Psqlite);
     function Complete(const sql: PAnsiChar): Integer;
 
@@ -419,6 +442,7 @@ type
 
     procedure FreeMem(ptr: Pointer);
     function LibVersion: PAnsiChar;
+    function Has_sqlite3_column_table_name: Boolean;
 
     function FunctionType({%H-}db: Psqlite; const {%H-}zName: PAnsiChar;
       {%H-}datatype: Integer): Integer;
@@ -489,6 +513,12 @@ type
     function column_type(Stmt: Psqlite3_stmt; iCol: Integer): Integer;
     function column_value(Stmt: Psqlite3_stmt; iCol: Integer): Psqlite3_value;
 
+    function backup_init(pDest: Psqlite; const zDestName: PAnsiChar; pSource: Psqlite; const zSourceName: PAnsiChar):Pointer;
+    function backup_step(p: Psqlite; nPage: Integer): Integer;
+    function backup_finish(p: Psqlite): Integer;
+    function backup_remaining(p: Psqlite): Integer;
+    function backup_pagecount(p: Psqlite): Integer;
+
     procedure ProgressHandler(db: Psqlite; p1: Integer;
       callback: Tsqlite_simple_callback; ptr: Pointer);
     function CommitHook(db: Psqlite; callback: Tsqlite_simple_callback;
@@ -509,7 +539,11 @@ type
     function GetDescription: string; override;
   end;
 
+{$ENDIF ZEOS_DISABLE_SQLITE}
+
 implementation
+
+{$IFNDEF ZEOS_DISABLE_SQLITE}
 
 uses ZPlainLoader, ZEncoding{$IFDEF WITH_UNITANSISTRINGS}, AnsiStrings{$ENDIF};
 
@@ -518,6 +552,11 @@ uses ZPlainLoader, ZEncoding{$IFDEF WITH_UNITANSISTRINGS}, AnsiStrings{$ENDIF};
 function TZSQLiteBaseDriver.GetUnicodeCodePageName: String;
 begin
   Result := 'UTF-8'
+end;
+
+function TZSQLiteBaseDriver.Has_sqlite3_column_table_name: Boolean;
+begin
+  Result := Assigned(sqlite3_column_table_name);
 end;
 
 procedure TZSQLiteBaseDriver.LoadCodePages;  //Egonhugeist
@@ -533,7 +572,7 @@ constructor TZSQLiteBaseDriver.Create;
 begin
    inherited create;
    FLoader := TZNativeLibraryLoader.Create([]);
-  {$IFNDEF UNIX}
+  {$IFDEF MSWINDOWS}
     FLoader.AddLocation(WINDOWS_DLL_LOCATION);
   {$ELSE}
     FLoader.AddLocation(LINUX_DLL_LOCATION);
@@ -574,9 +613,21 @@ begin
   Result := sqlite3_commit_hook(db, callback, ptr);
 end;
 
+function TZSQLiteBaseDriver.CompiledWith_SQLITE_ENABLE_COLUMN_METADATA: Boolean;
+begin
+  Result := Assigned(sqlite3_column_name) and Assigned(sqlite3_column_table_name);
+end;
+
 function TZSQLiteBaseDriver.Complete(const sql: PAnsiChar): Integer;
 begin
   Result := sqlite3_complete(sql);
+end;
+
+function TZSQLiteBaseDriver.ErrorMessage(db: Psqlite): RawByteString;
+begin
+  if Assigned(sqlite3_errmsg) and Assigned(db)
+  then Result := {$IFDEF WITH_UNITANSISTRINGS}AnsiStrings.{$ENDIF}Trim(sqlite3_errmsg(db))
+  else Result := '';
 end;
 
 function TZSQLiteBaseDriver.ErrorString(db: Psqlite; code: Integer): RawByteString;
@@ -668,14 +719,14 @@ begin
   Result := sqlite3_libversion;
 end;
 
-function TZSQLiteBaseDriver.Open(const filename: PAnsiChar): Psqlite;
+function TZSQLiteBaseDriver.Open(const filename: PAnsiChar; var Handle: Psqlite): Integer;
 {$IFNDEF UNICODE}
 var
   Version: string;
   FileNameString: String;
 {$ENDIF}
 begin
-  Result:= nil;
+  Handle := nil;
   (*Note to Windows users: The encoding used for the filename argument of
     sqlite3_open() and sqlite3_open_v2() must be UTF-8, not whatever codepage
     is currently defined. Filenames containing international characters must
@@ -683,18 +734,18 @@ begin
     sqlite3_open_v2(). *)
 
 {$IFDEF UNICODE}
-  sqlite3_open(filename, Result);
+  Result := sqlite3_open(filename, Handle);
 {$ELSE}
   Version := LibVersion;
   FileNameString := filename;
   if (Version > '3.2.5') then
     {$IFDEF FPC}
-      sqlite3_open(PAnsiChar(FileNameString), Result)
+      Result := sqlite3_open(PAnsiChar(FileNameString), Handle)
     {$ELSE}
-      sqlite3_open(PAnsiChar(AnsiToUTF8(FileNameString)), Result)
+      Result := sqlite3_open(PAnsiChar(AnsiToUTF8(FileNameString)), Handle)
     {$ENDIF}
   else
-    sqlite3_open(filename, Result);
+    Result := sqlite3_open(filename, Handle);
 {$ENDIF}
 end;
 
@@ -854,6 +905,33 @@ begin
   Result := sqlite3_data_count(pStmt);
 end;
 
+function TZSQLiteBaseDriver.backup_finish(p: Psqlite): Integer;
+begin
+  Result := sqlite3_backup_finish(p);
+end;
+
+function TZSQLiteBaseDriver.backup_init(pDest: Psqlite;
+  const zDestName: PAnsiChar; pSource: Psqlite;
+  const zSourceName: PAnsiChar): Pointer;
+begin
+  Result := sqlite3_backup_init(pDest, zDestName, pSource, zSourceName);
+end;
+
+function TZSQLiteBaseDriver.backup_pagecount(p: Psqlite): Integer;
+begin
+  Result := sqlite3_backup_pagecount(p);
+end;
+
+function TZSQLiteBaseDriver.backup_remaining(p: Psqlite): Integer;
+begin
+  Result := sqlite3_backup_remaining(p);
+end;
+
+function TZSQLiteBaseDriver.backup_step(p: Psqlite; nPage: Integer): Integer;
+begin
+  Result := sqlite3_backup_step(p, nPage);
+end;
+
 function TZSQLiteBaseDriver.bind_blob(pStmt: Psqlite3_stmt; ParamIndex: Integer;
   const Buffer: Pointer; N: Integer; ValDestructor: Tsqlite3_destructor_type): Integer;
 begin
@@ -988,8 +1066,7 @@ end;
 procedure TZSQLite3PlainDriver.LoadApi;
 begin
 { ************** Load adresses of API Functions ************* }
-  with Loader do
-  begin
+  with Loader do begin
   @sqlite3_open                   := GetAddress('sqlite3_open');
   @sqlite3_close                  := GetAddress('sqlite3_close');
 
@@ -1042,12 +1119,16 @@ begin
 
   @sqlite3_finalize               := GetAddress('sqlite3_finalize');
   @sqlite3_reset                  := GetAddress('sqlite3_reset');
+  @sqlite3_enable_load_extension  := GetAddress('sqlite3_enable_load_extension');
 
   @sqlite3_exec                   := GetAddress('sqlite3_exec');
   @sqlite3_last_insert_rowid      := GetAddress('sqlite3_last_insert_rowid');
   @sqlite3_changes                := GetAddress('sqlite3_changes');
+
   @sqlite3_errmsg                 := GetAddress('sqlite3_errmsg');
   @sqlite3_errstr                 := GetAddress('sqlite3_errstr');
+  @sqlite3_extended_errcode       := GetAddress('sqlite3_extended_errcode');
+
   @sqlite3_interrupt              := GetAddress('sqlite3_interrupt');
   @sqlite3_complete               := GetAddress('sqlite3_complete');
   @sqlite3_busy_handler           := GetAddress('sqlite3_busy_handler');
@@ -1068,13 +1149,19 @@ begin
   @sqlite3_commit_hook            := GetAddress('sqlite3_commit_hook');
   @sqlite3_rekey                  := GetAddress('sqlite3_rekey');
   @sqlite3_key                    := GetAddress('sqlite3_key');
+  { backup api }
+  @sqlite3_backup_init := GetAddress('sqlite3_backup_init');
+  @sqlite3_backup_step := GetAddress('sqlite3_backup_step');
+  @sqlite3_backup_finish := GetAddress('sqlite3_backup_finish');
+  @sqlite3_backup_remaining := GetAddress('sqlite3_backup_remaining');
+  @sqlite3_backup_pagecount := GetAddress('sqlite3_backup_pagecount');
   end;
 end;
 
 constructor TZSQLite3PlainDriver.Create;
 begin
   inherited Create;
-  {$IFNDEF UNIX}
+  {$IFDEF MSWINDOWS}
     FLoader.AddLocation(WINDOWS_DLL3_LOCATION);
   {$ELSE}
     FLoader.AddLocation(LINUX_DLL3_LOCATION);
@@ -1092,6 +1179,8 @@ function TZSQLite3PlainDriver.GetDescription: string;
 begin
   Result := 'Native Plain Driver for SQLite 3';
 end;
+
+{$ENDIF ZEOS_DISABLE_SQLITE}
 
 end.
 

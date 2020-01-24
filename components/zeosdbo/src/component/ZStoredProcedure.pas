@@ -71,7 +71,7 @@ type
     procedure RetrieveParamValues;
     function GetStoredProcName: string;
     procedure SetStoredProcName(const Value: string);
-    function GetParamType(const Value: TZProcedureColumnType): TParamType;
+    //function GetParamType(const Value: TZProcedureColumnType): TParamType;
   protected
     function CreateStatement(const SQL: string; Properties: TStrings):
       IZPreparedStatement; override;
@@ -129,9 +129,6 @@ uses
   @param Properties a statement specific properties.
   @returns a created DBC statement.
 }
-{$IFDEF FPC}
-  {$HINTS OFF}
-{$ENDIF}
 function TZStoredProc.CreateStatement(const SQL: string; Properties: TStrings):
   IZPreparedStatement;
 var
@@ -157,7 +154,7 @@ begin
 
   for I := 0 to Params.Count - 1 do
   begin
-    CallableStatement.RegisterParamType( I{$IFNDEF GENERIC_INDEX}+1{$ENDIF}, ord(Params[I].ParamType));
+    CallableStatement.RegisterParamType( I{$IFNDEF GENERIC_INDEX}+1{$ENDIF}, ord(DatasetTypeToProcColDbc[Params[I].ParamType]));
     if Params[I].ParamType in [ptResult, ptOutput, ptInputOutput] then
       CallableStatement.RegisterOutParameter(I{$IFNDEF GENERIC_INDEX}+1{$ENDIF},
         Ord(ConvertDatasetToDbcType(Params[I].DataType)));
@@ -172,9 +169,6 @@ begin
   end;
   Result := CallableStatement;
 end;
-{$IFDEF FPC}
-  {$HINTS ON}
-{$ENDIF}
 
 {**
   Fill prepared statement with parameters.
@@ -183,9 +177,6 @@ end;
   @param Params a collection of SQL parameters.
   @param DataLink a datalink to get parameters.
 }
-{$IFDEF FPC}
-  {$HINTS OFF}
-{$ENDIF}
 procedure TZStoredProc.SetStatementParams(Statement: IZPreparedStatement;
   ParamNames: TStringDynArray; Params: TParams; DataLink: TDataLink);
 var
@@ -202,9 +193,6 @@ begin
     SetStatementParam(I{$IFNDEF GENERIC_INDEX}+1{$ENDIF}, Statement, Param);
   end;
 end;
-{$IFDEF FPC}
-  {$HINTS ON}
-{$ENDIF}
 
 {**
   Retrieves parameter values from callable statement.
@@ -264,6 +252,12 @@ begin
         {$ENDIF WITH_FTSINGLE}
         ftFloat:
           Param.AsFloat := FCallableStatement.GetDouble(I{$IFNDEF GENERIC_INDEX}+1{$ENDIF});
+        {$IFDEF WITH_FTEXTENDED}
+        ftExtended:
+          Param.AsFloat := FCallableStatement.GetBigDecimal(I{$IFNDEF GENERIC_INDEX}+1{$ENDIF});
+        {$ENDIF}
+        ftBCD:
+          Param.AsCurrency := FCallableStatement.GetCurrency(I{$IFNDEF GENERIC_INDEX}+1{$ENDIF});
         ftString:
           begin
             Param.AsString := FCallableStatement.GetString(I{$IFNDEF GENERIC_INDEX}+1{$ENDIF});
@@ -327,14 +321,11 @@ begin
   Result := Trim(SQL.Text);
 end;
 
-{$IFDEF FPC}
-  {$HINTS OFF}
-{$ENDIF}
 procedure TZStoredProc.SetStoredProcName(const Value: string);
 var
   OldParams: TParams;
   Catalog, Schema, ObjectName: string;
-  ColumnType: Integer;
+  ColumnType: TZProcedureColumnType;
 begin
   if AnsiCompareText(Trim(SQL.Text), Trim(Value)) <> 0 then
   begin
@@ -357,11 +348,11 @@ begin
           Params.Clear;
           while FMetaResultSet.Next do
           begin
-            ColumnType := FMetaResultSet.GetInt(ProcColColumnTypeIndex);
-            if ColumnType >= 0 then //-1 is result column
+            ColumnType := TZProcedureColumnType(FMetaResultSet.GetInt(ProcColColumnTypeIndex));
+            //if ColumnType >= 0 then //-1 is result column
               Params.CreateParam(ConvertDbcToDatasetType(TZSqlType(FMetaResultSet.GetInt(ProcColDataTypeIndex))),
                 FMetaResultSet.GetString(ProcColColumnNameIndex),
-                GetParamType(TZProcedureColumnType(ColumnType)));
+                ProcColDbcToDatasetType[ColumnType]);
           end;
           Params.AssignValues(OldParams);
         finally
@@ -373,9 +364,6 @@ begin
     end;
   end;
 end;
-{$IFDEF FPC}
-  {$HINTS ON}
-{$ENDIF}
 
 procedure TZStoredProc.ExecProc;
 begin
@@ -488,7 +476,7 @@ end;
   @param Value a initial procedure column type.
   @return a corresponding param type.
 }
-function TZStoredProc.GetParamType(const Value: TZProcedureColumnType): TParamType;
+{function TZStoredProc.GetParamType(const Value: TZProcedureColumnType): TParamType;
 begin
   case Value of
     pctIn:
@@ -504,7 +492,7 @@ begin
   else
     Result := ptUnknown;
   end;
-end;
+end;}
 
 {$IFDEF WITH_IPROVIDER}
 {**

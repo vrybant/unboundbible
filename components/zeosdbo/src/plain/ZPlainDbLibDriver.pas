@@ -56,7 +56,11 @@ interface
 
 {$I ZPlain.inc}
 
-uses Classes, ZCompatibility, ZPlainDriver, ZPlainDbLibConstants;
+{$IFNDEF ZEOS_DISABLE_DBLIB}
+
+uses Classes, ZCompatibility, ZPlainDriver, ZPlainDbLibConstants,
+  {$IFDEF FPC}syncobjs{$ELSE}SyncObjs{$ENDIF}
+  {$IFDEF TLIST_IS_DEPRECATED},ZSysUtils{$ENDIF};
 
 const
   NTWDBLIB_DLL_LOCATION ='ntwdblib.dll';
@@ -71,7 +75,8 @@ type
   IZDBLibPlainDriver = interface (IZPlainDriver)
     ['{7731C3B4-0608-4B6B-B089-240AC43A3463}']
 
-    procedure CheckError(dbProc: PDBPROCESS);
+    procedure CheckError(dbProc: PDBPROCESS); deprecated;
+    function GetErrorString(dbProc: PDBPROCESS): String;
 
     function dbDead(dbProc: PDBPROCESS): Boolean;
     function dbLogin: PLOGINREC;
@@ -161,6 +166,7 @@ type
     procedure dbLoginFree(Login: PLOGINREC); virtual; abstract;
     constructor Create; virtual;
     procedure CheckError(dbProc: PDBPROCESS);
+    function GetErrorString(dbProc: PDBPROCESS): String;
     function GetVariables: TDBVariables;
   end;
 
@@ -407,6 +413,7 @@ type
     function GetDescription: string; override;
 
     {API functions}
+    function dbOpen(Login: PLOGINREC; Host: PAnsiChar): PDBPROCESS; override;
     function dbsetlversion(Login: PLOGINREC): RETCODE; virtual;
     function dbsetversion: RETCODE; virtual;
 
@@ -452,7 +459,6 @@ type
   TZFreeTDS42SybasePlainDriver = class(TZFreeTDSBasePlainDriver)
   protected
     function Clone: IZPlainDriver; override;
-    procedure LoadCodePages; override;
   public
     constructor Create; override;
     function GetProtocol: string; override;
@@ -464,7 +470,6 @@ type
   TZFreeTDS50PlainDriver = class(TZFreeTDS42SybasePlainDriver)
   protected
     function Clone: IZPlainDriver; override;
-    procedure LoadCodePages; override;
   public
     constructor Create; override;
     function GetProtocol: string; override;
@@ -476,7 +481,6 @@ type
   TZFreeTDS70PlainDriver = class(TZFreeTDS42MsSQLPlainDriver)
   protected
     function Clone: IZPlainDriver; override;
-    procedure LoadCodePages; override;
   public
     function GetProtocol: string; override;
     function GetDescription: string; override;
@@ -487,7 +491,6 @@ type
   TZFreeTDS71PlainDriver = class(TZFreeTDS70PlainDriver)
   protected
     function Clone: IZPlainDriver; override;
-    procedure LoadCodePages; override;
   public
     function GetProtocol: string; override;
     function GetDescription: string; override;
@@ -497,7 +500,6 @@ type
   TZFreeTDS72PlainDriver = class(TZFreeTDS70PlainDriver)
   protected
     function Clone: IZPlainDriver; override;
-    procedure LoadCodePages; override;
   public
     function GetProtocol: string; override;
     function GetDescription: string; override;
@@ -512,12 +514,17 @@ var
   OldSybaseMessageHandle: SYBDBMSGHANDLE_PROC = nil;
   OldMsSQLMessageHandle: DBMSGHANDLE_PROC = nil;
   OldMsSQLErrorHandle: DBERRHANDLE_PROC = nil;
-  SQLErrors: TList;
-  SQLMessages: TList;
+  ErrorCS: TCriticalSection;
+  SQLErrors: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF};
+  SQLMessages: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF};
+
+{$ENDIF ZEOS_DISABLE_DBLIB}
 
 implementation
 
-uses SysUtils, ZPlainLoader, ZEncoding, {$IFDEF FPC}DOS{$ELSE}Windows{$ENDIF};
+{$IFNDEF ZEOS_DISABLE_DBLIB}
+
+uses SysUtils, ZPlainLoader, ZEncoding, ZClasses, ZFastCode;
 
 procedure AddSybaseCodePages(PlainDriver: TZAbstractPlainDriver);
 begin
@@ -577,41 +584,54 @@ end;
 { Handle sql server error messages }
 function SybaseErrorHandle(Proc: PDBPROCESS; Severity, DbErr, OsErr: Integer;
   DbErrStr, OsErrStr: PAnsiChar): Integer;
-{$IFNDEF UNIX} stdcall{$ELSE} cdecl{$ENDIF};
+{$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
 var
   SqlError: PDBLibError;
 begin
-  New(SqlError);
-  SqlError.dbProc := Proc;
-  SqlError.Severity := Severity;
-  SqlError.DbErr := DbErr;
-  SqlError.OsErr := OsErr;
-  SqlError.DbErrStr := DbErrStr;
-  SqlError.OsErrStr := OsErrStr;
-  SQLErrors.Add(SqlError);
-
-  Result := INT_CANCEL;
+  ErrorCS.Enter;
+  try
+    New(SqlError);
+    SqlError.dbProc := Proc;
+    SqlError.Severity := Severity;
+    SqlError.DbErr := DbErr;
+    SqlError.OsErr := OsErr;
+    if DbErrStr <> nil then
+      ZSetString(DbErrStr, StrLen(DbErrStr), SqlError.DbErrStr);
+    if OsErrStr <> nil then
+      ZSetString(OsErrStr, StrLen(OsErrStr), SqlError.OsErrStr);
+    SQLErrors.Add(SqlError);
+  finally
+    Result := INT_CANCEL;
+    ErrorCS.Leave;
+  end;
 end;
 
 { Handle sql server messages }
 function SybaseMessageHandle(Proc: PDBPROCESS; MsgNo: DBINT; MsgState,
     Severity: Integer; MsgText, SrvName, ProcName: PAnsiChar; Line: DBUSMALLINT):
-    Integer; {$IFNDEF UNIX} stdcall {$ELSE} cdecl {$ENDIF};
+    Integer; {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
 var
   SQLMessage: PDBLibMessage;
 begin
-  New(SQLMessage);
-  SQLMessage.dbProc := Proc;
-  SQLMessage.MsgNo := MsgNo;
-  SQLMessage.MsgState := MsgState;
-  SQLMessage.Severity := Severity;
-  SQLMessage.MsgText := MsgText;
-  SQLMessage.SrvName := SrvName;
-  SQLMessage.ProcName := ProcName;
-  SQLMessage.Line := Line;
-  SQLMessages.Add(SQLMessage);
-
-  Result := 0;
+  ErrorCS.Enter;
+  try
+    New(SQLMessage);
+    SQLMessage.dbProc := Proc;
+    SQLMessage.MsgNo := MsgNo;
+    SQLMessage.MsgState := MsgState;
+    SQLMessage.Severity := Severity;
+    if MsgText <> nil then
+      ZSetString(MsgText, StrLen(MsgText), SQLMessage.MsgText);
+    if SrvName <> nil then
+      ZSetString(SrvName, StrLen(SrvName), SQLMessage.SrvName);
+    if ProcName <> nil then
+      ZSetString(ProcName, StrLen(ProcName), SQLMessage.ProcName);
+    SQLMessage.Line := Line;
+    SQLMessages.Add(SQLMessage);
+  finally
+    Result := 0;
+    ErrorCS.Leave;
+  end;
 end;
 
 { Handle sql server error messages }
@@ -620,16 +640,22 @@ function DbLibErrorHandle(Proc: PDBPROCESS; Severity, DbErr, OsErr: Integer;
 var
   SqlError: PDBLibError;
 begin
-  New(SqlError);
-  SqlError.dbProc := Proc;
-  SqlError.Severity := Severity;
-  SqlError.DbErr := DbErr;
-  SqlError.OsErr := OsErr;
-  SqlError.DbErrStr := DbErrStr;
-  SqlError.OsErrStr := OsErrStr;
-  SQLErrors.Add(SqlError);
-
-  Result := INT_CANCEL;
+  ErrorCS.Enter;
+  try
+    New(SqlError);
+    SqlError.dbProc := Proc;
+    SqlError.Severity := Severity;
+    SqlError.DbErr := DbErr;
+    SqlError.OsErr := OsErr;
+    if DbErrStr <> nil then
+      ZSetString(DbErrStr, StrLen(DbErrStr),SqlError.DbErrStr);
+    if OsErrStr <> nil then
+      ZSetString(OsErrStr, StrLen(OsErrStr),SqlError.OsErrStr);
+    SQLErrors.Add(SqlError);
+  finally
+    Result := INT_CANCEL;
+    ErrorCS.Leave;
+  end;
 end;
 
 { Handle sql server messages }
@@ -638,18 +664,25 @@ function DbLibMessageHandle(Proc: PDBPROCESS; MsgNo: DBINT; MsgState, Severity: 
 var
   SQLMessage: PDBLibMessage;
 begin
-  New(SQLMessage);
-  SQLMessage.dbProc := Proc;
-  SQLMessage.MsgNo := MsgNo;
-  SQLMessage.MsgState := MsgState;
-  SQLMessage.Severity := Severity;
-  SQLMessage.MsgText := MsgText;
-  SQLMessage.SrvName := SrvName;
-  SQLMessage.ProcName := ProcName;
-  SQLMessage.Line := Line;
-  SQLMessages.Add(SQLMessage);
-
-  Result := 0;
+  ErrorCS.Enter;
+  try
+    New(SQLMessage);
+    SQLMessage.dbProc := Proc;
+    SQLMessage.MsgNo := MsgNo;
+    SQLMessage.MsgState := MsgState;
+    SQLMessage.Severity := Severity;
+    if MsgText <> nil then
+      ZSetString(MsgText, StrLen(MsgText), SQLMessage.MsgText);
+    if SrvName <> nil then
+      ZSetString(SrvName, StrLen(SrvName), SQLMessage.SrvName);
+    if ProcName <> nil then
+      ZSetString(ProcName, StrLen(ProcName), SQLMessage.ProcName);
+    SQLMessage.Line := Line;
+    SQLMessages.Add(SQLMessage);
+  finally
+    Result := 0;
+    ErrorCS.Leave;
+  end;
 end;
 
 constructor TZDBLibAbstractPlainDriver.Create;
@@ -662,24 +695,34 @@ begin
 end;
 
 procedure TZDBLibAbstractPlainDriver.CheckError(dbProc: Pointer);
+var S: String;
+begin
+  S := GetErrorString(dbProc);
+  if S <> '' then
+    raise EZSQLException.Create(S);
+end;
+
+function TZDBLibAbstractPlainDriver.GetErrorString(
+  dbProc: PDBPROCESS): String;
 var
   I: Integer;
-  S: String;
   lErrorEntry: PDBLibError;
   lMesageEntry: PDBLibMessage;
 
     procedure AddToErrorMsg(const AError: String);
     begin
-      if S > '' then
-        S := S + #13#10;
-      S := S + AError;
+      if Result <> EmptyRaw then
+        Result := Result + LineEnding;
+      Result := Result + AError;
     end;
 
 begin
+  ErrorCS.Enter;
+  Result := '';
+  try
   if ((SQLErrors = nil) or (SQLErrors.Count = 0)) and
      ((SQLMessages = nil) or (SQLMessages.Count = 0)) then
     Exit;
-  S := '';
   I := 0;
   while I < SQLErrors.Count do begin
     lErrorEntry := PDBLibError(SQLErrors[I]);
@@ -708,8 +751,9 @@ begin
     else
       Inc(I);
   end;
-  if S <> '' then
-    raise Exception.Create(S);
+  finally
+    ErrorCS.Leave;
+  end;
 end;
 
 function TZDBLibAbstractPlainDriver.GetVariables: TDBVariables;
@@ -920,15 +964,15 @@ end;
 
 function TZDBLibBasePlainDriver.dbSqlExecAsync(dbProc: PDBPROCESS): RETCODE;
 var
-  lStartTick : Int64;
+  lStartMs: Integer;
 begin
   Result := DBLibAPI.dbsqlsend(dbProc);
   if Result = SUCCEED then begin
-    lStartTick := {$IFDEF FPC}GetMsCount{$ELSE}GetTickCount{$ENDIF};
+    lStartMs := 0;
     repeat
-      //DBApplication.ProcessMessages;
-    until ({$IFDEF FPC}GetMsCount{$ELSE}GetTickCount{$ENDIF} > lStartTick + TIMEOUT_MAXIMUM * 1000) or
-      (dbdataready(dbProc) = TRUE);
+      Sleep(1);
+      Inc(lStartMs);
+    until (lStartMs = TIMEOUT_MAXIMUM) or (dbdataready(dbProc) = TRUE);
     Result := DBLibAPI.dbsqlok(dbProc);
   end;
 end;
@@ -1230,7 +1274,9 @@ begin
     @SybaseAPI.dbclropt              := GetAddress('dbclropt');
     @SybaseAPI.dbcmd                 := GetAddress('dbcmd');
     @SybaseAPI.dbfcmd                := GetAddress('dbfcmd');
-    @SybaseAPI.dbcmdrow              := GetAddress('dbcmdrow');
+    @SybaseAPI.dbcmdrow              := GetAddress('DBCMDROW'); //Syb use uppercase name!!
+    if not Assigned(SybaseAPI.dbcmdrow) then //test if renamed
+      @SybaseAPI.dbcmdrow            := GetAddress('dbcmdrow');
     @SybaseAPI.dbcolbrowse           := GetAddress('dbcolbrowse');
     @SybaseAPI.dbcollen              := GetAddress('dbcollen');
     @SybaseAPI.dbcolinfo             := GetAddress('dbcolinfo');
@@ -1240,8 +1286,12 @@ begin
     @SybaseAPI.dbcoltype             := GetAddress('dbcoltype');
     @SybaseAPI.dbcolutype            := GetAddress('dbcolutype');
     @SybaseAPI.dbconvert             := GetAddress('dbconvert');
-    @SybaseAPI.dbcount               := GetAddress('dbcount');
-    @SybaseAPI.dbcurcmd              := GetAddress('dbcurcmd');
+    @SybaseAPI.dbcount               := GetAddress('DBCOUNT'); //Syb use uppercase name!!
+    if not Assigned(SybaseAPI.dbcount) then //test if renamed
+      @SybaseAPI.dbcount            := GetAddress('dbcount');
+    @SybaseAPI.dbcurcmd              := GetAddress('DBCURCMD'); //Syb use uppercase name!!
+    if not Assigned(SybaseAPI.dbcurcmd) then //test if renamed
+      @SybaseAPI.dbcurcmd            := GetAddress('dbcurcmd');
     @SybaseAPI.dbcurrow              := GetAddress('dbcurrow');
     @SybaseAPI.dbcursor              := GetAddress('dbcursor');
     @SybaseAPI.dbcursorbind          := GetAddress('dbcursorbind');
@@ -1253,7 +1303,9 @@ begin
     @SybaseAPI.dbdata                := GetAddress('dbdata');
     @SybaseAPI.dbdatecrack           := GetAddress('dbdatecrack');
     @SybaseAPI.dbdatlen              := GetAddress('dbdatlen');
-    @SybaseAPI.dbdead                := GetAddress('dbdead');
+    @SybaseAPI.dbdead                := GetAddress('DBDEAD');//Syb use uppercase name!!
+    if not Assigned(SybaseAPI.dbdead) then //test if renamed
+      @SybaseAPI.dbdead              := GetAddress('dbdead');
     @SybaseAPI.dbexit                := GetAddress('dbexit');
     @SybaseAPI.dbfcmd                := GetAddress('dbfcmd');
     @SybaseAPI.dbfirstrow            := GetAddress('dbfirstrow');
@@ -1523,15 +1575,15 @@ end;
 
 function TZDBLibSybaseASE125PlainDriver.dbSqlExecAsync(dbProc: PDBPROCESS): RETCODE;
 var
-  lStartTick : Int64;
+  lStartMs : Cardinal;
 begin
   Result := SybaseAPI.dbsqlsend(dbProc);
   if Result = SUCCEED then begin
-    lStartTick := {$IFDEF FPC}GetMsCount{$ELSE}GetTickCount{$ENDIF};
+    lStartMs := 0;
     repeat
-      continue;
-    until ({$IFDEF FPC}GetMsCount{$ELSE}GetTickCount{$ENDIF} > lStartTick + TIMEOUT_MAXIMUM * 1000) or
-      (dbdataready(dbProc) = TRUE);
+      Sleep(1);
+      Inc(lStartMs);
+    until (lStartMs = TIMEOUT_MAXIMUM) or (dbdataready(dbProc) = TRUE);
     Result := SybaseAPI.dbsqlok(dbProc);
   end;
 end;
@@ -1804,6 +1856,9 @@ begin
 { ************** Load adresses of API Functions ************* }
   with Loader do
   begin
+    if GetAddress('dbcoltypeinfo') <> nil then
+      raise Exception.Create('Wrong library bound. Propably a FreeTDS-Lib.'+LineEnding+
+         'Use the FreeTDS protocols instead!');
     //@MsSQLAPI.dbtablecolinfo  := GetAddress('dbtablecolinfo');
     @MsSQLAPI.dbdataready           := GetAddress('dbdataready');
     @MsSQLAPI.dbdatecrack           := GetAddress('dbdatecrack');
@@ -1950,15 +2005,15 @@ end;
 
 function TZDBLibMSSQL7PlainDriver.dbSqlExecAsync(dbProc: PDBPROCESS): RETCODE;
 var
-  lStartTick : Int64;
+  lStartMs : Cardinal;
 begin
   Result := DBLibAPI.dbsqlsend(dbProc);
   if Result = SUCCEED then begin
-    lStartTick := {$IFDEF FPC}GetMsCount{$ELSE}GetTickCount{$ENDIF};
+    lStartMs := 0;
     repeat
-      continue;
-    until ({$IFDEF FPC}GetMsCount{$ELSE}GetTickCount{$ENDIF} > lStartTick + TIMEOUT_MAXIMUM * 1000) or
-      (MsSQLAPI.dbdataready(dbProc) = TRUE);
+      Sleep(1);
+      Inc(lStartMs);
+    until (lStartMs = TIMEOUT_MAXIMUM) or (MsSQLAPI.dbdataready(dbProc) = TRUE);
     Result := DBLibAPI.dbsqlok(dbProc);
   end;
 end;
@@ -2164,6 +2219,12 @@ begin
   inherited Destroy;
 end;
 
+function TZFreeTDSBasePlainDriver.dbOpen(Login: PLOGINREC; Host: PAnsiChar): PDBPROCESS;
+begin
+  DBLibAPI.dbsetlogintime(10);
+  Result := FreeTDSAPI.tdsdbopen(Login, Host, 0);
+end;
+
 function TZFreeTDSBasePlainDriver.GetProtocol: string;
 begin
   Result := 'FreeTDS';
@@ -2223,7 +2284,11 @@ end;
 
 procedure TZFreeTDSBasePlainDriver.tdsDump_Open(const FileName: String);
 begin
-  FreeTDSAPI.tdsdump_open(PAnsiChar( AnsiString(FileName) ));
+  {$IFDEF UNICODE}
+  FreeTDSAPI.tdsdump_open(PAnsiChar(ZUnicodeToRaw(FileName,ZOSCodePage)));
+  {$ELSE}
+  FreeTDSAPI.tdsdump_open(Pointer(FileName));
+  {$ENDIF}
 end;
 
 function TZFreeTDSBasePlainDriver.dbdataready(Proc: PDBPROCESS): LongBool;
@@ -2294,9 +2359,8 @@ end;
 procedure TZFreeTDSBasePlainDriver.LoadCodePages;
 begin
   AddCodePage('UTF-8', 1, ceUTF8, zCP_UTF8,  '', 4, True);
-  AddCodePage('ISO-8859-1', 2, ceAnsi, zCP_L1_ISO_8859_1, '', 1, True);
-  AddCodePage('ASCII', 3, ceAnsi, zCP_us_ascii, '', 1, True);
-  //AddCodePage('UTF-16', 4, ceUTF16, zCP_UTF16, '', 2, True);
+  AddCodePage('ISO-8859-1', 2, ceAnsi, zCP_L1_ISO_8859_1, '', 1, False);
+  AddCodePage('ASCII', 3, ceAnsi, zCP_us_ascii, '', 1, False);
 end;
 
 { TZFreeTDS42MsSQLPlainDriver }
@@ -2352,11 +2416,6 @@ begin
   Result := TZFreeTDS42SybasePlainDriver.Create;
 end;
 
-procedure TZFreeTDS42SybasePlainDriver.LoadCodePages;
-begin
-  inherited;
-end;
-
 constructor TZFreeTDS42SybasePlainDriver.Create;
 begin
   inherited Create;
@@ -2397,11 +2456,6 @@ begin
   Result := TZFreeTDS50PlainDriver.Create;
 end;
 
-procedure TZFreeTDS50PlainDriver.LoadCodePages;
-begin
-  inherited;
-end;
-
 constructor TZFreeTDS50PlainDriver.Create;
 begin
   inherited Create;
@@ -2429,14 +2483,10 @@ begin
 end;
 
 { TZFreeTDS70PlainDriver }
+
 function TZFreeTDS70PlainDriver.Clone: IZPlainDriver;
 begin
   Result := TZFreeTDS70PlainDriver.Create;
-end;
-
-procedure TZFreeTDS70PlainDriver.LoadCodePages;
-begin
-  inherited;
 end;
 
 function TZFreeTDS70PlainDriver.GetProtocol: string;
@@ -2465,11 +2515,6 @@ begin
   Result := TZFreeTDS71PlainDriver.Create;
 end;
 
-procedure TZFreeTDS71PlainDriver.LoadCodePages;
-begin
-  Inherited;
-end;
-
 function TZFreeTDS71PlainDriver.GetProtocol: string;
 begin
   Result := 'FreeTDS_MsSQL-2000';
@@ -2486,14 +2531,10 @@ begin
 end;
 
 { TZFreeTDS72PlainDriver }
+
 function TZFreeTDS72PlainDriver.Clone: IZPlainDriver;
 begin
   Result := TZFreeTDS72PlainDriver.Create;
-end;
-
-procedure TZFreeTDS72PlainDriver.LoadCodePages;
-begin
-  inherited;
 end;
 
 function TZFreeTDS72PlainDriver.GetProtocol: string;
@@ -2512,9 +2553,11 @@ begin
 end;
 
 initialization
-  SQLErrors := TList.Create;
-  SQLMessages := TList.Create;
+  SQLErrors := {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF}.Create;
+  SQLMessages := {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF}.Create;
+  ErrorCS := TCriticalSection.Create;
 finalization
+  FreeAndnil(ErrorCS);
 //Free any record in the list if any
   while SQLErrors.Count > 0 do
   begin
@@ -2532,4 +2575,6 @@ finalization
   end;
   if SQLMessages <> nil then
     FreeAndNil(SQLMessages);
+{$ENDIF ZEOS_DISABLE_DBLIB}
+
 end.

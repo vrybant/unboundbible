@@ -55,7 +55,8 @@ interface
 
 {$I ZCore.inc}
 
-uses SysUtils, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} Contnrs,
+uses SysUtils, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF}
+  {$IFDEF NO_UNIT_CONTNRS}ZClasses{$ELSE}Contnrs{$ENDIF},
   ZCompatibility, ZVariant, ZTokenizer;
 
 type
@@ -272,14 +273,11 @@ var
   Temp: TZExpressionToken;
 begin
   Result := False;
-  for I := Low(TokenTypes) to High(TokenTypes) do
-  begin
-    if (FTokenIndex + I) < FInitialTokens.Count then
-    begin
+  for I := Low(TokenTypes) to High(TokenTypes) do begin
+    if (FTokenIndex + I) < FInitialTokens.Count then begin
       Temp := TZExpressionToken(FInitialTokens[FTokenIndex + I]);
       Result := Temp.TokenType = TokenTypes[I];
-      end
-      else
+    end else
       Result := False;
 
     if not Result then

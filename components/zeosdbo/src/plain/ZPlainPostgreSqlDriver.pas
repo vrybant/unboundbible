@@ -55,6 +55,8 @@ interface
 
 {$I ZPlain.inc}
 
+{$IFNDEF ZEOS_DISABLE_POSTGRESQL}
+
 uses {$IFDEF OLDFPC}ZClasses, {$ENDIF}ZCompatibility, ZPlainDriver;
 
 const
@@ -301,6 +303,9 @@ const
   TYPCATEGORY_BITSTRING	= 'V';		{ er ... "varbit"? }
   TYPCATEGORY_UNKNOWN	  = 'X';
 
+//some error codes
+  indeterminate_datatype: PAnsiChar = '42P18';
+  current_transaction_is_aborted: PAnsiChar = '25P02';
 {------------------------------------------------------------------------------------------}
 
 
@@ -350,7 +355,7 @@ type
   NOTE: in Postgres 6.4 and later, the be_pid is the notifying backend's,
   whereas in earlier versions it was always your own backend's PID.
 }
-  TZPostgreSQLNotify = packed record
+  TZPostgreSQLNotify = {packed }record //the reocord is NOT packet
     relname: PAnsiChar;   { name of relation containing data }
     be_pid:  Integer; { process id of backend }
     payload: PAnsiChar; {additional data in notify}
@@ -470,19 +475,6 @@ type
   PGresult = Pointer;
   PPGresult = Pointer;
   PGCancel = Pointer;
-
-{ PGnotify represents the occurrence of a NOTIFY message.
-  Ideally this would be an opaque typedef, but it's so simple that it's
-  unlikely to change.
-  NOTE: in Postgres 6.4 and later, the be_pid is the notifying backend's,
-  whereas in earlier versions it was always your own backend's PID.
-}
-  PGnotify = packed record
-    relname: array [0..NAMEDATALEN-1] of AnsiChar; { name of relation containing data }
-    be_pid:  Integer;			      { process id of backend }
-  end;
-
-  PPGnotify = ^PGnotify;
 
 { PQnoticeProcessor is the function type for the notice-message callback. }
 
@@ -619,8 +611,8 @@ type
   TPQsendDescribePrepared = function(Handle: PPGconn; const stmt: PAnsiChar): Integer; cdecl;
   TPQsendDescribePortal = function(Handle: PPGconn; const portal: PAnsiChar): Integer; cdecl;
 
-  TPQnotifies      = function(Handle: PPGconn): PPGnotify; cdecl;
-  TPQfreeNotify    = procedure(Handle: PPGnotify);cdecl;
+  TPQnotifies      = function(Handle: PPGconn): PZPostgreSQLNotify; cdecl;
+  TPQfreeNotify    = procedure(Handle: PZPostgreSQLNotify);cdecl;
   TPQisBusy        = function(Handle: PPGconn): Integer; cdecl;
   TPQconsumeInput  = function(Handle: PPGconn): Integer; cdecl;
   TPQgetCancel     = function(Handle: PPGconn): PGcancel; cdecl;
@@ -1123,8 +1115,9 @@ type
     function GetDescription: string; override;
   end;
 
+{$ENDIF ZEOS_DISABLE_POSTGRESQL}
 implementation
-
+{$IFNDEF ZEOS_DISABLE_POSTGRESQL}
 uses SysUtils, ZPlainLoader, Classes, ZEncoding
   {$IFDEF WITH_UNITANSISTRINGS}, AnsiStrings{$ENDIF};
 
@@ -1503,7 +1496,7 @@ end;
 
 procedure TZPostgreSQLBaseDriver.FreeNotify(Handle: PZPostgreSQLNotify);
 begin
-  POSTGRESQL_API.PQfreeNotify(PPGnotify(Handle));
+  POSTGRESQL_API.PQfreeNotify(Handle);
 end;
 
 function TZPostgreSQLBaseDriver.GetBackendPID(
@@ -1986,7 +1979,7 @@ begin
   inherited Create;
   Self.FLoader.ClearLocations;
   {$IFNDEF STRICT_DLL_LOADING}
-    {$IFNDEF UNIX}
+  {$IFDEF MSWINDOWS}
       FLoader.AddLocation(WINDOWS_DLL_LOCATION);
     {$ELSE}
       FLoader.AddLocation(LINUX_DLL9_LOCATION);
@@ -2008,7 +2001,5 @@ function TZPostgreSQL9PlainDriver.GetStandardConformingStrings: Boolean;
 begin
   Result := True;
 end;
-
+{$ENDIF ZEOS_DISABLE_POSTGRESQL}
 end.
-
-

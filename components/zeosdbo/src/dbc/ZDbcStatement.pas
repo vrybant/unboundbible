@@ -54,9 +54,11 @@ unit ZDbcStatement;
 interface
 
 {$I ZDbc.inc}
+{$Z-}
 
 uses
   Types, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
+  {$IF defined(UNICODE) and not defined(WITH_UNICODEFROMLOCALECHARS)}Windows,{$IFEND}
   ZDbcIntfs, ZTokenizer, ZCompatibility, ZVariant, ZDbcLogging, ZClasses,
   ZDbcUtils;
 
@@ -69,8 +71,6 @@ type
 
   TZAbstractStatement = class(TZCodePagedObject, IZStatement, IZLoggingObject)
   private
-    fWBuffer: array[Byte] of WideChar;
-    fABuffer: array[Byte] of AnsiChar;
     fABufferIndex, fWBufferIndex: Integer;
     FMaxFieldSize: Integer;
     FMaxRows: Integer;
@@ -84,17 +84,19 @@ type
     FResultSetType: TZResultSetType;
     FPostUpdates: TZPostUpdatesMode;
     FLocateUpdates: TZLocateUpdatesMode;
-    FCursorName: AnsiString;
     FBatchQueries: TStrings;
     FConnection: IZConnection;
     FInfo: TStrings;
     FChunkSize: Integer; //size of buffer chunks for large lob's related to network settings
     FClosed: Boolean;
-    FWSQL: ZWideString;
-    FaSQL: RawByteString;
     FCachedLob: Boolean;
     procedure SetLastResultSet(const ResultSet: IZResultSet);
   protected
+    FCursorName: RawByteString;
+    fWBuffer: array[Byte] of WideChar;
+    fABuffer: array[Byte] of AnsiChar;
+    FWSQL: ZWideString;
+    FaSQL: RawByteString;
     FStatementId : Integer;
     FOpenResultSet: Pointer; //weak reference to avoid memory-leaks and cursor issues
     procedure ToBuff(const Value: ZWideString; var Result: ZWideString); overload;
@@ -103,12 +105,12 @@ type
     procedure FlushBuff(var Result: RawByteString); overload;
     procedure PrepareOpenResultSetForReUse; virtual;
     procedure PrepareLastResultSetForReUse; virtual;
-    procedure FreeOpenResultSetReference;
+    procedure FreeOpenResultSetReference(const ResultSet: IZResultSet);
     procedure SetASQL(const Value: RawByteString); virtual;
     procedure SetWSQL(const Value: ZWideString); virtual;
     class function GetNextStatementId : integer;
     procedure RaiseUnsupportedException;
-
+    procedure ReleaseConnection; virtual;
     property MaxFieldSize: Integer read FMaxFieldSize write FMaxFieldSize;
     property MaxRows: Integer read FMaxRows write FMaxRows;
     property EscapeProcessing: Boolean
@@ -125,7 +127,7 @@ type
       read FResultSetConcurrency write FResultSetConcurrency;
     property ResultSetType: TZResultSetType
       read FResultSetType write FResultSetType;
-    property CursorName: AnsiString read FCursorName write FCursorName;
+    property CursorName: RawByteString read FCursorName write FCursorName;
     property BatchQueries: TStrings read FBatchQueries;
     property Connection: IZConnection read FConnection;
     property Info: TStrings read FInfo;
@@ -137,7 +139,7 @@ type
     property ChunkSize: Integer read FChunkSize;
     property CachedLob: Boolean read FCachedLob;
     function CreateStmtLogEvent(Category: TZLoggingCategory;
-      const Msg: RawByteString=''): TZLoggingEvent;
+      const Msg: RawByteString=EmptyRaw): TZLoggingEvent;
   public
     constructor Create(const Connection: IZConnection; Info: TStrings);
     destructor Destroy; override;
@@ -152,7 +154,9 @@ type
 
     function GetSQL : String;
 
-    procedure Close; virtual;
+    procedure BeforeClose; virtual;
+    procedure Close;
+    procedure AfterClose; virtual;
 
     function GetMaxFieldSize: Integer; virtual;
     procedure SetMaxFieldSize(Value: Integer); virtual;
@@ -162,7 +166,7 @@ type
     function GetQueryTimeout: Integer; virtual;
     procedure SetQueryTimeout(Value: Integer); virtual;
     procedure Cancel; virtual;
-    procedure SetCursorName(const Value: AnsiString); virtual;
+    procedure SetCursorName(const Value: String); virtual;
 
     function GetResultSet: IZResultSet; virtual;
     function GetUpdateCount: Integer; virtual;
@@ -208,16 +212,16 @@ type
     FInParamValues: TZVariantDynArray;
     FInParamTypes: TZSQLTypeArray;
     FInParamDefaultValues: TStringDynArray;
-    FInParamCount: Integer;
     FInitialArrayCount: ArrayLenInt;
     FPrepared : Boolean;
     FClientVariantManger: IZClientVariantManager;
+  protected
+    FInParamCount: Integer;
     FCachedQueryRaw: TRawByteStringDynArray;
     FCachedQueryUni: TUnicodeStringDynArray;
     FNCharDetected: TBooleanDynArray;
     FIsParamIndex: TBooleanDynArray;
     FIsPraparable: Boolean;
-  protected
     function GetClientVariantManger: IZClientVariantManager;
     procedure PrepareInParameters; virtual;
     procedure BindInParameters; virtual;
@@ -226,7 +230,7 @@ type
     procedure SetInParamCount(const NewParamCount: Integer); virtual;
     procedure SetInParam(ParameterIndex: Integer; SQLType: TZSQLType;
       const Value: TZVariant); virtual;
-    procedure LogPrepStmtMessage(Category: TZLoggingCategory; const Msg: RawByteString = '');
+    procedure LogPrepStmtMessage(Category: TZLoggingCategory; const Msg: RawByteString = EmptyRaw);
     function GetInParamLogValue(Value: TZVariant): RawByteString;
     function GetOmitComments: Boolean; virtual;
     function GetCompareFirstKeywordStrings: TPreparablePrefixTokens; virtual;
@@ -261,7 +265,7 @@ type
     function ExecuteUpdatePrepared: Integer; virtual;
     function ExecutePrepared: Boolean; virtual;
 
-    procedure Close; override;
+    procedure BeforeClose; override;
     function GetSQL : String;
     procedure Prepare; virtual;
     procedure Unprepare; virtual;
@@ -287,8 +291,12 @@ type
     procedure SetPChar(ParameterIndex: Integer; const Value: PChar); virtual;
     procedure SetCharRec(ParameterIndex: Integer; const Value: TZCharRec); virtual;
     procedure SetString(ParameterIndex: Integer; const Value: String); virtual;
+    {$IFNDEF NO_ANSISTRING}
     procedure SetAnsiString(ParameterIndex: Integer; const Value: AnsiString); virtual;
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
     procedure SetUTF8String(ParameterIndex: Integer; const Value: UTF8String); virtual;
+    {$ENDIF}
     procedure SetRawByteString(ParameterIndex: Integer; const Value: RawByteString); virtual;
     procedure SetUnicodeString(ParameterIndex: Integer; const Value: ZWideString);  virtual; //AVZ
     procedure SetBytes(ParameterIndex: Integer; const Value: TBytes); virtual;
@@ -332,7 +340,7 @@ type
   protected
     FResultSets: IZCollection;
     FActiveResultset: Integer;
-    FDBParamTypes: array of ShortInt;
+    FDBParamTypes: TZProcedureColumnTypeDynArray;
     procedure ClearResultSets; virtual;
     procedure TrimInParameters; virtual;
     procedure SetOutParamCount(NewParamCount: Integer); virtual;
@@ -350,7 +358,7 @@ type
   public
     constructor Create(const Connection: IZConnection; const SQL: string; Info: TStrings);
     procedure ClearParameters; override;
-    procedure Close; override;
+    procedure BeforeClose; override;
 
     function IsFunction: Boolean;
     function HasOutParameter: Boolean;
@@ -360,7 +368,7 @@ type
     function GetLastResultSet: IZResultSet; virtual;
     function BOR: Boolean; virtual;
     function EOR: Boolean; virtual;
-    function GetResultSetByIndex(const {%H-}Index: Integer): IZResultSet; virtual;
+    function GetResultSetByIndex(const Index: Integer): IZResultSet; virtual;
     function GetResultSetCount: Integer; virtual;
 
     procedure RegisterOutParameter(ParameterIndex: Integer;
@@ -371,8 +379,12 @@ type
     function IsNull(ParameterIndex: Integer): Boolean; virtual;
     function GetPChar(ParameterIndex: Integer): PChar; virtual;
     function GetString(ParameterIndex: Integer): String; virtual;
+    {$IFNDEF NO_ANSISTRING}
     function GetAnsiString(ParameterIndex: Integer): AnsiString; virtual;
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
     function GetUTF8String(ParameterIndex: Integer): UTF8String; virtual;
+    {$ENDIF}
     function GetRawByteString(ParameterIndex: Integer): RawByteString; virtual;
     function GetUnicodeString(ParameterIndex: Integer): ZWideString; virtual;
     function GetBoolean(ParameterIndex: Integer): Boolean; virtual;
@@ -432,7 +444,7 @@ type
     function PrepareWideSQLQuery: ZWideString; virtual;
     function PrepareAnsiSQLQuery: RawByteString; virtual;
   public
-    procedure Close; override;
+    procedure BeforeClose; override;
 
     function ExecuteQuery(const SQL: ZWideString): IZResultSet; override;
     function ExecuteQuery(const SQL: RawByteString): IZResultSet; override;
@@ -476,7 +488,9 @@ type
 implementation
 
 uses ZFastCode, ZSysUtils, ZMessages, ZDbcResultSet, ZCollections,
-  ZEncoding;
+  ZEncoding
+  {$IF defined(NO_INLINE_SIZE_CHECK) and not defined(UNICODE) and defined(MSWINDOWS)},Windows{$IFEND}
+  {$IFDEF NO_INLINE_SIZE_CHECK}, Math{$ENDIF};
 
 var
 {**
@@ -517,7 +531,6 @@ end;
 destructor TZAbstractStatement.Destroy;
 begin
   Close;
-  if Assigned(FBatchQueries) then
     FreeAndNil(FBatchQueries);
   FConnection.DeregisterStatement(Self);
   FConnection := nil;
@@ -531,19 +544,24 @@ end;
   @param Value: the SQL-String which has to be optional preprepared
 }
 procedure TZAbstractStatement.SetWSQL(const Value: ZWideString);
+{$IFNDEF UNICODE}var CP: Word;{$ENDIF}
 begin
   if FWSQL <> Value then
+    FClosed := False;
     {$IFDEF UNICODE}
-    if not (ConSettings^.ClientCodePage^.Encoding = ceUTF16) then
-      FASQL := GetRawEncodedSQL(Value)
-    else
-      if ConSettings^.AutoEncode then
-        FWSQL := GetUnicodeEncodedSQL(Value)
-      else
-        FWSQL := Value;
+    if (ConSettings^.ClientCodePage^.Encoding = ceUTF16) then begin
+      FWSQL := GetUnicodeEncodedSQL(Value);
+      {$IFDEF DEBUG}FASQL := ZUnicodeToRaw(FWSQL, ConSettings^.CTRL_CP);{$ENDIF}
+    end else begin
+      FASQL := GetRawEncodedSQL(Value);
+      FWSQL := Value;
+    end;
     {$ELSE !UNICODE}
     begin
-      FaSQL := ConSettings^.ConvFuncs.ZUnicodeToRaw(Value, ConSettings^.ClientCodePage^.CP); //required for the resultsets
+      if (ConSettings^.ClientCodePage^.Encoding = ceUTF16)
+      then CP := ConSettings^.CTRL_CP
+      else CP := ConSettings.ClientCodePage.CP;
+      FaSQL := GetRawEncodedSQL(ConSettings^.ConvFuncs.ZUnicodeToRaw(Value, CP)); //required for the resultsets
       FWSQL := Value;
     end;
     {$ENDIF UNICODE}
@@ -557,10 +575,10 @@ var
 begin
   L := Length(Value);
   if L = 0 then Exit;
-  if L <= (SizeOf(fABuffer)-fABufferIndex) then begin
+  if L < (SizeOf(fABuffer)-fABufferIndex) then begin
     P := Pointer(Value);
     if L = 1 //happens very often (comma,space etc) -> no move
-    then fABuffer[fABufferIndex] := P^
+    then fABuffer[fABufferIndex] := AnsiChar(P^)
     else System.Move(Pointer(Value)^, fABuffer[fABufferIndex], L);
     Inc(fABufferIndex, L);
   end else begin
@@ -584,7 +602,7 @@ var
 begin
   L := Length(Value);
   if L = 0 then Exit;
-  if L <= ((SizeOf(fWBuffer) shr 1)-fWBufferIndex) then begin
+  if L < ((SizeOf(fWBuffer) shr 1)-fWBufferIndex) then begin
     P := Pointer(Value);
     if L = 1 //happens very often (comma,space etc) -> no move
     then fWBuffer[fWBufferIndex] := P^
@@ -605,15 +623,19 @@ end;
 
 procedure TZAbstractStatement.SetASQL(const Value: RawByteString);
 begin
-  if FASQL <> Value then
-  begin
+  if FASQL <> Value then begin
+    FClosed := False;
     {$IFDEF UNICODE}
     FASQL := Value;
-    FWSQL := ConSettings^.ConvFuncs.ZRawToUnicode(FASQL, ConSettings^.ClientCodePage^.CP); //required for the resultsets
+    FWSQL := ZRawToUnicode(FASQL, ConSettings^.ClientCodePage.CP); //required for the resultsets
     {$ELSE !UNICODE}
-    FASQL := GetRawEncodedSQL(Value);
-    if ConSettings^.ClientCodePage^.Encoding = ceUTF16 then
-      FWSQL := ZRawToUnicode(FASQL, ConSettings^.ClientCodePage^.CP);
+    if ConSettings^.ClientCodePage^.Encoding = ceUTF16 then begin
+      FWSQL := GetUnicodeEncodedSQL(Value);
+      FASQL := ZUnicodeToRaw(FWSQL, ConSettings^.CTRL_CP);
+    end else begin
+      FASQL := GetRawEncodedSQL(Value);
+      {$IFDEF DEBUG}FWSQL := ZRawToUnicode(FASQL, FClientCP);{$ENDIF}
+    end;
     {$ENDIF UNICODE}
   end;
 end;
@@ -626,13 +648,18 @@ begin
   raise EZSQLException.Create(SUnsupportedOperation);
 end;
 
+procedure TZAbstractStatement.ReleaseConnection;
+begin
+  FConnection := nil;
+end;
+
 {**
   Sets a last result set to avoid problems with reference counting.
   @param ResultSet the lastest executed result set.
 }
 procedure TZAbstractStatement.SetLastResultSet(const ResultSet: IZResultSet);
 begin
-  if (FLastResultSet <> nil) then
+  if (FLastResultSet <> nil) and (Pointer(ResultSet) <> Pointer(FLastResultSet)) then
     FLastResultSet.Close;
 
   FLastResultSet := ResultSet;
@@ -694,9 +721,12 @@ begin
   end;
 end;
 
-procedure TZAbstractStatement.FreeOpenResultSetReference;
+procedure TZAbstractStatement.FreeOpenResultSetReference(const ResultSet: IZResultSet);
 begin
-  FOpenResultSet := nil;
+  if FOpenResultSet = Pointer(ResultSet) then
+    FOpenResultSet := nil;
+  if Pointer(FLastResultSet) = Pointer(ResultSet) then
+    FLastResultSet := nil;
 end;
 
 class function TZAbstractStatement.GetNextStatementId: integer;
@@ -771,13 +801,26 @@ end;
   <code>ResultSet</code> object, if one exists, is also closed.
 }
 procedure TZAbstractStatement.Close;
+var RefCountAdded: Boolean;
 begin
-  if LastResultSet <> nil then
-  begin
-    LastResultSet.Close;
-    LastResultSet := nil;
+  if not fClosed then begin
+    RefCountAdded := (RefCount = 1) and (Assigned(FOpenResultSet) or Assigned(FLastResultSet));
+  if RefCountAdded then _AddRef;
+  try
+        BeforeClose;
+        FClosed := True;
+        AfterClose;
+    finally
+    FClosed := True;
+    if RefCountAdded then begin
+      if (RefCount = 1) then begin
+        DriverManager.AddGarbage(Self);
+          ReleaseConnection;
+      end;
+      _Release;
+    end;
   end;
-  FClosed := True;
+  end;
 end;
 
 {**
@@ -923,9 +966,8 @@ var
   SQLTokens: TZTokenDynArray;
   i: Integer;
 begin
-  if ConSettings^.AutoEncode then
-  begin
-    Result := ''; //init for FPC
+  if ConSettings^.AutoEncode then begin
+    Result := EmptyRaw; //init for FPC
     SQLTokens := GetConnection.GetDriver.GetTokenizer.TokenizeBuffer(SQL, [toSkipEOF]); //Disassembles the Query
     {$IFDEF UNICODE}FWSQL{$ELSE}FASQL{$ENDIF} := '';
     for i := Low(SQLTokens) to high(SQLTokens) do begin //Assembles the Query
@@ -941,10 +983,11 @@ begin
     end;
     FlushBuff(Result);
   end else begin
-    {$IFDEF UNICODE}FWSQL{$ELSE}FASQL{$ENDIF} := SQL;
     {$IFDEF UNICODE}
+    FWSQL := SQL;
     Result := ConSettings^.ConvFuncs.ZUnicodeToRaw(SQL, ConSettings^.ClientCodePage^.CP);
     {$ELSE}
+    FASQL := SQL;
     Result := SQL;
     {$ENDIF}
   end;
@@ -954,6 +997,7 @@ function TZAbstractStatement.GetUnicodeEncodedSQL(const SQL: {$IF defined(FPC) a
 var
   SQLTokens: TZTokenDynArray;
   i: Integer;
+  {$IFNDEF UNICODE}US: ZWideString;{$ENDIF}
 begin
   if ConSettings^.AutoEncode then begin
     Result := ''; //init
@@ -966,10 +1010,13 @@ begin
       ToBuff(SQLTokens[i].Value, FASQL);
       case (SQLTokens[i].TokenType) of
         ttQuoted, ttComment,
-        ttWord, ttQuotedIdentifier, ttKeyword:
-          ToBuff(ConSettings^.ConvFuncs.ZStringToUnicode(SQL, ConSettings.CTRL_CP), Result);
-        else
-          ToBuff(ASCII7ToUnicodeString(SQLTokens[i].Value), Result);
+        ttWord, ttQuotedIdentifier, ttKeyword: begin
+          US := ConSettings^.ConvFuncs.ZStringToUnicode(SQL, ConSettings.CTRL_CP);
+          ToBuff(US, Result);
+        end else begin
+          US := ASCII7ToUnicodeString(SQLTokens[i].Value);
+          ToBuff(US, Result);
+        end;
       end;
       {$ENDIF UNICODE}
     end;
@@ -987,16 +1034,17 @@ begin
     {$ELSE !UNICODE}
     Result := ConSettings^.ConvFuncs.ZStringToUnicode(SQL, ConSettings.CTRL_CP);
     {$ENDIF UNICODE}
+      FWSQL := '';
   end;
 end;
 
 function TZAbstractStatement.CreateStmtLogEvent(Category: TZLoggingCategory;
-  const Msg: RawByteString = ''): TZLoggingEvent;
+  const Msg: RawByteString = EmptyRaw): TZLoggingEvent;
 begin
-  if msg <> '' then
-    result := TZLoggingEvent.Create(Category, ConSettings^.Protocol, 'Statement '+IntToRaw(FStatementId)+' : '+ Msg, 0, '')
+  if msg <> EmptyRaw then
+    result := TZLoggingEvent.Create(Category, ConSettings^.Protocol, 'Statement '+IntToRaw(FStatementId)+' : '+ Msg, 0, EmptyRaw)
   else
-    result := TZLoggingEvent.Create(Category, ConSettings^.Protocol, 'Statement '+IntToRaw(FStatementId), 0, '');
+    result := TZLoggingEvent.Create(Category, ConSettings^.Protocol, 'Statement '+IntToRaw(FStatementId), 0, EmptyRaw);
 end;
 
 function TZAbstractStatement.CreateLogEvent(
@@ -1031,9 +1079,9 @@ end;
 
   @param name the new cursor name, which must be unique within a connection
 }
-procedure TZAbstractStatement.SetCursorName(const Value: AnsiString);
+procedure TZAbstractStatement.SetCursorName(const Value: String);
 begin
-  FCursorName := Value;
+  FCursorName := ConSettings^.ConvFuncs.ZStringToRaw(Value, ConSettings^.CTRL_CP, ConSettings^.ClientCodePage^.CP);
 end;
 
 {**
@@ -1089,7 +1137,10 @@ end;
 }
 function TZAbstractStatement.GetResultSet: IZResultSet;
 begin
-  Result := LastResultSet;
+  Result := FLastResultSet;
+  { does not work as TZGenericTestDbcResultSet.TestLastQuery does expect it! }
+  {FLastResultSet := nil;
+  FOpenResultSet := Pointer(Result);}
 end;
 
 {**
@@ -1297,6 +1348,21 @@ end;
 procedure TZAbstractStatement.AddBatchRequest(const SQL: string);
 begin
   FBatchQueries.Add(SQL);
+end;
+
+procedure TZAbstractStatement.AfterClose;
+begin
+
+end;
+
+procedure TZAbstractStatement.BeforeClose;
+begin
+  if Assigned(FLastResultSet) then
+    LastResultSet.Close;
+  if Assigned(FOpenResultSet) then begin
+    IZResultSet(FOpenResultSet).Close;
+    FOpenResultSet := nil;
+  end;
 end;
 
 {**
@@ -1609,10 +1675,10 @@ end;
   @param Msg a description message.
 }
 procedure TZAbstractPreparedStatement.LogPrepStmtMessage(Category: TZLoggingCategory;
-  const Msg: RawByteString = '');
+  const Msg: RawByteString = EmptyRaw);
 begin
   if DriverManager.HasLoggingListener then
-    if msg <> '' then
+    if msg <> EmptyRaw then
       DriverManager.LogMessage(Category, ConSettings^.Protocol, 'Statement '+IntToRaw(FStatementId)+' : '+Msg)
     else
       DriverManager.LogMessage(Category, ConSettings^.Protocol, 'Statement '+IntToRaw(FStatementId));
@@ -1629,8 +1695,12 @@ begin
       vtInteger : result := IntToRaw(VInteger);
       vtFloat : result := FloatToRaw(VFloat);
       vtString,
+      {$IFNDEF NO_ANSISTRING}
       vtAnsiString,
+      {$ENDIF}
+      {$IFNDEF NO_UTF8STRING}
       vtUTF8String,
+      {$ENDIF}
       vtRawByteString,
       vtUnicodeString,
       vtCharRec: result := #39 + ClientVarManager.GetAsRawByteString(Value) + #39;
@@ -1649,13 +1719,17 @@ end;
   @return a <code>ResultSet</code> object that contains the data produced by the
     query; never <code>null</code>
 }
-{$WARNINGS OFF}
+{$IFDEF FPC}
+  {$PUSH} {$WARN 5033 off : Function result does not seem to be set} // base class - result not returned intentionally
+{$ENDIF}
 function TZAbstractPreparedStatement.ExecuteQueryPrepared: IZResultSet;
 begin
+  Result := nil;
   { Logging Execution }
   DriverManager.LogMessage(lcExecPrepStmt,Self);
 end;
-{$WARNINGS ON}
+{$IFDEF FPC} {$POP} {$ENDIF}
+
 {**
   Executes the SQL INSERT, UPDATE or DELETE statement
   in this <code>PreparedStatement</code> object.
@@ -1666,13 +1740,13 @@ end;
   @return either the row count for INSERT, UPDATE or DELETE statements;
   or 0 for SQL statements that return nothing
 }
-{$WARNINGS OFF}
 function TZAbstractPreparedStatement.ExecuteUpdatePrepared: Integer;
 begin
+  Result := -1;
   { Logging Execution }
   DriverManager.LogMessage(lcExecPrepStmt,Self);
 end;
-{$WARNINGS ON}
+
 {**
   Sets the designated parameter the default SQL value.
   <P><B>Note:</B> You must specify the default value.
@@ -1946,11 +2020,13 @@ end;
   @param parameterIndex the first parameter is 1, the second is 2, ...
   @param x the parameter value
 }
+{$IFNDEF NO_ANSISTRING}
 procedure TZAbstractPreparedStatement.SetAnsiString(ParameterIndex: Integer;
    const Value: AnsiString);
 begin
   SetInParam(ParameterIndex, stString, EncodeAnsiString(Value));
 end;
+{$ENDIF}
 
 {**
   Sets the designated parameter to a Java <code>UTF8String</code> value.
@@ -1963,12 +2039,13 @@ end;
   @param parameterIndex the first parameter is 1, the second is 2, ...
   @param x the parameter value
 }
+{$IFNDEF NO_UTF8STRING}
 procedure TZAbstractPreparedStatement.SetUTF8String(ParameterIndex: Integer;
    const Value: UTF8String);
 begin
   SetInParam(ParameterIndex, stString, EncodeUTF8String(Value));
 end;
-
+{$ENDIF}
 {**
   Sets the designated parameter to a Java <code>RawByteString</code> value.
   The driver dosn't converts this
@@ -2035,7 +2112,6 @@ end;
   @param parameterIndex the first parameter is 1, the second is 2, ...
   @param x the parameter value
 }
-
 procedure TZAbstractPreparedStatement.SetUnicodeString(ParameterIndex: Integer;
   const Value: ZWideString);
 begin
@@ -2294,7 +2370,7 @@ begin
           AssertLength;
         stString:
           case VariantType of
-            vtString, vtAnsiString, vtUTF8String, vtRawByteString, vtCharRec:
+            vtString, {$IFNDEF NO_ANSISTRING}vtAnsiString, {$ENDIF}vtUTF8String, vtRawByteString, vtCharRec:
               AssertLength
             else
               raise Exception.Create('Invalid Variant-Type for String-Array binding!');
@@ -2358,11 +2434,11 @@ begin
   DriverManager.LogMessage(lcExecPrepStmt,Self);
 end;
 
-procedure TZAbstractPreparedStatement.Close;
+procedure TZAbstractPreparedStatement.BeforeClose;
 begin
-  if Prepared then
-    Unprepare;
-  inherited Close;
+  inherited BeforeClose;
+    if Prepared then
+      Unprepare;
 end;
 
 function TZAbstractPreparedStatement.GetSQL: String;
@@ -2427,7 +2503,7 @@ begin
     FCachedQueryRaw := ZDbcUtils.TokenizeSQLQueryRaw({$IFDEF UNICODE}FWSQL{$ELSE}FASQL{$ENDIF}, ConSettings,
       Connection.GetDriver.GetTokenizer, FIsParamIndex, FNCharDetected, GetCompareFirstKeywordStrings, @FIsPraparable);
 
-    Result := ''; //init Result
+    Result := EmptyRaw; //init Result
     for I := 0 to High(FCachedQueryRaw) do
       Result := Result + FCachedQueryRaw[i];
   end
@@ -2521,7 +2597,7 @@ begin
   FSQL := SQL;
   FOutParamCount := 0;
   SetOutParamCount(0);
-  FProcSql := ''; //Init -> FPC
+  FProcSql := EmptyRaw; //Init -> FPC
   FLastWasNull := True;
   FResultSets := TZCollection.Create;
   FIsFunction := False;
@@ -2567,7 +2643,7 @@ begin
   begin
     if ( InParamTypes[I] = ZDbcIntfs.stUnknown ) then
       Continue;
-    if (FDBParamTypes[i] in [2, 4]) then //[ptResult, ptOutput]
+    if Ord(FDBParamTypes[i]) > Ord(pctInOut) then //[ptResult, ptOutput]
       continue; //EgonHugeist: Ignore known OutParams! else StatmentInparamCount <> expect ProcedureParamCount
     ParamTypes[ParamCount] := InParamTypes[I];
     ParamValues[ParamCount] := InParamValues[I];
@@ -2630,10 +2706,10 @@ end;
   garbage collected. When a <code>Statement</code> object is closed, its current
   <code>ResultSet</code> object, if one exists, is also closed.
 }
-procedure TZAbstractCallableStatement.Close;
+procedure TZAbstractCallableStatement.BeforeClose;
 begin
   ClearResultSets;
-  inherited Close;
+  inherited BeforeClose;
 end;
 
 
@@ -2714,10 +2790,12 @@ end;
   @param Index the index of the Resultset
   @result <code>IZResultSet</code> of the Index or nil.
 }
+{$IFDEF FPC} {$PUSH} {$WARN 5024 off : Parameter "$1" not used} {$ENDIF} // encoding unknown - parameter not used intentionally
 function TZAbstractCallableStatement.GetResultSetByIndex(const Index: Integer): IZResultSet;
 begin
   Result := nil;
 end;
+{$IFDEF FPC} {$POP} {$ENDIF}
 
 {**
   Returns the Count of retrived ResultSets.
@@ -2761,9 +2839,9 @@ begin
   if ({$IFDEF GENERIC_INDEX}High{$ELSE}Length{$ENDIF}(FDBParamTypes) < ParameterIndex) then
     SetLength(FDBParamTypes, ParameterIndex{$IFDEF GENERIC_INDEX}+1{$ENDIF});
 
-  FDBParamTypes[ParameterIndex{$IFNDEF GENERIC_INDEX}-1{$ENDIF}] := ParamType;
-  if not FIsFunction then FIsFunction := ParamType = 4; //ptResult
-  if not FHasOutParameter then FHasOutParameter := ParamType in [2,3]; //ptOutput, ptInputOutput
+  FDBParamTypes[ParameterIndex{$IFNDEF GENERIC_INDEX}-1{$ENDIF}] := TZProcedureColumnType(ParamType);
+  if not FIsFunction then FIsFunction := ParamType = Ord(pctReturn);
+  if not FHasOutParameter then FHasOutParameter := TZProcedureColumnType(ParamType) in [pctOut,pctInOut]; //ptOutput, ptInputOutput
 end;
 
 {**
@@ -2875,10 +2953,12 @@ end;
   is <code>null</code>.
   @exception SQLException if a database access error occurs
 }
+{$IFNDEF NO_ANSISTRING}
 function TZAbstractCallableStatement.GetAnsiString(ParameterIndex: Integer): AnsiString;
 begin
   Result := ClientVarManager.GetAsAnsiString(GetOutParam(ParameterIndex));
 end;
+{$ENDIF NO_ANSISTRING}
 
 {**
   Retrieves the value of a JDBC <code>CHAR</code>, <code>VARCHAR</code>,
@@ -2896,10 +2976,12 @@ end;
   is <code>null</code>.
   @exception SQLException if a database access error occurs
 }
+{$IFNDEF NO_UTF8STRING}
 function TZAbstractCallableStatement.GetUTF8String(ParameterIndex: Integer): UTF8String;
 begin
   Result := ClientVarManager.GetAsUTF8String(GetOutParam(ParameterIndex));
 end;
+{$ENDIF}
 
 {**
   Retrieves the value of a JDBC <code>CHAR</code>, <code>VARCHAR</code>,
@@ -3191,7 +3273,7 @@ procedure TZAbstractPreparedCallableStatement.SetProcSQL(const Value: RawByteStr
 begin
   if Value <> ProcSQL then Unprepare;
   inherited SetProcSQL(Value);
-  if (Value <> '') and ( not Prepared ) then Prepare;
+  if (Value <> EmptyRaw) and ( not Prepared ) then Prepare;
 end;
 
 {**
@@ -3316,7 +3398,7 @@ begin
     ExecStatement.SetMaxRows(GetMaxRows);
     ExecStatement.SetEscapeProcessing(EscapeProcessing);
     ExecStatement.SetQueryTimeout(GetQueryTimeout);
-    ExecStatement.SetCursorName(CursorName);
+    ExecStatement.SetCursorName(String(CursorName));
 
     ExecStatement.SetFetchDirection(GetFetchDirection);
     ExecStatement.SetFetchSize(GetFetchSize);
@@ -3399,9 +3481,9 @@ end;
 {**
   Closes this statement and frees all resources.
 }
-procedure TZEmulatedPreparedStatement.Close;
+procedure TZEmulatedPreparedStatement.BeforeClose;
 begin
-  inherited Close;
+  inherited BeforeClose;
   if LastStatement <> nil then
   begin
     FLastStatement.Close;
@@ -3611,6 +3693,7 @@ begin
       Connection.GetDriver.GetTokenizer, FIsParamIndex, FNCharDetected,
       GetCompareFirstKeywordStrings, @FIsPraparable, FNeedNCharDetection);
 end;
+{$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R+}{$IFEND}
 
 { TZEmulatedPreparedStatement_W }
 

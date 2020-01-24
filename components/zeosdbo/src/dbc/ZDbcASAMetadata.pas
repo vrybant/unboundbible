@@ -55,6 +55,7 @@ interface
 
 {$I ZDbc.inc}
 
+{$IFNDEF ZEOS_DISABLE_ASA}
 uses
   Types, Classes, SysUtils, ZDbcIntfs, ZDbcMetadata, ZCompatibility,
   ZDbcConnection, ZDbcASA, ZURL;
@@ -251,7 +252,9 @@ type
     constructor Create(Connection: TZAbstractConnection; const Url: TZURL); override;
   end;
 
+{$ENDIF ZEOS_DISABLE_ASA}
 implementation
+{$IFNDEF ZEOS_DISABLE_ASA}
 
 uses ZFastCode, ZDbcASAUtils, ZSysUtils, ZSelectSchema;
 
@@ -1204,16 +1207,16 @@ end;
 
 function TZASADatabaseMetadata.ConvertEscapes(const Pattern: String): String;
 var
-  EscapeChar: Char;
+  EscapeChar: PChar;
   P: PChar;
 begin
   Result := '';
-  if Length(Pattern) = 0 then Exit;
-  EscapeChar := GetDatabaseInfo.GetSearchStringEscape[1];
+  if Pattern = '' then Exit;
+  EscapeChar := Pointer(GetDatabaseInfo.GetSearchStringEscape);
   P := Pointer(Pattern);
   ClearBuf;
   while P^ <> #0 do begin
-    if (P^ = EscapeChar) and (((P+1)^ = WildcardsArray[0]) or ((P+1)^=WildcardsArray[1])) then begin
+    if (P^ = EscapeChar^) and (((P+1)^ = WildcardsArray[0]) or ((P+1)^=WildcardsArray[1])) then begin
       ToBuf('[', Result);
       Inc(P);
       ToBuf(P^, Result);
@@ -1239,11 +1242,11 @@ begin
 end;
 
 {**
-  Composes a object name, AnsiQuotedStr or NullText
+  Composes a object name, SQLQuotedStr or NullText
   @param S the object string
   @param NullText the "NULL"-Text default: 'null'
   @param QuoteChar the QuoteChar default: '
-  @return 'null' if S is '' or S if s is already Quoted or AnsiQuotedStr(S, #39)
+  @return 'null' if S is '' or S if s is already Quoted or SQLQuotedStr(S, #39)
 }
 function TZASADatabaseMetadata.ComposeObjectString(const S: String;
   Const NullText: String = 'null'; QuoteChar: Char = #39): String;
@@ -1253,7 +1256,7 @@ begin
   else begin
     Result := ConvertEscapes(S);
     if not IC.IsQuoted(Result) then
-      Result := AnsiQuotedStr(Result, QuoteChar);
+      Result := SQLQuotedStr(Result, QuoteChar);
   end;
 end;
 
@@ -1269,7 +1272,7 @@ end;
 
 function TZASADatabaseMetadata.DecomposeObjectString(const S: String): String;
 begin
-  Result := AnsiQuotedStr(Inherited DecomposeObjectString(S), #39);
+  Result := SQLQuotedStr(Inherited DecomposeObjectString(S), #39);
 end;
 
 {**
@@ -1389,9 +1392,19 @@ function TZASADatabaseMetadata.UncachedGetProcedureColumns(const Catalog: string
   const SchemaPattern: string; const ProcedureNamePattern: string;
   const ColumnNamePattern: string): IZResultSet;
 var Len: NativeUInt;
+  SkipResultColumn: Boolean;
+  RS: IZResultSet;
 begin
+  if ProcedureNamePattern <> '' then begin
+    RS := GetProcedures(Catalog, SchemaPattern, ProcedureNamePattern);
+    SkipResultColumn := RS.Next and (RS.GetSmall(ProcedureTypeIndex) <> Ord(prtReturnsResult));
+    RS.Close;
+  end else
+    SkipResultColumn := False;
+
   Result := inherited UncachedGetProcedureColumns(Catalog, SchemaPattern,
     ProcedureNamePattern, ColumnNamePattern);
+
 
   with GetStatement.ExecuteQuery(
     Format('exec sp_jdbc_getprocedurecolumns %s, %s, %s, %s',
@@ -1408,8 +1421,11 @@ begin
       case GetSmallByName('COLUMN_TYPE') of
         1: Result.UpdateSmall(ProcColColumnTypeIndex, Ord(pctIn));
         2: Result.UpdateSmall(ProcColColumnTypeIndex, Ord(pctInOut));
-        3: Result.UpdateSmall(ProcColColumnTypeIndex, Ord(pctOut));
-        5: Result.UpdateSmall(ProcColColumnTypeIndex, Ord(pctReturn));
+        3: Result.UpdateSmall(ProcColColumnTypeIndex, Ord(pctResultSet));
+        4: Result.UpdateSmall(ProcColColumnTypeIndex, Ord(pctOut));
+        5:  if SkipResultColumn
+            then Continue
+            else Result.UpdateSmall(ProcColColumnTypeIndex, Ord(pctReturn));
       else
         Result.UpdateSmall(ProcColColumnTypeIndex, Ord(pctUnknown));
       end;
@@ -1470,11 +1486,7 @@ begin
 
   TableTypes := '';
   for I := 0 to Length(Types) - 1 do
-  begin
-    if TableTypes <> '' then
-      TableTypes := TableTypes + ',';
-    TableTypes := TableTypes + AnsiQuotedStr(Types[I], '''');
-  end;
+    AppendSepString(TableTypes, SQLQuotedStr(Types[I], ''''), ',');
 
   with GetStatement.ExecuteQuery(
     Format('exec sp_jdbc_tables %s, %s, %s, %s',
@@ -2348,8 +2360,8 @@ var
 begin
   Result:=inherited UncachedGetIndexInfo(Catalog, Schema, Table, Unique, Approximate);
 
-  Is_Unique := AnsiQuotedStr(BoolStrInts[Unique], '''');
-  Accuracy := AnsiQuotedStr(BoolStrInts[Approximate], '''');
+  Is_Unique := SQLQuotedStr(BoolStrInts[Unique], '''');
+  Accuracy := SQLQuotedStr(BoolStrInts[Approximate], '''');
 
   with GetStatement.ExecuteQuery(
     Format('exec sp_jdbc_getindexinfo %s, %s, %s, %s, %s',
@@ -2423,11 +2435,7 @@ begin
 
   UDTypes := '';
   for I := 0 to Length(Types) - 1 do
-  begin
-    if Length(UDTypes) > 0 then
-      UDTypes := UDTypes + ',';
-    UDTypes := UDTypes + AnsiQuotedStr(ZFastCode.IntToStr(Types[I]), '''');
-  end;
+    AppendSepString(UDTypes, SQLQuotedStr(ZFastCode.IntToStr(Types[I]), ''''), ',');
 
   with GetStatement.ExecuteQuery(
     Format('exec sp_jdbc_getudts %s, %s, %s, %s',
@@ -2450,7 +2458,5 @@ begin
     Close;
   end;
 end;
-
+{$ENDIF ZEOS_DISABLE_ASA}
 end.
-
-

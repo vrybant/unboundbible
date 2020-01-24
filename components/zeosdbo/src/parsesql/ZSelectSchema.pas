@@ -55,9 +55,10 @@ interface
 
 {$I ZParseSql.inc}
 
-uses ZClasses, Contnrs, ZCompatibility
-  {$IFDEF WITH_SYSTEMCLASSES},System.Classes{$ENDIF}
-  {$IFDEF WITH_TOBJECTLIST_INLINE}, System.Types{$ENDIF};
+uses ZClasses
+  {$IFNDEF NO_UNIT_CONTNRS},Contnrs{$ENDIF}
+  {$IFDEF WITH_TOBJECTLIST_REQUIRES_CLASSES}, Classes{$ENDIF}
+  {$IFDEF WITH_TOBJECTLIST_REQUIRES_SYSTEM_TYPES}, System.Types{$ENDIF};
 
 type
 
@@ -120,11 +121,11 @@ type
   IZSelectSchema = interface (IZInterface)
     ['{3B892975-57E9-4EB7-8DB1-BDDED91E7FBC}']
 
-    procedure AddField(FieldRef: TZFieldRef);
-    procedure InsertField(Index: Integer; FieldRef: TZFieldRef);
-    procedure DeleteField(FieldRef: TZFieldRef);
+    procedure AddField({$IFDEF AUTOREFCOUNT}const{$ENDIF}FieldRef: TZFieldRef);
+    procedure InsertField(Index: Integer; {$IFDEF AUTOREFCOUNT}const{$ENDIF}FieldRef: TZFieldRef);
+    procedure DeleteField({$IFDEF AUTOREFCOUNT}const{$ENDIF}FieldRef: TZFieldRef);
 
-    procedure AddTable(TableRef: TZTableRef);
+    procedure AddTable({$IFDEF AUTOREFCOUNT}const{$ENDIF}TableRef: TZTableRef);
 
     procedure LinkReferences(const Convertor: IZIdentifierConvertor);
 
@@ -157,11 +158,11 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure AddField(FieldRef: TZFieldRef);
-    procedure InsertField(Index: Integer; FieldRef: TZFieldRef);
-    procedure DeleteField(FieldRef: TZFieldRef);
+    procedure AddField({$IFDEF AUTOREFCOUNT}const{$ENDIF}FieldRef: TZFieldRef);
+    procedure InsertField(Index: Integer; {$IFDEF AUTOREFCOUNT}const{$ENDIF}FieldRef: TZFieldRef);
+    procedure DeleteField({$IFDEF AUTOREFCOUNT}const{$ENDIF}FieldRef: TZFieldRef);
 
-    procedure AddTable(TableRef: TZTableRef);
+    procedure AddTable({$IFDEF AUTOREFCOUNT}const{$ENDIF}TableRef: TZTableRef);
 
     procedure LinkReferences(const Convertor: IZIdentifierConvertor);
 
@@ -185,6 +186,8 @@ type
 
 implementation
 
+uses SysUtils;
+
 { TZTableRef }
 
 {**
@@ -207,11 +210,16 @@ end;
   @return a full database table name.
 }
 function TZTableRef.FullName: string;
+var P: PChar absolute Result;
+  I: Integer;
 begin
   Result := FCatalog + '.' + FSchema + '.' + FTable;
-  
-  while (Result <> '') and (Result[1] = '.') do
-    Delete(Result, 1, 1);
+  if P^ = '.' then begin
+    if (P+1)^ = '.'
+    then I := 2
+    else I := 1;
+    Result := Copy(Result, I+1, Length(Result)-I);
+  end;
 end;
 
 { TZFieldRef }
@@ -255,8 +263,8 @@ end;
 }
 destructor TZSelectSchema.Destroy;
 begin
-  FFields.Free;
-  FTables.Free;
+  FreeAndNil(FFields);
+  FreeAndNil(FTables);
 end;
 
 {**
@@ -551,7 +559,7 @@ begin
           FieldRef.Table, FieldRef.Field, FieldRef.Alias, TableRef));
     end;
   finally
-    TempFields.Free;
+    FreeAndNil(TempFields);
   end;
 end;
 
@@ -559,7 +567,7 @@ end;
   Adds a new field to this select schema.
   @param FieldRef a field reference object.
 }
-procedure TZSelectSchema.AddField(FieldRef: TZFieldRef);
+procedure TZSelectSchema.AddField({$IFDEF AUTOREFCOUNT}const{$ENDIF}FieldRef: TZFieldRef);
 begin
   FFields.Add(FieldRef);
 end;
@@ -569,7 +577,7 @@ end;
   @param Index an index where to insert a new field reference.
   @param FieldRef a field reference object.
 }
-procedure TZSelectSchema.InsertField(Index: Integer; FieldRef: TZFieldRef);
+procedure TZSelectSchema.InsertField(Index: Integer; {$IFDEF AUTOREFCOUNT}const{$ENDIF}FieldRef: TZFieldRef);
 begin
   FFields.Insert(Index, FieldRef);
 end;
@@ -578,7 +586,7 @@ end;
   Deletes a field from this select schema.
   @param FieldRef a field reference object.
 }
-procedure TZSelectSchema.DeleteField(FieldRef: TZFieldRef);
+procedure TZSelectSchema.DeleteField({$IFDEF AUTOREFCOUNT}const{$ENDIF}FieldRef: TZFieldRef);
 begin
   FFields.Remove(FieldRef);
 end;
@@ -587,7 +595,7 @@ end;
   Adds a new table to this select schema.
   @param TableRef a table reference object.
 }
-procedure TZSelectSchema.AddTable(TableRef: TZTableRef);
+procedure TZSelectSchema.AddTable({$IFDEF AUTOREFCOUNT}const{$ENDIF}TableRef: TZTableRef);
 begin
   FTables.Add(TableRef);
 end;

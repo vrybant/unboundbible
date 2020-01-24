@@ -54,8 +54,9 @@ interface
 {$I ZComponent.inc}
 
 uses
-  SysUtils, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} Forms, Dialogs,
-  ZDbcIntfs,ZCompatibility;
+  SysUtils, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF}
+  {Forms, Dialogs,}
+  ZDbcIntfs,ZCompatibility{$IFDEF TLIST_IS_DEPRECATED}, ZSysUtils{$ENDIF};
 
 const
   mask = 'æææ#2ææ0#ææ39æ-V„–FFVæææ';  { define your own mask  }
@@ -76,14 +77,13 @@ type
     property Sender: TObject read FSender write FSender;
   end;
 
-{$HINTS OFF}
   TZConnectionGroup = class(TComponent)
   private
     FOnChange: TNotifyEvent;
-    procedure DoChange(Sender: TObject);
+    //procedure DoChange(Sender: TObject);
     procedure Change;
   protected
-    FClients: tList;
+    FClients: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF};
     FProtocol: string;
     FHostName: string;
     FPort: Integer;
@@ -129,7 +129,6 @@ type
     // -- todo ----
     // add another property or event ?
   end;
-{$HINTS ON}
 
 implementation
 
@@ -152,7 +151,7 @@ end;
 constructor TZConnectionGroup.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FClients := tList.Create;
+  FClients := {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF}.Create;
 end;
 
 destructor TZConnectionGroup.Destroy;
@@ -162,10 +161,10 @@ begin
   inherited Destroy;
 end;
 
-procedure TZConnectionGroup.DoChange(Sender: TObject);
+{procedure TZConnectionGroup.DoChange(Sender: TObject);
 begin
   Change;
-end;
+end;}
 
 procedure TZConnectionGroup.Change;
   var i:Integer;

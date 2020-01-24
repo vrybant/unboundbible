@@ -50,7 +50,9 @@
 {********************************************************@}
 
 unit ZAbstractDataset;
-
+{$IFDEF FPC}
+{$WARN 4056 off : Conversion between ordinals and pointers is not portable}
+{$ENDIF}
 interface
 
 {$I ZComponent.inc}
@@ -59,7 +61,8 @@ uses
   Variants,
   SysUtils,  Classes, {$IFDEF MSEgui}mdb, mclasses{$ELSE}DB{$ENDIF},
   ZSqlUpdate, ZDbcIntfs, ZVariant, ZDbcCache, ZDbcCachedResultSet,
-  ZAbstractRODataset, ZCompatibility, ZSequence;
+  ZAbstractRODataset, ZCompatibility, ZSequence
+  {$IFDEF TLIST_IS_DEPRECATED}, ZSysUtils{$ENDIF};
 
 type
   {$IFDEF oldFPC} // added in 2006, probably pre 2.2.4
@@ -96,7 +99,7 @@ type
 
     FBeforeApplyUpdates: TNotifyEvent; {bangfauzan addition}
     FAfterApplyUpdates: TNotifyEvent; {bangfauzan addition}
-    FDetailDataSets: TList;
+    FDetailDataSets: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF};
     FDetailCachedUpdates: array of Boolean;
   private
     function GetUpdatesPending: Boolean;
@@ -117,7 +120,11 @@ type
 
     procedure InternalClose; override;
     procedure InternalEdit; override;
+    {$IFNDEF WITH_InternalAddRecord_TRecBuf}
     procedure InternalAddRecord(Buffer: Pointer; Append: Boolean); override;
+    {$ELSE}
+    procedure InternalAddRecord(Buffer: TRecBuf; Append: Boolean); override;
+    {$ENDIF}
     procedure InternalPost; override;
     procedure InternalDelete; override;
     procedure InternalUpdate;
@@ -195,7 +202,7 @@ type
 
 implementation
 
-uses Math, ZMessages, ZDatasetUtils;
+uses Math, ZMessages, ZDatasetUtils, ZClasses;
 
 { TZAbstractDataset }
 
@@ -210,7 +217,7 @@ begin
   FWhereMode := wmWhereKeyOnly;
   FUpdateMode := umUpdateChanged;
   RequestLive := True;
-  FDetailDataSets := TList.Create;
+  FDetailDataSets := {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF}.Create;
 end;
 
 {**
@@ -388,9 +395,6 @@ end;
 {**
   Performs an internal record updates.
 }
-{$IFDEF FPC}
-  {$HINTS OFF}
-{$ENDIF}
 procedure TZAbstractDataset.InternalUpdate;
 var
   RowNo: Integer;
@@ -416,9 +420,6 @@ begin
     end;
   end;
 end;
-{$IFDEF FPC}
-  {$HINTS ON}
-{$ENDIF}
 
 {**
   Performs an internal adding a new record.
@@ -426,15 +427,20 @@ end;
   @param Append <code>True</code> if record should be added to the end
     of the result set.
 }
-{$IFDEF FPC}
-  {$HINTS OFF}
-{$ENDIF}
+{$IFNDEF WITH_InternalAddRecord_TRecBuf}
 procedure TZAbstractDataset.InternalAddRecord(Buffer: Pointer; Append: Boolean);
+{$ELSE}
+procedure TZAbstractDataset.InternalAddRecord(Buffer: TRecBuf; Append: Boolean);
+{$ENDIF}
 var
   RowNo: Integer;
   RowBuffer: PZRowBuffer;
 begin
+{$IFNDEF WITH_InternalAddRecord_TRecBuf}
   if not GetActiveBuffer(RowBuffer) or (RowBuffer <> Buffer) then
+{$ELSE}
+  if not GetActiveBuffer(RowBuffer) or (TRecBuf(RowBuffer) <> Buffer) then
+{$ENDIF}
     raise EZDatabaseError.Create(SInternalError);
 
   if Append then
@@ -469,17 +475,10 @@ begin
     end;
   end;
 end;
-{$IFDEF FPC}
-  {$HINTS ON}
-{$ENDIF}
-
 
 {**
   Performs an internal post updates.
 }
-{$IFDEF FPC}
-  {$HINTS OFF}
-{$ENDIF}
 procedure TZAbstractDataset.InternalPost;
 var
   RowBuffer: PZRowBuffer;
@@ -519,7 +518,11 @@ begin
         end;
 
     if State = dsInsert then
+      {$IFNDEF WITH_InternalAddRecord_TRecBuf}
       InternalAddRecord(RowBuffer, False)
+      {$ELSE}
+      InternalAddRecord(TRecBuf(RowBuffer), False)
+      {$ENDIF}
     else
       InternalUpdate;
 
@@ -611,9 +614,6 @@ begin
          RowAccessor);
   end;
 end;
-{$IFDEF FPC}
-  {$HINTS ON}
-{$ENDIF}
 
 {**
   Processes component notifications.
@@ -735,7 +735,7 @@ begin
           SetTempState(dsInternalCalc);
           try
             for I := 0 to Fields.Count - 1 do
-              DataEvent(deFieldChange,ULong(Fields[i]));
+              DataEvent(deFieldChange, NativeInt(Fields[i]));
           finally
             RestoreState(ostate);
           end;
@@ -791,9 +791,6 @@ end;
   @param Delta a dataset where the current position shows the row to update.
   @returns <code>True</code> if updates were successfully applied.
 }
-{$IFDEF FPC}
-  {$HINTS OFF}
-{$ENDIF}
 function TZAbstractDataset.PSUpdateRecord(UpdateKind: TUpdateKind;
   Delta: TDataSet): Boolean;
 
@@ -961,11 +958,9 @@ begin
     Self.Active := ActiveMode;
   end;
 end;
-{$IFDEF FPC}
-  {$HINTS ON}
-{$ENDIF}
 
 {$ENDIF}
+
 procedure TZAbstractDataset.RegisterDetailDataSet(Value: TZAbstractDataset;
   CachedUpdates: Boolean);
 begin

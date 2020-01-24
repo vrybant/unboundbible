@@ -56,7 +56,8 @@ interface
 {$I ZComponent.inc}
 
 uses
-  Types, Classes, SysUtils, {$IFDEF MSEgui}mclasses,{$ENDIF}Contnrs,
+  Types, Classes, SysUtils, {$IFDEF MSEgui}mclasses,{$ENDIF}
+  {$IFNDEF NO_UNIT_CONTNRS}Contnrs{$ELSE}ZClasses{$ENDIF},
   ZDbcIntfs, ZTokenizer, ZGenericSqlToken, ZCompatibility;
 
 type
@@ -66,6 +67,7 @@ type
     FSQL: string;
     FParamIndices: TIntegerDynArray;
     FParams: TStrings;
+    FParamNamesArray: TStringDynArray;
 
     function GetParamCount: Integer;
     function GetParamName(Index: Integer): string;
@@ -77,7 +79,7 @@ type
     property ParamCount: Integer read GetParamCount;
     property ParamNames[Index: Integer]: string read GetParamName;
     property ParamIndices: TIntegerDynArray read FParamIndices;
-    property ParamNamesArray: TStringDynArray read GetParamNamesArray;
+    property ParamNamesArray: TStringDynArray read FParamNamesArray;
   end;
 
   {** Imlements a string list with SQL statements. }
@@ -140,6 +142,7 @@ begin
   FSQL := SQL;
   FParamIndices := ParamIndices;
   FParams := Params;
+  FParamNamesArray := GetParamNamesArray;
 end;
 
 {**

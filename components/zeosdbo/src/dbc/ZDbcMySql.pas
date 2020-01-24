@@ -55,8 +55,10 @@ interface
 
 {$I ZDbc.inc}
 
+{$IFNDEF ZEOS_DISABLE_MYSQL} //if set we have an empty unit
 uses
   Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
+  {$IF defined(UNICODE) and not defined(WITH_UNICODEFROMLOCALECHARS)}Windows,{$IFEND}
   ZCompatibility, ZDbcIntfs, ZDbcConnection, ZPlainMySqlDriver, ZPlainDriver,
   ZURL, ZDbcLogging, ZTokenizer, ZGenericSqlAnalyser, ZPlainMySqlConstants;
 
@@ -65,7 +67,6 @@ type
   {** Implements MySQL Database Driver. }
 
   { TZMySQLDriver }
-  {$WARNINGS OFF}
   TZMySQLDriver = class(TZAbstractDriver)
   protected
     function GetPlainDriver(const Url: TZURL; const InitDriver: Boolean = True): IZPlainDriver; override;
@@ -79,7 +80,6 @@ type
     function GetStatementAnalyser: IZStatementAnalyser; override;
     function GetClientVersion(const Url: string): Integer; override;
   end;
-  {$WARNINGS ON}
 
   {** Represents a MYSQL specific connection interface. }
   IZMySQLConnection = interface (IZConnection)
@@ -145,16 +145,15 @@ var
   {** The common driver manager object. }
   MySQLDriver: IZDriver;
 
+{$ENDIF ZEOS_DISABLE_MYSQL} //if set we have an empty unit
 implementation
+{$IFNDEF ZEOS_DISABLE_MYSQL} //if set we have an empty unit
 
 uses
-  {$IFDEF FPC}syncobjs{$ELSE}SyncObjs{$ENDIF},
   ZMessages, ZSysUtils, ZDbcMySqlStatement, ZMySqlToken, ZFastCode,
   ZDbcMySqlUtils, ZDbcMySqlMetadata, ZMySqlAnalyser, TypInfo, Math,
-  ZEncoding;
-
-var
-  MySQLCriticalSection: TCriticalSection;
+  {$IFDEF FPC}syncobjs{$ELSE}SyncObjs{$ENDIF},
+  ZEncoding, ZClasses;
 
 { TZMySQLDriver }
 
@@ -196,18 +195,10 @@ end;
   @return a <code>Connection</code> object that represents a
     connection to the URL
 }
-{$WARNINGS OFF} //suppress the deprecatad warning of calling create from internal
 function TZMySQLDriver.Connect(const Url: TZURL): IZConnection;
 begin
-  Result := nil; //init
-  MySQLCriticalSection.Enter;
-  try
-    Result := TZMySQLConnection.Create(Url);
-  finally
-    MySQLCriticalSection.Leave;
-  end;
+  Result := TZMySQLConnection.Create(Url);
 end;
-{$WARNINGS ON} //suppress the deprecatad warning of calling create from internal
 
 {**
   Gets the driver's major version number. Initially this should be 1.
@@ -298,7 +289,8 @@ begin
 end;
 
 const
-  MySQLSessionTransactionIsolation: array[TZTransactIsolationLevel] of AnsiString = (
+  MySQLSessionTransactionIsolation: array[TZTransactIsolationLevel] of
+    {$IFNDEF NO_ANSISTRING}AnsiString{$ELSE}RawByteString{$ENDIF} = (
     'SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ',
     'SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED',
     'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED',
@@ -359,7 +351,12 @@ begin
     Exit;
 
   LogMessage := 'CONNECT TO "'+ConSettings^.Database+'" AS USER "'+ConSettings^.User+'"';
-  FHandle := GetPlainDriver.Init(FHandle);
+  GlobalCriticalSection.Enter;
+  try
+    FHandle := GetPlainDriver.Init(FHandle); //is not threadsave!
+  finally
+    GlobalCriticalSection.Leave;
+  end;
   {EgonHugeist: get current characterset first }
   sMy_client_Char_Set := {$IFDEF UNICODE}ASCII7ToUnicodeString{$ENDIF}(GetPlainDriver.character_set_name(FHandle));
   if (sMy_client_Char_Set <> '') {mysql 4down doesn't have this function } and
@@ -477,8 +474,13 @@ setuint:      UIntOpt := StrToIntDef(Info.Values[sMyOpt], 0);
     end;
 
     { Connect to MySQL database. }
-    if GetPlainDriver.RealConnect(FHandle, PAnsiChar(AnsiString(HostName)),
-                              PAnsiChar(ConSettings^.User), PAnsiChar(AnsiString(Password)),
+    {$IFDEF UNICODE}
+    if GetPlainDriver.RealConnect(FHandle, PAnsiChar(ConSettings^.ConvFuncs.ZStringToRaw(HostName, ConSettings^.CTRL_CP, ConSettings^.ClientCodePage^.CP)),
+                              PAnsiChar(ConSettings^.User), PAnsiChar(ConSettings^.ConvFuncs.ZStringToRaw(Password, ConSettings^.CTRL_CP, ConSettings^.ClientCodePage^.CP)),
+    {$ELSE}
+    if GetPlainDriver.RealConnect(FHandle, PAnsiChar(HostName),
+                              PAnsiChar(ConSettings^.User), PAnsiChar(Password),
+    {$ENDIF}
                               PAnsiChar(ConSettings^.Database), Port, nil,
                               ClientFlag) = nil then begin
       CheckMySQLError(GetPlainDriver, FHandle, lcConnect, LogMessage, ConSettings);
@@ -499,7 +501,8 @@ setuint:      UIntOpt := StrToIntDef(Info.Values[sMyOpt], 0);
     if (FClientCodePage = '') and (sMy_client_Char_Set <> '') then
       FClientCodePage := sMy_client_Char_Set;
 
-    if (FClientCodePage <> sMy_client_Char_Set) then begin
+    //EH: MariaDB needs a explizit set of charset to be synced on Client<>Server!
+    if (FClientCodePage <> sMy_client_Char_Set) or (FPlainDriver.IsMariaDBDriver and (FClientCodePage <> '')) then begin
       //http://dev.mysql.com/doc/refman/5.7/en/mysql-set-character-set.html
       //take care mysql_real_escape_string works like expected!
       SQL := {$IFDEF UNICODE}UnicodeStringToAscii7{$ENDIF}(FClientCodePage);
@@ -533,16 +536,15 @@ setuint:      UIntOpt := StrToIntDef(Info.Values[sMyOpt], 0);
     end;
 
     inherited Open;
-
-
-    (GetMetadata as IZMySQLDatabaseMetadata).SetDataBaseName(GetDatabaseName);
     //no real version check required -> the user can simply switch off treading
     //enum('Y','N')
     FMySQL_FieldType_Bit_1_IsBoolean := StrToBoolEx(Info.Values['MySQL_FieldType_Bit_1_IsBoolean']);
     (GetMetadata as IZMySQLDatabaseMetadata).SetMySQL_FieldType_Bit_1_IsBoolean(FMySQL_FieldType_Bit_1_IsBoolean);
     FSupportsBitType := (
-      (    GetPlainDriver.IsMariaDBDriver and ((ClientVersion >= 100109) and (GetHostVersion >= EncodeSQLVersioning(10,0,0)))) or
-      (not GetPlainDriver.IsMariaDBDriver and ((ClientVersion >=  50003) and (GetHostVersion >= EncodeSQLVersioning(5,0,3)))));
+      (    GetPlainDriver.IsMariaDBDriver and (ClientVersion >= 100109) ) or
+      (not GetPlainDriver.IsMariaDBDriver and (ClientVersion >=  50003) ) ) and (GetHostVersion >= EncodeSQLVersioning(5,0,3));
+
+    (GetMetadata as IZMySQLDatabaseMetadata).SetDataBaseName(GetDatabaseName);
   except
     GetPlainDriver.Close(FHandle);
     FHandle := nil;
@@ -890,6 +892,8 @@ begin
     if ResultSet.Next
     then FDatabaseName := ResultSet.GetStringByName('DATABASE');
     FIKnowMyDatabaseName := True;
+    ResultSet.Close;
+    ResultSet := nil;
   end;
   Result := FDatabaseName;
 end;
@@ -897,11 +901,10 @@ end;
 initialization
   MySQLDriver := TZMySQLDriver.Create;
   DriverManager.RegisterDriver(MySQLDriver);
-  MySQLCriticalSection := TCriticalSection.Create;
 finalization
   if DriverManager <> nil then
     DriverManager.DeregisterDriver(MySQLDriver);
   MySQLDriver := nil;
-  FreeAndNil(MySQLCriticalSection);
-end.
 
+  {$ENDIF ZEOS_DISABLE_MYSQL} //if set we have an empty unit
+end.

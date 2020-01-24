@@ -55,6 +55,7 @@ interface
 
 {$I ZDbc.inc}
 
+{$IFNDEF ZEOS_DISABLE_DBLIB} //if set we have an empty unit
 uses Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
   ZCompatibility, ZClasses, ZSysUtils, ZCollections, ZDbcIntfs, ZDbcStatement,
   ZDbcDbLib, ZPlainDbLibConstants, ZPlainDbLibDriver;
@@ -68,7 +69,7 @@ type
     FHandle: PDBPROCESS;
     FResults: IZCollection;
     FUserEncoding: TZCharEncoding;
-    FLastOptainedRS: IZResultSet;
+    FClientCP: Word;
   protected
     procedure InternalExecuteStatement(const SQL: RawByteString);
     procedure FetchResults;
@@ -81,7 +82,6 @@ type
     procedure Prepare; override;
     procedure Unprepare; override;
     function GetMoreResults: Boolean; override;
-    function GetUpdateCount: Integer; override;
     function ExecuteQueryPrepared: IZResultSet; override;
     function ExecuteUpdatePrepared: Integer; override;
     function ExecutePrepared: Boolean; override;
@@ -102,13 +102,11 @@ type
     FUserEncoding: TZCharEncoding;
 
     procedure FetchResults;
-    //procedure FetchRowCount; virtual;
-
   protected
     procedure SetInParamCount(const NewParamCount: Integer); override;
   public
     constructor Create(const Connection: IZConnection; const ProcName: string; Info: TStrings);
-    procedure Close; override;
+    procedure BeforeClose; override;
 
     procedure RegisterOutParameter(ParameterIndex: Integer;
       SqlType: Integer); override;
@@ -116,10 +114,22 @@ type
     function ExecuteQueryPrepared: IZResultSet; override;
     function ExecuteUpdatePrepared: Integer; override;
     function ExecutePrepared: Boolean; override;
-
   end;
 
+{$ENDIF ZEOS_DISABLE_DBLIB} //if set we have an empty unit
 implementation
+{$IFNDEF ZEOS_DISABLE_DBLIB} //if set we have an empty unit
+
+(* target:
+  declare @p1 int
+set @p1=-1
+exec sp_prepexec @p1 output,NULL,N'select [PersonID] from [Tasks] t join [PersonSnapShots] pss on t.[CostSnapShotID]=pss.ID where t.[TaskTypeID]=21 and [CompletionDate] is null'
+select @p1
+
+https://docs.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-prepare-transact-sql?view=sql-server-2017
+https://docs.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-unprepare-transact-sql?view=sql-server-2017
+https://docs.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-describe-undeclared-parameters-transact-sql?view=sql-server-2017
+*)
 
 uses
   Types, Math,
@@ -157,6 +167,7 @@ begin
   else
     Self.FUserEncoding := ceDefault;
   FNeedNCharDetection := True;
+  FClientCP := ConSettings.ClientCodePage.CP;
 end;
 
 {**
@@ -178,57 +189,36 @@ function TZDBLibPreparedStatementEmulated.GetMoreResults: Boolean;
 var
   ResultSet: IZResultSet;
   UpdateCount: IZAnyValue;
-  I: Integer;
 begin
-  FLastOptainedRS := nil;
-  Result := False;
-  for i := 0 to FResults.Count -1 do begin
-    Result := FResults.Items[I].QueryInterface(IZResultSet, ResultSet) = S_OK;
-    if Result then begin
-      FLastOptainedRS := ResultSet;
-      FResults.Delete(I);
-      Break;
-    end else//else TestStatement can't be resolved
-      if FResults.Items[I].QueryInterface(IZAnyValue, UpdateCount) = S_OK then
+  Result := FResults.Count > 0;
+  if Result then begin
+    if FResults.Items[0].QueryInterface(IZResultSet, ResultSet) = S_OK then begin
+      LastResultSet := ResultSet;
+      FOpenResultSet := Pointer(ResultSet);
+    end else begin
+      LastResultSet := nil;
+      FOpenResultSet := nil;
+      if FResults.Items[0].QueryInterface(IZAnyValue, UpdateCount) = S_OK then
         LastUpdateCount := UpdateCount.GetInteger;
+    end;
+    FResults.Delete(0);
   end;
 end;
 
 function TZDBLibPreparedStatementEmulated.GetParamAsString(
   ParamIndex: Integer): RawByteString;
+var P: PAnsiChar;
 begin
+  // Todo: Talk with EgonHugeist wether this requiresmodifications for his Mextgen effort
   if InParamCount <= ParamIndex
   then Result := 'NULL'
   else Result := PrepareSQLParameter(InParamValues[ParamIndex],
       InParamTypes[ParamIndex], ClientVarManager, ConSettings, IsNCharIndex[ParamIndex]);
-end;
-
-{**
-  Returns the current result as an update count;
-  if the result is a <code>ResultSet</code> object or there are no more results, -1
-  is returned. This method should be called only once per result.
-
-  @return the current result as an update count; -1 if the current result is a
-    <code>ResultSet</code> object or there are no more results
-  @see #execute
-}
-function TZDBLibPreparedStatementEmulated.GetUpdateCount: Integer;
-var
-  UpdateCount: IZAnyValue;
-  I: Integer;
-begin
-  Result := inherited GetUpdateCount;
-  if (Result = -1) and (FResults.Count > 0) then
-    for i := 0 to FResults.Count -1 do
-      try
-        if FResults.Items[I].QueryInterface(IZAnyValue, UpdateCount) = S_OK then begin
-          Result := UpdateCount.GetInteger;
-          FResults.Delete(I);
-          Break;
-        end;
-      finally
-        UpdateCount := nil;
-      end;
+  P := Pointer(Result);
+  if (P <> nil) and (PByte(P)^ = Ord(#39)) and not IsNCharIndex[ParamIndex] and
+     (FDBLibConnection.GetProvider = dpMsSQL) and FDBLibConnection.FreeTDS and
+     (PByte(P+Length(Result)-1)^ = Ord(#39)) and (FClientCP = zCP_UTF8)
+  then Result := 'N' + Result;
 end;
 
 {**
@@ -247,12 +237,14 @@ begin
     Ansi := {$IFDEF WITH_UNITANSISTRINGS}AnsiStrings.{$ENDIF}StringReplace(SQL, '\'#13, '\\'#13, [rfReplaceAll])
   else
     //This one is to avoid sybase error: Invalid operator for datatype op: is null type: VOID TYPE
-    Ansi := {$IFDEF WITH_UNITANSISTRINGS}AnsiStrings.{$ENDIF}StringReplace(SQL, ' AND NULL IS NULL', '', [rfReplaceAll]);
+    Ansi := StringReplaceAll_CS_LToEQ(SQL, RawByteString(' AND NULL IS NULL'), EmptyRaw);
 
   FHandle := FDBLibConnection.GetConnectionHandle;
   FPlainDriver := FDBLibConnection.GetPlainDriver;
-  if FPlainDriver.dbcancel(FHandle) <> DBSUCCEED then
-    FDBLibConnection.CheckDBLibError(lcExecute, SQL);
+  //2018-09-16 Coomented by marsupilami79 because this hides errors in the logic
+  //result sets might get only partial data without an error
+  //if FPlainDriver.dbcancel(FHandle) <> DBSUCCEED then
+  //  FDBLibConnection.CheckDBLibError(lcExecute, SQL);
 
   if FPlainDriver.dbcmd(FHandle, Pointer(Ansi)) <> DBSUCCEED then
     FDBLibConnection.CheckDBLibError(lcExecute, SQL);
@@ -297,10 +289,7 @@ begin
   Prepare;
   InternalExecuteStatement(ComposeRawSQLQuery);
   FetchResults;
-  LastUpdateCount := GetUpdateCount;
-  Result := GetMoreResults;
-  LastResultSet := FLastOptainedRS;
-  FLastOptainedRS := nil;
+  Result := GetMoreResults and (LastResultSet <> nil);
 end;
 
 {**
@@ -315,11 +304,8 @@ begin
   Prepare;
   InternalExecuteStatement(ComposeRawSQLQuery);
   FetchResults;
-  if GetMoreResults then begin
-    Result := FLastOptainedRS;
-    FOpenResultSet := Pointer(Result);
-    FLastOptainedRS := nil;
-  end;
+  while GetMoreResults and (LastResultSet = nil) do ;
+  Result := GetResultSet;
 end;
 
 {**
@@ -337,6 +323,7 @@ begin
   Prepare;
   InternalExecuteStatement(ComposeRawSQLQuery);
   FetchResults;
+  while GetMoreResults and (LastResultSet <> nil) do ;
   Result := GetUpdateCount;
 end;
 
@@ -397,17 +384,13 @@ end;
 
 procedure TZDBLibPreparedStatementEmulated.FlushPendingResults;
 var I: Integer;
+  ResultSet: IZResultSet;
 begin
-  if FLastOptainedRS <> nil then begin
-    FLastOptainedRS.Close;
-    FLastOptainedRS := nil;
-  end;
-  FLastOptainedRS := nil;
+  if LastResultSet <> nil then
+    LastResultSet := nil;
   for I := 0 to FResults.Count -1 do
-    if Supports(FResults[I], IZResultSet, FLastOptainedRS) then begin
-      FLastOptainedRS.Close;
-      FLastOptainedRS := nil;
-    end;
+    if Supports(FResults[I], IZResultSet, ResultSet) then
+      ResultSet.Close;
   FResults.Clear;
 end;
 
@@ -432,10 +415,10 @@ begin
     Self.FUserEncoding := ceDefault;
 end;
 
-procedure TZDBLibCallableStatement.Close;
+procedure TZDBLibCallableStatement.BeforeClose;
 begin
   FRetrievedResultSet := nil;
-  inherited Close;
+  inherited BeforeClose;
 end;
 
 procedure TZDBLibCallableStatement.FetchResults;
@@ -468,31 +451,6 @@ begin
   end;
   FDBLibConnection.CheckDBLibError(lcOther, 'FETCHRESULTS');
 end;
-
-(*procedure TZDBLibCallableStatement.FetchRowCount;
-var
-  NativeResultSet: TZDBLibResultSet;
-begin
-  //Sybase does not seem to return dbCount at all, so a workaround is made
-  if FLastRowsAffected = -1 then
-  begin
-    FDBLibConnection.InternalExecuteStatement('select @@rowcount');
-    try
-      FPlainDriver.dbresults(FHandle);
-      NativeResultSet := TZDBLibResultSet.Create(Self, 'select @@rowcount');
-      try
-        if NativeResultset.Next then
-          FLastRowsAffected := NativeResultSet.GetInt(FirstDbcIndex);
-      finally
-        NativeResultset.Close;
-      end;
-      FResultSets.Add(TZUpdateCount.Create(FLastRowsAffected));
-    finally
-      FPlainDriver.dbCancel(FHandle);
-    end;
-    FDBLibConnection.CheckDBLibError(lcOther, 'FETCHRESULTS');
-  end;
-end;*)
 
 {**
   Moves to a <code>Statement</code> object's next result.  It returns
@@ -651,13 +609,12 @@ begin
           if IsNCharIndex[i] then
           begin
             Params[I].CharRec := ClientVarManager.GetAsCharRec(InParamValues[I], zCP_UTF8);
-            FPlainDriver.dbRpcParam(FHandle, nil, RetParam, Ord(tdsChar),
+            FPlainDriver.dbRpcParam(FHandle, nil, RetParam, Ord(tdsVarchar),
               -1, Max(1, Params[I].CharRec.Len), Params[I].CharRec.P);
-          end
-          else
+          end else
           begin
             Params[I].CharRec := ClientVarManager.GetAsCharRec(InParamValues[I], ConSettings^.ClientCodePage^.CP);
-            FPlainDriver.dbRpcParam(FHandle, nil, RetParam, Ord(tdsChar),
+            FPlainDriver.dbRpcParam(FHandle, nil, RetParam, Ord(tdsVarchar),
               -1, Max(1, Params[I].CharRec.Len), Params[I].CharRec.P);
           end;
         stDate:
@@ -762,7 +719,7 @@ begin
   if Length(OutParamValues) = 0 then // check if DynArray is initialized for RETURN_VALUE
     SetOutParamCount(1);
   OutParamValues[0] := Temp; //set function RETURN_VALUE
-
+  OutString := '';
   ParamIndex := 1;
   for I := 1 to OutParamCount - 1 do
   begin
@@ -817,7 +774,7 @@ begin
             PSmallInt(FPLainDriver.dbRetData(FHandle, ParamIndex))^);
         tdsInt4:
           SoftVarManager.SetAsInteger(Temp,
-            PLongInt(FPLainDriver.dbRetData(FHandle, ParamIndex))^);
+            PInteger(FPLainDriver.dbRetData(FHandle, ParamIndex))^);
         tdsInt8:
           SoftVarManager.SetAsInteger(Temp,
             PInt64(FPLainDriver.dbRetData(FHandle, ParamIndex))^);
@@ -904,6 +861,5 @@ begin
     SetOutParamCount(NewParamCount);
 end;
 
+{$ENDIF ZEOS_DISABLE_DBLIB} //if set we have an empty unit
 end.
-
-

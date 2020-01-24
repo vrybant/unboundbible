@@ -55,6 +55,8 @@ interface
 
 {$I ZParseSql.inc}
 
+{$IFNDEF ZEOS_DISABLE_POSTGRESQL}
+
 uses
   Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
   ZTokenizer, ZGenericSqlToken, ZMySqlToken;
@@ -62,43 +64,43 @@ uses
 type
 
   {** Implements a PostgreSQL-specific number state object. }
-  TZPostgreSQLNumberState = class (TZNumberState)
-  public
-    function NextToken(Stream: TStream; FirstChar: Char;
-      Tokenizer: TZTokenizer): TZToken; override;
-  end;
+  TZPostgreSQLNumberState = TZGenericSQLNoHexNumberState;
 
   {** Implements a PostgreSQL-specific quote string state object. }
   TZPostgreSQLQuoteState = class (TZMySQLQuoteState)
   private
+    { how backslashes in quoted strings are handled
+      True means backslashes are escape characters }
     FStandardConformingStrings: Boolean;
   protected
     function GetModifier(Stream: TStream; FirstChar: Char; ResetPosition: Boolean = True): String;
-    procedure GetDollarQuotedString(Stream: TStream; QuoteChar: Char; var Result: String);
     procedure GetQuotedString(Stream: TStream; QuoteChar: Char; EscapeSyntax: Boolean; var Result: String);
     procedure GetQuotedStringWithModifier(Stream: TStream; FirstChar: Char; var Result: String);
   public
     function NextToken(Stream: TStream; FirstChar: Char;
       {%H-}Tokenizer: TZTokenizer): TZToken; override;
-    procedure SetStandardConformingStrings(const Value: Boolean);
+
+    property StandardConformingStrings: Boolean read FStandardConformingStrings write FStandardConformingStrings;
   end;
 
   {**
     This state will either delegate to a comment-handling
     state, or return a token with just a slash in it.
   }
-  TZPostgreSQLCommentState = class (TZCppCommentState)
+  TZPostgreSQLCommentState = class (TZGenericSQLCommentState)
   protected
     procedure GetMultiLineComment(Stream: TStream; var Result: String); override;
-  public
-    function NextToken(Stream: TStream; FirstChar: Char;
-      Tokenizer: TZTokenizer): TZToken; override;
   end;
 
   {** Implements a symbol state object. }
   TZPostgreSQLSymbolState = class (TZSymbolState)
+  private
+    fNumberState: TZNumberState;
   public
+    function NextToken(Stream: TStream; FirstChar: Char;
+      Tokenizer: TZTokenizer): TZToken; override;
     constructor Create;
+    destructor Destroy; override;
   end;
 
   {** Implements a word state object. }
@@ -120,96 +122,17 @@ type
     procedure SetStandardConformingStrings(const Value: Boolean);
   end;
 
+{$ENDIF ZEOS_DISABLE_POSTGRESQL}
+
 implementation
+
+{$IFNDEF ZEOS_DISABLE_POSTGRESQL}
 
 uses ZCompatibility{$IFDEF FAST_MOVE}, ZFastCode{$ENDIF};
 
 const
   NameQuoteChar   = Char('"');
-  DollarQuoteChar = Char('$');
   SingleQuoteChar = Char('''');
-
-{ TZPostgreSQLNumberState }
-
-{**
-  Return a number token from a reader.
-  @return a number token from a reader
-}
-function TZPostgreSQLNumberState.NextToken(Stream: TStream; FirstChar: Char;
-  Tokenizer: TZTokenizer): TZToken;
-var
-  TempChar: Char;
-  FloatPoint: Boolean;
-  LastChar: Char;
-
-  procedure ReadDecDigits;
-  begin
-    LastChar := #0;
-    while Stream.Read(LastChar, SizeOf(Char)) > 0 do
-    begin
-      if CharInSet(LastChar, ['0'..'9']) then begin
-        ToBuf(LastChar, Result.Value);
-        LastChar := #0;
-      end else begin
-        Stream.Seek(-SizeOf(Char), soFromCurrent);
-        Break;
-      end;
-    end;
-  end;
-
-begin
-  FloatPoint := FirstChar = '.';
-  InitBuf(FirstChar);
-  Result.Value := '';
-  Result.TokenType := ttUnknown;
-  LastChar := #0;
-
-  { Reads the first part of the number before decimal point }
-  if not FloatPoint then
-  begin
-    ReadDecDigits;
-    FloatPoint := LastChar = '.';
-    if FloatPoint then
-    begin
-      Stream.Read(TempChar{%H-}, SizeOf(Char));
-      ToBuf(TempChar, Result.Value);
-    end;
-  end;
-
-  { Reads the second part of the number after decimal point }
-  if FloatPoint then
-    ReadDecDigits;
-
-  { Reads a power part of the number }
-  if (Ord(LastChar) or $20) = ord('e') then //CharInSet(LastChar, ['e','E']) then
-  begin
-    Stream.Read(TempChar, SizeOf(Char));
-    ToBuf(TempChar, Result.Value);
-    FloatPoint := True;
-
-    Stream.Read(TempChar, SizeOf(Char));
-    if CharInSet(TempChar, ['0'..'9','-','+']) then begin
-      ToBuf(TempChar, Result.Value);
-      ReadDecDigits;
-    end else begin
-      FlushBuf(Result.Value);
-      Result.Value := Copy(Result.Value, 1, Length(Result.Value) - 1);
-      Stream.Seek(-2*SizeOf(Char), soFromCurrent);
-    end;
-  end;
-  FlushBuf(Result.Value);
-
-  { Prepare the result }
-  if Result.Value = '.' then
-  begin
-    if Tokenizer.SymbolState <> nil then
-      Result := Tokenizer.SymbolState.NextToken(Stream, FirstChar, Tokenizer);
-  end else begin
-    if FloatPoint then
-      Result.TokenType := ttFloat
-    else Result.TokenType := ttInteger;
-  end;
-end;
 
 { TZPostgreSQLQuoteState }
 
@@ -242,51 +165,6 @@ begin
         Stream.Seek(-ReadNum, soFromCurrent);
     end;
   end;
-end;
-
-{**
-  Returns a quoted string token from a reader. This method
-  will get Tag from first char to QuoteChar and will collect
-  characters until reaches same Tag.
-
-  @return a quoted string token from a reader
-}
-procedure TZPostgreSQLQuoteState.GetDollarQuotedString(Stream: TStream;
-  QuoteChar: Char; var Result: String);
-var
-  ReadChar: Char;
-  Tag, TempTag: string;
-  TagState: integer;
-begin
-  Result := '';
-  InitBuf(QuoteChar);
-  TagState := 0;
-  while Stream.Read(ReadChar{%H-}, SizeOf(Char)) > 0 do
-  begin
-    if (ReadChar = QuoteChar) then
-    begin
-      if (TagState = 0) then begin
-        TagState := 1;
-        FlushBuf(Result);
-        Tag := Result;
-      end else if (TagState = 1) then
-      begin
-        TagState := 2;
-        TempTag := '';
-      end else if (TagState = 2) then
-        if TempTag = Tag then
-          TagState := 3
-        else
-          TempTag := '';
-    end;
-    ToBuf(ReadChar, Result);
-
-    if TagState = 2 then
-      TempTag := TempTag + ReadChar
-    else if TagState = 3 then
-      Break;
-  end;
-  FlushBuf(Result);
 end;
 
 {**
@@ -366,9 +244,6 @@ begin
   if FirstChar = NameQuoteChar then begin
     Result.TokenType := ttWord;
     GetQuotedString(Stream, FirstChar, False, Result.Value);
-  end else if FirstChar = DollarQuoteChar then begin
-    Result.TokenType := ttQuoted;
-    GetDollarQuotedString(Stream, FirstChar, Result.Value);
   end else begin
     Result.TokenType := ttQuoted;
     GetQuotedStringWithModifier(Stream, FirstChar, Result.Value);
@@ -376,15 +251,6 @@ begin
 end;
 
 {**
-  Sets how backslashes in quoted strings are handled
-  @param True means backslashes are escape characters
-}
-procedure TZPostgreSQLQuoteState.SetStandardConformingStrings(const Value:
-    Boolean);
-begin
-  FStandardConformingStrings := Value;
-end;
-
 { TZPostgreSQLCommentState }
 
 {**
@@ -407,54 +273,12 @@ begin
       Dec(NestedLevel);
       if NestedLevel = 0 then
         Break;
-    end;
+    end
+    else
     if (LastChar = '/') and (ReadChar = '*') then
       Inc(NestedLevel);
     LastChar := ReadChar;
   end;
-end;
-
-{**
-  Gets a PostgreSQL specific comments like -- or /* */.
-  @return either just a slash token, or the results of
-    delegating to a comment-handling state
-}
-function TZPostgreSQLCommentState.NextToken(Stream: TStream;
-  FirstChar: Char; Tokenizer: TZTokenizer): TZToken;
-var
-  ReadChar: Char;
-  ReadNum: Integer;
-begin
-  Result.TokenType := ttUnknown;
-  InitBuf(FirstChar);
-  Result.Value := '';
-
-  if FirstChar = '-' then begin
-    ReadNum := Stream.Read(ReadChar{%H-}, SizeOf(Char));
-    if (ReadNum > 0) and (ReadChar = '-') then begin
-      Result.TokenType := ttComment;
-      ToBuf(ReadChar, Result.Value);
-      GetSingleLineComment(Stream, Result.Value);
-    end else begin
-      if ReadNum > 0 then
-        Stream.Seek(-SizeOf(Char), soFromCurrent);
-    end;
-  end else if FirstChar = '/' then begin
-    ReadNum := Stream.Read(ReadChar, SizeOf(Char));
-    if (ReadNum > 0) and (ReadChar = '*') then begin
-      Result.TokenType := ttComment;
-      ToBuf(ReadChar, Result.Value);
-      GetMultiLineComment(Stream, Result.Value);
-    end else begin
-      if ReadNum > 0 then
-        Stream.Seek(-SizeOf(Char), soFromCurrent);
-    end;
-  end;
-
-  if (Result.TokenType = ttUnknown) and (Tokenizer.SymbolState <> nil) then
-    Result := Tokenizer.SymbolState.NextToken(Stream, FirstChar, Tokenizer)
-  else
-    FlushBuf(Result.Value);
 end;
 
 { TZPostgreSQLSymbolState }
@@ -473,6 +297,7 @@ begin
   Add('~*');
   Add('!~');
   Add('!~*');
+  fNumberState := TZNumberState.Create;
 end;
 
 { TZPostgreSQLWordState }
@@ -498,7 +323,7 @@ end;
 procedure TZPostgreSQLTokenizer.SetStandardConformingStrings(
   const Value: Boolean);
 begin
-  (QuoteState as TZPostgreSQLQuoteState).SetStandardConformingStrings(Value);
+  (QuoteState as TZPostgreSQLQuoteState).StandardConformingStrings := Value;
 end;
 
 {**
@@ -527,11 +352,72 @@ begin
 
   SetCharacterState(NameQuoteChar, NameQuoteChar, QuoteState);
   SetCharacterState(SingleQuoteChar, SingleQuoteChar, QuoteState);
-  SetCharacterState(DollarQuoteChar, DollarQuoteChar, QuoteState);
+ // SetCharacterState(DollarQuoteChar, DollarQuoteChar, QuoteState);
+  //SetCharacterState(DollarQuoteChar, DollarQuoteChar, WordState);
 
   SetCharacterState('/', '/', CommentState);
   SetCharacterState('-', '-', CommentState);
 end;
 
+destructor TZPostgreSQLSymbolState.Destroy;
+begin
+  FreeAndNil(FNumberState);
+  inherited;
+end;
+
+function TZPostgreSQLSymbolState.NextToken(Stream: TStream; FirstChar: Char;
+  Tokenizer: TZTokenizer): TZToken;
+var
+  NumRead: Integer;
+  ReadChar: Char;
+  Tag, TempTag: string;
+  TagState: integer;
+begin
+  Result := inherited NextToken(Stream, FirstChar, Tokenizer);
+  //detecting Postgre Parameters as one ttWordState:
+  if (Result.Value = '$') then begin
+    NumRead := Stream.Read(ReadChar{%H-}, SizeOf(Char));
+    if (NumRead > 0) then begin
+      Stream.Seek(-SizeOf(Char), soFromCurrent);
+      //detect body tags as ttQuoted
+      //eg. $body$ .... $body$ or $$ .... $$
+      TagState := 0;
+      InitBuf(FirstChar);
+      Result.Value := '';
+      NumRead := 0;
+      while Stream.Read(ReadChar{%H-}, SizeOf(Char)) > 0 do begin
+        Inc(NumRead, SizeOf(char));
+        if (TagState = 0) and (ReadChar = ',') then
+          Break;
+
+        if (ReadChar = '$') then begin
+          if (TagState = 0) then begin
+            TagState := 1;
+            FlushBuf(Result.Value);
+            Tag := Result.Value;
+          end else if (TagState = 1) then begin
+            TagState := 2;
+            TempTag := '';
+          end else if (TagState = 2) then
+            if TempTag = Tag
+            then TagState := 3
+            else TempTag := '';
+        end;
+        ToBuf(ReadChar, Result.Value);
+
+        if TagState = 2 then
+          TempTag := TempTag + ReadChar
+        else if TagState = 3 then begin
+          FlushBuf(Result.Value);
+          Result.TokenType := ttQuoted;
+          Exit;
+        end;
+      end;
+      Result.Value := '$';
+      Stream.Seek(-NumRead, soFromCurrent);
+    end;
+  end;
+end;
+{$ENDIF ZEOS_DISABLE_POSTGRESQL}
 end.
 

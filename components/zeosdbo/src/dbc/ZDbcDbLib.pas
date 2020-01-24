@@ -55,12 +55,8 @@ interface
 
 {$I ZDbc.inc}
 
+{$IFNDEF ZEOS_DISABLE_DBLIB} //if set we have an empty unit
 uses
-{$IFDEF FPC}
-  {$IFDEF WIN32}
-    Comobj,
-  {$ENDIF}
-{$ENDIF}
   Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
   ZDbcConnection, ZDbcIntfs, ZCompatibility, ZDbcLogging, ZPlainDbLibDriver,
   ZPlainDbLibConstants, ZTokenizer, ZGenericSqlAnalyser, ZURL;
@@ -69,7 +65,6 @@ type
   TDBLibProvider = (dpMsSQL, dpSybase);
 
   {** Implements DBLib Database Driver. }
-  {$WARNINGS OFF}
   TZDBLibDriver = class(TZAbstractDriver)
   public
     constructor Create; override;
@@ -80,7 +75,6 @@ type
     function GetTokenizer: IZTokenizer; override;
     function GetStatementAnalyser: IZStatementAnalyser; override;
   end;
-  {$WARNINGS ON}
 
   {** Represents a DBLib specific connection interface. }
   IZDBLibConnection = interface (IZConnection)
@@ -91,7 +85,6 @@ type
     function GetPlainDriver: IZDBLibPlainDriver;
     function GetConnectionHandle: PDBPROCESS;
     function GetServerAnsiCodePage: Word;
-    procedure InternalExecuteStatement(const SQL: RawByteString);
     procedure CheckDBLibError(LogCategory: TZLoggingCategory; const LogMessage: RawByteString);
   end;
 
@@ -138,8 +131,6 @@ type
     procedure SetCatalog(const Catalog: string); override;
     function GetCatalog: string; override;
 
-    function GetWarnings: EZSQLWarning; override;
-    procedure ClearWarnings; override;
     function GetBinaryEscapeString(const Value: TBytes): String; overload; override;
     function GetBinaryEscapeString(const Value: RawByteString): String; overload; override;
     function GetServerAnsiCodePage: Word;
@@ -149,13 +140,15 @@ var
   {** The common driver manager object. }
   DBLibDriver: IZDriver;
 
+{$ENDIF ZEOS_DISABLE_DBLIB} //if set we have an empty unit
 implementation
+{$IFNDEF ZEOS_DISABLE_DBLIB} //if set we have an empty unit
 
 uses
   {$IFDEF WITH_UNITANSISTRINGS}AnsiStrings,{$ENDIF}
   {$IFDEF FPC}syncobjs{$ELSE}SyncObjs{$ENDIF},
   ZSysUtils, ZMessages, ZDbcUtils, ZDbcDbLibStatement, ZEncoding, ZFastCode,
-  ZDbcDbLibMetadata, ZSybaseToken, ZSybaseAnalyser{$IFDEF OLDFPC}, ZClasses{$ENDIF};
+  ZDbcDbLibMetadata, ZSybaseToken, ZSybaseAnalyser, ZClasses;
 
 var
   DBLIBCriticalSection: TCriticalSection;
@@ -181,7 +174,6 @@ end;
 {**
   Attempts to make a database connection to the given URL.
 }
-{$WARNINGS OFF}
 function TZDBLibDriver.Connect(const Url: TZURL): IZConnection;
 begin
   Result := nil;
@@ -192,7 +184,6 @@ begin
     DBLIBCriticalSection.Release
   end;
 end;
-{$WARNINGS ON}
 
 {**
   Gets the driver's major version number. Initially this should be 1.
@@ -237,7 +228,6 @@ end;
 }
 procedure TZDBLibConnection.InternalCreate;
 begin
-  FDisposeCodePage := False;
   if ZFastCode.Pos('mssql', LowerCase(Url.Protocol)) > 0  then
   begin
     FMetadata := TZMsSqlDatabaseMetadata.Create(Self, Url);
@@ -252,7 +242,8 @@ begin
     else
       FMetadata := nil;
   FFreeTDS := ZFastCode.Pos('FreeTDS', Url.Protocol) > 0;
-
+  if FreeTDS and (Info.Values['codepage'] = '') then
+    Info.Values['codepage'] := 'ISO-8859-1'; //this is the default CP of free-tds
   FHandle := nil;
 end;
 
@@ -273,26 +264,22 @@ end;
   Executes simple statements internally.
 }
 procedure TZDBLibConnection.InternalExecuteStatement(const SQL: RawByteString);
-var
-  ASQL: RawByteString;
 begin
   FHandle := GetConnectionHandle;
-  if GetPlainDriver.dbCancel(FHandle) <> DBSUCCEED then
-    CheckDBLibError(lcExecute, SQL);
-  if FProvider = dpMsSQL then
-    ASQL := {$IFDEF WITH_UNITANSISTRINGS}AnsiStrings.{$ENDIF}StringReplace(Sql, '\'#13, '\\'#13, [rfReplaceAll])
-  else
-    ASQL := SQL;
+  //2018-09-17 commented by marsupilami79 - this should not be called because it
+  //just hides logic errors. -> not fully processed result sets would be canceled.
+  //if GetPlainDriver.dbCancel(FHandle) <> DBSUCCEED then
+  //  CheckDBLibError(lcExecute, SQL);
 
-  if (GetPlainDriver.dbcmd(FHandle, Pointer(ASQL)) <> DBSUCCEED) or
+  if (GetPlainDriver.dbcmd(FHandle, Pointer(SQL)) <> DBSUCCEED) or
      (GetPlainDriver.dbsqlexec(FHandle) <> DBSUCCEED) then
-    CheckDBLibError(lcExecute, ASQL);
+    CheckDBLibError(lcExecute, SQL);
   repeat
     GetPlainDriver.dbresults(FHandle);
     GetPlainDriver.dbcanquery(FHandle);
   until GetPlainDriver.dbmorecmds(FHandle) = DBFAIL;
-  CheckDBLibError(lcExecute, ASQL);
-  DriverManager.LogMessage(lcExecute, ConSettings^.Protocol, ASQL);
+  CheckDBLibError(lcExecute, SQL);
+  DriverManager.LogMessage(lcExecute, ConSettings^.Protocol, SQL);
 end;
 
 {**
@@ -301,29 +288,27 @@ end;
 procedure TZDBLibConnection.InternalLogin;
 var
   Loginrec: PLOGINREC;
-  LogMessage: RawByteString;
-  S: string;
+  RawTemp, LogMessage: RawByteString;
   lLogFile  : String;
 begin
-  LogMessage := 'CONNECT TO "'+AnsiString(HostName)+'"';
+  LogMessage := 'CONNECT TO "'+ConSettings^.ConvFuncs.ZStringToRaw(HostName, ConSettings.CTRL_CP, ZOSCodePage)+'"';
   LoginRec := GetPLainDriver.dbLogin;
   try
 //Common parameters
-    S := Info.Values['workstation'];
-    if S <> '' then
-      GetPlainDriver.dbSetLHost(LoginRec, PAnsiChar(AnsiString(S)));
+    RawTemp := ConSettings^.ConvFuncs.ZStringToRaw(Info.Values['workstation'], ConSettings.CTRL_CP, ZOSCodePage);
+    if Pointer(RawTemp) <> nil then
+      GetPlainDriver.dbSetLHost(LoginRec, Pointer(RawTemp));
 
-    S := Info.Values['appname'];
-    if S <> '' then
-      GetPlainDriver.dbSetLApp(LoginRec, PAnsiChar(AnsiString(S)));
+    RawTemp := ConSettings^.ConvFuncs.ZStringToRaw(Info.Values['appname'], ConSettings.CTRL_CP, ZOSCodePage);
+    if Pointer(RawTemp) <> nil then
+      GetPlainDriver.dbSetLApp(LoginRec, Pointer(RawTemp));
 
-    S := Info.Values['language'];
-    if S <> '' then
-      GetPlainDriver.dbSetLNatLang(LoginRec, PAnsiChar(AnsiString(S)));
+    RawTemp := ConSettings^.ConvFuncs.ZStringToRaw(Info.Values['language'], ConSettings.CTRL_CP, ZOSCodePage);
+    if Pointer(RawTemp) <> nil then
+      GetPlainDriver.dbSetLNatLang(LoginRec, Pointer(RawTemp));
 
-    S := Info.Values['timeout'];
-    if S <> '' then
-      GetPlainDriver.dbSetLoginTime(StrToIntDef(S, 60));
+    if Info.Values['timeout'] <> '' then
+      GetPlainDriver.dbSetLoginTime(StrToIntDef(Info.Values['timeout'], 60));
 
     if FFreeTDS then
     begin
@@ -341,47 +326,35 @@ begin
     end;
 
 
-    //mssql specific parameters
-    if ( FProvider = dpMsSQL ) then
-    begin
-      if ( StrToBoolEx(Info.Values['NTAuth']) or StrToBoolEx(Info.Values['trusted'])
-        or StrToBoolEx(Info.Values['secure']) ) and ( not FFreeTDS ) then
+    if ( FProvider = dpMsSQL ) and ( StrToBoolEx(Info.Values['NTAuth']) or StrToBoolEx(Info.Values['trusted'])
+      or StrToBoolEx(Info.Values['secure']) ) and ( not FFreeTDS ) then
       begin
         GetPlainDriver.dbsetlsecure(LoginRec);
         LogMessage := LogMessage + ' USING WINDOWS AUTHENTICATION';
-      end
-      else
-      begin
+    end else begin
         GetPlainDriver.dbsetluser(LoginRec, PAnsiChar(ConSettings^.User));
-        GetPlainDriver.dbsetlpwd(LoginRec, PAnsiChar(AnsiString(Password)));
+      {$IFDEF UNICODE}
+      RawTemp := ConSettings^.ConvFuncs.ZStringToRaw(Password, ConSettings.CTRL_CP, ZOSCodePage);
+      {$ELSE}
+      RawTemp := Password;
+      {$ENDIF}
+      GetPlainDriver.dbsetlpwd(LoginRec, PAnsiChar(RawTemp));
         LogMessage := LogMessage + ' AS USER "'+ConSettings^.User+'"';
       end;
-
-      if FFreeTDS then begin
-        S := Info.Values['codepage'];
-        if S <> '' then begin
-          GetPlainDriver.dbSetLCharSet(LoginRec, Pointer({$IFDEF UNICODE}UnicodeStringToAscii7{$ENDIF}(S)));
-          CheckCharEncoding(s);
+    if FFreeTDS or (FProvider = dpSybase) then begin
+      RawTemp := {$IFDEF UNICODE}UnicodeStringToAscii7{$ENDIF}(Info.Values['codepage']);
+      if Pointer(RawTemp) <> nil then begin
+        GetPlainDriver.dbSetLCharSet(LoginRec, Pointer(RawTemp));
+        CheckCharEncoding(Info.Values['codepage']);
         end;
       end;
-    end;
-
-    //sybase specific parameters
-    if FProvider = dpSybase then
-    begin
-      S := Info.Values['codepage'];
-      if S <> '' then
-        GetPlainDriver.dbSetLCharSet(LoginRec, Pointer({$IFDEF UNICODE}UnicodeStringToAscii7{$ENDIF}(S)));
-      GetPlainDriver.dbsetluser(LoginRec, PAnsiChar(ConSettings^.User));
-      GetPlainDriver.dbsetlpwd(LoginRec, PAnsiChar(AnsiString(Password)));
-        LogMessage := LogMessage + ' AS USER "'+ConSettings^.User+'"';
-    end;
 
     CheckDBLibError(lcConnect, LogMessage);
-    s := HostName;
+    RawTemp := ConSettings^.ConvFuncs.ZStringToRaw(HostName, ConSettings.CTRL_CP, ZOSCodePage);
     // add port number if FreeTDS is used, the port number was specified and no server instance name was given:
-    if FreeTDS and (Port <> 0) and (ZFastCode.Pos('\', HostName) = 0)  then s := s + ':' + ZFastCode.IntToStr(Port);
-    FHandle := GetPlainDriver.dbOpen(LoginRec, PAnsiChar(AnsiString(s)));
+    if FreeTDS and (Port <> 0) and (ZFastCode.Pos('\', HostName) = 0)  then
+      RawTemp := RawTemp + ':' + ZFastCode.IntToRaw(Port);
+    FHandle := GetPlainDriver.dbOpen(LoginRec, PAnsiChar(RawTemp));
     CheckDBLibError(lcConnect, LogMessage);
     if not Assigned(FHandle) then raise EZSQLException.Create('The connection to the server failed, no proper handle was returned. Insufficient memory, unable to connect for any reason. ');
 
@@ -410,22 +383,20 @@ begin
 end;
 
 procedure TZDBLibConnection.CheckDBLibError(LogCategory: TZLoggingCategory; const LogMessage: RawByteString);
+var errStr: String;
 begin
-  try
-    GetPlainDriver.CheckError(FHandle);
-  except
-    on E: Exception do
-    begin
-      DriverManager.LogError(LogCategory, ConSettings^.Protocol, LogMessage, 0,
-       ConvertEMsgToRaw(E.Message, ConSettings^.ClientCodePage^.CP));
-      raise;
-    end;
+  ErrStr := GetPlainDriver.GetErrorString(FHandle);
+  if ErrStr <> '' then begin
+    DriverManager.LogError(LogCategory, ConSettings^.Protocol, LogMessage, 0,
+      ConvertEMsgToRaw(ErrStr, ConSettings^.ClientCodePage^.CP));
+    raise EZSQLException.Create(ErrStr);
   end;
 end;
 
 {**
   Opens a connection to database server with specified parameters.
 }
+const textlimit: PAnsichar = '2147483647';
 procedure TZDBLibConnection.Open;
 var
   LogMessage: RawByteString;
@@ -441,7 +412,7 @@ begin
   DriverManager.LogMessage(lcConnect, ConSettings^.Protocol, LogMessage);
 
   LogMessage := 'set textlimit=2147483647';
-  if GetPlainDriver.dbsetopt(FHandle, GetPlainDriver.GetVariables.dboptions[Z_TEXTLIMIT] , '2147483647') <> DBSUCCEED then
+  if GetPlainDriver.dbsetopt(FHandle, GetPlainDriver.GetVariables.dboptions[Z_TEXTLIMIT],Pointer(textlimit)) <> DBSUCCEED then
     CheckDBLibError(lcConnect, LogMessage);
   DriverManager.LogMessage(lcConnect, ConSettings^.Protocol, LogMessage);
 
@@ -477,18 +448,15 @@ begin
       ConSettings^.ClientCodePage^.CP := zCP_UTF8;
       ConSettings^.ClientCodePage^.Encoding := ceUTF8;
       ConSettings^.ClientCodePage^.IsStringFieldCPConsistent := True;
-    end
-    else
-    begin
+    end else begin
       ConSettings^.ClientCodePage^.CP := FServerAnsiCodePage;
       ConSettings^.ClientCodePage^.IsStringFieldCPConsistent := False;
     end;
     ConSettings^.AutoEncode := True; //Must be set because we can't determine a column-codepage! e.g NCHAR vs. CHAR Fields
     SetConvertFunctions(ConSettings);
-    DetermineMSDateFormat;
-  end
-  else
-  begin
+  end else begin
+    if (FProvider = dpSybase) and (not FreeTDS)
+    then ConSettings^.ClientCodePage^.IsStringFieldCPConsistent := False;
     FServerAnsiCodePage := ConSettings^.ClientCodePage^.CP;
     ConSettings^.ReadFormatSettings.DateFormat := 'yyyy/mm/dd';
     ConSettings^.ReadFormatSettings.DateTimeFormat := ConSettings^.ReadFormatSettings.DateFormat+' '+ConSettings^.ReadFormatSettings.TimeFormat;
@@ -497,8 +465,9 @@ begin
   http://technet.microsoft.com/en-us/library/ms180878%28v=sql.105%29.aspx
    Using DATE and DATETIME in ISO 8601 format is multi-language supported:
    DATE Un-separated
-   DATETIME as YYYY-MM-DDTHH:NN:SS
-  }
+   DATETIME as YYYY-MM-DDTHH:NN:SS }
+  if (FProvider = dpMsSQL) then
+    DetermineMSDateFormat;
   ConSettings^.WriteFormatSettings.DateFormat := 'YYYYMMDD';
   ConSettings^.WriteFormatSettings.DateTimeFormat := 'YYYY-MM-DDTHH:NN:SS';
   SetDateTimeFormatProperties(False);
@@ -636,7 +605,7 @@ begin
 end;
 
 const
-  DBLibIsolationLevels: array[Boolean, TZTransactIsolationLevel] of AnsiString = ((
+  DBLibIsolationLevels: array[Boolean, TZTransactIsolationLevel] of RawByteString = ((
    'SET TRANSACTION ISOLATION LEVEL READ COMMITTED',
    'SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED',
    'SET TRANSACTION ISOLATION LEVEL READ COMMITTED',
@@ -678,7 +647,7 @@ var
   Tmp: RawByteString;
 begin
   Tmp := 'SELECT DATABASEPROPERTYEX('+
-    {$IFDEF WITH_UNITANSISTRINGS}AnsiStrings.{$ENDIF}AnsiQuotedStr(ConSettings^.Database, #39)+
+    SQLQuotedStr(ConSettings^.Database, {$IFDEF NO_ANSICHAR}Ord{$ENDIF}(#39))+
     ', ''Collation'') as DatabaseCollation';
   if (GetPlainDriver.dbcmd(FHandle, Pointer(Tmp)) <> DBSUCCEED) or
      (GetPlainDriver.dbsqlexec(FHandle) <> DBSUCCEED) or
@@ -708,8 +677,7 @@ var
 begin
   Result := High(Word);
   Tmp := 'SELECT COLLATIONPROPERTY('+
-    {$IFDEF WITH_UNITANSISTRINGS}AnsiStrings.{$ENDIF}AnsiQuotedStr(
-      {$IFDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(Collation), #39)+
+    SQLQuotedStr({$IFDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(Collation), {$IFDEF NO_ANSICHAR}Ord{$ENDIF}(#39))+
     ', ''Codepage'') as Codepage';
   if (GetPlainDriver.dbcmd(FHandle, Pointer(Tmp)) <> DBSUCCEED) or
      (GetPlainDriver.dbsqlexec(FHandle) <> DBSUCCEED) or
@@ -865,41 +833,6 @@ begin
   CheckDBLibError(lcOther, 'GETCATALOG');
 end;
 
-{**
-  Returns the first warning reported by calls on this Connection.
-  <P><B>Note:</B> Subsequent warnings will be chained to this
-  SQLWarning.
-  @return the first SQLWarning or null
-}
-function TZDBLibConnection.GetWarnings: EZSQLWarning;
-begin
-  Result := nil;
-end;
-
-{**
-  Clears all warnings reported for this <code>Connection</code> object.
-  After a call to this method, the method <code>getWarnings</code>
-    returns null until a new warning is reported for this Connection.
-}
-procedure TZDBLibConnection.ClearWarnings;
-var
-  LogMessage: RawByteString;
-begin
-  if Closed then
-    Exit;
-
-  if not GetPlainDriver.dbDead(FHandle) then
-    InternalExecuteStatement('if @@trancount > 0 rollback');
-
-  LogMessage := 'CLOSE CONNECTION TO "'+RawByteString(HostName)+'" DATABASE "'+ConSettings^.Database+'"';
-  if GetPlainDriver.dbclose(FHandle) <> DBSUCCEED then
-    CheckDBLibError(lcDisConnect, LogMessage);
-  DriverManager.LogMessage(lcDisconnect, ConSettings^.Protocol, LogMessage);
-
-  FHandle := nil;
-  inherited;
-end;
-
 function TZDBLibConnection.GetBinaryEscapeString(const Value: TBytes): String;
 begin
   Result := GetSQLHexString(PAnsiChar(Value), Length(Value), True);
@@ -924,4 +857,5 @@ finalization
     DriverManager.DeregisterDriver(DBLibDriver);
   DBLibDriver := nil;
   FreeAndNil(DBLIBCriticalSection);
+{$ENDIF ZEOS_DISABLE_DBLIB} //if set we have an empty unit
 end.

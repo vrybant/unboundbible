@@ -148,7 +148,7 @@ type
     procedure FillStatement(ResultSet: IZCachedResultSet;
       Statement: IZPreparedStatement; Config: TZSQLStatement;
       OldRowAccessor, NewRowAccessor: TZRowAccessor);
-    procedure UpdateParams(Sender: TObject);
+    procedure UpdateParams({%H-}Sender: TObject);
 
     procedure DoBeforeDeleteSQL;
     procedure DoBeforeInsertSQL;
@@ -222,7 +222,7 @@ type
 implementation
 
 uses ZGenericSqlToken, ZDatasetUtils, ZAbstractRODataset,ZAbstractDataset,
-  ZSysUtils, ZDbcUtils, ZMessages, ZCompatibility;
+  ZSysUtils, ZDbcUtils, ZMessages, ZCompatibility, ZClasses;
 
 { TZUpdateSQL }
 
@@ -760,6 +760,18 @@ var
     RefreshResultSet: IZResultSet;
     lValidateUpdateCount : Boolean;
     lUpdateCount : Integer;
+
+  function SomethingChanged: Boolean;
+  var I: Integer;
+  begin
+    Result := False;
+    for I := 0 to DataSet.Fields.Count -1 do
+      if OldRowAccessor.CompareBuffer(OldRowAccessor.RowBuffer,
+         NewRowAccessor.RowBuffer, I+FirstDbcIndex, NewRowAccessor.GetCompareFunc(I+FirstDbcIndex, ckEquals))  <> 0 then begin
+        Result := True;
+        Break;
+      end;
+  end;
 begin
   if (UpdateType = utDeleted)
     and (OldRowAccessor.RowBuffer.UpdateType = utInserted) then
@@ -770,8 +782,9 @@ begin
       Config := FInsertSQL;
     utDeleted:
       Config := FDeleteSQL;
-    utModified:
-      Config := FModifySQL;
+    utModified: if SomethingChanged
+                then Config := FModifySQL
+                else Exit;
     else
       Exit;
   end;
@@ -807,8 +820,7 @@ begin
         utInserted: DoBeforeInsertSQLStatement(Self, I, ExecuteStatement);
         utModified: DoBeforeModifySQLStatement(Self, I, ExecuteStatement);
       end;
-      if ExecuteStatement then
-      begin
+      if ExecuteStatement then begin
         // if Property ValidateUpdateCount isn't set : assume it's true
         lValidateUpdateCount := (Sender.GetStatement.GetParameters.IndexOfName('ValidateUpdateCount') = -1)
                               or StrToBoolEx(Sender.GetStatement.GetParameters.Values['ValidateUpdateCount']);
@@ -945,42 +957,42 @@ procedure TZUpdateSQL.DoAfterDeleteSQLStatement(const Sender: TObject;
   StatementIndex: Integer);
 begin
  if Assigned(FAfterDeleteSQLStatement) then
-    FAfterDeleteSQLStatement(Self, StatementIndex);
+    FAfterDeleteSQLStatement(Sender, StatementIndex);
 end;
 
 procedure TZUpdateSQL.DoAfterInsertSQLStatement(const Sender: TObject;
   StatementIndex: Integer; out UpdateAutoIncFields: Boolean);
 begin
  if Assigned(FAfterInsertSQLStatement) then
-    FAfterInsertSQLStatement(Self, StatementIndex, UpdateAutoIncFields);
+    FAfterInsertSQLStatement(Sender, StatementIndex, UpdateAutoIncFields);
 end;
 
 procedure TZUpdateSQL.DoAfterModifySQLStatement(const Sender: TObject;
   StatementIndex: Integer);
 begin
  if Assigned(FAfterModifySQLStatement) then
-    FAfterModifySQLStatement(Self, StatementIndex);
+    FAfterModifySQLStatement(Sender, StatementIndex);
 end;
 
 procedure TZUpdateSQL.DoBeforeDeleteSQLStatement(const Sender: TObject;
   StatementIndex: Integer; out Execute: Boolean);
 begin
  if Assigned(FBeforeDeleteSQLStatement) then
-    FBeforeDeleteSQLStatement(Self, StatementIndex, Execute);
+    FBeforeDeleteSQLStatement(Sender, StatementIndex, Execute);
 end;
 
 procedure TZUpdateSQL.DoBeforeInsertSQLStatement(const Sender: TObject;
   StatementIndex: Integer; out Execute: Boolean);
 begin
  if Assigned(FBeforeInsertSQLStatement) then
-    FBeforeInsertSQLStatement(Self, StatementIndex, Execute);
+    FBeforeInsertSQLStatement(Sender, StatementIndex, Execute);
 end;
 
 procedure TZUpdateSQL.DoBeforeModifySQLStatement(const Sender: TObject;
   StatementIndex: Integer; out Execute: Boolean);
 begin
  if Assigned(FBeforeModifySQLStatement) then
-    FBeforeModifySQLStatement(Self, StatementIndex, Execute);
+    FBeforeModifySQLStatement(Sender, StatementIndex, Execute);
 end;
 
 end.

@@ -55,6 +55,7 @@ interface
 
 {$I ZDbc.inc}
 
+{$IFNDEF ZEOS_DISABLE_SQLITE} //if set we have an empty unit
 uses
   Classes, SysUtils,
   ZSysUtils, ZDbcIntfs, ZPlainSqLiteDriver, ZDbcLogging, ZCompatibility;
@@ -67,8 +68,8 @@ uses
   @result the SQLType field type value
 }
 function ConvertSQLiteTypeToSQLType(var TypeName: RawByteString;
-  UndefinedVarcharAsStringLength: Integer; var Precision: Integer;
-  var Decimals: Integer; CtrlsCPType: TZControlsCodePage): TZSQLType;
+  UndefinedVarcharAsStringLength: Integer; out Precision: Integer;
+  out Decimals: Integer; CtrlsCPType: TZControlsCodePage): TZSQLType;
 
 {**
   Checks for possible sql errors.
@@ -80,7 +81,8 @@ function ConvertSQLiteTypeToSQLType(var TypeName: RawByteString;
 }
 procedure CheckSQLiteError(const PlainDriver: IZSQLitePlainDriver;
   Handle: PSqlite; ErrorCode: Integer; LogCategory: TZLoggingCategory;
-  const LogMessage: RawByteString; ConSettings: PZConSettings);
+  const LogMessage: RawByteString; ConSettings: PZConSettings;
+  ExtendedErrorMessage: Boolean);
 
 {**
   Decodes a SQLite Version Value and Encodes it to a Zeos SQL Version format:
@@ -91,11 +93,12 @@ procedure CheckSQLiteError(const PlainDriver: IZSQLitePlainDriver;
 }
 function ConvertSQLiteVersionToSQLVersion(SQLiteVersion: PAnsiChar ): Integer;
 
-
+{$ENDIF ZEOS_DISABLE_SQLITE} //if set we have an empty unit
 implementation
+{$IFNDEF ZEOS_DISABLE_SQLITE} //if set we have an empty unit
 
 uses {$IFDEF WITH_UNITANSISTRINGS}AnsiStrings, {$ENDIF}
-  ZMessages, ZFastCode;
+  ZMessages, ZFastCode, ZClasses;
 
 {**
   Convert string SQLite field type to SQLType
@@ -105,8 +108,8 @@ uses {$IFDEF WITH_UNITANSISTRINGS}AnsiStrings, {$ENDIF}
   @result the SQLType field type value
 }
 function ConvertSQLiteTypeToSQLType(var TypeName: RawByteString;
-  UndefinedVarcharAsStringLength: Integer; var Precision: Integer;
-  var Decimals: Integer; CtrlsCPType: TZControlsCodePage): TZSQLType;
+  UndefinedVarcharAsStringLength: Integer; out Precision: Integer;
+  out Decimals: Integer; CtrlsCPType: TZControlsCodePage): TZSQLType;
 var
   pBL, pBR, pC: Integer;
   P: PAnsiChar;
@@ -117,7 +120,7 @@ begin
   Decimals := 0;
   pBL := ZFastCode.Pos({$IFDEF UNICODE}RawByteString{$ENDIF}('('), TypeName);
   if pBL > 0 then begin
-    {%H-}NativeUInt(P) := NativeUInt(TypeName)+Word(pBL);
+    P := {%H-}Pointer(NativeUInt(TypeName)+Word(pBL));
     Precision := ValRawInt(P, pC);
     while (P+pC-1)^ = ' ' do inc(pC);
     if (P+pC-1)^ = ',' then begin
@@ -219,18 +222,22 @@ end;
 }
 procedure CheckSQLiteError(const PlainDriver: IZSQLitePlainDriver;
   Handle: PSqlite; ErrorCode: Integer; LogCategory: TZLoggingCategory;
-  const LogMessage: RawByteString; ConSettings: PZConSettings);
+  const LogMessage: RawByteString; ConSettings: PZConSettings;
+  ExtendedErrorMessage: Boolean);
 var
-  Error: RawByteString;
+  ErrorStr, ErrorMsg: RawByteString;
 begin
-  if not (ErrorCode in [SQLITE_OK, SQLITE_ROW, SQLITE_DONE]) then
-  begin
-    if Error = '' then
-      Error := PlainDriver.ErrorString(Handle, ErrorCode);
+  if not (ErrorCode in [SQLITE_OK, SQLITE_ROW, SQLITE_DONE]) then begin
+    ErrorMsg := '';
+    ErrorStr := PLainDriver.ErrorString(Handle, ErrorCode);
+    if ExtendedErrorMessage then
+      ErrorMsg := PLainDriver.ErrorMessage(Handle);
+    if ErrorMsg <> '' then
+      ErrorStr := 'Error: '+ErrorStr+LineEnding+'Message: '+ErrorMsg;
     DriverManager.LogError(LogCategory, ConSettings^.Protocol, LogMessage,
-      ErrorCode, Error);
+      ErrorCode, ErrorStr);
     raise EZSQLException.CreateWithCode(ErrorCode, Format(SSQLError1,
-      [ConSettings.ConvFuncs.ZRawToString(Error, ConSettings^.ClientCodePage^.CP, ConSettings^.CTRL_CP)]));
+      [ConSettings.ConvFuncs.ZRawToString(ErrorStr, ConSettings^.ClientCodePage^.CP, ConSettings^.CTRL_CP)]));
   end;
 end;
 
@@ -256,5 +263,6 @@ begin
   Result := EncodeSQLVersioning(MajorVersion,MinorVersion,SubVersion);
 end;
 
+{$ENDIF ZEOS_DISABLE_SQLITE} //if set we have an empty unit
 end.
 

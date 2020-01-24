@@ -55,6 +55,7 @@ interface
 
 {$I ZPlain.inc}
 
+{$IFNDEF ZEOS_DISABLE_ORACLE}
 {$J+}
 
 uses
@@ -73,9 +74,9 @@ type
   sword   = Integer;
   psword  = ^sword;
   eword   = Integer;
-  uword   = LongInt;
+  uword   = Cardinal;
   sb4     = Integer;
-  ub4     = LongInt;
+  ub4     = Cardinal;
   sb2     = SmallInt;
   ub2     = Word;
   sb1     = ShortInt;
@@ -147,7 +148,7 @@ type
   POCIDuration = ^OCIDuration;
   OCITypeEncap = ub2;      //enum!
   OCITypeMethodFlag = ub2; //enum!
-  OCITypeParamMode = ub2;  //enum!
+  OCITypeParamMode = sb4;  //enum!
   OCIObjectPropId = ub1;
   OCIRefreshOpt = ub2;     //enum!
 
@@ -653,7 +654,7 @@ const
   OCI_TRANS_NOMIGRATE    = $00100000; // non migratable transaction
   OCI_TRANS_TWOPHASE     = $01000000; // use two phase commit
 
-  { OCI pece wise fetch }
+  { OCI piece wise fetch }
   OCI_ONE_PIECE       = 0; // one piece
   OCI_FIRST_PIECE     = 1; // the first piece
   OCI_NEXT_PIECE      = 2; // the next of many pieces
@@ -670,7 +671,10 @@ const
   {****************** Describe Handle Parameter Attributes *****************}
 
   { Attributes common to Columns and Stored Procs }
-  OCI_ATTR_DATA_SIZE      = 1;    // maximum size of the data
+  OCI_ATTR_DATA_SIZE      = 1;    // ub2 The maximum size of the type attribute.
+                                  // This length is returned in bytes and not
+                                  // characters for strings and raws.
+                                  // It returns 22 for NUMBERs
   OCI_ATTR_DATA_TYPE      = 2;    // the SQL type of the column/argument
   OCI_ATTR_DISP_SIZE      = 3;    // the display size
   OCI_ATTR_NAME           = 4;    // the name of the column/argument
@@ -7170,6 +7174,8 @@ type
   { argument types are unknown }
   { return type might be wrong }
   TOCI_TYPEPARAM_IS_REQUIRED = function (param_flag : longint) : longint;
+
+{$ENDIF ZEOS_DISABLE_ORACLE}
 
 implementation
 

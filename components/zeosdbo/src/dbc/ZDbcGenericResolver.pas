@@ -56,9 +56,10 @@ interface
 {$I ZDbc.inc}
 
 uses
-  Types, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils, Contnrs, StrUtils,
+  Types, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
+  {$IFNDEF NO_UNIT_CONTNRS}Contnrs,{$ENDIF} StrUtils,
   ZVariant, ZDbcIntfs, ZDbcCache, ZDbcCachedResultSet, ZCompatibility,
-  ZSelectSchema, {$IFDEF OLDFPC}ZClasses,{$ENDIF} ZCollections;
+  ZSelectSchema, {$IF defined(OLDFPC) or defined(NO_UNIT_CONTNRS)}ZClasses,{$IFEND} ZCollections;
 
 type
 
@@ -108,7 +109,7 @@ type
     FWhereAll: Boolean;
     FUpdateAll: Boolean;
 
-    FUpdateStatements : TZHashMap;
+    FStatements : TZHashMap;
   protected
     InsertStatement   : IZPreparedStatement;
     UpdateStatement   : IZPreparedStatement;
@@ -154,9 +155,9 @@ type
     function FormWhereClause(Columns: TObjectList;
       OldRowAccessor: TZRowAccessor): string; virtual;
     function FormInsertStatement(Columns: TObjectList;
-      {%H-}NewRowAccessor: TZRowAccessor): string;
+      {%H-}NewRowAccessor: TZRowAccessor): string; virtual;
     function FormUpdateStatement(Columns: TObjectList;
-      OldRowAccessor, NewRowAccessor: TZRowAccessor): string;
+      OldRowAccessor, NewRowAccessor: TZRowAccessor): string; virtual;
     function FormDeleteStatement(Columns: TObjectList;
       OldRowAccessor: TZRowAccessor): string;
     function FormCalculateStatement(Columns: TObjectList): string; virtual;
@@ -168,16 +169,17 @@ type
       OldRowAccessor, NewRowAccessor: TZRowAccessor); virtual;
     {BEGIN of PATCH [1185969]: Do tasks after posting updates. ie: Updating AutoInc fields in MySQL }
     procedure UpdateAutoIncrementFields(Sender: IZCachedResultSet;
-      {%H-}UpdateType: TZRowUpdateType;
-      {%H-}OldRowAccessor, {%H-}NewRowAccessor: TZRowAccessor; Resolver: IZCachedResolver); virtual;
+      UpdateType: TZRowUpdateType;
+      OldRowAccessor, NewRowAccessor: TZRowAccessor; Resolver: IZCachedResolver); virtual;
     {END of PATCH [1185969]: Do tasks after posting updates. ie: Updating AutoInc fields in MySQL }
-    procedure RefreshCurrentRow(Sender: IZCachedResultSet;{%H-}RowAccessor: TZRowAccessor); //FOS+ 07112006
+    procedure RefreshCurrentRow(Sender: IZCachedResultSet; RowAccessor: TZRowAccessor); //FOS+ 07112006
 
   end;
 
 implementation
 
 uses ZMessages, ZSysUtils, ZDbcMetadata, ZDbcUtils
+  {$IF not defined(OLDFPC) and not defined(NO_UNIT_CONTNRS)},ZClasses{$IFEND}
   {$IFDEF FAST_MOVE}, ZFastCode{$ENDIF};
 
 { TZResolverParameter }
@@ -231,7 +233,7 @@ begin
     'where', 'keyonly')) = 'ALL';
 
   InsertStatement := nil;
-  FUpdateStatements := TZHashMap.Create;
+  FStatements := TZHashMap.Create;
   DeleteStatement := nil;
 
 end;
@@ -240,6 +242,14 @@ end;
   Destroys this object and cleanups the memory.
 }
 destructor TZGenericCachedResolver.Destroy;
+procedure FlustStmt(var Stmt: IZPreparedStatement);
+begin
+  if Stmt <> nil then begin
+    Stmt.Close;
+    Stmt := nil
+  end;
+end;
+
 begin
   FMetadata := nil;
   FDatabaseMetadata := nil;
@@ -252,7 +262,10 @@ begin
   FreeAndNil(FUpdateParams);
   FreeAndNil(FDeleteParams);
 
-  FreeAndNil(FUpdateStatements);
+  FreeAndNil(FStatements);
+  FlustStmt(InsertStatement);
+  FlustStmt(UpdateStatement);
+  FlustStmt(DeleteStatement);
   inherited Destroy;
 end;
 
@@ -367,50 +380,30 @@ end;
 }
 procedure TZGenericCachedResolver.DefineUpdateColumns(
   Columns: TObjectList; OldRowAccessor, NewRowAccessor: TZRowAccessor);
-var
-  I: Integer;
-  ColumnIndices: TIntegerDynArray;
-  CompareFuncs: TCompareFuncs;
+var I: Integer;
 begin
   { Use precached parameters. }
-  if UpdateAll and (UpdateColumns.Count > 0) then
-  begin
+  if UpdateAll and (UpdateColumns.Count > 0) then begin
     CopyResolveParameters(UpdateColumns, Columns);
     Exit;
   end;
 
   { Defines parameters for UpdateAll mode. }
-  if UpdateAll then
-  begin
+  if UpdateAll then begin
     for I := FirstDbcIndex to Metadata.GetColumnCount{$IFDEF GENERIC_INDEX}-1{$ENDIF} do
-    begin
-      if (Metadata.GetTableName(I) <> '') and (Metadata.GetColumnName(I) <> '')
-        and Metadata.IsWritable(I) then
-      begin
+      if (Metadata.GetTableName(I) <> '') and
+         (Metadata.GetColumnName(I) <> '') and Metadata.IsWritable(I) then
         UpdateColumns.Add(TZResolverParameter.Create(I,
           Metadata.GetColumnName(I), Metadata.GetColumnType(I), True, ''));
-      end;
-    end;
     CopyResolveParameters(UpdateColumns, Columns);
-  end
-  { Defines parameters for UpdateChanged mode. }
-  else
-  begin
-    SetLength(ColumnIndices, 1);
-    SetLength(CompareFuncs, 1);
+  end else { Defines parameters for UpdateChanged mode. }
     for I := FirstDbcIndex to Metadata.GetColumnCount{$IFDEF GENERIC_INDEX}-1{$ENDIF} do
-    begin
-      ColumnIndices[0] := I;
-      CompareFuncs[0] := NewRowAccessor.GetCompareFunc(I, ckEquals);
-      if (Metadata.GetTableName(I) <> '') and (Metadata.GetColumnName(I) <> '')
-        and Metadata.IsWritable(I) and ( OldRowAccessor.CompareBuffers(
-        OldRowAccessor.RowBuffer, NewRowAccessor.RowBuffer, ColumnIndices, CompareFuncs)  <> 0) then
-      begin
+      if (Metadata.GetTableName(I) <> '') and
+         (Metadata.GetColumnName(I) <> '') and Metadata.IsWritable(I) and
+         (OldRowAccessor.CompareBuffer(OldRowAccessor.RowBuffer,
+          NewRowAccessor.RowBuffer, I, NewRowAccessor.GetCompareFunc(I, ckEquals))  <> 0) then
         Columns.Add(TZResolverParameter.Create(I,
           Metadata.GetColumnName(I), Metadata.GetColumnType(I), True, ''));
-      end;
-    end;
-  end;
 end;
 
 {**
@@ -588,8 +581,9 @@ begin
 
     if FCalcDefaults then
       Statement.SetDefaultValue(I {$IFNDEF GENERIC_INDEX}+1{$ENDIF}, Metadata.GetDefaultValue(ColumnIndex));
-
-    case Metadata.GetColumnType(ColumnIndex) of
+    if RowAccessor.IsNull(ColumnIndex) then
+      Statement.SetNull(I {$IFNDEF GENERIC_INDEX}+1{$ENDIF}, Metadata.GetColumnType(ColumnIndex))
+    else case Metadata.GetColumnType(ColumnIndex) of
       stBoolean:
         Statement.SetBoolean(I {$IFNDEF GENERIC_INDEX}+1{$ENDIF},
           RowAccessor.GetBoolean(ColumnIndex, WasNull));
@@ -646,8 +640,6 @@ begin
          Statement.SetBlob(I {$IFNDEF GENERIC_INDEX}+1{$ENDIF}, stBinaryStream,
            RowAccessor.GetBlob(ColumnIndex, WasNull));
     end;
-    if WasNull then
-      Statement.SetNull(I {$IFNDEF GENERIC_INDEX}+1{$ENDIF}, Metadata.GetColumnType(ColumnIndex))
   end;
 end;
 
@@ -703,15 +695,13 @@ var
 begin
   TableName := DefineTableName;
   DefineInsertColumns(Columns);
-  if Columns.Count = 0 then
-  begin
+  if Columns.Count = 0 then begin
     Result := '';
     Exit;
   end;
 
   Temp1 := '';
-  for I := 0 to Columns.Count - 1 do
-  begin
+  for I := 0 to Columns.Count - 1 do begin
     Current := TZResolverParameter(Columns[I]);
     AppendSepString(Temp1, IdentifierConvertor.Quote(Current.ColumnName), ',');
   end;
@@ -816,36 +806,35 @@ begin
   case UpdateType of
     utInserted:
       begin
-        if InsertStatement = nil then
-        begin
+        if InsertStatement = nil then begin
           SQL := FormInsertStatement(FInsertParams, NewRowAccessor);
           InsertStatement := CreateResolverStatement(SQL);
           Statement := InsertStatement;
-        end
-        else
-        begin
-          Statement := InsertStatement;
-          SQL := InsertStatement.GetSQL;
         end;
+        Statement := InsertStatement;
         SQLParams := FInsertParams;
       end;
     utDeleted:
       begin
-        if DeleteStatement = nil then
-        begin
-          SQL := FormDeleteStatement(FDeleteParams, OldRowAccessor);
-          If Assigned(DeleteStatement) and (SQL <> DeleteStatement.GetSQL) then
-            DeleteStatement := nil;
-          If not Assigned(DeleteStatement) then
+        if not FWhereAll then begin
+          If DeleteStatement = nil then begin
+            SQL := FormDeleteStatement(FDeleteParams, OldRowAccessor);
             DeleteStatement := CreateResolverStatement(SQL);
+          end;
           Statement := DeleteStatement;
-        end
-        else
-        begin
-          Statement := DeleteStatement;
-          SQL := DeleteStatement.GetSQL;
+          SQLParams := FDeleteParams;
+        end else begin
+          FDeleteParams.Clear;  //EH: where columns propably are cached after 1. call
+          SQL := FormDeleteStatement(FDeleteParams, OldRowAccessor);
+          if SQL = '' then Exit;
+          TempKey := TZAnyValue.CreateWithInteger(Hash(SQL));
+          Statement := FStatements.Get(TempKey) as IZPreparedStatement;
+          If Statement = nil then begin
+            Statement := CreateResolverStatement(SQL);
+            FStatements.Put(TempKey, Statement);
+          end;
+          SQLParams := FDeleteParams;
         end;
-        SQLParams := FDeleteParams;
       end;
     utModified:
       begin
@@ -855,11 +844,10 @@ begin
         SQL := FormUpdateStatement(FUpdateParams, OldRowAccessor, NewRowAccessor);
         If SQL = '' then exit;// no fields have been changed
         TempKey := TZAnyValue.CreateWithInteger(Hash(SQL));
-        UpdateStatement := FUpdateStatements.Get(TempKey) as IZPreparedStatement;
-        If UpdateStatement = nil then
-        begin
+        UpdateStatement := FStatements.Get(TempKey) as IZPreparedStatement;
+        If UpdateStatement = nil then begin
           UpdateStatement := CreateResolverStatement(SQL);
-          FUpdateStatements.Put(TempKey, UpdateStatement);
+          FStatements.Put(TempKey, UpdateStatement);
         end;
         Statement := UpdateStatement;
         SQLParams := FUpdateParams;
@@ -868,22 +856,21 @@ begin
       Exit;
   end;
 
-  if SQL <> '' then
-  begin
-    FillStatement(Statement, SQLParams, OldRowAccessor, NewRowAccessor);
-    // if Property ValidateUpdateCount isn't set : assume it's true
-    lValidateUpdateCount := (Sender.GetStatement.GetParameters.IndexOfName('ValidateUpdateCount') = -1)
+  FillStatement(Statement, SQLParams, OldRowAccessor, NewRowAccessor);
+
+  // if Property ValidateUpdateCount isn't set : assume it's true
+  lValidateUpdateCount := (Sender.GetStatement.GetParameters.IndexOfName('ValidateUpdateCount') = -1)
                           or StrToBoolEx(Sender.GetStatement.GetParameters.Values['ValidateUpdateCount']);
 
-    lUpdateCount := Statement.ExecuteUpdatePrepared;
-    {$IFDEF WITH_VALIDATE_UPDATE_COUNT}
-    if  (lValidateUpdateCount) and (lUpdateCount <> 1   ) then
-      raise EZSQLException.Create(Format(SInvalidUpdateCount, [lUpdateCount]));
-    {$ENDIF}
-  end;
+  lUpdateCount := Statement.ExecuteUpdatePrepared;
+  {$IFDEF WITH_VALIDATE_UPDATE_COUNT}
+  if  (lValidateUpdateCount) and (lUpdateCount <> 1   ) then
+    raise EZSQLException.Create(Format(SInvalidUpdateCount, [lUpdateCount]));
+  {$ENDIF}
 end;
 
-procedure TZGenericCachedResolver.RefreshCurrentRow(Sender: IZCachedResultSet;  RowAccessor: TZRowAccessor);
+{$IFDEF FPC} {$PUSH} {$WARN 5024 off : Parameter "$1" not used} {$ENDIF} // abstract method - parameters not used intentionally
+procedure TZGenericCachedResolver.RefreshCurrentRow(Sender: IZCachedResultSet; RowAccessor: TZRowAccessor);
 begin
  raise EZSQLException.Create(SRefreshRowOnlySupportedWithUpdateObject);
 end;
@@ -948,6 +935,8 @@ begin
                 RowAccessor.SetULong(Current.ColumnIndex, ResultSet.GetULong(I));
               stFloat:
                 RowAccessor.SetFloat(Current.ColumnIndex, ResultSet.GetFloat(I));
+              stCurrency:
+                RowAccessor.SetCurrency(Current.ColumnIndex, ResultSet.GetCurrency(I));
               stDouble:
                 RowAccessor.SetDouble(Current.ColumnIndex, ResultSet.GetDouble(I));
               stBigDecimal:
@@ -990,6 +979,8 @@ procedure TZGenericCachedResolver.UpdateAutoIncrementFields(
 begin
  //Should be implemented at Specific database Level Cached resolver
 end;
+{$IFDEF FPC} {$POP} {$ENDIF}
+
 {END of PATCH [1185969]: Do tasks after posting updates. ie: Updating AutoInc fields in MySQL }
 
 end.

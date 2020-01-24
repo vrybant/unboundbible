@@ -108,7 +108,7 @@ type
     procedure SetParamCheck(Value: Boolean);
     function GetParamChar: Char;
     procedure SetParamChar(Value: Char);
-    procedure UpdateSQLStrings(Sender: TObject);
+    procedure UpdateSQLStrings({%H-}Sender: TObject);
   protected
     procedure CheckConnected;
     function DoOnError(StatementIndex: Integer; E: Exception):
@@ -393,12 +393,12 @@ begin
                 FParams);
               Statement.ExecuteUpdatePrepared;
             end;
+          Statement.Close; //see test Test1049821: if LastResultSet is assigned
           Statement := nil;
         except
           on E: Exception do
           begin
-            if Assigned(Statement) then
-              Statement := nil;
+            Statement := nil;
             Action := DoOnError(I, E);
             if Action = eaFail then
               RaiseSQLException(E)
@@ -447,18 +447,8 @@ end;
 }
 function TZSQLProcessor.CreateStatement(const SQL: string;
   Properties: TStrings): IZPreparedStatement;
-var
-  Temp: TStrings;
 begin
-  Temp := TStringList.Create;
-  try
-    if Assigned(Properties) then
-      Temp.AddStrings(Properties);
-
-    Result := FConnection.DbcConnection.PrepareStatementWithParams(SQL, Temp);
-  finally
-    Temp.Free;
-  end;
+  Result := FConnection.DbcConnection.PrepareStatementWithParams(SQL, Properties);
 end;
 
 {**

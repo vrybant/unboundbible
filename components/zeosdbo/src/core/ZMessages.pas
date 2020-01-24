@@ -135,6 +135,7 @@ resourcestring
   cSUnexpectedExprEnd = 'Fin d''expression imprévue';
   cSRightBraceExpected = ') attendue';
   cSParametersError = '%d paramètres attendus mais %d ont été trouvés';
+  cSParamValueExceeded = 'value of param %d exceeded';
   cSExpectedMoreParams = 'Plus de deux paramètres sont attendus';
   cSInvalidVarByteArray = 'Tableau de VarByte non valide';
   cSVariableAlreadyExists = 'La variable "%s" existe déjà';
@@ -277,6 +278,8 @@ resourcestring
 
   cSRowBufferWidthExceeded ='La taille du buffer de lignes a été dépassée. Essayez d''utiliser moins ou de plus longues colonnes dans la requête SQL.';
   cSPreviousResultStillOpen = 'L''ensemble de données résultat précédent de cette instruction est encore ouvert';
+
+  csCantFilterOnComputedColumns = 'Translate: Filtering a data set on computed fields and lookup fields is not supported.';
 //--- end added by Serge Girard ------------------------------------
 {$ELSE !FRENCH}
 // -> ms, 09/05/2005
@@ -302,6 +305,7 @@ resourcestring
   cSUnexpectedExprEnd = 'Final inesperado de expressão';
   cSRightBraceExpected = ') esperado';
   cSParametersError = 'Esperado %d parâmetros mas foi encontrado %d';
+  cSParamValueExceeded = 'value of param %d exceeded';
   cSExpectedMoreParams = 'Esperado mais que 2 parâmetros';
   cSInvalidVarByteArray = 'VarByte array inválido';
   cSVariableAlreadyExists = 'Variável "%s" já existe';
@@ -442,6 +446,8 @@ resourcestring
   cSInvalidUpdateCount   = '%d registro(s) atualizados. Apenas um registro deveria ter sido atualizado.';
 
   cSRowBufferWidthExceeded ='O tamanho do buffer para linhas (Rows) foi excedido. Tente usar menos ou mais colunas na query SQL';
+
+  csCantFilterOnComputedColumns = 'Translate: Filtering a data set on computed fields and lookup fields is not supported.';
 {$ELSE}
 
 {$IFDEF DUTCH}
@@ -466,6 +472,7 @@ resourcestring
   cSUnexpectedExprEnd = 'Onverwacht einde van de expressie';
   cSRightBraceExpected = ') verwacht';
   cSParametersError = 'Verwacht worden %d parameters maar er zijn er %d gevonden';
+  cSParamValueExceeded = 'value of param %d exceeded';
   cSExpectedMoreParams = 'Meer dan 2 parameters werden verwacht';
   cSInvalidVarByteArray = 'Ongeldig VarByte array';
   cSVariableAlreadyExists = 'Variabele "%s" bestaat al';
@@ -607,6 +614,8 @@ resourcestring
   cSInvalidUpdateCount     = '%d record(s) gewijzigd. Slechts 1 record had gewijzigd mogen zijn.';
 
   cSRowBufferWidthExceeded ='Rij buffer grootte overschreden. Probeer minder kolommen te gebruiken in je SQL query.';
+
+  csCantFilterOnComputedColumns = 'Translate: Filtering a data set on computed fields and lookup fields is not supported.';
 {$ELSE}
 // <- ms, 09/05/2005
 
@@ -633,6 +642,7 @@ resourcestring
   cSUnexpectedExprEnd = 'Unerwartetes Ende des Ausdrucks';
   cSRightBraceExpected = ') erwartet';
   cSParametersError = 'Es werden %d Parameter erwartet, aber nur %d Parameter gefunden';
+  cSParamValueExceeded = 'Daten des Parameters %d zu groß.';
   cSExpectedMoreParams = 'Es werden mehr als zwei Parameter erwartet';
   cSInvalidVarByteArray = 'Ungültiges VarByte Array';
   cSVariableAlreadyExists = 'Die Variable "%s" existiert bereits';
@@ -774,6 +784,8 @@ resourcestring
   cSInvalidUpdateCount     = '%d Datensätze geändert. Exakt ein Datensatz sollte geändert werden.';
 
   cSRowBufferWidthExceeded ='Translate: Row buffer width exceeded. Try using fewer or longer columns in SQL query.';
+
+  csCantFilterOnComputedColumns = 'Datasets können nich nach berechneten Feldern und Lookup-Feldern gefiltert werden.';
 {$ELSE}
   // -> fduenas, 28/06/2005
 {$IFDEF SPANISH} //Spanish translations
@@ -798,6 +810,7 @@ resourcestring
   cSUnexpectedExprEnd = 'Fin de expresión inesperado';
   cSRightBraceExpected = ') esperado';
   cSParametersError = 'Se esperaban %d parámetros pero solo %d fueron encontrados';
+  cSParamValueExceeded = 'value of param %d exceeded';
   cSExpectedMoreParams = 'Se esperaban más de dos parámetros';
   cSInvalidVarByteArray = 'Arreglo VarByte inválido';
   cSVariableAlreadyExists = 'La variable "%s" ya existe';
@@ -940,6 +953,8 @@ resourcestring
   cSInvalidUpdateCount     = 'Translate : %d record(s) updated. Only one record should have been updated.';
 
   cSRowBufferWidthExceeded ='Translate: Row buffer width exceeded. Try using fewer or longer columns in SQL query.';
+
+  csCantFilterOnComputedColumns = 'Translate: Filtering a data set on computed fields and lookup fields is not supported.';
 {$ELSE}
 
 {$IFDEF ROMANA}
@@ -965,6 +980,7 @@ resourcestring
   cSUnexpectedExprEnd = 'Final neaºteptat pentru expresie';
   cSRightBraceExpected = ') aºteptat';
   cSParametersError = 'parametrul %d a fost aºteptat dar %d a fost gãsit';
+  cSParamValueExceeded = 'value of param %d exceeded';
   cSExpectedMoreParams = 'Mai nult de doi parametrii sunt aºteptaþi';
   cSInvalidVarByteArray = 'Arie VarByte invalidã';
   cSVariableAlreadyExists = 'Variabila "%s" deja existã';
@@ -1104,6 +1120,9 @@ resourcestring
   cSUnKnownParamDataType = 'TRANSLATE: Unknown Param.DataType';
 
   cSRowBufferWidthExceeded ='Translate: Row buffer width exceeded. Try using fewer or longer columns in SQL query.';
+
+  csCantFilterOnComputedColumns = 'Translate: Filtering a data set on computed fields and lookup fields is not supported.';
+
   // <-- added by tohenk
   {$ELSE}
   {$IFDEF INDONESIAN}
@@ -1128,6 +1147,7 @@ resourcestring
   cSUnexpectedExprEnd = 'Tidak dibutuhkan, akhir dari ekspresi';
   cSRightBraceExpected = ') dibutuhkan';
   cSParametersError = '%d parameter dibutuhkan tapi terdapat %d parameter';
+  cSParamValueExceeded = 'value of param %d exceeded';
   cSExpectedMoreParams = 'Dibutuhkan lebih dari dua parameter';
   cSInvalidVarByteArray = 'array VarByte tidak valid';
   cSVariableAlreadyExists = 'Variabel "%s" sudah ada';
@@ -1269,6 +1289,8 @@ resourcestring
   cSInvalidUpdateCount     = '%d rekord terupdate. Seharusnya hanya satu rekord yang terupdate.';
 
   cSRowBufferWidthExceeded = 'Lebar buffer baris terlampaui. Coba kurangi atau gunakan kolom yang lebih panjang dalam query SQL.';
+
+  csCantFilterOnComputedColumns = 'Translate: Filtering a data set on computed fields and lookup fields is not supported.';
   // <--- end added by tohenk
   //--- begin added by ORMADA --------------------------------------------------
 {$ELSE}
@@ -1294,6 +1316,7 @@ resourcestring
   cSUnexpectedExprEnd                       = 'Íåîæèäàííûé êîíåö âûðàæåíèÿ';
   cSRightBraceExpected                      = ') ïðîïóùåíà';
   cSParametersError                         = 'îæèäàåòñÿ %d ïàðàìåòðîâ, íàéäåíî %d';
+  cSParamValueExceeded = 'value of param %d exceeded';
   cSExpectedMoreParams                      = 'Îæèäàåòñÿ áîëåå 2-õ ïàðàìåòðîâ';
   cSInvalidVarByteArray                     = 'Íåâåðíûé ìàññèâ (VarByte)';
   cSVariableAlreadyExists                   = 'Çíà÷åíèå "%s" óæå ñóùåñòâóåò';
@@ -1436,6 +1459,8 @@ resourcestring
   cSInvalidUpdateCount     = 'Translate : %d record(s) updated. Only one record should have been updated.';
 
   cSRowBufferWidthExceeded ='Translate: Row buffer width exceeded. Try using fewer or longer columns in SQL query.';
+
+  csCantFilterOnComputedColumns = 'Translate: Filtering a data set on computed fields and lookup fields is not supported.';
 {$ELSE}
 
 //--- added by Petr Stasiak - pestasoft.com ------------------------------------
@@ -1461,6 +1486,7 @@ resourcestring
   cSUnexpectedExprEnd = 'Neoèekávaný konec výrazu';
   cSRightBraceExpected = ') oèekáván(o/a/y)';
   cSParametersError = '%d parametrù oèekáváno, ale %d existuje';
+  cSParamValueExceeded = 'value of param %d exceeded';
   cSExpectedMoreParams = 'Je oèekáváno více, než 2 parametry';
   cSInvalidVarByteArray = 'Nesprávný VarByte array';
   cSVariableAlreadyExists = 'Promìná "%s" již existuje';
@@ -1603,6 +1629,8 @@ resourcestring
   cSInvalidUpdateCount     = '%d záznam(ù) aktualizováno. Pouze jeden záznam byl zmìnìn.';
 
   cSRowBufferWidthExceeded ='Translate: Row buffer width exceeded. Try using fewer or longer columns in SQL query.';
+
+  csCantFilterOnComputedColumns = 'Translate: Filtering a data set on computed fields and lookup fields is not supported.';
 //--- end added by Petr Stasiak - pestasoft.com ------------------------------------
 
 {$ELSE}
@@ -1630,6 +1658,7 @@ resourcestring
   cSUnexpectedExprEnd = 'Nieoczekiwany koniec wyra¿enia';
   cSRightBraceExpected = 'Oczekiwano znaku )';
   cSParametersError = 'Oczekiwana iloœæ parametrów: %d, znaleziono: %d';
+  cSParamValueExceeded = 'value of param %d exceeded';
   cSExpectedMoreParams = 'Oczekiwano wiêcej ni¿ dwa parametry';
   cSInvalidVarByteArray = 'B³êdna tablica VarByte';
   cSVariableAlreadyExists = 'Zmienna "%s" ju¿ istnieje';
@@ -1773,6 +1802,8 @@ resourcestring
 
   cSRowBufferWidthExceeded ='Przekroczono rozmiar bufora. Spróbuj u¿yæ mniejszej liczby kolumn lub d³u¿szych kolumn w zapytaniu SQL.';
 
+  csCantFilterOnComputedColumns = 'Translate: Filtering a data set on computed fields and lookup fields is not supported.';
+
 {$ELSE} // default: ENGLISH
 
   cSSQLError1 = 'SQL Error: %s';
@@ -1796,6 +1827,7 @@ resourcestring
   cSUnexpectedExprEnd = 'Unexpected end of expression';
   cSRightBraceExpected = ') expected';
   cSParametersError = '%d parameters were expected but %d were found';
+  cSParamValueExceeded = 'value of param %d exceeded';
   cSExpectedMoreParams = 'More than two parameters are expected';
   cSInvalidVarByteArray = 'Invalid VarByte array';
   cSVariableAlreadyExists = 'Variable "%s" already exists';
@@ -1939,6 +1971,8 @@ resourcestring
 
   cSRowBufferWidthExceeded ='Row buffer width exceeded. Try using fewer or longer columns in SQL query.';
 
+  csCantFilterOnComputedColumns = 'Filtering a data set on computed fields and lookup fields is not supported.';
+
 {$ENDIF} // POLISH
 
 {$ENDIF} // CZECH
@@ -1983,6 +2017,7 @@ var
   SUnexpectedExprEnd: String;
   SRightBraceExpected: String;
   SParametersError: String;
+  SParamValueExceeded: String;
   SExpectedMoreParams: String;
   SInvalidVarByteArray: String;
   SVariableAlreadyExists: String;
@@ -2153,6 +2188,8 @@ begin
   SUnexpectedExprEnd := cSUnexpectedExprEnd;
   SRightBraceExpected := cSRightBraceExpected;
   SParametersError := cSParametersError;
+  SParamValueExceeded := cSParamValueExceeded;
+
   SExpectedMoreParams := cSExpectedMoreParams;
   SInvalidVarByteArray := cSInvalidVarByteArray;
   SVariableAlreadyExists := cSVariableAlreadyExists;

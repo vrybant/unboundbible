@@ -55,8 +55,9 @@ interface
 
 {$I ZDbc.inc}
 
+{$IFNDEF ZEOS_DISABLE_POSTGRESQL} //if set we have an empty unit
 uses
-  {$IFDEF WITH_TOBJECTLIST_INLINE}System.Types, System.Contnrs{$ELSE}Types{$ENDIF},
+  {$IFDEF WITH_TOBJECTLIST_REQUIRES_SYSTEM_TYPES}System.Types, System.Contnrs{$ELSE}Types{$ENDIF},
   Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
   ZSysUtils, ZDbcIntfs, ZDbcResultSet, ZPlainPostgreSqlDriver, ZDbcLogging,
   ZDbcResultSetMetadata, ZCompatibility;
@@ -91,7 +92,8 @@ type
     FUndefinedVarcharAsStringLength: Integer;
     FCachedLob: boolean;
     FpgOIDTypes: TIntegerDynArray;
-    function GetBuffer(ColumnIndex: Integer; var Len: NativeUInt): PAnsiChar; {$IFDEF WITHINLINE}inline;{$ENDIF}
+    FDecimalSeps: array[Boolean] of Char;
+    function GetBuffer(ColumnIndex: Integer; out Len: NativeUInt): PAnsiChar; {$IFDEF WITHINLINE}inline;{$ENDIF}
     procedure ClearPGResult;
   protected
     function InternalGetString(ColumnIndex: Integer): RawByteString; override;
@@ -115,6 +117,7 @@ type
     function GetULong(ColumnIndex: Integer): UInt64; override;
     function GetFloat(ColumnIndex: Integer): Single; override;
     function GetDouble(ColumnIndex: Integer): Double; override;
+    function GetCurrency(ColumnIndex: Integer): Currency; override;
     function GetBigDecimal(ColumnIndex: Integer): Extended; override;
     function GetBytes(ColumnIndex: Integer): TBytes; override;
     function GetDate(ColumnIndex: Integer): TDateTime; override;
@@ -164,17 +167,20 @@ type
   end;
 
 
+{$ENDIF ZEOS_DISABLE_POSTGRESQL} //if set we have an empty unit
 implementation
+{$IFNDEF ZEOS_DISABLE_POSTGRESQL} //if set we have an empty unit
 
 uses
   {$IFDEF WITH_UNITANSISTRINGS}AnsiStrings,{$ENDIF} Math,
   ZMessages, ZEncoding, ZFastCode, ZDbcPostgreSqlMetadata, ZDbcMetadata,
-  ZDbcPostgreSql, ZDbcPostgreSqlUtils, ZDbcPostgreSqlStatement;
+  ZDbcPostgreSql, ZDbcPostgreSqlUtils, ZDbcPostgreSqlStatement, ZClasses;
 
 
 // added for suporting Infinity, -Infinity and NaN.
 // See https://sourceforge.net/p/zeoslib/tickets/173/
 // maybe this should be pushed into ZSysUtils.SQLStrToFloatDef?
+{$IF defined(DELPHI) or defined(FPC_HAS_TYPE_EXTENDED)}
 procedure pgSQLStrToFloatDef(Value: PAnsiChar; const Def: Extended;
   var Result: Extended); overload;
 begin
@@ -187,10 +193,15 @@ begin
   else
     ZSysUtils.SQLStrToFloatDef(Value, Def, Result);
 end;
+{$IFEND}
 
 procedure pgSQLStrToFloatDef(Value: PAnsiChar; const Def: Single;
   var Result: Single); overload;
 begin
+  {$IFDEF FPC2_6DOWN}
+  {$R-}
+  {$Q-}
+  {$ENDIF}
   if Value = 'Infinity' then
     Result := Infinity
   else if Value = '-Infinity' then
@@ -199,12 +210,23 @@ begin
     Result := NaN
   else
     ZSysUtils.SQLStrToFloatDef(Value, Def, Result);
+  {$IFDEF FPC2_6DOWN}
+    {$ifdef RangeCheckEnabled}
+      {$R+}
+    {$endif}
+    {$ifdef OverFlowCheckEnabled}
+      {$Q+}
+    {$endif}
+  {$ENDIF}
 end;
 
-{$IF defined(DELPHI) or defined(FPC_HAS_TYPE_EXTENDED)}
 procedure pgSQLStrToFloatDef(Value: PAnsiChar; const Def: Double;
   var Result: Double); overload;
 begin
+  {$IFDEF FPC2_6DOWN}
+    {$R-}
+    {$Q-}
+  {$ENDIF}
   if Value = 'Infinity' then
     Result := Infinity
   else if Value = '-Infinity' then
@@ -213,8 +235,15 @@ begin
     Result := NaN
   else
     ZSysUtils.SQLStrToFloatDef(Value, Def, Result);
+  {$IFDEF FPC2_6DOWN}
+    {$ifdef RangeCheckEnabled}
+      {$R+}
+    {$endif}
+    {$ifdef OverFlowCheckEnabled}
+      {$Q+}
+    {$endif}
+  {$ENDIF}
 end;
-{$IFEND}
 
 { TZPostgreSQLResultSet }
 
@@ -424,8 +453,10 @@ end;
 }
 procedure TZPostgreSQLResultSet.ResetCursor;
 begin
-  ClearPGResult;
-  inherited ResetCursor;
+  if not Closed then begin
+    ClearPGResult;
+    inherited ResetCursor;
+  end;
 end;
 {**
   Indicates if the value of the designated column in the current row
@@ -446,7 +477,7 @@ begin
     ColumnIndex{$IFNDEF GENERIC_INDEX} - 1{$ENDIF}) <> 0;
 end;
 
-function TZPostgreSQLResultSet.GetBuffer(ColumnIndex: Integer; var Len: NativeUint): PAnsiChar;
+function TZPostgreSQLResultSet.GetBuffer(ColumnIndex: Integer; out Len: NativeUint): PAnsiChar;
 var RNo: Integer;
 begin
   RNo := RowNo - 1;
@@ -496,7 +527,7 @@ end;
 }
 function TZPostgreSQLResultSet.GetPAnsiChar(ColumnIndex: Integer; out Len: NativeUInt): PAnsiChar;
 begin
-  Result := GetBuffer(ColumnIndex{$IFNDEF GENERIC_INDEX}-1{$ENDIF}, Len{%H-});
+  Result := GetBuffer(ColumnIndex{$IFNDEF GENERIC_INDEX}-1{$ENDIF}, Len);
 end;
 
 {**
@@ -531,7 +562,7 @@ begin
   {$IFNDEF GENERIC_INDEX}
   ColumnIndex := ColumnIndex -1;
   {$ENDIF}
-  P := GetBuffer(ColumnIndex, L{%H-});
+  P := GetBuffer(ColumnIndex, L);
   if LastWasNull then
     Result := ''
   else
@@ -562,7 +593,7 @@ var
   Len: NativeUInt;
   Buffer: PAnsiChar;
 begin
-  Buffer := GetBuffer(ColumnIndex{$IFNDEF GENERIC_INDEX}-1{$ENDIF}, Len{%H-});
+  Buffer := GetBuffer(ColumnIndex{$IFNDEF GENERIC_INDEX}-1{$ENDIF}, Len);
   if LastWasNull then
     Result := ''
   else
@@ -651,6 +682,7 @@ end;
   @return the column value; if the value is SQL <code>NULL</code>, the
     value returned is <code>0</code>
 }
+{$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R-}{$IFEND}
 function TZPostgreSQLResultSet.GetULong(ColumnIndex: Integer): UInt64;
 begin
 {$IFNDEF DISABLE_CHECKING}
@@ -665,6 +697,7 @@ begin
   else
     Result := RawToUInt64Def(FPlainDriver.GetValue(FQueryHandle, RowNo - 1, ColumnIndex), 0);
 end;
+{$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R+}{$IFEND}
 
 {**
   Gets the value of the designated column in the current row
@@ -793,6 +826,25 @@ begin
   end else Result := nil;
 end;
 
+function TZPostgreSQLResultSet.GetCurrency(
+  ColumnIndex: Integer): Currency;
+var
+  Len: NativeUInt;
+  Buffer: PAnsiChar;
+begin
+{$IFNDEF DISABLE_CHECKING}
+  CheckColumnConvertion(ColumnIndex, stDate);
+{$ENDIF}
+  {$IFNDEF GENERIC_INDEX}
+  ColumnIndex := ColumnIndex -1;
+  {$ENDIF}
+  Buffer := GetBuffer(ColumnIndex, Len);
+
+  if LastWasNull
+  then Result := 0
+  else SQLStrToFloatDef(Buffer, 0, FDecimalSeps[FpgOIDTypes[ColumnIndex] = CASHOID], Result);
+end;
+
 {**
   Gets the value of the designated column in the current row
   of this <code>ResultSet</code> object as
@@ -814,13 +866,13 @@ begin
   {$IFNDEF GENERIC_INDEX}
   ColumnIndex := ColumnIndex -1;
   {$ENDIF}
-  Buffer := GetBuffer(ColumnIndex, Len{%H-});
+  Buffer := GetBuffer(ColumnIndex, Len);
 
   if LastWasNull then
     Result := 0
   else
     if Len = ConSettings^.ReadFormatSettings.DateFormatLen then
-      Result := RawSQLDateToDateTime(Buffer, Len, ConSettings^.ReadFormatSettings, Failed{%H-})
+      Result := RawSQLDateToDateTime(Buffer, Len, ConSettings^.ReadFormatSettings, Failed)
     else
       Result := {$IFDEF USE_FAST_TRUNC}ZFastCode.{$ENDIF}Trunc(
         RawSQLTimeStampToDateTime(Buffer, Len, ConSettings^.ReadFormatSettings, Failed));
@@ -847,13 +899,13 @@ begin
   {$IFNDEF GENERIC_INDEX}
   ColumnIndex := ColumnIndex -1;
   {$ENDIF}
-  Buffer := GetBuffer(ColumnIndex, Len{%H-});
+  Buffer := GetBuffer(ColumnIndex, Len);
 
   if LastWasNull then
     Result := 0
   else
     if not (Len > ConSettings^.ReadFormatSettings.TimeFormatLen) and ( ( ConSettings^.ReadFormatSettings.TimeFormatLen - Len) <= 4 )then
-      Result := RawSQLTimeToDateTime(Buffer, Len, ConSettings^.ReadFormatSettings, Failed{%H-})
+      Result := RawSQLTimeToDateTime(Buffer, Len, ConSettings^.ReadFormatSettings, Failed)
     else
       Result := Frac(RawSQLTimeStampToDateTime(Buffer,  Len, ConSettings^.ReadFormatSettings, Failed));
 end;
@@ -883,7 +935,7 @@ begin
   LastWasNull := FPlainDriver.GetIsNull(FQueryHandle, RowNo - 1, ColumnIndex) <> 0;
   if not LastWasNull then begin
     Buffer := FPlainDriver.GetValue(FQueryHandle, RowNo - 1, ColumnIndex);
-    Result := RawSQLTimeStampToDateTime(Buffer, ZFastCode.StrLen(Buffer), ConSettings^.ReadFormatSettings, Failed{%H-});
+    Result := RawSQLTimeStampToDateTime(Buffer, ZFastCode.StrLen(Buffer), ConSettings^.ReadFormatSettings, Failed);
   end;
 end;
 
@@ -1215,5 +1267,6 @@ begin
   {$ENDIF}
 end;
 
+{$ENDIF ZEOS_DISABLE_POSTGRESQL} //if set we have an empty unit
 end.
 

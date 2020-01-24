@@ -56,9 +56,7 @@ interface
 {$I ZCore.inc}
 
 uses
-  {$IFNDEF FPC}
-  Windows, //need for inline
-  {$ENDIF}
+  {$IF not defined(FPC) and defined(MSWINDOWS)}Windows,{$IFEND}  //need for inline
   Classes, SysUtils, ZCompatibility, ZClasses;
 
 const
@@ -75,16 +73,22 @@ const
   StrFalseUp = 'FALSE';
   StrTrueUp = 'TRUE';
   BoolStrsUp: array[Boolean] of string = (StrFalseUp, StrTrueUp);
-  BoolStrsUpRaw: array[Boolean] of RawByteString = (RawByteString(StrFalseUp), RawByteString(StrTrueUp));
   BoolStrsUpW: array[Boolean] of ZWideString = (ZWideString(StrFalseUp), ZWideString(StrTrueUp));
+{$IFNDEF WITH_TBYTES_AS_RAWBYTESTRING}
+  BoolStrsUpRaw: array[Boolean] of RawByteString = (RawByteString(StrFalseUp), RawByteString(StrTrueUp));
+{$ELSE}
+var
+  BoolStrsUpRaw: array[Boolean] of RawByteString;
+{$ENDIF}
 
 type
   {** Defines variant types. }
   TZVariantType = (vtNull, vtBoolean, vtInteger, vtUInteger, vtFloat, vtBytes,
-    vtString, vtAnsiString, vtUTF8String, vtRawByteString, vtUnicodeString, //String Types
+    vtString, {$IFNDEF NO_ANSISTRING}vtAnsiString, {$ENDIF}{$IFNDEF NO_UTF8STRING}vtUTF8String,{$ENDIF} vtRawByteString, vtUnicodeString, //String Types
     vtDateTime, vtPointer, vtInterface, vtCharRec,
     vtArray{a dynamic array of [vtNull ... vtCharRec]} );
 
+  PZArray =^TZArray;
   TZArray = Record
     VArray: Pointer; { Pointer to a Dynamic Array of X}
     VArrayType: Byte; {ord of TZSQLType}
@@ -98,9 +102,13 @@ type
   TZVariant = {$ifndef FPC_REQUIRES_PROPER_ALIGNMENT}packed{$endif} record
     VType: TZVariantType;
     VString: String;
+    {$IFNDEF NO_ANSISTRING}
     VAnsiString: AnsiString;
+    {$ENDIF}
     VRawByteString: RawByteString;
+    {$IFNDEF NO_UTF8STRING}
     VUTF8String: UTF8String;
+    {$ENDIF}
     VUnicodeString: ZWideString;
     VBytes: TBytes;
     VInterface: IZInterface;
@@ -133,10 +141,10 @@ type
     ['{DAA373D9-1A98-4AA8-B65E-4C23167EE83F}']
 
     function IsNull(const Value: TZVariant): Boolean;
-    procedure SetNull(var Value: TZVariant);
+    procedure SetNull(out Value: TZVariant);
 
     function Convert(const Value: TZVariant; NewType: TZVariantType): TZVariant;
-    procedure Assign(const SrcValue: TZVariant; var DstValue: TZVariant);
+    procedure Assign(const SrcValue: TZVariant; out DstValue: TZVariant);
     function Clone(const Value: TZVariant): TZVariant;
     function Compare(const Value1, Value2: TZVariant): Integer;
 
@@ -146,31 +154,39 @@ type
     function GetAsUInteger(const Value: TZVariant): UInt64;
     function GetAsFloat(const Value: TZVariant): Extended;
     function GetAsString(const Value: TZVariant): String;
+    {$IFNDEF NO_ANSISTRING}
     function GetAsAnsiString(const Value: TZVariant): AnsiString;
+    {$ENDIF}
     function GetAsRawByteString(const Value: TZVariant): RawByteString; overload;
     function GetAsCharRec(const Value: TZVariant): TZCharRec;
+    {$IFNDEF NO_UTF8STRING}
     function GetAsUTF8String(const Value: TZVariant): UTF8String;
+    {$ENDIF}
     function GetAsUnicodeString(const Value: TZVariant): ZWideString;
     function GetAsDateTime(const Value: TZVariant): TDateTime;
     function GetAsPointer(const Value: TZVariant): Pointer;
     function GetAsInterface(const Value: TZVariant): IZInterface;
     function GetAsArray(const Value: TZVariant): TZArray;
 
-    procedure SetAsBoolean(var Value: TZVariant; const Data: Boolean);
-    procedure SetAsBytes(var Value: TZVariant; const Data: TBytes);
-    procedure SetAsInteger(var Value: TZVariant; const Data: Int64);
-    procedure SetAsUInteger(var Value: TZVariant; const Data: UInt64);
-    procedure SetAsFloat(var Value: TZVariant; const Data: Extended);
-    procedure SetAsString(var Value: TZVariant; const Data: String);
-    procedure SetAsAnsiString(var Value: TZVariant; const Data: AnsiString);
-    procedure SetAsUTF8String(var Value: TZVariant; const Data: UTF8String);
-    procedure SetAsRawByteString(var Value: TZVariant; const Data: RawByteString);
-    procedure SetAsCharRec(var Value: TZVariant; const Data: TZCharRec);
-    procedure SetAsUnicodeString(var Value: TZVariant; const Data: ZWideString);
-    procedure SetAsDateTime(var Value: TZVariant; const Data: TDateTime);
-    procedure SetAsPointer(var Value: TZVariant; const Data: Pointer);
-    procedure SetAsInterface(var Value: TZVariant; const Data: IZInterface);
-    procedure SetAsArray(var Value: TZVariant; const Data: TZArray);
+    procedure SetAsBoolean(out Value: TZVariant; const Data: Boolean);
+    procedure SetAsBytes(out Value: TZVariant; const Data: TBytes);
+    procedure SetAsInteger(out Value: TZVariant; const Data: Int64);
+    procedure SetAsUInteger(out Value: TZVariant; const Data: UInt64);
+    procedure SetAsFloat(out Value: TZVariant; const Data: Extended);
+    procedure SetAsString(out Value: TZVariant; const Data: String);
+    {$IFNDEF NO_ANSISTRING}
+    procedure SetAsAnsiString(out Value: TZVariant; const Data: AnsiString);
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
+    procedure SetAsUTF8String(out Value: TZVariant; const Data: UTF8String);
+    {$ENDIF}
+    procedure SetAsRawByteString(out Value: TZVariant; const Data: RawByteString);
+    procedure SetAsCharRec(out Value: TZVariant; const Data: TZCharRec);
+    procedure SetAsUnicodeString(out Value: TZVariant; const Data: ZWideString);
+    procedure SetAsDateTime(out Value: TZVariant; const Data: TDateTime);
+    procedure SetAsPointer(out Value: TZVariant; const Data: Pointer);
+    procedure SetAsInterface(out Value: TZVariant; const Data: IZInterface);
+    procedure SetAsArray(out Value: TZVariant; const Data: TZArray);
 
     function OpAdd(const Value1, Value2: TZVariant): TZVariant;
     function OpSub(const Value1, Value2: TZVariant): TZVariant;
@@ -194,10 +210,14 @@ type
   {** Implements a variant manager with strict convertion rules. }
   {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF} = class (TInterfacedObject, IZVariantManager)
   private
+    {$IFNDEF NO_ANSISTRING}
     ZAnsiToUTF8: TZAnsiToUTF8;
     ZUTF8ToAnsi: TZUTF8ToAnsi;
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
     ZUTF8ToString: TZUTF8ToString;
     ZStringToUTF8: TZStringToUTF8;
+    {$ENDIF}
     FSystemCodePage: Word;
   protected
     procedure RaiseTypeMismatchError;
@@ -206,12 +226,12 @@ type
     constructor Create;
     function Convert(const Value: TZVariant; NewType: TZVariantType): TZVariant;
       virtual;
-    procedure Assign(const SrcValue: TZVariant; var DstValue: TZVariant);
+    procedure Assign(const SrcValue: TZVariant; out DstValue: TZVariant);
     function Clone(const Value: TZVariant): TZVariant;
     function Compare(const Value1, Value2: TZVariant): Integer;
 
     function IsNull(const Value: TZVariant): Boolean;
-    procedure SetNull(var Value: TZVariant);
+    procedure SetNull(out Value: TZVariant);
 
     function GetAsBoolean(const Value: TZVariant): Boolean;
     function GetAsBytes(const Value: TZVariant): TBytes;
@@ -219,10 +239,14 @@ type
     function GetAsUInteger(const Value: TZVariant): UInt64;
     function GetAsFloat(const Value: TZVariant): Extended;
     function GetAsString(const Value: TZVariant): String;
+    {$IFNDEF NO_ANSISTRING}
     function GetAsAnsiString(const Value: TZVariant): AnsiString;
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
     function GetAsUTF8String(const Value: TZVariant): UTF8String;
+    {$ENDIF}
     function GetAsRawByteString(const Value: TZVariant): RawByteString; overload;
-    function GetAsRawByteString(const {%H-}Value: TZVariant; const {%H-}RawCP: Word): RawByteString; overload; virtual;
+    function GetAsRawByteString(const Value: TZVariant; const RawCP: Word): RawByteString; overload; virtual;
     function GetAsCharRec(const Value: TZVariant): TZCharRec; overload;
     function GetAsUnicodeString(const Value: TZVariant): ZWideString;
     function GetAsDateTime(const Value: TZVariant): TDateTime;
@@ -230,21 +254,25 @@ type
     function GetAsInterface(const Value: TZVariant): IZInterface;
     function GetAsArray(const Value: TZVariant): TZArray;
 
-    procedure SetAsBoolean(var Value: TZVariant; const Data: Boolean);
-    procedure SetAsBytes(var Value: TZVariant; const Data: TBytes);
-    procedure SetAsInteger(var Value: TZVariant; const Data: Int64);
-    procedure SetAsUInteger(var Value: TZVariant; const Data: UInt64);
-    procedure SetAsFloat(var Value: TZVariant; const Data: Extended);
-    procedure SetAsString(var Value: TZVariant; const Data: String);
-    procedure SetAsAnsiString(var Value: TZVariant; const Data: AnsiString);
-    procedure SetAsUTF8String(var Value: TZVariant; const Data: UTF8String);
-    procedure SetAsRawByteString(var Value: TZVariant; const Data: RawByteString);
-    procedure SetAsCharRec(var Value: TZVariant; const Data: TZCharRec);
-    procedure SetAsUnicodeString(var Value: TZVariant; const Data: ZWideString);
-    procedure SetAsDateTime(var Value: TZVariant; const Data: TDateTime);
-    procedure SetAsPointer(var Value: TZVariant; const Data: Pointer);
-    procedure SetAsInterface(var Value: TZVariant; const Data: IZInterface);
-    procedure SetAsArray(var Value: TZVariant; const Data: TZArray);
+    procedure SetAsBoolean(out Value: TZVariant; const Data: Boolean);
+    procedure SetAsBytes(out Value: TZVariant; const Data: TBytes);
+    procedure SetAsInteger(out Value: TZVariant; const Data: Int64);
+    procedure SetAsUInteger(out Value: TZVariant; const Data: UInt64);
+    procedure SetAsFloat(out Value: TZVariant; const Data: Extended);
+    procedure SetAsString(out Value: TZVariant; const Data: String);
+    {$IFNDEF NO_ANSISTRING}
+    procedure SetAsAnsiString(out Value: TZVariant; const Data: AnsiString);
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
+    procedure SetAsUTF8String(out Value: TZVariant; const Data: UTF8String);
+    {$ENDIF}
+    procedure SetAsRawByteString(out Value: TZVariant; const Data: RawByteString);
+    procedure SetAsCharRec(out Value: TZVariant; const Data: TZCharRec);
+    procedure SetAsUnicodeString(out Value: TZVariant; const Data: ZWideString);
+    procedure SetAsDateTime(out Value: TZVariant; const Data: TDateTime);
+    procedure SetAsPointer(out Value: TZVariant; const Data: Pointer);
+    procedure SetAsInterface(out Value: TZVariant; const Data: IZInterface);
+    procedure SetAsArray(out Value: TZVariant; const Data: TZArray);
 
     function OpAdd(const Value1, Value2: TZVariant): TZVariant;
     function OpSub(const Value1, Value2: TZVariant): TZVariant;
@@ -306,8 +334,12 @@ type
     function GetInteger: Int64;
     function GetFloat: Extended;
     function GetString: String;
+    {$IFNDEF NO_ANSISTRING}
     function GetAnsiString: AnsiString;
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
     function GetUTF8String: UTF8String;
+    {$ENDIF}
     function GetUnicodeString: ZWideString;
     function GetDateTime: TDateTime;
   end;
@@ -343,8 +375,12 @@ type
     function GetInteger: Int64;
     function GetFloat: Extended;
     function GetString: String;
+    {$IFNDEF NO_ANSISTRING}
     function GetAnsiString: AnsiString;
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
     function GetUTF8String: UTF8String;
+    {$ENDIF}
     function GetUnicodeString: ZWideString;
     function GetDateTime: TDateTime;
 
@@ -428,18 +464,22 @@ function EncodeFloat(const Value: Extended): TZVariant; {$IFDEF WITH_INLINE}inli
   @returns an encoded custom variant.
 }
 function EncodeString(const Value: String): TZVariant; {$IFDEF WITH_INLINE}inline;{$ENDIF}
+{$IFNDEF NO_ANSISTRING}
 {**
   Encodes a AnsiString into a custom variant.
   @param Value a AnsiString value to be encoded.
   @returns an encoded custom variant.
 }
 function EncodeAnsiString(const Value: AnsiString): TZVariant;  {$IFDEF WITH_INLINE}inline;{$ENDIF}
+{$ENDIF}
 {**
   Encodes a UTF8String into a custom variant.
   @param Value a UTF8String value to be encoded.
   @returns an encoded custom variant.
 }
+{$IFNDEF NO_UTF8STRING}
 function EncodeUTF8String(const Value: UTF8String): TZVariant; {$IFDEF WITH_INLINE}inline;{$ENDIF}
+{$ENDIF}
 {**
   Encodes a RawByteString into a custom variant.
   @param Value a RawByteString value to be encoded.
@@ -506,35 +546,41 @@ uses
 { TZDefaultVariantManager }
 
 {**
-  Constructs this object and assignes the main properties.
+  Constructs this object and assigns the main properties.
 }
 constructor {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.Create;
 begin
   inherited;
   FSystemCodePage := ZOSCodePage;
+  {$IFNDEF WITH_TBYTES_AS_RAWBYTESTRING}
   if ZCompatibleCodePages(zCP_UTF8, FSystemCodePage) then
   begin
+    {$IFNDEF NO_ANSISTRING}
     ZAnsiToUTF8 := @ZMoveAnsiToUTF8;
     ZUTF8ToAnsi := @ZMoveUTF8ToAnsi;
+    {$ENDIF}
     ZUTF8ToString := @ZMoveUTF8ToString;
     ZStringToUTF8 := @ZMoveStringToUTF8;
   end
   else
   begin
+    {$IFNDEF NO_ANSISTRING}
     ZAnsiToUTF8 := @ZConvertAnsiToUTF8;
     ZUTF8ToAnsi := @ZConvertUTF8ToAnsi;
+    {$ENDIF}
     ZUTF8ToString := @ZConvertUTF8ToString;
     ZStringToUTF8 := @ZConvertStringToUTF8;
   end;
+  {$ENDIF}
 end;
 
 {**
-  Assignes one variant value to another one.
+  Assigns one variant value to another one.
   @param SrcValue a source variant value.
   @param DstValue a destination variant value.
 }
 procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.Assign(const SrcValue: TZVariant;
-  var DstValue: TZVariant);
+  out DstValue: TZVariant);
 begin
   DstValue.VType := SrcValue.VType;
   case SrcValue.VType of
@@ -544,9 +590,13 @@ begin
     vtUInteger: DstValue.VUInteger := SrcValue.VUInteger;
     vtFloat: DstValue.VFloat := SrcValue.VFloat;
     vtString: DstValue.VString := SrcValue.VString;
+{$IFNDEF NO_ANSISTRING}
     vtAnsiString: DstValue.VAnsiString := SrcValue.VAnsiString;
+{$ENDIF}
     vtRawByteString: DstValue.VRawByteString := SrcValue.VRawByteString;
+{$IFNDEF NO_UTF8STRING}
     vtUTF8String: DstValue.VUTF8String := SrcValue.VUTF8String;
+{$ENDIF}
     vtCharRec: DstValue.VCharRec := SrcValue.VCharRec;
     vtUnicodeString: DstValue.VUnicodeString := SrcValue.VUnicodeString;
     vtDateTime: DstValue.VDateTime := SrcValue.VDateTime;
@@ -562,7 +612,7 @@ end;
 }
 function {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.Clone(const Value: TZVariant): TZVariant;
 begin
-  Assign(Value, Result{%H-});
+  Assign(Value, Result);
 end;
 
 {**
@@ -613,12 +663,16 @@ begin
           Result.VBytes := Value.VBytes;
         vtString:
           Result.VBytes := StrToBytes(Value.VString);
+        {$IFNDEF NO_ANSISTRING}
         vtAnsiString:
           Result.VBytes := StrToBytes(Value.VAnsiString);
+        {$ENDIF}
         vtRawByteString:
-          Result.VBytes := StrToBytes(Value.VRawByteString);
+          Result.VBytes := {$IFNDEF WITH_TBYTES_AS_RAWBYTESTRING}StrToBytes{$ENDIF}(Value.VRawByteString);
+        {$IFNDEF NO_UTF8STRING}
         vtUTF8String:
           Result.VBytes := StrToBytes(Value.VUTF8String);
+        {$ENDIF}
         vtUnicodeString:
           Result.VBytes := StrToBytes(Value.VUnicodeString);
         else
@@ -962,9 +1016,14 @@ begin
       end;
     vtString:
       Result := AnsiCompareStr(Value1.VString, GetAsString(Value2));
+{$IFNDEF NO_ANSISTRING}
     vtAnsiString:
       Result := {$IFDEF WITH_UNITANSISTRINGS}AnsiStrings.{$ENDIF}AnsiCompareStr(Value1.VAnsiString, GetAsAnsiString(Value2));
-    vtUTF8String, vtRawByteString:
+{$ENDIF}
+{$IFNDEF NO_UTF8STRING}
+    vtUTF8String,
+{$ENDIF}
+    vtRawByteString:
 DoWideCompare:
       {$IF defined(Delphi) and defined(UNICODE)}
       Result := AnsiCompareStr(GetAsUnicodeString(Value1), GetAsUnicodeString(Value2));
@@ -979,9 +1038,11 @@ DoWideCompare:
         Result := WideCompareStr(PWideChar(Value1.VCharRec.P), PWideChar(GetAsUnicodeString(Value2)))
         {$ENDIF}
       else
+      {$IFNDEF NO_ANSISTRING}
         if ZCompatibleCodePages(Value1.VCharRec.CP, ZOSCodePage) then
           Result := {$IFDEF WITH_ANSISTRCOMP_DEPRECATED}AnsiStrings.{$ENDIF}AnsiStrComp(PAnsiChar(Value1.VCharRec.P), PAnsiChar(Pointer(GetAsAnsiString(Value2))))
         else
+      {$ENDIF}
           goto DoWideCompare;
     vtUnicodeString:
 {$IFNDEF FPC}
@@ -1005,7 +1066,7 @@ DoWideCompare:
           Result := 0;
       end;
     vtPointer:
-      Result := sign({%H-}NativeUInt(Value1.VPointer) - GetAsInteger(Value2));
+      Result := sign(Int64({%H-}NativeUInt(Value1.VPointer) - GetAsUInteger(Value2)));
     else
       Result := 0;
   end;
@@ -1025,7 +1086,7 @@ end;
   Sets the NULL value to specified variant.
   @param Value variant value to be set to NULL.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetNull(var Value: TZVariant);
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetNull(out Value: TZVariant);
 begin
   Value := EncodeNull;
 end;
@@ -1051,6 +1112,7 @@ function {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManag
 begin
   Result := Convert(Value, vtBytes).VBytes;
 end;
+
 {**
   Gets a variant to integer value.
   @param Value a variant to be converted.
@@ -1061,6 +1123,7 @@ function {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManag
 begin
   Result := Convert(Value, vtInteger).VInteger;
 end;
+
 {**
   Gets a variant to UInt64 value.
   @param Value a variant to be converted.
@@ -1070,7 +1133,6 @@ function {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManag
   const Value: TZVariant): UInt64;
 begin
   Result := Convert(Value, vtUInteger).VUInteger;
-
 end;
 
 {**
@@ -1100,27 +1162,37 @@ end;
   @param Value a variant to be converted.
   @param a result value.
 }
+{$IFNDEF NO_ANSISTRING}
 function {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.GetAsAnsiString(
   const Value: TZVariant): AnsiString;
 begin
   Result := Convert(Value, vtAnsiString).VAnsiString;
 end;
+{$ENDIF}
 
+{$IFNDEF NO_UTF8STRING}
 function {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.GetAsUTF8String(const Value: TZVariant): UTF8String;
 begin
   Result := Convert(Value, vtUTF8String).VUTF8String;
 end;
+{$ENDIF}
 
 function {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.GetAsRawByteString(const Value: TZVariant): RawByteString;
 begin
   Result := Convert(Value, vtRawByteString).VRawByteString;
 end;
 
-function {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.{%H-}GetAsRawByteString(const Value: TZVariant;
+{$IFDEF FPC} // parameters not used intentionally
+  {$PUSH}
+  {$WARN 5033 off : Function result does not seem to be set}
+  {$WARN 5024 off : Parameter "$1" not used}
+{$ENDIF}
+function {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.GetAsRawByteString(const Value: TZVariant;
   const RawCP: Word): RawByteString;
 begin
   RaiseUnsupportedOperation
 end;
+{$IFDEF FPC} {$POP} {$ENDIF}
 
 function {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.GetAsCharRec(const Value: TZVariant): TZCharRec;
 begin
@@ -1183,165 +1255,169 @@ begin
 end;
 
 {**
-  Assignes a boolean value to variant.
+  Assigns a boolean value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsBoolean(var Value: TZVariant;
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsBoolean(out Value: TZVariant;
   const Data: Boolean);
 begin
   Value := EncodeBoolean(Data);
 end;
 
 {**
-  Assignes a Byte array value to variant.
+  Assigns a Byte array value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsBytes(var Value: TZVariant;
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsBytes(out Value: TZVariant;
   const Data: TBytes);
 begin
   Value := EncodeBytes(Data);
 end;
 
 {**
-  Assignes an integer value to variant.
+  Assigns an integer value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsInteger(var Value: TZVariant;
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsInteger(out Value: TZVariant;
   const Data: Int64);
 begin
   Value := EncodeInteger(Data);
 end;
 
 {**
-  Assignes an integer value to variant.
+  Assigns an integer value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsUInteger(var Value: TZVariant;
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsUInteger(out Value: TZVariant;
   const Data: UInt64);
 begin
   Value := EncodeUInteger(Data);
 end;
 
 {**
-  Assignes a float value to variant.
+  Assigns a float value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsFloat(var Value: TZVariant;
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsFloat(out Value: TZVariant;
   const Data: Extended);
 begin
   Value := EncodeFloat(Data);
 end;
 
 {**
-  Assignes a String value to variant.
+  Assigns a String value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsString(var Value: TZVariant;
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsString(out Value: TZVariant;
   const Data: String);
 begin
   Value := EncodeString(Data);
 end;
 
 {**
-  Assignes a AnsiString value to variant.
+  Assigns a AnsiString value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsAnsiString(var Value: TZVariant;
+{$IFNDEF NO_ANSISTRING}
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsAnsiString(out Value: TZVariant;
   const Data: AnsiString);
 begin
   Value := EncodeAnsiString(Data);
 end;
+{$ENDIF}
 
 {**
-  Assignes a UTF8string value to variant.
+  Assigns a UTF8string value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsUTF8String(var Value: TZVariant;
+{$IFNDEF NO_UTF8STRING}
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsUTF8String(out Value: TZVariant;
   const Data: UTF8String);
 begin
   Value := EncodeUTF8String(Data);
 end;
+{$ENDIF}
 
 {**
-  Assignes a RawByteString value to variant.
+  Assigns a RawByteString value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsRawByteString(var Value: TZVariant;
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsRawByteString(out Value: TZVariant;
   const Data: RawByteString);
 begin
   Value := EncodeRawByteString(Data);
 end;
 
 {**
-  Assignes a RawByteString value to variant.
+  Assigns a RawByteString value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsCharRec(var Value: TZVariant;
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsCharRec(out Value: TZVariant;
   const Data: TZCharRec);
 begin
   Value := EncodeCharRec(Data);
 end;
 
 {**
-  Assignes a unicode string value to variant.
+  Assigns a unicode string value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsUnicodeString(var Value: TZVariant;
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsUnicodeString(out Value: TZVariant;
   const Data: ZWideString);
 begin
   Value := EncodeUnicodeString(Data);
 end;
 
 {**
-  Assignes a datetime value to variant.
+  Assigns a datetime value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsDateTime(var Value: TZVariant;
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsDateTime(out Value: TZVariant;
   const Data: TDateTime);
 begin
   Value := EncodeDateTime(Data);
 end;
 
 {**
-  Assignes a pointer value to variant.
+  Assigns a pointer value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsPointer(var Value: TZVariant;
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsPointer(out Value: TZVariant;
   const Data: Pointer);
 begin
   Value := EncodePointer(Data);
 end;
 
 {**
-  Assignes a interface value to variant.
+  Assigns a interface value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsInterface(var Value: TZVariant;
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsInterface(out Value: TZVariant;
   const Data: IZInterface);
 begin
   Value := EncodeInterface(Data);
 end;
 
 {**
-  Assignes a TZArray value to variant.
+  Assigns a TZArray value to variant.
   @param Value a variant to store the value.
   @param Data a value to be assigned.
 }
-procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsArray(var Value: TZVariant;
+procedure {$IFDEF ZEOS_TEST_ONLY}TZDefaultVariantManager{$ELSE}TZSoftVariantManager{$ENDIF}.SetAsArray(out Value: TZVariant;
   const Data: TZArray);
 begin
   Value := EncodeArray(Data);
@@ -1359,12 +1435,22 @@ begin
   case Value1.VType of
     vtNull: Result := EncodeNull;
     vtInteger: Result := EncodeInteger(Value1.VInteger + GetAsInteger(Value2));
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R-}{$IFEND}
     vtUInteger: Result := EncodeUInteger(Value1.VUInteger + GetAsUInteger(Value2));
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R+}{$IFEND}
     vtFloat: Result := EncodeFloat(Value1.VFloat + GetAsFloat(Value2));
     vtString: Result := EncodeString(Value1.VString + GetAsString(Value2));
+    {$IFNDEF NO_ANSISTRING}
     vtAnsiString: Result := EncodeAnsiString(Value1.VAnsiString + GetAsAnsiString(Value2));
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
     vtUTF8String: Result := EncodeUTF8String(Value1.VUTF8String + GetAsUTF8String(Value2));
+    {$ENDIF}
+    {$IFDEF WITH_TBYTES_AS_RAWBYTESTRING}
+    vtRawByteString: Result := EncodeRawByteString(RawConcat([Value1.VRawByteString,GetAsRawByteString(Value2)]));
+    {$ELSE}
     vtRawByteString: Result := EncodeRawByteString(Value1.VRawByteString + GetAsRawByteString(Value2));
+    {$ENDIF}
     vtUnicodeString: Result := EncodeUnicodeString(Value1.VUnicodeString + GetAsUnicodeString(Value2));
     vtDateTime: Result := EncodeDateTime(Value1.VDateTime + GetAsDateTime(Value2));
     else RaiseUnsupportedOperation;
@@ -1384,7 +1470,9 @@ begin
     vtNull: Result := EncodeNull;
     vtBoolean: Result := EncodeBoolean(Value1.VBoolean and GetAsBoolean(Value2));
     vtInteger: Result := EncodeInteger(Value1.VInteger and GetAsInteger(Value2));
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R-}{$IFEND}
     vtUInteger: Result := EncodeUInteger(Value1.VUInteger and GetAsUInteger(Value2));
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R+}{$IFEND}
     else RaiseUnsupportedOperation;
   end;
 end;
@@ -1401,7 +1489,9 @@ begin
   case Value1.VType of
     vtNull: Result := EncodeNull;
     vtInteger: Result := EncodeInteger(Value1.VInteger div GetAsInteger(Value2));
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R-}{$IFEND}
     vtUInteger: Result := EncodeUInteger(Value1.VUInteger div GetAsUInteger(Value2));
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R+}{$IFEND}
     vtFloat: Result := EncodeFloat(Value1.VFloat / GetAsFloat(Value2));
     else RaiseUnsupportedOperation;
   end;
@@ -1455,7 +1545,9 @@ begin
   case Value1.VType of
     vtNull: Result := EncodeNull;
     vtInteger: Result := EncodeInteger(Value1.VInteger mod GetAsInteger(Value2));
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R-}{$IFEND}
     vtUInteger: Result := EncodeUInteger(Value1.VUInteger mod GetAsUInteger(Value2));
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R+}{$IFEND}
     else RaiseUnsupportedOperation;
   end;
 end;
@@ -1496,7 +1588,9 @@ begin
   case Value1.VType of
     vtNull: Result := EncodeNull;
     vtInteger: Result := EncodeInteger(Value1.VInteger * GetAsInteger(Value2));
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R-}{$IFEND}
     vtUInteger: Result := EncodeUInteger(Value1.VUInteger * GetAsUInteger(Value2));
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R+}{$IFEND}
     vtFloat: Result := EncodeFloat(Value1.VFloat * GetAsFloat(Value2));
     else RaiseUnsupportedOperation;
   end;
@@ -1558,7 +1652,9 @@ begin
     vtNull: SetNull(Result{%H-});
     vtBoolean: Result := EncodeBoolean(Value1.VBoolean or GetAsBoolean(Value2));
     vtInteger: Result := EncodeInteger(Value1.VInteger or GetAsInteger(Value2));
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R-}{$IFEND}
     vtUInteger: Result := EncodeUInteger(Value1.VInteger or GetAsUInteger(Value2));
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R+}{$IFEND}
     else RaiseUnsupportedOperation;
   end;
 end;
@@ -1593,7 +1689,9 @@ begin
   case Value1.VType of
     vtNull: Result := EncodeNull;
     vtInteger: Result := EncodeInteger(Value1.VInteger - GetAsInteger(Value2));
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R-}{$IFEND}
     vtUInteger: Result := EncodeUInteger(Value1.VUInteger - GetAsUInteger(Value2));
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R+}{$IFEND}
     vtFloat: Result := EncodeFloat(Value1.VFloat - GetAsFloat(Value2));
     else RaiseUnsupportedOperation;
   end;
@@ -1630,10 +1728,12 @@ begin
       end;
     vtUInteger:
       begin
+        {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R-}{$IFEND}
         TempUInteger1 := Value1.VUInteger;
         TempUInteger2 := GetAsUInteger(Value2);
         Result := EncodeUInteger((TempUInteger1 and not TempUInteger2)
           or (not TempUInteger1 and TempUInteger2));
+        {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R+}{$IFEND}
       end;
     else RaiseUnsupportedOperation;
   end;
@@ -1649,9 +1749,392 @@ end;
 }
 function TZSoftVariantManager.Convert(const Value: TZVariant;
   NewType: TZVariantType): TZVariant;
-var
-  UniTemp: ZWideString;
-label AsVCharRecFromVString;
+
+  { !!! Performance note !!!
+    This method is executed VERY often so it must be fast as possible.
+  But if all the code is placed as one single piece, compiler will add LOTS
+  of UStrClr, FinalizeArray etc in the method's prolog. This is caused by string
+  assignments so we extract cases of every string type into separate function.
+    This even beats additional time for nested function call: every string type case
+  adds N finalizing so single piece of code makes N*M (M - number of string types, 6 here)
+  calls while variant with nested functions only makes 1 + N calls.
+    For string types conversions speedup is just 2 times and for non-string is about 40 TIMES!
+
+    Every nested function probably could be optimized further... }
+
+  procedure ProcessString(const Value: TZVariant; out Result: TZVariant);
+  begin
+    Result.VType := vtString;
+    case Value.VType of
+      vtNull:
+        Result.VString := '';
+      vtBoolean:
+        Result.VString := BoolStrsUp[Value.VBoolean];
+      vtBytes:
+        ZSetString(Pointer(Value.VBytes), Length(Value.VBytes), Result.VString);
+      vtInteger:
+        Result.VString := {$IFDEF UNICODE}IntToUnicode{$ELSE}IntToRaw{$ENDIF}(Value.VInteger);
+      vtUInteger:
+        Result.VString := {$IFDEF UNICODE}IntToUnicode{$ELSE}IntToRaw{$ENDIF}(Value.VUInteger);
+      vtFloat:
+        Result.VString := FloatToSqlStr(Value.VFloat);
+      vtString:
+        Result.VString := Value.VString;
+      {$IFNDEF NO_ANSISTRING}
+      vtAnsiString:
+        Result.VString := {$IFDEF UNICODE}String{$ENDIF}(Value.VAnsiString);
+      {$ENDIF}
+      {$IFNDEF NO_UTF8STRING}
+      vtUTF8String:
+        Result.VString := ZUTF8ToString(Value.VUTF8String, FSystemCodePage);
+      {$ENDIF}
+      vtUnicodeString:
+        Result.VString := {$IFNDEF UNICODE}String{$ENDIF}(Value.VUnicodeString); //hint: VarArrayOf(['Test']) returns allways varOleStr which is type WideString don't change that again
+      vtCharRec:
+        if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
+          {$IFDEF UNICODE}
+          SetString(Result.VString, PChar(Value.VCharRec.P), Value.VCharRec.Len)
+          {$ELSE}
+          Result.VString := PUnicodeToRaw(Value.VCharRec.P, Value.VCharRec.Len, ZOSCodePage)
+          {$ENDIF}
+        else
+        {$IFNDEF UNICODE}
+        if ZCompatibleCodePages(ZOSCodePage, Value.VCharRec.CP) then
+          SetString(Result.VString, PChar(Value.VCharRec.P), Value.VCharRec.Len)
+        else
+        {$ENDIF}
+          Result.VString := {$IFNDEF UNICODE}String{$ENDIF}(PRawToUnicode(
+            Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP));
+      vtDateTime:
+        Result.VString := DateTimeToAnsiSQLDate(Value.VDateTime);
+      else
+        RaiseTypeMismatchError;
+    end;
+  end;
+
+  { !! Performance note: if values returned from functions are assigned directly
+  to Result's field, the compiler generates lots of string clearing functions in
+  the prolog. F.ex., for ProcessAnsiString overall prolog roundtrip consists of
+  2*LStrArrayClr, 2*LStrClr and 3*UStrClr. Trick with local variable results in
+  1*UStrArrayClr, 1*LStrClr and 1*UStrClr (eliminating 4 function calls! }
+  {$IFNDEF NO_ANSISTRING}
+  procedure ProcessAnsiString(const Value: TZVariant; out Result: TZVariant);
+  var
+    ResTmp: AnsiString;
+  begin
+    Result.VType := vtAnsiString;
+    case Value.VType of
+      vtNull:
+        ResTmp := '';
+      vtBoolean:
+        ResTmp := BoolStrsUpRaw[Value.VBoolean];
+      vtInteger:
+        ResTmp := IntToRaw(Value.VInteger);
+      vtUInteger:
+        ResTmp := IntToRaw(Value.VUInteger);
+      vtFloat:
+        ResTmp := {$IFDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(FloatToSqlStr(Value.VFloat));
+      vtString:
+        ResTmp := {$IFDEF UNICODE}AnsiString{$ENDIF}(Value.VString);
+      vtAnsiString:
+        ResTmp := Value.VAnsiString;
+      vtUTF8String:
+        ResTmp := ZUTF8ToAnsi(Value.VUTF8String);
+      vtUnicodeString:
+        ResTmp := ZUnicodeToRaw(Value.VUnicodeString, ZOSCodePage);
+      vtCharRec:
+        if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
+          ResTmp := PUnicodeToRaw(Value.VCharRec.P, Value.VCharRec.Len, ZOSCodePage)
+        else
+          if ZCompatibleCodePages(ZOSCodePage, Value.VCharRec.CP) then
+            SetString(ResTmp, PAnsiChar(Value.VCharRec.P), Value.VCharRec.Len)
+          else
+            ResTmp := ZUnicodeToRaw(PRawToUnicode(Value.
+              VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP), ZOSCodePage);
+      vtDateTime:
+        ResTmp := {$IFDEF UNICODE}AnsiString{$ENDIF}(DateTimeToAnsiSQLDate(Value.VDateTime));
+      else
+        RaiseTypeMismatchError;
+    end;
+    Result.VAnsiString := ResTmp;
+  end;
+  {$ENDIF}
+  {$IFNDEF NO_UTF8STRING}
+  procedure ProcessUTF8String(const Value: TZVariant; out Result: TZVariant);
+  var
+    ResTmp: UTF8String;
+    UniTemp: ZWideString;
+  begin
+    Result.VType := vtUTF8String;
+    case Value.VType of
+      vtNull:
+        ResTmp := '';
+      vtBoolean:
+        ResTmp := BoolStrsUpRaw[Value.VBoolean];
+      vtInteger:
+        ResTmp := IntToRaw(Value.VInteger);
+      vtUInteger:
+        ResTmp := IntToRaw(Value.VUInteger);
+      vtFloat:
+        ResTmp := {$IFDEF WITH_RAWBYTESTRING}UTF8String{$ENDIF}(FloatToSqlStr(Value.VFloat));
+      vtString:
+        ResTmp := ZStringToUTF8(Value.VString, FSystemCodePage);
+      {$IFNDEF NO_ANSISTRING}
+      vtAnsiString:
+        ResTmp := ZAnsiToUTF8(Value.VAnsiString);
+      {$ENDIF}
+      vtUTF8String:
+        ResTmp := Value.VUTF8String;
+      vtUnicodeString:
+        {$IFDEF WITH_RAWBYTESTRING}
+        ResTmp := UTF8String(Value.VUnicodeString);
+        {$ELSE}
+        ResTmp := UTF8Encode(Value.VUnicodeString);
+        {$ENDIF}
+      vtCharRec:
+        if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
+        begin
+          SetString(UniTemp, PChar(Value.VCharRec.P), Value.VCharRec.Len);
+          ResTmp := {$IFDEF WITH_RAWBYTETRING}UTF8String{$ELSE}UTF8Encode{$ENDIF}(UniTemp);
+        end
+        else
+          if ZCompatibleCodePages(zCP_UTF8, Value.VCharRec.CP) then
+            ZSetString(PAnsiChar(Value.VCharRec.P), Value.VCharRec.Len, ResTmp)
+          else
+            ResTmp := {$IFDEF WITH_RAWBYTESTRING}UTF8String{$ELSE}UTF8Encode{$ENDIF}(
+              PRawToUnicode(Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP));
+      vtDateTime:
+        ResTmp := UTF8String(DateTimeToAnsiSQLDate(Value.VDateTime));
+      else
+        RaiseTypeMismatchError;
+    end;
+    Result.VUTF8String := ResTmp;
+  end;
+  {$ENDIF}
+  // Performance note: only two clearing functions here, nothing to shorten
+  procedure ProcessRawByteString(const Value: TZVariant; out Result: TZVariant);
+  begin
+    Result.VType := vtRawByteString;
+    case Value.VType of
+      vtNull:
+        Result.VRawByteString := EmptyRaw;
+      vtBoolean:
+        Result.VRawByteString := BoolStrsUpRaw[Value.VBoolean];
+      vtInteger:
+        Result.VRawByteString := IntToRaw(Value.VInteger);
+      vtUInteger:
+        Result.VRawByteString := IntToRaw(Value.VUInteger);
+      vtFloat:
+        Result.VRawByteString := FloatToSqlRaw(Value.VFloat);
+      vtRawByteString:
+        Result.VRawByteString := Value.VRawByteString;
+      vtDateTime:
+        Result.VRawByteString := {$IFDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(DateTimeToAnsiSQLDate(Value.VDateTime));
+      else
+        RaiseTypeMismatchError;
+    end;
+  end;
+
+  procedure ProcessUnicodeString(const Value: TZVariant; out Result: TZVariant);
+  begin
+    Result.VType := vtUnicodeString;
+    case Value.VType of
+      vtNull:
+        Result.VUnicodeString := '';
+      vtBoolean:
+        Result.VUnicodeString := BoolStrsUpW[Value.VBoolean];
+      vtInteger:
+        Result.VUnicodeString := IntToUnicode(Value.VInteger);
+      vtUInteger:
+        Result.VUnicodeString := IntToUnicode(Value.VUInteger);
+      vtFloat:
+        Result.VUnicodeString := {$IFNDEF UNICODE}ASCII7ToUnicodeString{$ENDIF}(FloatToSqlStr(Value.VFloat));
+      vtString:
+        Result.VUnicodeString := {$IFNDEF UNICODE}ZWideString{$ENDIF}(Value.VString);
+      {$IFNDEF NO_ANSISTRING}
+      vtAnsiString:
+        Result.VUnicodeString := ZRawToUnicode(Value.VAnsiString, ZOSCodePage);
+      {$ENDIF}
+      {$IFNDEF NO_UTF8STRING}
+      vtUTF8String:
+        Result.VUnicodeString := {$IFDEF WITH_RAWBYTESTRING}ZWideString{$ELSE}UTF8Decode{$ENDIF}(Value.VUTF8String);
+      {$ENDIF}
+      vtUnicodeString:
+        Result.VUnicodeString := Value.VUnicodeString;
+      vtCharRec:
+        if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
+          SetString(Result.VUnicodeString, PWideChar(Value.VCharRec.P), Value.VCharRec.Len)
+        else
+          Result.VUnicodeString := PRawToUnicode(Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP);
+      vtDateTime:
+        Result.VUnicodeString := {$IFNDEF UNICODE}ASCII7ToUnicodeString{$ENDIF}(DateTimeToAnsiSQLDate(Value.VDateTime));
+      else
+        RaiseTypeMismatchError;
+    end;
+  end;
+
+  procedure ProcessBytes(const Value: TZVariant; out Result: TZVariant);
+  begin
+    Result.VType := vtBytes;
+    case Value.VType of
+      vtNull:
+        Result.VBytes := nil;
+      vtBytes:
+        Result.VBytes := Value.VBytes;
+      vtString:
+        Result.VBytes := StrToBytes(Value.VString);
+      {$IFNDEF NO_ANSISTRING}
+      vtAnsiString:
+        Result.VBytes := StrToBytes(Value.VAnsiString);
+      {$ENDIF}
+      vtRawByteString:
+        Result.VBytes := {$IFNDEF WITH_TBYTES_AS_RAWBYTESTRING}StrToBytes{$ENDIF}(Value.VRawByteString);
+      {$IFNDEF NO_UTF8STRING}
+      vtUTF8String:
+        Result.VBytes := StrToBytes(Value.VUTF8String);
+      {$ENDIF}
+      vtUnicodeString:
+        Result.VBytes := StrToBytes(Value.VUnicodeString);
+      vtCharRec:
+        begin
+          if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
+            SetLength(Result.VBytes, Value.VCharRec.Len*2)
+          else
+            SetLength(Result.VBytes, Value.VCharRec.Len);
+          {$IFDEF FAST_MOVE}ZFastCode{$ELSE}System{$ENDIF}.Move(Value.VCharRec.P^, Pointer(Result.VBytes)^, Length(Result.VBytes));
+        end;
+      else
+        RaiseTypeMismatchError;
+    end;
+  end;
+
+  procedure ProcessDateTime(const Value: TZVariant; out Result: TZVariant);
+  begin
+    Result.VType := vtDateTime;
+    case Value.VType of
+      vtNull:
+        Result.VDateTime := 0;
+      vtBoolean:
+        RaiseTypeMismatchError;
+      vtInteger:
+        Result.VDateTime := Value.VInteger;
+      vtUInteger:
+        Result.VDateTime := Value.VUInteger;
+      vtFloat:
+        Result.VDateTime := Value.VFloat;
+      vtString:
+        Result.VDateTime := AnsiSQLDateToDateTime(Value.VString);
+      {$IFNDEF NO_ANSISTRING}
+      vtAnsiString:
+        Result.VDateTime := AnsiSQLDateToDateTime({$IFDEF UNICODE}ASCII7ToUnicodeString{$ENDIF}(Value.VAnsiString));
+      {$ENDIF}
+      {$IFNDEF NO_UTF8STRING}
+      vtUTF8String:
+        Result.VDateTime := AnsiSQLDateToDateTime({$IFDEF UNICODE}ASCII7ToUnicodeString{$ENDIF}(Value.VUTF8String));
+      {$ENDIF}
+      vtRawByteString:
+        Result.VDateTime := AnsiSQLDateToDateTime({$IFDEF UNICODE}ASCII7ToUnicodeString{$ENDIF}(Value.VRawByteString));
+      vtUnicodeString:
+        Result.VDateTime := AnsiSQLDateToDateTime({$IFNDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(Value.VUnicodeString));
+      vtCharRec:
+        if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
+        begin
+          SetString(Result.VUnicodeString, PWideChar(Value.VCharRec.P), Value.VCharRec.Len);
+          Result.VDateTime := AnsiSQLDateToDateTime({$IFNDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(Value.VUnicodeString));
+        end
+        else
+        begin
+          {$IFDEF UNICODE}
+          Result.VDateTime := AnsiSQLDateToDateTime(PRawToUnicode(Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP));
+          {$ELSE}
+          SetString(Result.VString, PAnsiChar(Value.VCharRec.P), Value.VCharRec.Len);
+          Result.VDateTime := AnsiSQLDateToDateTime(Value.VString);
+          {$ENDIF}
+        end;
+      vtDateTime:
+        Result.VDateTime := Value.VDateTime;
+      else
+        RaiseTypeMismatchError;
+    end;
+  end;
+
+  procedure ProcessCharRec(const Value: TZVariant; out Result: TZVariant);
+  label AsVCharRecFromVString;
+  begin
+    Result.VType := vtCharRec;
+    case Value.VType of
+      vtNull:
+        begin
+          Result.VCharRec.Len := 0;
+          Result.VCharRec.CP := High(Word);
+          Result.VCharRec.P := nil;
+        end;
+      vtBoolean, vtInteger, vtUInteger, vtFloat, vtBytes, vtDateTime:
+        begin
+          Result.VString := Convert(Value, vtString).VString;
+          Goto AsVCharRecFromVString;
+        end;
+      vtString:
+        begin
+          Result.VString := Value.VString;
+AsVCharRecFromVString:
+          Result.VCharRec.CP := {$IFDEF UNICODE}zCP_UTF16{$ELSE}ZOSCodePage{$ENDIF};
+          if Pointer(Result.VString) = nil then
+          begin
+            Result.VCharRec.Len := 0;
+            Result.VCharRec.P := {$IFDEF UNICODE}PEmptyUnicodeString{$ELSE}PEmptyAnsiString{$ENDIF};
+          end
+          else
+          begin
+            Result.VCharRec.Len := {%H-}PLengthInt(NativeUInt(Result.VString) - StringLenOffSet)^; //fast Length() helper
+            Result.VCharRec.P := Pointer(Result.VString); //avoid RTL call of PChar conversion
+          end;
+        end;
+      {$IFNDEF NO_ANSISTRING}
+      vtAnsiString:
+        begin
+          Result.VAnsiString := Value.VAnsiString;
+          Result.VCharRec.CP := ZOSCodePage;
+          if Pointer(Result.VAnsiString) = nil then begin
+            Result.VCharRec.Len := 0;
+            Result.VCharRec.P := PEmptyAnsiString;
+          end else begin
+            Result.VCharRec.Len := {%H-}PLengthInt(NativeUInt(Result.VAnsiString) - StringLenOffSet)^; //fast Length() helper
+            Result.VCharRec.P := Pointer(Result.VAnsiString); //avoid RTL call of PAnsiChar conversion
+          end;
+        end;
+      {$ENDIF}
+      {$IFNDEF NO_UTF8STRING}
+      vtUTF8String:
+        begin
+          Result.VUTF8String := Value.VUTF8String;
+          Result.VCharRec.CP := zCP_UTF8;
+          if Pointer(Result.VUTF8String) = nil then begin
+            Result.VCharRec.Len := 0;
+            Result.VCharRec.P := PEmptyAnsiString;
+          end else begin
+            Result.VCharRec.Len := {%H-}PLengthInt(NativeUInt(Result.VUTF8String) - StringLenOffSet)^; //fast Length() helper for D7..D9 where Length() isn't inlined;
+            Result.VCharRec.P := Pointer(Result.VUTF8String); //avoid RTL call of PAnsiChar conversion
+          end;
+        end;
+      {$ENDIF}
+      vtUnicodeString:
+        begin
+          Result.VUnicodeString := Value.VUnicodeString;
+          Result.VCharRec.CP := zCP_UTF16;
+          Result.VCharRec.Len := Length(Result.VUnicodeString); //don't use PLengthInt helper: VUnicodeString may be Wide/Unicode-String
+          if Result.VCharRec.Len = 0 then
+            Result.VCharRec.P := PEmptyUnicodeString
+          else
+            Result.VCharRec.P := Pointer(Result.VUnicodeString); //avoid RTL call of PWideChar conversion
+        end;
+      vtCharRec:
+        Result.VCharRec := Value.VCharRec;
+      else
+        RaiseTypeMismatchError;
+    end;
+  end;
+
 begin
   Result.VType := NewType;
   case NewType of
@@ -1669,10 +2152,14 @@ begin
           Result.VBoolean := Value.VFloat <> 0;
         vtString:
           Result.VBoolean := StrToBoolEx(Value.VString);
+        {$IFNDEF NO_ANSISTRING}
         vtAnsiString:
           Result.VBoolean := StrToBoolEx(Value.VAnsiString);
+        {$ENDIF}
+        {$IFNDEF NO_UTF8STRING}
         vtUTF8String:
           Result.VBoolean := StrToBoolEx(Value.VUTF8String);
+        {$ENDIF}
         vtRawByteString:
           Result.VBoolean := StrToBoolEx(Value.VRawByteString);
         vtUnicodeString:
@@ -1688,32 +2175,7 @@ begin
           RaiseTypeMismatchError;
       end;
     vtBytes:
-      case Value.VType of
-        vtNull:
-          Result.VBytes := nil;
-        vtBytes:
-          Result.VBytes := Value.VBytes;
-        vtString:
-          Result.VBytes := StrToBytes(Value.VString);
-        vtAnsiString:
-          Result.VBytes := StrToBytes(Value.VAnsiString);
-        vtRawByteString:
-          Result.VBytes := StrToBytes(Value.VRawByteString);
-        vtUTF8String:
-          Result.VBytes := StrToBytes(Value.VUTF8String);
-        vtUnicodeString:
-          Result.VBytes := StrToBytes(Value.VUnicodeString);
-        vtCharRec:
-          begin
-            if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
-              SetLength(Result.VBytes, Value.VCharRec.Len*2)
-            else
-              SetLength(Result.VBytes, Value.VCharRec.Len);
-            {$IFDEF FAST_MOVE}ZFastCode{$ELSE}System{$ENDIF}.Move(Value.VCharRec.P^, Pointer(Result.VBytes)^, Length(Result.VBytes));
-          end;
-        else
-          RaiseTypeMismatchError;
-      end;
+      ProcessBytes(Value, Result);
     vtInteger:
       case Value.VType of
         vtNull:
@@ -1731,26 +2193,22 @@ begin
           Result.VInteger := {$IFDEF USE_FAST_TRUNC}ZFastCode.{$ENDIF}Trunc(Value.VFloat);
         vtString:
           Result.VInteger := {$IFDEF UNICODE}UnicodeToInt64Def{$ELSE}RawToInt64Def{$ENDIF}(Value.VString, 0);
+        {$IFNDEF NO_ANSISTRING}
         vtAnsiString:
           Result.VInteger := RawToInt64Def(Pointer(Value.VAnsiString), 0);
+        {$ENDIF}
+        {$IFNDEF NO_UTF8STRING}
         vtUTF8String:
           Result.VInteger := RawToInt64Def(Pointer(Value.VUTF8String), 0);
+        {$ENDIF}
         vtRawByteString:
           Result.VInteger := RawToInt64Def(Pointer(Value.VRawByteString), 0);
         vtUnicodeString:
           Result.VInteger := UnicodeToInt64Def(Value.VUnicodeString, 0);
         vtCharRec:
-          if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
-          begin
-            {$IFDEF FPC}
-            SetString(UniTemp, PWideChar(Value.VCharRec.P), Value.VCharRec.Len);
-            Result.VInteger := UnicodeToInt64Def(UniTemp, 0);
-            {$ELSE}
-            Result.VInteger := UnicodeToInt64Def(Value.VCharRec.P, 0);
-            {$ENDIF}
-          end
-          else
-            Result.VInteger := RawToInt64Def(Value.VCharRec.P, 0);
+          if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16)
+          then Result.VInteger := UnicodeToInt64Def(PWideChar(Value.VCharRec.P), 0)
+          else Result.VInteger := RawToInt64Def(PAnsiChar(Value.VCharRec.P), 0);
         vtDateTime:
           Result.VInteger := {$IFDEF USE_FAST_TRUNC}ZFastCode.{$ENDIF}Trunc(Value.VDateTime);
         vtPointer:
@@ -1758,6 +2216,7 @@ begin
         else
           RaiseTypeMismatchError;
       end;
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R-}{$IFEND}
     vtUInteger:
       case Value.VType of
         vtNull:
@@ -1775,10 +2234,14 @@ begin
           Result.VUInteger := {$IFDEF USE_FAST_TRUNC}ZFastCode.{$ENDIF}Trunc(Value.VFloat);
         vtString:
           Result.VUInteger := {$IFDEF UNICODE}UnicodeToUInt64Def{$ELSE}RawToUInt64Def{$ENDIF}(Value.VString, 0);
+        {$IFNDEF NO_ANSISTRING}
         vtAnsiString:
           Result.VUInteger := RawToUInt64Def(Value.VAnsiString, 0);
+        {$ENDIF}
+        {$IFNDEF NO_UTF8STRING}
         vtUTF8String:
           Result.VUInteger := RawToUInt64Def(Value.VUTF8String, 0);
+        {$ENDIF}
         vtRawByteString:
           Result.VUInteger := RawToUInt64Def(Value.VRawByteString, 0);
         vtUnicodeString:
@@ -1795,6 +2258,7 @@ begin
         vtInterface:
           RaiseTypeMismatchError;
       end;
+    {$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R+}{$IFEND}
     vtFloat:
       case Value.VType of
         vtNull:
@@ -1812,10 +2276,14 @@ begin
           Result.VFloat := Value.VFloat;
         vtString:
           SqlStrToFloatDef(PChar(Pointer(Value.VString)), 0, Result.VFloat, Length(Value.VString));
+        {$IFNDEF NO_ANSISTRING}
         vtAnsiString:
           SqlStrToFloatDef(PAnsiChar(Pointer(Value.VAnsiString)), 0, Result.VFloat, Length(Value.VAnsiString));
+        {$ENDIF}
+        {$IFNDEF NO_UTF8STRING}
         vtUTF8String:
           SqlStrToFloatDef(PAnsiChar(Pointer(Value.VUTF8String)), 0, Result.VFloat, Length(Value.VUTF8String));
+        {$ENDIF}
         vtRawByteString:
           SqlStrToFloatDef(PAnsiChar(Pointer(Value.VRawByteString)), 0, Result.VFloat, Length(Value.VRawByteString));
         vtUnicodeString:
@@ -1830,210 +2298,8 @@ begin
         else
           RaiseTypeMismatchError;
       end;
-    vtString:
-      case Value.VType of
-        vtNull:
-          Result.VString := '';
-        vtBoolean:
-          Result.VString := BoolStrsUp[Value.VBoolean];
-        vtBytes:
-          ZSetString(Pointer(Value.VBytes), Length(Value.VBytes), Result.VString);
-        vtInteger:
-          Result.VString := {$IFDEF UNICODE}IntToUnicode{$ELSE}IntToRaw{$ENDIF}(Value.VInteger);
-        vtUInteger:
-          Result.VString := {$IFDEF UNICODE}IntToUnicode{$ELSE}IntToRaw{$ENDIF}(Value.VUInteger);
-        vtFloat:
-          Result.VString := FloatToSqlStr(Value.VFloat);
-        vtString:
-          Result.VString := Value.VString;
-        vtAnsiString:
-          Result.VString := {$IFDEF UNICODE}String{$ENDIF}(Value.VAnsiString);
-        vtUTF8String:
-          Result.VString := ZUTF8ToString(Value.VUTF8String, FSystemCodePage);
-        vtUnicodeString:
-          Result.VString := {$IFNDEF UNICODE}String{$ENDIF}(Value.VUnicodeString); //hint: VarArrayOf(['Test']) returns allways varOleStr which is type WideString don't change that again
-        vtCharRec:
-          if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
-            {$IFDEF UNICODE}
-            SetString(Result.VString, PChar(Value.VCharRec.P), Value.VCharRec.Len)
-            {$ELSE}
-            Result.VString := PUnicodeToRaw(Value.VCharRec.P, Value.VCharRec.Len, ZOSCodePage)
-            {$ENDIF}
-          else
-          {$IFNDEF UNICODE}
-          if ZCompatibleCodePages(ZOSCodePage, Value.VCharRec.CP) then
-            SetString(Result.VString, PChar(Value.VCharRec.P), Value.VCharRec.Len)
-          else
-          {$ENDIF}
-            Result.VString := {$IFNDEF UNICODE}String{$ENDIF}(PRawToUnicode(
-              Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP));
-        vtDateTime:
-          Result.VString := DateTimeToAnsiSQLDate(Value.VDateTime);
-        else
-          RaiseTypeMismatchError;
-      end;
-    vtAnsiString:
-      case Value.VType of
-        vtNull:
-          Result.VAnsiString := '';
-        vtBoolean:
-          Result.VAnsiString := BoolStrsUpRaw[Value.VBoolean];
-        vtInteger:
-          Result.VAnsiString := IntToRaw(Value.VInteger);
-        vtUInteger:
-          Result.VAnsiString := IntToRaw(Value.VUInteger);
-        vtFloat:
-          Result.VAnsiString := {$IFDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(FloatToSqlStr(Value.VFloat));
-        vtString:
-          Result.VAnsiString := {$IFDEF UNICODE}AnsiString{$ENDIF}(Value.VString);
-        vtAnsiString:
-          Result.VAnsiString := Value.VAnsiString;
-        vtUTF8String:
-          Result.VAnsiString := ZUTF8ToAnsi(Value.VUTF8String);
-        vtUnicodeString:
-          Result.VAnsiString := ZUnicodeToRaw(Value.VUnicodeString, ZOSCodePage);
-        vtCharRec:
-          if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
-            Result.VAnsiString := PUnicodeToRaw(Value.VCharRec.P, Value.VCharRec.Len, ZOSCodePage)
-          else
-            if ZCompatibleCodePages(ZOSCodePage, Value.VCharRec.CP) then
-              SetString(Result.VAnsiString, PAnsiChar(Value.VCharRec.P), Value.VCharRec.Len)
-            else
-              Result.VAnsiString := ZUnicodeToRaw(PRawToUnicode(Value.
-                VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP), ZOSCodePage);
-        vtDateTime:
-          Result.VAnsiString := {$IFDEF UNICODE}AnsiString{$ENDIF}(DateTimeToAnsiSQLDate(Value.VDateTime));
-        else
-          RaiseTypeMismatchError;
-      end;
-    vtUTF8String:
-      case Value.VType of
-        vtNull:
-          Result.VUTF8String := '';
-        vtBoolean:
-          Result.VUTF8String := BoolStrsUpRaw[Value.VBoolean];
-        vtInteger:
-          Result.VUTF8String := IntToRaw(Value.VInteger);
-        vtUInteger:
-          Result.VUTF8String := IntToRaw(Value.VUInteger);
-        vtFloat:
-          Result.VUTF8String := {$IFDEF WITH_RAWBYTESTRING}UTF8String{$ENDIF}(FloatToSqlStr(Value.VFloat));
-        vtString:
-          Result.VUTF8String := ZStringToUTF8(Value.VString, FSystemCodePage);
-        vtAnsiString:
-          Result.VUTF8String := ZAnsiToUTF8(Value.VAnsiString);
-        vtUTF8String:
-          Result.VUTF8String := Value.VUTF8String;
-        vtUnicodeString:
-          {$IFDEF WITH_RAWBYTESTRING}
-          Result.VUTF8String := UTF8String(Value.VUnicodeString);
-          {$ELSE}
-          Result.VUTF8String := UTF8Encode(Value.VUnicodeString);
-          {$ENDIF}
-        vtCharRec:
-          if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
-          begin
-            SetString(UniTemp, PChar(Value.VCharRec.P), Value.VCharRec.Len);
-            Result.VUTF8String := {$IFDEF WITH_RAWBYTETRING}UTF8String{$ELSE}UTF8Encode{$ENDIF}(UniTemp);
-          end
-          else
-            if ZCompatibleCodePages(zCP_UTF8, Value.VCharRec.CP) then
-              ZSetString(PAnsiChar(Value.VCharRec.P), Value.VCharRec.Len, Result.VUTF8String)
-            else
-              Result.VUTF8String := {$IFDEF WITH_RAWBYTESTRING}UTF8String{$ELSE}UTF8Encode{$ENDIF}(
-                PRawToUnicode(Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP));
-        vtDateTime:
-          Result.VUTF8String := UTF8String(DateTimeToAnsiSQLDate(Value.VDateTime));
-        else
-          RaiseTypeMismatchError;
-      end;
-    vtRawByteString:
-      case Value.VType of
-        vtNull:
-          Result.VRawByteString := '';
-        vtBoolean:
-          Result.VRawByteString := BoolStrsUpRaw[Value.VBoolean];
-        vtInteger:
-          Result.VRawByteString := IntToRaw(Value.VInteger);
-        vtUInteger:
-          Result.VRawByteString := IntToRaw(Value.VUInteger);
-        vtFloat:
-          Result.VRawByteString := FloatToSqlRaw(Value.VFloat);
-        vtRawByteString:
-          Result.VRawByteString := Value.VRawByteString;
-        vtDateTime:
-          Result.VRawByteString := {$IFDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(DateTimeToAnsiSQLDate(Value.VDateTime));
-        else
-          RaiseTypeMismatchError;
-      end;
-    vtUnicodeString:
-      case Value.VType of
-        vtNull:
-          Result.VUnicodeString := '';
-        vtBoolean:
-          Result.VUnicodeString := BoolStrsUpW[Value.VBoolean];
-        vtInteger:
-          Result.VUnicodeString := IntToUnicode(Value.VInteger);
-        vtUInteger:
-          Result.VUnicodeString := IntToUnicode(Value.VUInteger);
-        vtFloat:
-          Result.VUnicodeString := {$IFNDEF UNICODE}ASCII7ToUnicodeString{$ENDIF}(FloatToSqlStr(Value.VFloat));
-        vtString:
-          Result.VUnicodeString := {$IFNDEF UNICODE}ZWideString{$ENDIF}(Value.VString);
-        vtAnsiString:
-          Result.VUnicodeString := ZRawToUnicode(Value.VAnsiString, ZOSCodePage);
-        vtUTF8String:
-          Result.VUnicodeString := {$IFDEF WITH_RAWBYTESTRING}ZWideString{$ELSE}UTF8Decode{$ENDIF}(Value.VUTF8String);
-        vtUnicodeString:
-          Result.VUnicodeString := Value.VUnicodeString;
-        vtCharRec:
-          if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
-            SetString(Result.VUnicodeString, PWideChar(Value.VCharRec.P), Value.VCharRec.Len)
-          else
-            Result.VUnicodeString := PRawToUnicode(Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP);
-        vtDateTime:
-          Result.VUnicodeString := {$IFNDEF UNICODE}ASCII7ToUnicodeString{$ENDIF}(DateTimeToAnsiSQLDate(Value.VDateTime));
-        else
-          RaiseTypeMismatchError;
-      end;
     vtDateTime:
-      case Value.VType of
-        vtNull:
-          Result.VDateTime := 0;
-        vtBoolean:
-          RaiseTypeMismatchError;
-        vtInteger:
-          Result.VDateTime := Value.VInteger;
-        vtUInteger:
-          Result.VDateTime := Value.VUInteger;
-        vtFloat:
-          Result.VDateTime := Value.VFloat;
-        vtString:
-          Result.VDateTime := AnsiSQLDateToDateTime(Value.VString);
-        vtAnsiString:
-          Result.VDateTime := AnsiSQLDateToDateTime({$IFDEF UNICODE}ASCII7ToUnicodeString{$ENDIF}(Value.VAnsiString));
-        vtUTF8String:
-          Result.VDateTime := AnsiSQLDateToDateTime({$IFDEF UNICODE}ASCII7ToUnicodeString{$ENDIF}(Value.VUTF8String));
-        vtRawByteString:
-          Result.VDateTime := AnsiSQLDateToDateTime({$IFDEF UNICODE}ASCII7ToUnicodeString{$ENDIF}(Value.VRawByteString));
-        vtUnicodeString:
-          Result.VDateTime := AnsiSQLDateToDateTime({$IFNDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(Value.VUnicodeString));
-        vtCharRec:
-          if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
-          begin
-            SetString(Result.VUnicodeString, PWideChar(Value.VCharRec.P), Value.VCharRec.Len);
-            Result.VDateTime := AnsiSQLDateToDateTime({$IFNDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(Value.VUnicodeString));
-          end
-          else
-          begin
-            SetString(Result.VAnsiString, PAnsiChar(Value.VCharRec.P), Value.VCharRec.Len);
-            Result.VDateTime := AnsiSQLDateToDateTime({$IFDEF UNICODE}ASCII7ToUnicodeString{$ENDIF}(Value.VAnsiString));
-          end;
-        vtDateTime:
-          Result.VDateTime := Value.VDateTime;
-        else
-          RaiseTypeMismatchError;
-      end;
+      ProcessDateTime(Value, Result);
     vtPointer:
       case Value.VType of
         vtNull:
@@ -2055,87 +2321,32 @@ begin
           Result.VInterface := Value.VInterface;
         else
       end;
+
+    vtString:
+      ProcessString(Value, Result);
+    {$IFNDEF NO_ANSISTRING}
+    vtAnsiString:
+      ProcessAnsiString(Value, Result);
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
+    vtUTF8String:
+      ProcessUTF8String(Value, Result);
+    {$ENDIF}
+    vtRawByteString:
+      ProcessRawByteString(Value, Result);
+
+    vtUnicodeString:
+      ProcessUnicodeString(Value, Result);
+
     vtCharRec:
-      case Value.VType of
-        vtNull:
-          begin
-            Result.VCharRec.Len := 0;
-            Result.VCharRec.CP := High(Word);
-            Result.VCharRec.P := nil;
-          end;
-        vtBoolean, vtInteger, vtUInteger, vtFloat, vtBytes, vtDateTime:
-          begin
-            Result.VString := Convert(Value, vtString).VString;
-            Goto AsVCharRecFromVString;
-          end;
-        vtString:
-          begin
-            Result.VString := Value.VString;
-AsVCharRecFromVString:
-            Result.VCharRec.CP := {$IFDEF UNICODE}zCP_UTF16{$ELSE}ZOSCodePage{$ENDIF};
-            if Pointer(Result.VString) = nil then
-            begin
-              Result.VCharRec.Len := 0;
-              Result.VCharRec.P := {$IFDEF UNICODE}PEmptyUnicodeString{$ELSE}PEmptyAnsiString{$ENDIF};
-            end
-            else
-            begin
-              Result.VCharRec.Len := {%H-}PLengthInt(NativeUInt(Result.VString) - StringLenOffSet)^; //fast Length() helper
-              Result.VCharRec.P := Pointer(Result.VString); //avoid RTL call of PChar conversion
-            end;
-          end;
-        vtAnsiString:
-          begin
-            Result.VAnsiString := Value.VAnsiString;
-            Result.VCharRec.CP := ZOSCodePage;
-            if Pointer(Result.VAnsiString) = nil then
-            begin
-              Result.VCharRec.Len := 0;
-              Result.VCharRec.P := PEmptyAnsiString;
-            end
-            else
-            begin
-              Result.VCharRec.Len := {%H-}PLengthInt(NativeUInt(Result.VAnsiString) - StringLenOffSet)^; //fast Length() helper
-              Result.VCharRec.P := Pointer(Result.VAnsiString); //avoid RTL call of PAnsiChar conversion
-            end;
-          end;
-        vtUTF8String:
-          begin
-            Result.VUTF8String := Value.VUTF8String;
-            Result.VCharRec.CP := zCP_UTF8;
-            if Pointer(Result.VUTF8String) = nil then
-            begin
-              Result.VCharRec.Len := 0;
-              Result.VCharRec.P := PEmptyAnsiString;
-            end
-            else
-            begin
-              Result.VCharRec.Len := {%H-}PLengthInt(NativeUInt(Result.VUTF8String) - StringLenOffSet)^; //fast Length() helper for D7..D9 where Length() isn't inlined;
-              Result.VCharRec.P := Pointer(Result.VUTF8String); //avoid RTL call of PAnsiChar conversion
-            end;
-          end;
-        vtUnicodeString:
-          begin
-            Result.VUnicodeString := Value.VUnicodeString;
-            Result.VCharRec.CP := zCP_UTF16;
-            Result.VCharRec.Len := Length(Result.VUnicodeString); //don't use PLengthInt helper: VUnicodeString may be Wide/Unicode-String
-            if Result.VCharRec.Len = 0 then
-              Result.VCharRec.P := PEmptyUnicodeString
-            else
-              Result.VCharRec.P := Pointer(Result.VUnicodeString); //avoid RTL call of PWideChar conversion
-          end;
-        vtCharRec:
-          Result.VCharRec := Value.VCharRec;
-        else
-          RaiseTypeMismatchError;
-      end;
+      ProcessCharRec(Value, Result);
   end;
 end;
 
 { TZClientVariantManager }
 
 {**
-  Constructs this object and assignes the main properties.
+  Constructs this object and assigns the main properties.
   @param ClientCodePage the current ClientCodePage.
 }
 constructor TZClientVariantManager.Create(const ConSettings: PZConSettings);
@@ -2153,11 +2364,360 @@ end;
 }
 function TZClientVariantManager.Convert(const Value: TZVariant;
   NewType: TZVariantType): TZVariant;
+
+  { !!! Performance note - read comment inside TZSoftVariantManager.Convert !!! }
+
+  procedure ProcessString(const Value: TZVariant; out Result: TZVariant);
+  begin
+    Result.VType := vtString;
+    case Value.VType of
+      vtNull:
+        Result.VString := '';
+      vtBoolean:
+        Result.VString := BoolStrsUp[Value.VBoolean];
+      vtBytes:
+        ZSetString(Pointer(Value.VBytes), Length(Value.VBytes), Result.VString);
+      vtInteger:
+        Result.VString := {$IFDEF UNICODE}IntToUnicode{$ELSE}IntToRaw{$ENDIF}(Value.VInteger);
+      vtUInteger:
+        Result.VString := {$IFDEF UNICODE}IntToUnicode{$ELSE}IntToRaw{$ENDIF}(Value.VUInteger);
+      vtFloat:
+        Result.VString := FloatToSqlStr(Value.VFloat);
+      vtString:
+        Result.VString := Value.VString;
+      {$IFNDEF NO_ANSISTRING}
+      vtAnsiString:
+        Result.VString := FConSettings^.ConvFuncs.ZAnsiToString(Value.VAnsiString, FConSettings^.CTRL_CP);
+      {$ENDIF}
+      {$IFNDEF NO_UTF8STRING}
+      vtUTF8String:
+        Result.VString := FConSettings^.ConvFuncs.ZUTF8ToString(Value.VUTF8String, FConSettings^.CTRL_CP);
+      {$ENDIF}
+      vtRawByteString:
+        Result.VString := FConSettings^.ConvFuncs.ZRawToString(Value.VRawByteString, FConSettings^.ClientCodePage^.CP, FConSettings^.CTRL_CP);
+     vtUnicodeString:
+        //hint: VarArrayOf(['Test']) returns allways varOleStr which is type WideString don't change that again
+        //this hint means a cast instead of convert. The user should better use WideString constants!
+        Result.VString := FConSettings^.ConvFuncs.ZUnicodeToString(Value.VUnicodeString, FConSettings^.CTRL_CP);
+      vtCharRec:
+        if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
+          {$IFDEF UNICODE}
+          SetString(Result.VString, PChar(Value.VCharRec.P), Value.VCharRec.Len)
+          {$ELSE}
+          Result.VString := PUnicodeToRaw(Value.VCharRec.P, Value.VCharRec.Len, ZOSCodePage)
+          {$ENDIF}
+        else
+          {$IFNDEF UNICODE}
+          if ZCompatibleCodePages(ZOSCodePage, Value.VCharRec.CP) then
+            SetString(Result.VString, PChar(Value.VCharRec.P), Value.VCharRec.Len)
+          else begin
+            Result.VUnicodeString := PRawToUnicode(Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP);//localice com widestring
+            Result.VString := FConSettings^.ConvFuncs.ZUnicodeToString(Value.VUnicodeString, FConSettings^.CTRL_CP);
+            Result.VUnicodeString := '';
+          end;
+          {$ELSE}
+            Result.VString := PRawToUnicode(Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP);//localice com widestring
+          {$ENDIF}
+      vtDateTime:
+        Result.VString := ZSysUtils.{$IFDEF UNICODE}DateTimeToUnicodeSQLTimeStamp{$ELSE}DateTimeToRawSQLTimeStamp{$ENDIF}(Value.VDateTime, FConSettings^.WriteFormatSettings, False);
+      else
+        RaiseTypeMismatchError;
+    end;
+    Result.VType := vtString;
+  end;
+  {$IFNDEF NO_ANSISTRING}
+  procedure ProcessAnsiString(const Value: TZVariant; out Result: TZVariant);
+  var
+    UniTemp: ZWideString;
+    ResTmp: AnsiString;
+  begin
+    Result.VType := vtAnsiString;
+    case Value.VType of
+      vtNull:
+        ResTmp := '';
+      vtBoolean:
+        ResTmp := BoolStrsUpRaw[Value.VBoolean];
+      vtInteger:
+        ResTmp := IntToRaw(Value.VInteger);
+      vtUInteger:
+        ResTmp := IntToRaw(Value.VUInteger);
+      vtFloat:
+        ResTmp := {$IFDEF UNICODE}UnicodeStringToAscii7{$ENDIF}(FloatToSqlStr(Value.VFloat));
+      vtString:
+        ResTmp := (FConSettings^.ConvFuncs.ZStringToAnsi(Value.VString, FConSettings^.CTRL_CP));
+      vtAnsiString:
+        ResTmp := Value.VAnsiString;
+      vtUTF8String:
+        ResTmp := FConSettings^.ConvFuncs.ZUTF8ToAnsi(Value.VUTF8String);
+      vtRawByteString:
+        ResTmp := FConSettings^.ConvFuncs.ZRawToAnsi(Value.VRawByteString, FConSettings^.ClientCodePage^.CP);
+      vtUnicodeString:
+        ResTmp := ZUnicodeToRaw(Value.VUnicodeString, ZOSCodePage);
+      vtCharRec:
+        if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then begin
+          SetString(UniTemp, PWideChar(Value.VCharRec.P), Value.VCharRec.Len); //localize com widestring
+          ResTmp := PUnicodeToRaw(Pointer(UniTemp), Length(UniTemp), ZOSCodePage);
+        end else if ZCompatibleCodePages(ZOSCodePage, Value.VCharRec.CP) then
+          SetString(ResTmp, PAnsiChar(Value.VCharRec.P), Value.VCharRec.Len)
+        else begin
+          UniTemp := PRawToUnicode(Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP);
+          ResTmp := PUnicodeToRaw(Pointer(UniTemp), Length(UniTemp), ZOSCodePage);
+        end;
+      vtDateTime:
+        ResTmp := ZSysUtils.DateTimeToRawSQLTimeStamp(Value.VDateTime, FConSettings^.WriteFormatSettings, False);
+      else
+        RaiseTypeMismatchError;
+    end;
+    Result.VAnsiString := ResTmp;
+  end;
+  {$ENDIF}
+  {$IFNDEF NO_UTF8STRING}
+  procedure ProcessUTF8String(const Value: TZVariant; out Result: TZVariant);
+  var
+    UniTemp: ZWideString;
+    ResTmp: UTF8String;
+  begin
+    Result.VType := vtUTF8String;
+    case Value.VType of
+      vtNull:
+        ResTmp := '';
+      vtBoolean:
+        ResTmp := BoolStrsUpRaw[Value.VBoolean];
+      vtInteger:
+        ResTmp := IntToRaw(Value.VInteger);
+      vtUInteger:
+        ResTmp := IntToRaw(Value.VUInteger);
+      vtFloat:
+        ResTmp := {$IFDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(FloatToSqlStr(Value.VFloat));
+      vtString:
+        ResTmp := FConSettings^.ConvFuncs.ZStringToUTF8(Value.VString, FConSettings^.CTRL_CP);
+      {$IFNDEF NO_ANSISTRING}
+      vtAnsiString:
+        ResTmp := FConSettings^.ConvFuncs.ZAnsiToUTF8(Value.VAnsiString);
+      {$ENDIF}
+      vtUTF8String:
+        ResTmp := Value.VUTF8String;
+      vtRawByteString:
+        ResTmp := FConSettings^.ConvFuncs.ZRawToUTF8(Value.VRawByteString, FConSettings^.ClientCodePage^.CP);
+      vtUnicodeString:
+        {$IFDEF WITH_RAWBYTESTRING}
+        ResTmp := UTF8String(Value.VUnicodeString);
+        {$ELSE}
+        ResTmp := UTF8Encode(Value.VUnicodeString);
+        {$ENDIF}
+      vtCharRec:
+        if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
+        begin
+          SetString(UniTemp, PChar(Value.VCharRec.P), Value.VCharRec.Len);
+          ResTmp := {$IFDEF WITH_RAWBYTETRING}UTF8String{$ELSE}UTF8Encode{$ENDIF}(UniTemp);
+        end else if ZCompatibleCodePages(zCP_UTF8, Value.VCharRec.CP) then
+          ZSetString(PAnsiChar(Value.VCharRec.P), Value.VCharRec.Len, ResTmp)
+        else begin
+          UniTemp := PRawToUnicode(Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP); //localie com WideString
+          ResTmp := {$IFDEF WITH_RAWBYTESTRING}UTF8String{$ELSE}UTF8Encode{$ENDIF}(UniTemp);
+        end;
+      vtDateTime:
+        ResTmp := ZSysUtils.DateTimeToRawSQLTimeStamp(Value.VDateTime, FConSettings^.WriteFormatSettings, False);
+      else
+        RaiseTypeMismatchError;
+    end;
+    Result.VUTF8String := ResTmp;
+  end;
+  {$ENDIF}
+  procedure ProcessRawByteString(const Value: TZVariant; out Result: TZVariant);
+  var
+    UniTemp: ZWideString;
+    ResTmp: RawByteString;
+  begin
+    Result.VType := vtRawByteString;
+    case Value.VType of
+      vtNull:
+        ResTmp := EmptyRaw;
+      vtBoolean:
+        ResTmp := BoolStrsUpRaw[Value.VBoolean];
+      vtInteger:
+        ResTmp := IntToRaw(Value.VInteger);
+      vtUInteger:
+        ResTmp := IntToRaw(Value.VUInteger);
+      vtFloat:
+        ResTmp := {$IFDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(FloatToSqlStr(Value.VFloat));
+      vtString:
+        ResTmp := FConSettings^.ConvFuncs.ZStringToRaw(Value.VString, FConSettings^.CTRL_CP, FConSettings^.ClientCodePage^.CP);
+      {$IFNDEF NO_ANSISTRING}
+      vtAnsiString:
+        ResTmp := FConSettings^.ConvFuncs.ZAnsiToRaw(Value.VAnsiString, FConSettings^.ClientCodePage^.CP);
+      {$ENDIF}
+      {$IFNDEF NO_UTF8STRING}
+      vtUTF8String:
+        ResTmp := FConSettings^.ConvFuncs.ZUTF8ToRaw(Value.VUTF8String, FConSettings^.ClientCodePage^.CP);
+      {$ENDIF}
+      vtRawByteString:
+        ResTmp := Value.VRawByteString;
+      vtUnicodeString:
+        ResTmp := FConSettings^.ConvFuncs.ZUnicodeToRaw(Value.VUnicodeString, FConSettings^.ClientCodePage^.CP);
+      vtDateTime:
+        ResTmp := ZSysUtils.DateTimeToRawSQLTimeStamp(Value.VDateTime, FConSettings^.WriteFormatSettings, False);
+      vtCharRec:
+        if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
+          ResTmp := PUnicodeToRaw(Value.VCharRec.P, Value.VCharRec.Len, FConSettings^.ClientCodePage^.CP)
+        else if ZCompatibleCodePages(FConSettings^.ClientCodePage^.CP, Value.VCharRec.CP) then
+          ZSetString(PAnsiChar(Value.VCharRec.P), Value.VCharRec.Len, ResTmp)
+        else begin
+          UniTemp := PRawToUnicode(Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP);
+          ResTmp := ZUnicodeToRaw(UniTemp, FConSettings^.ClientCodePage^.CP);
+        end;
+      else
+        RaiseTypeMismatchError;
+    end;
+    Result.VRawByteString := ResTmp;
+  end;
+
+  procedure ProcessUnicodeString(const Value: TZVariant; out Result: TZVariant);
+  begin
+    Result.VType := vtUnicodeString;
+    case Value.VType of
+      vtNull:
+        Result.VUnicodeString := '';
+      vtBoolean:
+        Result.VUnicodeString := BoolStrsUpW[Value.VBoolean];
+      vtInteger:
+        Result.VUnicodeString := IntToUnicode(Value.VInteger);
+      vtUInteger:
+        Result.VUnicodeString := IntToUnicode(Value.VUInteger);
+      vtFloat:
+        Result.VUnicodeString := {$IFNDEF UNICODE}ASCII7ToUnicodeString{$ENDIF}(FloatToSqlStr(Value.VFloat));
+      vtString:
+        Result.VUnicodeString := FConSettings^.ConvFuncs.ZStringToUnicode(Value.VString, FConSettings^.CTRL_CP);
+      {$IFNDEF NO_ANSISTRING}
+      vtAnsiString:
+        Result.VUnicodeString := ZRawToUnicode(Value.VAnsiString, ZOSCodePage);
+      {$ENDIF}
+      {$IFNDEF NO_UTF8STRING}
+      vtUTF8String:
+        Result.VUnicodeString := PRawToUnicode(Pointer(Value.VUTF8String), Length(Value.VUTF8String), zCP_UTF8);
+      {$ENDIF}
+      vtRawByteString:
+        Result.VUnicodeString := FConSettings^.ConvFuncs.ZRawToUnicode(Value.VRawByteString, FConSettings^.ClientCodePage^.CP);
+      vtUnicodeString:
+        Result.VUnicodeString := Value.VUnicodeString;
+      vtDateTime:
+        Result.VUnicodeString := ZSysUtils.DateTimeToUnicodeSQLTimeStamp(Value.VDateTime, FConSettings^.WriteFormatSettings, False);
+      vtCharRec:
+        if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
+          SetString(Result.VUnicodeString, PWideChar(Value.VCharRec.P), Value.VCharRec.Len)
+        else
+          Result.VUnicodeString := PRawToUnicode(Value.VCharRec.P,
+            Value.VCharRec.Len, Value.VCharRec.CP);
+      else
+        RaiseTypeMismatchError;
+    end;
+  end;
+
+  procedure ProcessCharRec(const Value: TZVariant; out Result: TZVariant);
+  begin
+    Result.VType := vtCharRec;
+    case Value.VType of
+      vtNull:
+        begin
+          Result.VCharRec.Len := 0;
+          Result.VCharRec.CP := High(Word);
+          Result.VCharRec.P := nil;
+        end;
+      vtBoolean, vtInteger, vtFloat, vtBytes, vtDateTime:
+        begin
+          if FConSettings^.ClientCodePage^.IsStringFieldCPConsistent then
+          begin
+            Result.VRawByteString := Convert(Value, vtRawByteString).VRawByteString;
+            Result.VCharRec.CP := FConSettings^.ClientCodePage^.CP;
+            if Pointer(Result.VRawByteString) = nil then
+            begin
+              Result.VCharRec.Len := 0;
+              Result.VCharRec.P := PEmptyAnsiString; //avoid nil result
+            end
+            else
+            begin
+              Result.VCharRec.Len := {%H-}PLengthInt(NativeUInt(Result.VRawByteString) - StringLenOffSet)^; //fast Length() helper
+              Result.VCharRec.P := Pointer(Result.VRawByteString); //avoid RTL conversion to PAnsiChar
+            end;
+          end
+          else
+          begin
+            Result.VUnicodeString := Convert(Value, vtUnicodeString).VUnicodeString;
+            Result.VCharRec.CP := zCP_UTF16;
+            Result.VCharRec.Len := Length(Result.VUnicodeString);
+            if Result.VCharRec.Len = 0 then
+              Result.VCharRec.P := PEmptyUnicodeString //avoid nil result
+            else
+              Result.VCharRec.P := Pointer(Result.VUnicodeString); //avoid RTL conversion to PAnsiChar
+          end;
+        end;
+      vtString:
+        begin
+          Result.VString := Value.VString;
+          Result.VCharRec.CP := {$IFDEF UNICODE}zCP_UTF16{$ELSE}ZOSCodePage{$ENDIF};
+          if Pointer(Result.VString) = nil then
+          begin
+            Result.VCharRec.Len := 0;
+            Result.VCharRec.P := {$IFDEF UNICODE}PEmptyUnicodeString{$ELSE}PEmptyAnsiString{$ENDIF}; //avoid nil result
+          end
+          else
+          begin
+            Result.VCharRec.Len := {%H-}PLengthInt(NativeUInt(Result.VString) - StringLenOffSet)^; //fast Length() helper
+            Result.VCharRec.P := Pointer(Result.VString); //avoid RTL conversion to PAnsiChar
+          end;
+        end;
+      {$IFNDEF NO_ANSISTRING}
+      vtAnsiString:
+        begin
+          Result.VAnsiString := Value.VAnsiString;
+          Result.VCharRec.CP := ZOSCodePage;
+          if Pointer(Result.VAnsiString) = nil then
+          begin
+            Result.VCharRec.Len := 0;
+            Result.VCharRec.P := PEmptyAnsiString; //avoid nil result
+          end
+          else
+          begin
+            Result.VCharRec.Len := {%H-}PLengthInt(NativeUInt(Result.VAnsiString) - StringLenOffSet)^; //fast Length() helper
+            Result.VCharRec.P := Pointer(Result.VAnsiString); //avoid RTL conversion to PAnsiChar
+          end;
+        end;
+      {$ENDIF}
+      {$IFNDEF NO_UTF8STRING}
+      vtUTF8String:
+        begin
+          Result.VUTF8String := Value.VUTF8String;
+          Result.VCharRec.CP := zCP_UTF8;
+          if Pointer(Result.VUTF8String) = nil then begin
+            Result.VCharRec.Len := 0;
+            Result.VCharRec.P := PEmptyAnsiString; //avoid nil result
+          end else begin
+            Result.VCharRec.Len := {%H-}PLengthInt(NativeUInt(Result.VUTF8String) - StringLenOffSet)^; //fast Length() helper
+            Result.VCharRec.P := Pointer(Result.VUTF8String); //avoid RTL conversion to PAnsiChar
+          end;
+        end;
+      {$ENDIF}
+      vtUnicodeString:
+        begin
+          Result.VUnicodeString := Value.VUnicodeString;
+          Result.VCharRec.CP := zCP_UTF16;
+          Result.VCharRec.Len := Length(Result.VUnicodeString);
+          if Result.VCharRec.Len = 0 then
+            Result.VCharRec.P := PEmptyUnicodeString //avoid nil result
+          else
+            Result.VCharRec.P := Pointer(Result.VUnicodeString); //avoid RTL conversion to PWideChar
+        end;
+      vtCharRec:
+        Result.VCharRec := Value.VCharRec;
+      else
+        RaiseTypeMismatchError;
+    end;
+  end;
+
 var
-  UniTemp: ZWideString;
   Failed: Boolean;
   CharRec: TZCharRec;
-label DateTimeFromAnsi, DateTimeFromUnicode;
+label DateTimeFromRaw, DateTimeFromUnicode;
 begin
   Result.VType := NewType;
   case NewType of
@@ -2177,10 +2737,14 @@ begin
           Result.VBoolean := Pointer(Value.VBytes) <> nil;
         vtString:
           Result.VBoolean := StrToBoolEx(Value.VString);
+        {$IFNDEF NO_ANSISTRING}
         vtAnsiString:
           Result.VBoolean := StrToBoolEx(Value.VAnsiString);
+        {$ENDIF}
+        {$IFNDEF NO_UTF8STRING}
         vtUTF8String:
           Result.VBoolean := StrToBoolEx(Value.VUTF8String);
+        {$ENDIF}
         vtRawByteString:
           Result.VBoolean := StrToBoolEx(Value.VRawByteString);
         vtUnicodeString:
@@ -2215,16 +2779,31 @@ begin
           begin
             CharRec.P := Pointer(Value.VString);
             CharRec.Len := Length(Value.VString);
-            goto {$IFDEF UNICODE}DateTimeFromUnicode{$ELSE}DateTimeFromAnsi{$ENDIF};
+            goto {$IFDEF UNICODE}DateTimeFromUnicode{$ELSE}DateTimeFromRaw{$ENDIF};
           end;
+        {$IFNDEF NO_ANSISTRING}
         vtAnsiString:
           begin
             CharRec.P := Pointer(Value.VAnsiString);
             CharRec.Len := Length(Value.VAnsiString);
-DateTimeFromAnsi:
-            if (PAnsiChar(CharRec.P)+2)^ = ':' then
+          end;
+        {$ENDIF}
+        {$IFNDEF NO_UTF8STRING}
+        vtUTF8String:
+          begin
+            CharRec.P := Pointer(Value.VUTF8String);
+            CharRec.Len := Length(Value.VUTF8String);
+            goto DateTimeFromRaw;
+          end;
+        {$ENDIF}
+        vtRawByteString:
+          begin
+            CharRec.P := Pointer(Value.VRawByteString);
+            CharRec.Len := Length(Value.VRawByteString);
+DateTimeFromRaw:
+            if Ord((PAnsiChar(CharRec.P)+2)^) = Ord(':') then
               Result.VDateTime := RawSQLTimeToDateTime(
-                CharRec.P, CharRec.Len, FConSettings^.ReadFormatSettings, Failed{%H-})
+                CharRec.P, CharRec.Len, FConSettings^.ReadFormatSettings, Failed)
             else
               if (FConSettings^.ReadFormatSettings.DateTimeFormatLen - CharRec.Len) <= 4 then
                 Result.VDateTime := RawSQLTimeStampToDateTime(
@@ -2233,18 +2812,6 @@ DateTimeFromAnsi:
                 Result.VDateTime := RawSQLTimeToDateTime(
                   CharRec.P, CharRec.Len, FConSettings^.ReadFormatSettings, Failed);
           end;
-        vtUTF8String:
-          begin
-            CharRec.P := Pointer(Value.VUTF8String);
-            CharRec.Len := Length(Value.VUTF8String);
-            goto DateTimeFromAnsi;
-          end;
-        vtRawByteString:
-          begin
-            CharRec.P := Pointer(Value.VRawByteString);
-            CharRec.Len := Length(Value.VRawByteString);
-            goto DateTimeFromAnsi;
-          end;
         vtUnicodeString:
           begin
             CharRec.P := Pointer(Value.VUnicodeString);
@@ -2252,7 +2819,7 @@ DateTimeFromAnsi:
 DateTimeFromUnicode:
             if (PWideChar(CharRec.P)+2)^ = ':' then
               Result.VDateTime := UnicodeSQLTimeToDateTime(CharRec.P, CharRec.Len,
-                FConSettings^.ReadFormatSettings, Failed{%H-})
+                FConSettings^.ReadFormatSettings, Failed)
             else
               if (FConSettings^.ReadFormatSettings.DateTimeFormatLen - CharRec.Len) <= 4 then
                 Result.VDateTime := UnicodeSQLTimeStampToDateTime(CharRec.P, CharRec.Len,
@@ -2267,310 +2834,34 @@ DateTimeFromUnicode:
             if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
               goto DateTimeFromUnicode
             else
-              goto DateTimeFromAnsi;
+              goto DateTimeFromRaw;
           end
         else
           RaiseTypeMismatchError;
       end;
+
     vtString:
-      case Value.VType of
-        vtNull:
-          Result.VString := '';
-        vtBoolean:
-          Result.VString := BoolStrsUp[Value.VBoolean];
-        vtBytes:
-          ZSetString(Pointer(Value.VBytes), Length(Value.VBytes), Result.VString);
-        vtInteger:
-          Result.VString := {$IFDEF UNICODE}IntToUnicode{$ELSE}IntToRaw{$ENDIF}(Value.VInteger);
-        vtUInteger:
-          Result.VString := {$IFDEF UNICODE}IntToUnicode{$ELSE}IntToRaw{$ENDIF}(Value.VUInteger);
-        vtFloat:
-          Result.VString := FloatToSqlStr(Value.VFloat);
-        vtString:
-          Result.VString := Value.VString;
-        vtAnsiString:
-          Result.VString := FConSettings^.ConvFuncs.ZAnsiToString(Value.VAnsiString, FConSettings^.CTRL_CP);
-        vtUTF8String:
-          Result.VString := FConSettings^.ConvFuncs.ZUTF8ToString(Value.VUTF8String, FConSettings^.CTRL_CP);
-        vtRawByteString:
-          Result.VString := FConSettings^.ConvFuncs.ZRawToString(Value.VRawByteString, FConSettings^.ClientCodePage^.CP, FConSettings^.CTRL_CP);
-        vtUnicodeString:
-          //hint: VarArrayOf(['Test']) returns allways varOleStr which is type WideString don't change that again
-          //this hint means a cast instead of convert. The user should better use WideString constants!
-          Result.VString := FConSettings^.ConvFuncs.ZUnicodeToString(Value.VUnicodeString, FConSettings^.CTRL_CP);
-        vtCharRec:
-          if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
-            {$IFDEF UNICODE}
-            SetString(Result.VString, PChar(Value.VCharRec.P), Value.VCharRec.Len)
-            {$ELSE}
-            Result.VString := PUnicodeToRaw(Value.VCharRec.P, Value.VCharRec.Len, ZOSCodePage)
-            {$ENDIF}
-          else
-            {$IFNDEF UNICODE}
-            if ZCompatibleCodePages(ZOSCodePage, Value.VCharRec.CP) then
-              SetString(Result.VString, PChar(Value.VCharRec.P), Value.VCharRec.Len)
-            else
-            {$ENDIF}
-              Result.VString := {$IFNDEF UNICODE}String{$ENDIF}(PRawToUnicode(
-                Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP));
-        vtDateTime:
-          Result.VString := ZSysUtils.{$IFDEF UNICODE}DateTimeToUnicodeSQLTimeStamp{$ELSE}DateTimeToRawSQLTimeStamp{$ENDIF}(Value.VDateTime, FConSettings^.WriteFormatSettings, False);
-        else
-          RaiseTypeMismatchError;
-      end;
+      ProcessString(Value, Result);
+    {$IFNDEF NO_ANSISTRING}
     vtAnsiString:
-      case Value.VType of
-        vtNull:
-          Result.VAnsiString := '';
-        vtBoolean:
-          Result.VAnsiString := BoolStrsUpRaw[Value.VBoolean];
-        vtInteger:
-          Result.VAnsiString := IntToRaw(Value.VInteger);
-        vtUInteger:
-          Result.VAnsiString := IntToRaw(Value.VUInteger);
-        vtFloat:
-          Result.VAnsiString := {$IFDEF UNICODE}UnicodeStringToAscii7{$ENDIF}(FloatToSqlStr(Value.VFloat));
-        vtString:
-          Result.VAnsiString := FConSettings^.ConvFuncs.ZStringToAnsi(Value.VString, FConSettings^.CTRL_CP);
-        vtAnsiString:
-          Result.VAnsiString := Value.VAnsiString;
-        vtUTF8String:
-          Result.VAnsiString := FConSettings^.ConvFuncs.ZUTF8ToAnsi(Value.VUTF8String);
-        vtRawByteString:
-          Result.VAnsiString := FConSettings^.ConvFuncs.ZRawToAnsi(Value.VRawByteString, FConSettings^.ClientCodePage^.CP);
-        vtUnicodeString:
-          Result.VAnsiString := ZUnicodeToRaw(Value.VUnicodeString, ZOSCodePage);
-        vtCharRec:
-          if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
-          begin
-            SetString(UniTemp, PWideChar(Value.VCharRec.P), Value.VCharRec.Len);
-            Result.VAnsiString := AnsiString(UniTemp);
-          end
-          else
-            if ZCompatibleCodePages(ZOSCodePage, Value.VCharRec.CP) then
-              SetString(Result.VAnsiString, PAnsiChar(Value.VCharRec.P), Value.VCharRec.Len)
-            else
-              Result.VAnsiString := AnsiString(PRawToUnicode(Value.VCharRec.P,
-                Value.VCharRec.Len, Value.VCharRec.CP));
-        vtDateTime:
-          Result.VAnsiString := ZSysUtils.DateTimeToRawSQLTimeStamp(Value.VDateTime, FConSettings^.WriteFormatSettings, False);
-        else
-          RaiseTypeMismatchError;
-      end;
+      ProcessAnsiString(Value, Result);
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
     vtUTF8String:
-      case Value.VType of
-        vtNull:
-          Result.VUTF8String := '';
-        vtBoolean:
-          Result.VUTF8String := BoolStrsUpRaw[Value.VBoolean];
-        vtInteger:
-          Result.VUTF8String := IntToRaw(Value.VInteger);
-        vtUInteger:
-          Result.VUTF8String := IntToRaw(Value.VUInteger);
-        vtFloat:
-          Result.VUTF8String := {$IFDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(FloatToSqlStr(Value.VFloat));
-        vtString:
-          Result.VUTF8String := FConSettings^.ConvFuncs.ZStringToUTF8(Value.VString, FConSettings^.CTRL_CP);
-        vtAnsiString:
-          Result.VUTF8String := FConSettings^.ConvFuncs.ZAnsiToUTF8(Value.VAnsiString);
-        vtUTF8String:
-          Result.VUTF8String := Value.VUTF8String;
-        vtRawByteString:
-          Result.VUTF8String := FConSettings^.ConvFuncs.ZRawToUTF8(Value.VRawByteString, FConSettings^.ClientCodePage^.CP);
-        vtUnicodeString:
-          {$IFDEF WITH_RAWBYTESTRING}
-          Result.VUTF8String := UTF8String(Value.VUnicodeString);
-          {$ELSE}
-          Result.VUTF8String := UTF8Encode(Value.VUnicodeString);
-          {$ENDIF}
-        vtCharRec:
-          if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
-          begin
-            SetString(UniTemp, PChar(Value.VCharRec.P), Value.VCharRec.Len);
-            Result.VUTF8String := {$IFDEF WITH_RAWBYTETRING}UTF8String{$ELSE}UTF8Encode{$ENDIF}(UniTemp);
-          end
-          else
-            if ZCompatibleCodePages(zCP_UTF8, Value.VCharRec.CP) then
-              ZSetString(PAnsiChar(Value.VCharRec.P), Value.VCharRec.Len, Result.VUTF8String)
-            else
-              Result.VUTF8String := {$IFDEF WITH_RAWBYTESTRING}UTF8String{$ELSE}UTF8Encode{$ENDIF}(
-                PRawToUnicode(Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP));
-        vtDateTime:
-          Result.VUTF8String := ZSysUtils.DateTimeToRawSQLTimeStamp(Value.VDateTime, FConSettings^.WriteFormatSettings, False);
-        else
-          RaiseTypeMismatchError;
-      end;
+      ProcessUTF8String(Value, Result);
+    {$ENDIF}
+
     vtRawByteString:
-      case Value.VType of
-        vtNull:
-          Result.VRawByteString := '';
-        vtBoolean:
-          Result.VRawByteString := BoolStrsUpRaw[Value.VBoolean];
-        vtInteger:
-          Result.VRawByteString := IntToRaw(Value.VInteger);
-        vtUInteger:
-          Result.VRawByteString := IntToRaw(Value.VUInteger);
-        vtFloat:
-          Result.VRawByteString := {$IFDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(FloatToSqlStr(Value.VFloat));
-        vtString:
-          Result.VRawByteString := FConSettings^.ConvFuncs.ZStringToRaw(Value.VString, FConSettings^.CTRL_CP, FConSettings^.ClientCodePage^.CP);
-        vtAnsiString:
-          Result.VRawByteString := FConSettings^.ConvFuncs.ZAnsiToRaw(Value.VAnsiString, FConSettings^.ClientCodePage^.CP);
-        vtUTF8String:
-          Result.VRawByteString := FConSettings^.ConvFuncs.ZUTF8ToRaw(Value.VUTF8String, FConSettings^.ClientCodePage^.CP);
-        vtRawByteString:
-          Result.VRawByteString := Value.VRawByteString;
-        vtUnicodeString:
-          Result.VRawByteString := FConSettings^.ConvFuncs.ZUnicodeToRaw(Value.VUnicodeString, FConSettings^.ClientCodePage^.CP);
-        vtDateTime:
-          Result.VRawByteString := ZSysUtils.DateTimeToRawSQLTimeStamp(Value.VDateTime, FConSettings^.WriteFormatSettings, False);
-        vtCharRec:
-          if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
-            Result.VRawByteString := PUnicodeToRaw(Value.VCharRec.P, Value.VCharRec.Len, FConSettings^.ClientCodePage^.CP)
-          else
-            if ZCompatibleCodePages(FConSettings^.ClientCodePage^.CP, Value.VCharRec.CP) then
-              ZSetString(PAnsiChar(Value.VCharRec.P), Value.VCharRec.Len, Result.VRawByteString)
-            else
-            begin
-              UniTemp := PRawToUnicode(Value.VCharRec.P, Value.VCharRec.Len, Value.VCharRec.CP);
-              Result.VRawByteString := ZUnicodeToRaw(UniTemp, FConSettings^.ClientCodePage^.CP);
-            end;
-        else
-          RaiseTypeMismatchError;
-      end;
+      ProcessRawByteString(Value, Result);
+
     vtUnicodeString:
-      case Value.VType of
-        vtNull:
-          Result.VUnicodeString := '';
-        vtBoolean:
-          Result.VUnicodeString := BoolStrsUpW[Value.VBoolean];
-        vtInteger:
-          Result.VUnicodeString := IntToUnicode(Value.VInteger);
-        vtUInteger:
-          Result.VUnicodeString := IntToUnicode(Value.VUInteger);
-        vtFloat:
-          Result.VUnicodeString := {$IFNDEF UNICODE}ASCII7ToUnicodeString{$ENDIF}(FloatToSqlStr(Value.VFloat));
-        vtString:
-          Result.VUnicodeString := FConSettings^.ConvFuncs.ZStringToUnicode(Value.VString, FConSettings^.CTRL_CP);
-        vtAnsiString:
-          Result.VUnicodeString := ZRawToUnicode(Value.VAnsiString, ZOSCodePage);
-        vtUTF8String:
-          Result.VUnicodeString := PRawToUnicode(Pointer(Value.VUTF8String), Length(Value.VUTF8String), zCP_UTF8);
-        vtRawByteString:
-          Result.VUnicodeString := FConSettings^.ConvFuncs.ZRawToUnicode(Value.VRawByteString, FConSettings^.ClientCodePage^.CP);
-        vtUnicodeString:
-          Result.VUnicodeString := Value.VUnicodeString;
-        vtDateTime:
-          Result.VUnicodeString := ZSysUtils.DateTimeToUnicodeSQLTimeStamp(Value.VDateTime, FConSettings^.WriteFormatSettings, False);
-        vtCharRec:
-          if ZCompatibleCodePages(Value.VCharRec.CP, zCP_UTF16) then
-            SetString(Result.VUnicodeString, PWideChar(Value.VCharRec.P), Value.VCharRec.Len)
-          else
-            Result.VUnicodeString := PRawToUnicode(Value.VCharRec.P,
-              Value.VCharRec.Len, Value.VCharRec.CP);
-        else
-          RaiseTypeMismatchError;
-      end;
+      ProcessUnicodeString(Value, Result);
+
     vtCharRec:
-      case Value.VType of
-        vtNull:
-          begin
-            Result.VCharRec.Len := 0;
-            Result.VCharRec.CP := High(Word);
-            Result.VCharRec.P := nil;
-          end;
-        vtBoolean, vtInteger, vtFloat, vtBytes, vtDateTime:
-          begin
-            if FConSettings^.ClientCodePage^.IsStringFieldCPConsistent then
-            begin
-              Result.VRawByteString := Convert(Value, vtRawByteString).VRawByteString;
-              Result.VCharRec.CP := FConSettings^.ClientCodePage^.CP;
-              if Pointer(Result.VRawByteString) = nil then
-              begin
-                Result.VCharRec.Len := 0;
-                Result.VCharRec.P := PEmptyAnsiString; //avoid nil result
-              end
-              else
-              begin
-                Result.VCharRec.Len := {%H-}PLengthInt(NativeUInt(Result.VRawByteString) - StringLenOffSet)^; //fast Length() helper
-                Result.VCharRec.P := Pointer(Result.VRawByteString); //avoid RTL conversion to PAnsiChar
-              end;
-            end
-            else
-            begin
-              Result.VUnicodeString := Convert(Value, vtUnicodeString).VUnicodeString;
-              Result.VCharRec.CP := zCP_UTF16;
-              Result.VCharRec.Len := Length(Result.VUnicodeString);
-              if Result.VCharRec.Len = 0 then
-                Result.VCharRec.P := PEmptyUnicodeString //avoid nil result
-              else
-                Result.VCharRec.P := Pointer(Result.VUnicodeString); //avoid RTL conversion to PAnsiChar
-            end;
-          end;
-        vtString:
-          begin
-            Result.VString := Value.VString;
-            Result.VCharRec.CP := {$IFDEF UNICODE}zCP_UTF16{$ELSE}ZOSCodePage{$ENDIF};
-            if Pointer(Result.VString) = nil then
-            begin
-              Result.VCharRec.Len := 0;
-              Result.VCharRec.P := {$IFDEF UNICODE}PEmptyUnicodeString{$ELSE}PEmptyAnsiString{$ENDIF}; //avoid nil result
-            end
-            else
-            begin
-              Result.VCharRec.Len := {%H-}PLengthInt(NativeUInt(Result.VString) - StringLenOffSet)^; //fast Length() helper
-              Result.VCharRec.P := Pointer(Result.VString); //avoid RTL conversion to PAnsiChar
-            end;
-          end;
-        vtAnsiString:
-          begin
-            Result.VAnsiString := Value.VAnsiString;
-            Result.VCharRec.CP := ZOSCodePage;
-            if Pointer(Result.VAnsiString) = nil then
-            begin
-              Result.VCharRec.Len := 0;
-              Result.VCharRec.P := PEmptyAnsiString; //avoid nil result
-            end
-            else
-            begin
-              Result.VCharRec.Len := {%H-}PLengthInt(NativeUInt(Result.VAnsiString) - StringLenOffSet)^; //fast Length() helper
-              Result.VCharRec.P := Pointer(Result.VAnsiString); //avoid RTL conversion to PAnsiChar
-            end;
-          end;
-        vtUTF8String:
-          begin
-            Result.VUTF8String := Value.VUTF8String;
-            Result.VCharRec.CP := zCP_UTF8;
-            if Pointer(Result.VUTF8String) = nil then
-            begin
-              Result.VCharRec.Len := 0;
-              Result.VCharRec.P := PEmptyAnsiString; //avoid nil result
-            end
-            else
-            begin
-              Result.VCharRec.Len := {%H-}PLengthInt(NativeUInt(Result.VUTF8String) - StringLenOffSet)^; //fast Length() helper
-              Result.VCharRec.P := Pointer(Result.VUTF8String); //avoid RTL conversion to PAnsiChar
-            end;
-          end;
-        vtUnicodeString:
-          begin
-            Result.VUnicodeString := Value.VUnicodeString;
-            Result.VCharRec.CP := zCP_UTF16;
-            Result.VCharRec.Len := Length(Result.VUnicodeString);
-            if Result.VCharRec.Len = 0 then
-              Result.VCharRec.P := PEmptyUnicodeString //avoid nil result
-            else
-              Result.VCharRec.P := Pointer(Result.VUnicodeString); //avoid RTL conversion to PWideChar
-          end;
-        vtCharRec:
-          Result.VCharRec := Value.VCharRec;
-        else
-          RaiseTypeMismatchError;
-      end;
+      ProcessCharRec(Value, Result);
   end;
 end;
 
-{$WARNINGS OFF} //suppress [Pascal Warning] ZVariant.pas(1926): W1035 Return value of function 'TZClientVariantManager.GetAsRawByteString' might be undefined
 function TZClientVariantManager.GetAsRawByteString(const Value: TZVariant;
   const RawCP: Word): RawByteString;
 var
@@ -2578,7 +2869,7 @@ var
 begin
   case Value.VType of
     vtNull:
-      Result := '';
+      Result := EmptyRaw;
     vtBoolean:
       Result := BoolStrsUpRaw[Value.VBoolean];
     vtBytes:
@@ -2591,16 +2882,20 @@ begin
       Result := FloatToSqlRaw(Value.VFloat);
     vtString:
       Result := fConSettings.ConvFuncs.ZStringToRaw(Value.VString, FConSettings^.CTRL_CP, RawCP);
+    {$IFNDEF NO_ANSISTRING}
     vtAnsiString:
       if ZCompatibleCodePages(ZOSCodePage, RawCP) then
         Result := ZMoveAnsiToRaw(Value.VAnsiString, RawCP)
       else
         Result := ZConvertAnsiToRaw(Value.VAnsiString, RawCP);
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
     vtUTF8String:
       if ZCompatibleCodePages(zCP_UTF8, RawCP) then
         Result := ZMoveUTF8ToRaw(Value.VUTF8String, RawCP)
       else
         Result := ZConvertUTF8ToRaw(Value.VUTF8String, RawCP);
+    {$ENDIF}
     vtRawByteString:
       if ZCompatibleCodePages(FConSettings^.ClientCodePage^.CP, RawCP) then
         Result := Value.VRawByteString
@@ -2654,6 +2949,7 @@ begin
         end
         else
           goto AsRBS;
+    {$IFNDEF NO_UTF8STRING}
     vtUTF8String:
       if CodePage = zCP_UTF8 then
       begin
@@ -2680,6 +2976,8 @@ begin
         end
         else
         goto AsRBS;
+    {$ENDIF}
+    {$IFNDEF NO_ANSISTRING}
     vtAnsiString:
       if CodePage = zCP_UTF16 then
       begin
@@ -2691,6 +2989,7 @@ begin
           Result.P := Pointer(Value.VUnicodeString); //avoid RTL conversion to PWideChar
       end
       else goto AsRBS;
+    {$ENDIF}
     vtRawByteString:
       if CodePage = zCP_UTF16 then
       begin
@@ -2751,12 +3050,10 @@ AsRBS:
   end;
 end;
 
-{$WARNINGS ON}
-
 { TZAnyValue }
 
 {**
-  Constructs this object and assignes the main properties.
+  Constructs this object and assigns the main properties.
   @param Value an any value.
 }
 constructor TZAnyValue.Create(const Value: TZVariant);
@@ -2765,7 +3062,7 @@ begin
 end;
 
 {**
-  Constructs this object and assignes the main properties.
+  Constructs this object and assigns the main properties.
   @param Value a boolean value.
 }
 constructor TZAnyValue.CreateWithBoolean(Value: Boolean);
@@ -2774,7 +3071,7 @@ begin
 end;
 
 {**
-  Constructs this object and assignes the main properties.
+  Constructs this object and assigns the main properties.
   @param Value a datetime value.
 }
 constructor TZAnyValue.CreateWithDateTime(const Value: TDateTime);
@@ -2783,7 +3080,7 @@ begin
 end;
 
 {**
-  Constructs this object and assignes the main properties.
+  Constructs this object and assigns the main properties.
   @param Value a float value.
 }
 constructor TZAnyValue.CreateWithFloat(const Value: Extended);
@@ -2792,7 +3089,7 @@ begin
 end;
 
 {**
-  Constructs this object and assignes the main properties.
+  Constructs this object and assigns the main properties.
   @param Value a integer value.
 }
 constructor TZAnyValue.CreateWithInteger(const Value: Int64);
@@ -2801,7 +3098,7 @@ begin
 end;
 
 {**
-  Constructs this object and assignes the main properties.
+  Constructs this object and assigns the main properties.
   @param Value a string value.
 }
 constructor TZAnyValue.CreateWithString(const Value: String);
@@ -2810,7 +3107,7 @@ begin
 end;
 
 {**
-  Constructs this object and assignes the main properties.
+  Constructs this object and assigns the main properties.
   @param Value a unicode string value.
 }
 {$IFDEF UNICODE}
@@ -2911,19 +3208,23 @@ end;
   Gets a stored value converted to AnsiString.
   @return a stored value converted to string.
 }
+{$IFNDEF NO_ANSISTRING}
 function TZAnyValue.GetAnsiString: AnsiString;
 begin
   Result := SoftVarManager.GetAsAnsiString(FValue);
 end;
+{$ENDIF}
 
 {**
   Gets a stored value converted to AnsiString.
   @return a stored value converted to string.
 }
+{$IFNDEF NO_UTF8STRING}
 function TZAnyValue.GetUTF8String: UTF8String;
 begin
   Result := SoftVarManager.GetAsUTF8String(FValue);
 end;
+{$ENDIF}
 
 {**
   Gets a stored value converted to boolean.
@@ -2982,8 +3283,12 @@ begin
 {$endif}
     vtFloat: Result := Value.VFloat;
     vtString: Result := Value.VString;
+    {$IFNDEF NO_ANSISTRING}
     vtAnsiString: Result := Value.VAnsiString;
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
     vtUTF8String: Result := Value.VUTF8String;
+    {$ENDIF}
     vtRawByteString: Result := Value.VRawByteString;
     vtUnicodeString: Result := Value.VUnicodeString;
     vtDateTime: Result := Value.VDateTime;
@@ -3151,21 +3456,25 @@ end;
   Creates a AnsiString variant.
   @param Value a value to be assigned.
 }
+{$IFNDEF NO_ANSISTRING}
 function EncodeAnsiString(const Value: AnsiString): TZVariant;
 begin
   Result.VType := vtAnsiString;
   Result.VAnsiString := Value;
 end;
+{$ENDIF}
 
 {**
   Creates a UTF8String variant.
   @param Value a value to be assigned.
 }
+{$IFNDEF NO_UTF8STRING}
 function EncodeUTF8String(const Value: UTF8String): TZVariant;
 begin
   Result.VType := vtUTF8String;
   Result.VUTF8String := Value;
 end;
+{$ENDIF}
 
 {**
   Creates a RawByteString variant.
@@ -3237,7 +3546,20 @@ begin
   Result.VArray := Value;
 end;
 
+{$IFDEF WITH_TBYTES_AS_RAWBYTESTRING}
+procedure RawFiller;
+var B: Boolean;
+begin
+  for B := False to True do
+    BoolStrsUpRaw[b] := UnicodeStringToASCII7(BoolStrsUpW[b]);
+end;
+{$ENDIF}
+
 initialization
+{$IFDEF WITH_TBYTES_AS_RAWBYTESTRING}
+  RawFiller;
+{$ENDIF}
+
   {$IFDEF ZEOS_TEST_ONLY}
   DefVarManager  := TZDefaultVariantManager.Create;
   {$ENDIF ZEOS_TEST_ONLY}
@@ -3250,5 +3572,3 @@ finalization
   {$ENDIF ZEOS_TEST_ONLY}
   SoftVarManager := nil;
 end.
-
-

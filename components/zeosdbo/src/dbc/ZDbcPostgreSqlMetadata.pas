@@ -56,6 +56,7 @@ interface
 
 {$I ZDbc.inc}
 
+{$IFNDEF ZEOS_DISABLE_POSTGRESQL} //if set we have an empty unit
 uses
   Types, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
   ZDbcIntfs, ZDbcMetadata, ZCompatibility, ZDbcPostgreSqlUtils,
@@ -253,8 +254,8 @@ type
     function CreateDatabaseInfo: IZDatabaseInfo; override; // technobot 2008-06-27
 
     // (technobot) should any of these be moved to TZPostgreSQLDatabaseInfo?:
-    function GetPostgreSQLType(Oid: Integer): string;
-    function GetSQLTypeByOid(Oid: Integer): TZSQLType;
+    function GetPostgreSQLType(Oid: OID): string;
+    function GetSQLTypeByOid(Oid: OID): TZSQLType;
     function GetSQLTypeByName(const TypeName: string): TZSQLType;
     function TableTypeSQLExpression(const TableType: string; UseSchemas: Boolean):
       string;
@@ -263,7 +264,7 @@ type
     // (technobot) end of questioned section
 
     function EscapeString(const S: string): string; override;
-    function UncachedGetTables(const {%H-}Catalog: string; const SchemaPattern: string;
+    function UncachedGetTables(const Catalog: string; const SchemaPattern: string;
       const TableNamePattern: string; const Types: TStringDynArray): IZResultSet; override;
     function UncachedGetSchemas: IZResultSet; override;
     function UncachedGetCatalogs: IZResultSet; override;
@@ -303,7 +304,9 @@ type
     procedure ClearCache; override;
  end;
 
+{$ENDIF ZEOS_DISABLE_POSTGRESQL} //if set we have an empty unit
 implementation
+{$IFNDEF ZEOS_DISABLE_POSTGRESQL} //if set we have an empty unit
 
 uses
   //Math,
@@ -1541,14 +1544,15 @@ function TZPostgreSQLDatabaseMetadata.UncachedGetProcedureColumns(const Catalog:
   end;
 
 var
-  I, ReturnType, ColumnTypeOid, ArgOid: Integer;
+  I, ReturnType: Integer;
+  ColumnTypeOid, ArgOid: OID;
   SQL, ReturnTypeType: string;
   IsInParam, IsOutParam: Boolean;
   ArgTypes, ArgNames, ArgModes: TStrings;
   Ver73Up, Ver80Up: Boolean;
   ResultSet: IZResultSet;
   ColumnsRS: IZResultSet;
-  ArgMode: Char;
+  ArgMode: PChar;
   OutParamCount: Integer;
   ColumnName: string;
   ColumnType: Integer;
@@ -1624,38 +1628,30 @@ begin
         begin
           IsInParam := True;
           IsOutParam := False;
-          if ArgModes.Count > I then
-          begin
-            ArgMode := ArgModes[I][1];
-            IsInParam := CharInSet(ArgMode, ['i', 'b', 'v']);
-            IsOutParam := CharInSet(ArgMode, ['o', 'b', 't']);
+          if ArgModes.Count > I then begin
+            ArgMode := Pointer(ArgModes[i]);
+            IsInParam := Ord(ArgMode^) in [Ord('i'), Ord('b'), ORd('v')];
+            IsOutParam := Ord(ArgMode^) in [Ord('o'), Ord('b'), Ord('t')];
           end;
 
           if IsOutParam then
             Inc(OutParamCount);
 
           // column name
-          ArgOid := {$IFDEF UNICODE}UnicodeToInt{$ELSE}RawToInt{$ENDIF}(ArgTypes.Strings[i]);
+          ArgOid := {$IFDEF UNICODE}UnicodeToInt64{$ELSE}RawToInt64{$ENDIF}(ArgTypes.Strings[i]);
           if ArgNames.Count > I then
             ColumnName := ArgNames.Strings[I]
           else
             ColumnName := '$' + ZFastCode.IntToStr(I + 1);
 
           // column type
-          if IsInParam then
-          begin
-            if IsOutParam then
-              ColumnType := Ord(pctInOut)
-            else
-              ColumnType := Ord(pctIn);
-          end
-          else
-          begin
-           if IsOutParam then
-             ColumnType := Ord(pctOut)
-           else
-             ColumnType := Ord(pctUnknown);
-          end;
+          if IsInParam then begin
+            if IsOutParam
+            then ColumnType := Ord(pctInOut)
+            else ColumnType := Ord(pctIn);
+          end else if IsOutParam
+           then ColumnType := Ord(pctOut)
+           else ColumnType := Ord(pctUnknown);
 
           InsertProcedureColumnRow(Result, GetStringByName('nspname'),
             GetStringByName('proname'), ColumnName, ColumnType,
@@ -1666,33 +1662,25 @@ begin
         if (OutParamCount > 0) then
           Continue;
 
-        if (ReturnTypeType = 'c') then // Extract composit type columns
-        begin
+        if (ReturnTypeType = 'c') then begin // Extract composit type columns
           ColumnsRS := GetConnection.CreateStatement.ExecuteQuery(
             Format('SELECT a.attname,a.atttypid'
               + ' FROM pg_catalog.pg_attribute a WHERE a.attrelid=%s'
               + ' ORDER BY a.attnum',
               [ResultSet.GetStringByName('typrelid')]));
-          while ColumnsRS.Next do
-          begin
-            ColumnTypeOid := ColumnsRS.GetIntByName('atttypid');
+          while ColumnsRS.Next do begin
+            ColumnTypeOid := ColumnsRS.GetUIntByName('atttypid');
             InsertProcedureColumnRow(Result, GetStringByName('nspname'),
               GetStringByName('proname'), ColumnsRS.GetStringByName('attname'),
               Ord(pctResultSet), Ord(GetSQLTypeByOid(ColumnTypeOid)),
               GetPostgreSQLType(ColumnTypeOid), Ord(ntNullableUnknown));
           end;
           ColumnsRS.Close;
-        end
-        else
-        begin
-          if (ReturnTypeType <> 'p') then // Single non-pseudotype return value
-          begin
-            InsertProcedureColumnRow(Result, GetStringByName('nspname'),
-              GetStringByName('proname'), 'returnValue', Ord(pctReturn),
-              Ord(GetSQLTypeByOid(ReturnType)), GetPostgreSQLType(ReturnType),
-              Ord(ntNullableUnknown));
-          end;
-        end;
+        end else if (ReturnTypeType <> 'p') then // Single non-pseudotype return value
+          InsertProcedureColumnRow(Result, GetStringByName('nspname'),
+            GetStringByName('proname'), 'returnValue', Ord(pctReturn),
+            Ord(GetSQLTypeByOid(ReturnType)), GetPostgreSQLType(ReturnType),
+            Ord(ntNullableUnknown));
       end;
       Close;
     end;
@@ -3247,12 +3235,12 @@ begin
     end;
 end;
 
-function TZPostgreSQLDatabaseMetadata.GetPostgreSQLType(Oid: Integer): string;
+function TZPostgreSQLDatabaseMetadata.GetPostgreSQLType(Oid: OID): string;
 begin
   Result := (GetConnection as IZPostgreSQLConnection).GetTypeNameByOid(Oid);
 end;
 
-function TZPostgreSQLDatabaseMetadata.GetSQLTypeByOid(Oid: Integer): TZSQLType;
+function TZPostgreSQLDatabaseMetadata.GetSQLTypeByOid(Oid: OID): TZSQLType;
 var
   PostgreSQLConnection: IZPostgreSQLConnection;
 begin
@@ -3278,7 +3266,8 @@ const
   cnspname_index    = FirstDbcIndex + 10;
 var
   Len: NativeUInt;
-  TypeOid, AttTypMod, Precision: Integer;
+  TypeOid: Cardinal;
+  AttTypMod, Precision: Integer;
   SQL, PgType: string;
   SQLType: TZSQLType;
   CheckVisibility: Boolean;
@@ -3361,7 +3350,7 @@ begin
     begin
       AttTypMod := GetInt(atttypmod_index);
 
-      TypeOid := GetInt(atttypid_index);
+      TypeOid := GetUInt(atttypid_index);
       PgType := GetPostgreSQLType(TypeOid);
 
       Result.MoveToInsertRow;
@@ -3527,31 +3516,31 @@ var
   PrevChar: Char;
   InQuotes: Boolean;
   I, BeginIndex: Integer;
+  P: PChar;
 begin
   if AclString = '' then Exit;
   InQuotes := False;
   PrevChar := ' ';
   BeginIndex := 2;
-  for I := BeginIndex to Length(AclString) do
-  begin
-    if (AclString[I] = '"') and (PrevChar <> '\' ) then
-      InQuotes := not InQuotes
-    else if (AclString[I] = ',') and not InQuotes then
-    begin
+  P := Pointer(AclString);
+  for I := BeginIndex to Length(AclString) do begin
+    Inc(P);
+    if (P^ = '"') and (PrevChar <> '\' )
+    then InQuotes := not InQuotes
+    else if (P^ = ',') and not InQuotes then begin
       List.Add(Copy(AclString, BeginIndex, I - BeginIndex));
       BeginIndex := I+1;
     end;
-    PrevChar := AclString[I];
+    PrevChar := P^;
   end;
 
   // add last element removing the trailing "}"
   List.Add(Copy(AclString, BeginIndex, Length(AclString) - BeginIndex));
 
   // Strip out enclosing quotes, if any.
-  for I := 0 to List.Count-1 do
-  begin
-    if (List.Strings[i][1] = '"')
-      and (List.Strings[i][Length(List.Strings[i])] = '"') then
+  for I := 0 to List.Count-1 do begin
+    P := Pointer(List.Strings[i]);
+    if (P^ = '"') and ((P+Length(List.Strings[i])-1)^ = '"') then
       List.Strings[i] := Copy(List.Strings[i], 2, Length(List.Strings[i])-2);
   end;
 end;
@@ -3663,29 +3652,29 @@ function TZPostgreSQLIdentifierConvertor.ExtractQuote(
   const Value: string): string;
 var
   QuoteDelim: string;
+  P: PChar absolute QuoteDelim;
 begin
-  QuoteDelim := Metadata.GetDatabaseInfo.GetIdentifierQuoteString;
-  Result := Value;
-  if (QuoteDelim <> '') and (Value <> '') then
-    if (Value[1]=QuoteDelim[1]) and
-      (Value[Length(Value)]=QuoteDelim[1]) then
-    begin
-      Result:=copy(Value,2,length(Value)-2);
-      Result:=StringReplace(Result,QuoteDelim+QuoteDelim,QuoteDelim,[rfReplaceAll]);
-    end
-    else
-      Result := AnsiLowerCase(Value);
-
+  if IsQuoted(Value) then begin
+    QuoteDelim := Metadata.GetDatabaseInfo.GetIdentifierQuoteString;
+    case Length(QuoteDelim) of
+      1: Result := SQLDequotedStr(Value, P^);
+      2: Result := SQLDequotedStr(Value, P^, (P+1)^);
+      else Result := Value;
+    end;
+  end else
+    Result := AnsiLowerCase(Value);
 end;
 
 function TZPostgreSQLIdentifierConvertor.IsQuoted(const Value: string): Boolean;
 var
   QuoteDelim: string;
+  pQ, pV: PChar;
 begin
   QuoteDelim := Metadata.GetDatabaseInfo.GetIdentifierQuoteString;
-  Result := (QuoteDelim <> '') and (Value <> '') and
-            (Value[1]=QuoteDelim[1]) and
-            (Value[Length(Value)]=QuoteDelim[1]);
+  pQ := Pointer(QuoteDelim);
+  pV := Pointer(Value);
+  Result := (pQ <> nil) and (pV <> nil) and (pQ^ = pV^) and
+            ((pV+Length(Value)-1)^ = (pQ+Length(QuoteDelim)-1)^);
 end;
 
 function TZPostgreSQLIdentifierConvertor.IsSpecialCase(
@@ -3712,15 +3701,19 @@ end;
 function TZPostgreSQLIdentifierConvertor.Quote(const Value: string): string;
 var
   QuoteDelim: string;
+  P: PChar absolute QuoteDelim;
 begin
   Result := Value;
-  if IsCaseSensitive(Value) then
-  begin
+  if IsCaseSensitive(Value) then begin
     QuoteDelim := Metadata.GetDatabaseInfo.GetIdentifierQuoteString;
-    Result := QuoteDelim +
-              StringReplace(Result,QuoteDelim,QuoteDelim+QuoteDelim,[rfReplaceAll]) +
-              QuoteDelim;
+    case Length(QuoteDelim) of
+      0: Result := Value;
+      1: Result := SQLQuotedStr(Value, P^);
+      2: Result := SQLQuotedStr(Value, P^, (P+1)^);
+      else Result := Value;
+    end;
   end;
 end;
 
+{$ENDIF ZEOS_DISABLE_POSTGRESQL} //if set we have an empty unit
 end.

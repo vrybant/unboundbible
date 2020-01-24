@@ -55,6 +55,7 @@ interface
 
 {$I ZDbc.inc}
 
+{$IFNDEF ZEOS_DISABLE_SQLITE} //if set we have an empty unit
 uses
   Types, Classes, SysUtils, ZSysUtils, ZDbcIntfs, ZDbcMetadata,
   ZCompatibility, ZDbcSQLiteUtils;
@@ -241,10 +242,12 @@ type
     function UncachedGetCharacterSets: IZResultSet; override; //EgonHugeist
   end;
 
+{$ENDIF ZEOS_DISABLE_SQLITE} //if set we have an empty unit
 implementation
+{$IFNDEF ZEOS_DISABLE_SQLITE} //if set we have an empty unit
 
 uses
-  ZDbcUtils, ZDbcSqLite, ZFastCode, ZSelectSchema;
+  ZDbcUtils, ZDbcSqLite, ZFastCode, ZSelectSchema, ZClasses;
 
 { TZSQLiteDatabaseInfo }
 
@@ -1335,7 +1338,7 @@ begin
         Result.UpdatePAnsiChar(ColumnNameIndex, GetPAnsiChar(name_index, Len), @Len);
         RawTmp := GetRawByteString(type_index);
         SQLType := ConvertSQLiteTypeToSQLType(RawTmp, UndefinedVarcharAsStringLength,
-          Precision{%H-}, Decimals{%H-}, ConSettings.CPType);
+          Precision, Decimals, ConSettings.CPType);
         Result.UpdateSmall(TableColColumnTypeIndex, Ord(SQLType));
 
         Len := Length(RawTmp);
@@ -1445,6 +1448,15 @@ begin
       Result.InsertRow;
     end;
     Close;
+  end;
+  if Result.IsBeforeFirst then begin
+    Result.MoveToInsertRow;
+    if Schema <> '' then
+      Result.UpdateString(CatalogNameIndex, Schema);
+    Result.UpdateString(TableNameIndex, Table);
+    Result.UpdateRawByteString(PrimaryKeyColumnNameIndex, 'rowid');
+    Result.UpdateInt(PrimaryKeyKeySeqIndex, 0);
+    Result.InsertRow;
   end;
 end;
 
@@ -1622,7 +1634,7 @@ begin
     begin
       while MainResultSet.Next do
       begin
-        if (ZFastCode.Pos(AnsiString(' autoindex '), MainResultSet.GetRawByteString(main_name_field_index)) = 0)
+        if (ZFastCode.Pos({$IFDEF NO_ANSISTRING}RawByteString{$ELSE}AnsiString{$ENDIF}(' autoindex '), MainResultSet.GetRawByteString(main_name_field_index)) = 0)
           and ((Unique = False) or (MainResultSet.GetInt(main_unique_field_index) = 0)) then
         begin
           ResultSet := GetConnection.CreateStatement.ExecuteQuery(
@@ -1637,7 +1649,7 @@ begin
             Result.UpdatePAnsiChar(IndexInfoColIndexNameIndex, MainResultSet.GetPAnsiChar(main_name_field_index, Len), @Len);
             Result.UpdateInt(IndexInfoColOrdPositionIndex, ResultSet.GetInt(sub_seqno_field_index)+FirstDbcIndex);
             Result.UpdatePAnsiChar(IndexInfoColColumnNameIndex, ResultSet.GetPAnsiChar(sub_name_field_index, Len), @Len);
-            Result.UpdateString(IndexInfoColAscOrDescIndex, 'A');
+            Result.UpdateRawByteString(IndexInfoColAscOrDescIndex, 'A');
             Result.UpdateInt(IndexInfoColCardinalityIndex, 0);
             Result.UpdateInt(IndexInfoColPagesIndex, 0);
             Result.InsertRow;
@@ -1684,7 +1696,7 @@ These constant define integer codes that represent the various text encodings su
 
   Result:=inherited UncachedGetCharacterSets;
 
-  for i := 0 to high(Encodings) do
+  for i := Low(Encodings) to High(Encodings) do
   begin
     Result.MoveToInsertRow;
     Result.UpdateString(CharacterSetsNameIndex, Encodings[i].CP); //CHARACTER_SET_NAME
@@ -1693,5 +1705,6 @@ These constant define integer codes that represent the various text encodings su
   end;
 end;
 
+{$ENDIF ZEOS_DISABLE_SQLITE} //if set we have an empty unit
 end.
 

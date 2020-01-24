@@ -46,6 +46,8 @@ interface
 
 {$I ZPlain.inc}
 
+{$IFNDEF ZEOS_DISABLE_ASA}
+
 uses Classes, ZCompatibility, ZPlainDriver, ZPlainASAConstants;
 
 {***************** Plain API Constants definition ****************}
@@ -432,7 +434,9 @@ type
     function GetDescription: string; override;
   end;
 
+{$ENDIF ZEOS_DISABLE_ASA}
 implementation
+{$IFNDEF ZEOS_DISABLE_ASA}
 
 uses SysUtils, ZPlainLoader, ZEncoding;
 
@@ -836,7 +840,7 @@ end;
 
 function TZASA7PlainDriver.GetDescription: string;
 begin
-  Result := 'Native Plain Driver for ASA 7.0 DBLib';
+  Result := 'Native Plain Driver for Sybase ASA 7.0 DBLib';
 end;
 
 {TZASA8PlainDriver}
@@ -859,7 +863,7 @@ end;
 
 function TZASA8PlainDriver.GetDescription: string;
 begin
-  Result := 'Native Plain Driver for ASA 8.0 DBLib';
+  Result := 'Native Plain Driver for Sybase ASA 8.0 DBLib';
 end;
 
 {TZASA9PlainDriver}
@@ -882,7 +886,7 @@ end;
 
 function TZASA9PlainDriver.GetDescription: string;
 begin
-  Result := 'Native Plain Driver for ASA 9.0 DBLib';
+  Result := 'Native Plain Driver for Sybase ASA 9.0 DBLib';
 end;
 
 {TZASA12PlainDriver}
@@ -905,8 +909,8 @@ end;
 
 function TZASA12PlainDriver.GetDescription: string;
 begin
-  Result := 'Native Plain Driver for ASA 9.0 DBLib';
+  Result := 'Native Plain Driver for Sybase ASA 12.0 DBLib';
 end;
-
+{$ENDIF ZEOS_DISABLE_ASA}
 end.
 

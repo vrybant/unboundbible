@@ -56,6 +56,7 @@ interface
 
 {$I ZDbc.inc}
 
+{$IFNDEF ZEOS_DISABLE_POSTGRESQL} //if set we have an empty unit
 uses
   Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
   ZDbcIntfs, ZPlainPostgreSqlDriver, ZDbcPostgreSql, ZDbcLogging,
@@ -121,7 +122,7 @@ function PGEscapeString(SrcBuffer: PAnsiChar; SrcLength: Integer;
   @param Value a string in PostgreSQL escape format.
   @return a regular string.
 }
-function DecodeString(const Value: AnsiString): AnsiString;
+function DecodeString(const Value: RawByteString): RawByteString;
 
 {**
   Checks for possible sql errors.
@@ -154,9 +155,11 @@ function PGPrepareAnsiSQLParam(const Value: TZVariant; const ClientVarManager: I
   const Connection: IZPostgreSQLConnection; ChunkSize: Cardinal; InParamType: TZSQLType;
   oidasblob, DateTimePrefix, QuotedNumbers: Boolean; ConSettings: PZConSettings): RawByteString;
 
+{$ENDIF ZEOS_DISABLE_POSTGRESQL} //if set we have an empty unit
 implementation
+{$IFNDEF ZEOS_DISABLE_POSTGRESQL} //if set we have an empty unit
 
-uses ZFastCode, ZMessages, ZDbcPostgreSqlResultSet, ZDbcUtils, ZSysUtils;
+uses ZFastCode, ZMessages, ZDbcPostgreSqlResultSet, ZDbcUtils, ZSysUtils,ZClasses;
 
 {**
    Return ZSQLType from PostgreSQL type name
@@ -168,23 +171,23 @@ function PostgreSQLToSQLType(const Connection: IZPostgreSQLConnection;
   const TypeName: string): TZSQLType;
 var
   TypeNameLo: string;
+  P: PChar absolute TypeNameLo;
 begin
   TypeNameLo := LowerCase(TypeName);
   if (TypeNameLo = 'interval') or (TypeNameLo = 'char') or (TypeNameLo = 'bpchar')
     or (TypeNameLo = 'varchar') or (TypeNameLo = 'bit') or (TypeNameLo = 'varbit')
-  then//EgonHugeist: Highest Priority Client_Character_set!!!!
-    if (Connection.GetConSettings.CPType = cCP_UTF16) then
+  then if (Connection.GetConSettings.CPType = cCP_UTF16) then
       Result := stUnicodeString
     else
       Result := stString
-  else if TypeNameLo = 'text' then
+  else if (TypeNameLo = 'text') or (TypeNameLo = 'citext') then
     Result := stAsciiStream
   else if TypeNameLo = 'oid' then
   begin
     if Connection.IsOidAsBlob() then
       Result := stBinaryStream
     else
-      Result := stInteger;
+      Result := stLongWord;
   end
   else if TypeNameLo = 'name' then
     Result := stString
@@ -229,10 +232,12 @@ begin
   end
   else if (TypeNameLo = 'int2vector') or (TypeNameLo = 'oidvector') then
     Result := stAsciiStream
-  else if (TypeNameLo <> '') and (TypeNameLo[1] = '_') then // ARRAY TYPES
+  else if (TypeNameLo <> '') and (P^ = '_') then // ARRAY TYPES
     Result := stAsciiStream
   else if (TypeNameLo = 'uuid') then
     Result := stGuid
+  else if StartsWith(TypeNameLo,  'json') then
+    Result := stAsciiStream
   else
     Result := stUnknown;
 
@@ -259,13 +264,9 @@ begin
         else
           Result := stString;
     TEXTOID: Result := stAsciiStream; { text }
-    OIDOID: { oid }
-      begin
-        if OidAsBlob then
-          Result := stBinaryStream
-        else
-          Result := stInteger;
-      end;
+    OIDOID: if OidAsBlob
+            then Result := stBinaryStream
+            else Result := stLongWord;
     NAMEOID: Result := stString; { name }
     INT2OID: Result := stSmall; { int2 }
     INT4OID: Result := stInteger; { int4 }
@@ -291,6 +292,7 @@ begin
           Result := stBinaryStream;
       end;
     UUIDOID: Result := stGUID; {uuid}
+    JSONOID, JSONBOID: Result := stAsciiStream;
     INT2VECTOROID, OIDVECTOROID: Result := stAsciiStream; { int2vector/oidvector. no '_aclitem' }
     143,629,651,719,791,1000..OIDARRAYOID,1040,1041,1115,1182,1183,1185,1187,1231,1263,
     1270,1561,1563,2201,2207..2211,2949,2951,3643,3644,3645,3735,3770 : { other array types }
@@ -497,10 +499,9 @@ begin
   begin
     LastState := pg_CS_stat(LastState,integer(SrcBuffer^),
       TZPgCharactersetType(ConSettings.ClientCodePage.ID));
-    if (SrcBuffer^ in [#0, '''']) or ((SrcBuffer^ = '\') and (LastState = 0)) then
-      Inc(DestLength, 4)
-    else
-      Inc(DestLength);
+    if (PByte(SrcBuffer)^ in [Ord(#0), Ord(#39)]) or ((PByte(SrcBuffer)^ = Ord('\')) and (LastState = 0))
+    then Inc(DestLength, 4)
+    else Inc(DestLength);
     Inc(SrcBuffer);
   end;
 
@@ -508,32 +509,28 @@ begin
   SetLength(Result, DestLength);
   DestBuffer := Pointer(Result);
   if Quoted then begin
-    DestBuffer^ := '''';
+    PByte(DestBuffer)^ := Ord(#39);
     Inc(DestBuffer);
   end;
 
   LastState := 0;
-  for I := 1 to SrcLength do
-  begin
+  for I := 1 to SrcLength do begin
     LastState := pg_CS_stat(LastState,integer(SrcBuffer^),
       TZPgCharactersetType(ConSettings.ClientCodePage.ID));
-    if CharInSet(SrcBuffer^, [#0, '''']) or ((SrcBuffer^ = '\') and (LastState = 0)) then
-    begin
-      DestBuffer[0] := '\';
-      DestBuffer[1] := AnsiChar(Ord('0') + (Byte(SrcBuffer^) shr 6));
-      DestBuffer[2] := AnsiChar(Ord('0') + ((Byte(SrcBuffer^) shr 3) and $07));
-      DestBuffer[3] := AnsiChar(Ord('0') + (Byte(SrcBuffer^) and $07));
+    if (PByte(SrcBuffer)^ in [Ord(#0), Ord(#39)]) or ((PByte(SrcBuffer)^ = Ord('\')) and (LastState = 0)) then begin
+      PByte(DestBuffer)^ := Ord('\');
+      PByte(DestBuffer+1)^ := Ord('0') + (Byte(SrcBuffer^) shr 6);
+      PByte(DestBuffer+2)^ := Ord('0') + ((Byte(SrcBuffer^) shr 3) and $07);
+      PByte(DestBuffer+3)^ := Ord('0') + (Byte(SrcBuffer^) and $07);
       Inc(DestBuffer, 4);
-    end
-    else
-    begin
+    end else begin
       DestBuffer^ := SrcBuffer^;
       Inc(DestBuffer);
     end;
     Inc(SrcBuffer);
   end;
   if Quoted then
-    DestBuffer^ := '''';
+    PByte(DestBuffer)^ := Ord(#39);
 end;
 
 
@@ -556,11 +553,9 @@ begin
   DestLength := Ord(Quoted) shl 1;
   for I := 1 to Len do
   begin
-    if (Byte(SrcBuffer^) < 32) or (Byte(SrcBuffer^) > 126)
-    or (SrcBuffer^ in ['''', '\']) then
-      Inc(DestLength, 5)
-    else
-      Inc(DestLength);
+    if (Byte(SrcBuffer^) < 32) or (Byte(SrcBuffer^) > 126) or (PByte(SrcBuffer)^ in [Ord(#39), Ord('\')])
+    then Inc(DestLength, 5)
+    else Inc(DestLength);
     Inc(SrcBuffer);
   end;
   SrcBuffer := DestBuffer; //restore
@@ -568,23 +563,19 @@ begin
   SetLength(Result, DestLength);
   DestBuffer := Pointer(Result);
   if Quoted then begin
-    DestBuffer^ := '''';
+    PByte(DestBuffer)^ := Ord(#39);
     Inc(DestBuffer);
   end;
 
-  for I := 1 to Len do
-  begin
-    if (Byte(SrcBuffer^) < 32) or (Byte(SrcBuffer^) > 126) or (SrcBuffer^ in ['''', '\']) then
-    begin
-      DestBuffer[0] := '\';
-      DestBuffer[1] := '\';
-      DestBuffer[2] := AnsiChar(Ord('0') + (Byte(SrcBuffer^) shr 6));
-      DestBuffer[3] := AnsiChar(Ord('0') + ((Byte(SrcBuffer^) shr 3) and $07));
-      DestBuffer[4] := AnsiChar(Ord('0') + (Byte(SrcBuffer^) and $07));
+  for I := 1 to Len do begin
+    if (Byte(SrcBuffer^) < 32) or (Byte(SrcBuffer^) > 126) or (PByte(SrcBuffer)^ in [Ord(#39), Ord('\')]) then begin
+      PByte(DestBuffer)^ := Ord('\');
+      PByte(DestBuffer+1)^ := Ord('\');
+      PByte(DestBuffer+2)^ := Ord('0') + (Byte(SrcBuffer^) shr 6);
+      PByte(DestBuffer+3)^ := Ord('0') + ((Byte(SrcBuffer^) shr 3) and $07);
+      PByte(DestBuffer+4)^ := Ord('0') + (Byte(SrcBuffer^) and $07);
       Inc(DestBuffer, 5);
-    end
-    else
-    begin
+    end else begin
       DestBuffer^ := SrcBuffer^;
       Inc(DestBuffer);
     end;
@@ -599,7 +590,7 @@ end;
   @param Value a string in PostgreSQL escape format.
   @return a regular string.
 }
-function DecodeString(const Value: AnsiString): AnsiString;
+function DecodeString(const Value: RawByteString): RawByteString;
 var
   SrcLength, DestLength: Integer;
   SrcBuffer, DestBuffer: PAnsiChar;
@@ -615,23 +606,18 @@ begin
     if SrcBuffer^ = '\' then
     begin
       Inc(SrcBuffer);
-      if CharInSet(SrcBuffer^, ['\', '''']) then
-      begin
+      if PByte(SrcBuffer)^ in [Ord('\'), Ord('''')] then begin
         DestBuffer^ := SrcBuffer^;
         Inc(SrcBuffer);
         Dec(SrcLength, 2);
-      end
-      else
-      begin
-        DestBuffer^ := AnsiChar(((Byte(SrcBuffer[0]) - Ord('0')) shl 6)
+      end else begin
+        PByte(DestBuffer)^ := ((Byte(SrcBuffer[0]) - Ord('0')) shl 6)
           or ((Byte(SrcBuffer[1]) - Ord('0')) shl 3)
-          or ((Byte(SrcBuffer[2]) - Ord('0'))));
+          or ((Byte(SrcBuffer[2]) - Ord('0')));
         Inc(SrcBuffer, 3);
         Dec(SrcLength, 4);
       end;
-    end
-    else
-    begin
+    end else begin
       DestBuffer^ := SrcBuffer^;
       Inc(SrcBuffer);
       Dec(SrcLength);
@@ -824,6 +810,8 @@ begin
       RaiseUnsupportedParameterTypeException(InParamType);
   end;
 end;
+{$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R+}{$IFEND}
 
 
+{$ENDIF ZEOS_DISABLE_POSTGRESQL} //if set we have an empty unit
 end.

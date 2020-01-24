@@ -56,22 +56,18 @@ interface
 {$I ZDbc.inc}
 
 uses
-{$IFDEF FPC}
-  {$IFDEF WIN32}
-    Comobj,
-  {$ENDIF}
-{$ENDIF}
 {$IFDEF WITH_LCONVENCODING}
   LConvEncoding,
 {$ENDIF}
   Types, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
+  {$IFDEF TLIST_IS_DEPRECATED}ZSysUtils,{$ENDIF}
+  {$IF defined(UNICODE) and not defined(WITH_UNICODEFROMLOCALECHARS)}Windows,{$IFEND}
   ZClasses, ZDbcIntfs, ZTokenizer, ZCompatibility, ZGenericSqlToken,
   ZGenericSqlAnalyser, ZPlainDriver, ZURL, ZCollections, ZVariant;
 
 type
 
   {** Implements Abstract Database Driver. }
-  {$WARNINGS OFF} //to supress the deprecated Warning of connect
   TZAbstractDriver = class(TInterfacedObject, IZDriver)
   protected
     FCachedPlainDrivers: IZHashMap;
@@ -100,7 +96,6 @@ type
     function GetStatementAnalyser: IZStatementAnalyser; virtual;
     function GetClientVersion(const {%H-}Url: string): Integer; virtual;
   end;
-  {$WARNINGS OFF}
 
   {** Implements Abstract Database Connection. }
 
@@ -118,7 +113,7 @@ type
     FURL: TZURL;
     FUseMetadata: Boolean;
     FClientVarManager: IZClientVariantManager;
-    fRegisteredStatements: TList; //weak reference to pending stmts
+    fRegisteredStatements: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF}; //weak reference to pending stmts
     function GetHostName: string;
     procedure SetHostName(const Value: String);
     function GetPort: Integer;
@@ -141,14 +136,15 @@ type
     {$ENDIF}
     procedure InternalCreate; virtual; abstract;
     procedure SetDateTimeFormatProperties(DetermineFromInfo: Boolean = True);
-    procedure ResetCurrentClientCodePage(const Name: String);
+    procedure ResetCurrentClientCodePage(const Name: String;
+      IsStringFieldCPConsistent: Boolean);
     function GetEncoding: TZCharEncoding;
     function GetClientVariantManager: IZClientVariantManager;
     procedure CheckCharEncoding(const CharSet: String; const DoArrange: Boolean = False);
     function GetClientCodePageInformations: PZCodePage; //EgonHugeist
     function GetAutoEncodeStrings: Boolean; //EgonHugeist
     procedure SetAutoEncodeStrings(const Value: Boolean);
-    procedure OnPropertiesChange(Sender: TObject); virtual;
+    procedure OnPropertiesChange({%H-}Sender: TObject); virtual;
     procedure RaiseUnsupportedException;
 
     procedure RegisterStatement(const Value: IZStatement);
@@ -174,7 +170,6 @@ type
     property URL: TZURL read FURL;
     property TransactIsolationLevel: TZTransactIsolationLevel
       read FTransactIsolationLevel write FTransactIsolationLevel;
-    property Closed: Boolean read FClosed write FClosed;
   public
     constructor Create(const {%H-}Driver: IZDriver; const Url: string;
       const {%H-}PlainDriver: IZPlainDriver; const HostName: string; Port: Integer;
@@ -239,7 +234,9 @@ type
 
     function GetWarnings: EZSQLWarning; virtual;
     procedure ClearWarnings; virtual;
+    {$IFNDEF WITH_TBYTES_AS_RAWBYTESTRING}
     function GetBinaryEscapeString(const Value: RawByteString): String; overload; virtual;
+    {$ENDIF}
     function GetBinaryEscapeString(const Value: TBytes): String; overload; virtual;
     function GetEscapeString(const Value: ZWideString): ZWideString; overload; virtual;
     function GetEscapeString(const Value: RawByteString): RawByteString; overload; virtual;
@@ -249,7 +246,9 @@ type
     function GetTestMode : Byte;
     procedure SetTestMode(Mode: Byte);
     {$ENDIF}
-end;
+  protected
+    property Closed: Boolean read IsClosed write FClosed;
+  end;
 
   {** Implements Abstract Database notification. }
   TZAbstractNotification = class(TInterfacedObject, IZNotification)
@@ -300,8 +299,13 @@ end;
 
 implementation
 
-uses ZMessages, ZSysUtils, ZDbcMetadata, ZDbcUtils, ZEncoding
-  {$IFDEF WITH_UNITANSISTRINGS}, AnsiStrings{$ENDIF};
+uses ZMessages,{$IFNDEF TLIST_IS_DEPRECATED}ZSysUtils, {$ENDIF}
+  ZDbcMetadata, ZDbcUtils, ZEncoding, StrUtils,
+  {$IFDEF FPC}syncobjs{$ELSE}SyncObjs{$ENDIF}
+  {$IFDEF WITH_INLINE},ZFastCode{$ENDIF}
+  {$IFDEF WITH_UNITANSISTRINGS}, AnsiStrings{$ENDIF}
+  {$IF defined(NO_INLINE_SIZE_CHECK) and not defined(UNICODE) and defined(MSWINDOWS)},Windows{$IFEND}
+  {$IFDEF NO_INLINE_SIZE_CHECK}, Math{$ENDIF};
 
 { TZAbstractDriver }
 
@@ -368,7 +372,7 @@ end;
   @return a <code>Connection</code> object that represents a
     connection to the URL
 }
-{$WARNINGS OFF}
+{$WARN SYMBOL_DEPRECATED OFF}
 function TZAbstractDriver.Connect(const Url: string; Info: TStrings): IZConnection;
 var
   TempURL:  TZURL;
@@ -380,12 +384,32 @@ begin
     TempUrl.Free;
   end;
 end;
+{$WARN SYMBOL_DEPRECATED ON}
 
+{**
+  Attempts to make a database connection to the given URL.
+  The driver should return "null" if it realizes it is the wrong kind
+  of driver to connect to the given URL.  This will be common, as when
+  the JDBC driver manager is asked to connect to a given URL it passes
+  the URL to each loaded driver in turn.
+
+  <P>The driver should raise a SQLException if it is the right
+  driver to connect to the given URL, but has trouble connecting to
+  the database.
+
+  <P>The java.util.Properties argument can be used to passed arbitrary
+  string tag/value pairs as connection arguments.
+  Normally at least "user" and "password" properties should be
+  included in the Properties.
+
+  @param url the TZURL of the database to which to connect
+  @return a <code>Connection</code> object that represents a
+    connection to the URL
+}
 function TZAbstractDriver.Connect(const Url: TZURL): IZConnection;
 begin
   Result := nil;
 end;
-{$WARNINGS ON}
 
 {**
   Returns true if the driver thinks that it can open a connection
@@ -424,12 +448,12 @@ begin
   if Protocol = '' then
   begin
     Result := PlainDriver.GetProtocol;
-    TempKey := TZAnyValue.CreateWithString(PlainDriver.GetProtocol)
+    TempKey := TZAnyValue.CreateWithString(AnsiLowerCase(PlainDriver.GetProtocol))
   end
   else
   begin
     Result := Protocol;
-    TempKey := TZAnyValue.CreateWithString(Protocol+LibLocation);
+    TempKey := TZAnyValue.CreateWithString(AnsiLowerCase(Protocol+LibLocation));
   end;
   FCachedPlainDrivers.Put(TempKey, PlainDriver);
 end;
@@ -439,15 +463,17 @@ var
   TempKey: IZAnyValue;
   TempPlain: IZPlainDriver;
 begin
-  TempKey := TZAnyValue.CreateWithString(Protocol+LibLocation);
+  TempKey := TZAnyValue.CreateWithString(AnsiLowerCase(Protocol+LibLocation));
   Result := FCachedPlainDrivers.Get(TempKey) as IZPlainDriver;
   if Result = nil then
   begin
-    TempKey := nil;
-    TempKey := TZAnyValue.CreateWithString(Protocol);
+    TempKey := TZAnyValue.CreateWithString(AnsiLowerCase(Protocol));
     TempPlain := FCachedPlainDrivers.Get(TempKey) as IZPlainDriver;
     if Assigned(TempPlain) then
+    begin
       Result := TempPlain.Clone;
+      AddPlainDriverToCache(Result, Protocol, LibLocation);
+    end;
   end;
 end;
 
@@ -460,8 +486,14 @@ function TZAbstractDriver.GetPlainDriver(const Url: TZURL;
   const InitDriver: Boolean): IZPlainDriver;
 begin
   Result := GetPlainDriverFromCache(Url.Protocol, Url.LibLocation);
-  if Assigned(Result) and InitDriver then
-    Result.Initialize(Url.LibLocation);
+  if Assigned(Result) and InitDriver then begin
+    GlobalCriticalSection.Enter;
+    try
+      Result.Initialize(Url.LibLocation);
+    finally
+      GlobalCriticalSection.Leave;
+    end;
+  end;
 end;
 
 {**
@@ -597,62 +629,56 @@ begin
   Result := FURL.Properties;
 end;
 
-procedure TZAbstractConnection.SetDateTimeFormatProperties(DetermineFromInfo: Boolean = True);
+procedure TZAbstractConnection.SetDateTimeFormatProperties(DetermineFromInfo: Boolean);
+
+  procedure SetNotEmptyFormat(const FmtFromValues, FmtDefault: string; out ResultFmt: string);
+  begin
+    if FmtFromValues = '' then
+      ResultFmt := FmtDefault
+    else
+      ResultFmt := UpperCase(FmtFromValues);
+  end;
+
 begin
-  {date formats}
   if DetermineFromInfo then begin
-    if Info.Values['datewriteformat'] = '' then
-      ConSettings^.WriteFormatSettings.DateFormat := 'YYYY-MM-DD'
-    else
-      ConSettings^.WriteFormatSettings.DateFormat := UpperCase(Info.Values['datewriteformat']);
+  {date formats}
+    SetNotEmptyFormat(Info.Values['DateWriteFormat'],
+      DefDateFormatYMD,
+      ConSettings^.WriteFormatSettings.DateFormat);
 
-    if Info.Values['datereadformat'] = '' then
-      ConSettings^.ReadFormatSettings.DateFormat := 'YYYY-MM-DD'
-    else
-      ConSettings^.ReadFormatSettings.DateFormat := UpperCase(Info.Values['datereadformat']);
+    SetNotEmptyFormat(Info.Values['DateReadFormat'],
+      DefDateFormatYMD,
+      ConSettings^.ReadFormatSettings.DateFormat);
 
-    if Info.Values['datedisplayformat'] = '' then
-      ConSettings^.DisplayFormatSettings.DateFormat := ({$IFDEF WITH_FORMATSETTINGS}FormatSettings.{$ENDIF}ShortDateFormat)
-    else
-      ConSettings^.DisplayFormatSettings.DateFormat := UpperCase(Info.Values['datedisplayformat']);
+    SetNotEmptyFormat(Info.Values['DateDisplayFormat'],
+      {$IFDEF WITH_FORMATSETTINGS}FormatSettings.{$ENDIF}ShortDateFormat,
+      ConSettings^.DisplayFormatSettings.DateFormat);
 
     {time formats}
-    if Info.Values['timewiteformat'] = '' then
-      if GetMetaData.GetDatabaseInfo.SupportsMilliseconds then
-        ConSettings^.WriteFormatSettings.TimeFormat := 'HH:NN:SS.ZZZ'
-      else
-        ConSettings^.WriteFormatSettings.TimeFormat := 'HH:NN:SS'
-    else
-      ConSettings^.WriteFormatSettings.TimeFormat := UpperCase(Info.Values['timewiteformat']);
+    SetNotEmptyFormat(Info.Values['TimeWriteFormat'],
+      IfThen(GetMetaData.GetDatabaseInfo.SupportsMilliseconds, DefTimeFormatMsecs, DefTimeFormat),
+      ConSettings^.WriteFormatSettings.TimeFormat);
 
-    if Info.Values['timereadformat'] = '' then
-      if GetMetaData.GetDatabaseInfo.SupportsMilliseconds then
-        ConSettings^.ReadFormatSettings.TimeFormat := 'HH:NN:SS.ZZZ'
-      else
-        ConSettings^.ReadFormatSettings.TimeFormat := 'HH:NN:SS'
-    else
-      ConSettings^.ReadFormatSettings.TimeFormat := UpperCase(Info.Values['timereadformat']);
+    SetNotEmptyFormat(Info.Values['TimeReadFormat'],
+      IfThen(GetMetaData.GetDatabaseInfo.SupportsMilliseconds, DefTimeFormatMsecs, DefTimeFormat),
+      ConSettings^.ReadFormatSettings.TimeFormat);
 
-    if Info.Values['timedisplayformat'] = '' then
-      ConSettings^.DisplayFormatSettings.TimeFormat := {$IFDEF WITH_FORMATSETTINGS}FormatSettings.{$ENDIF}LongTimeFormat
-    else
-      ConSettings^.DisplayFormatSettings.TimeFormat := UpperCase(Info.Values['timedisplayformat']);
+    SetNotEmptyFormat(Info.Values['TimeDisplayFormat'],
+      {$IFDEF WITH_FORMATSETTINGS}FormatSettings.{$ENDIF}LongTimeFormat,
+      ConSettings^.DisplayFormatSettings.TimeFormat);
 
-    {timestamp format}
-    if Info.Values['datetimewriteformat'] = '' then
-      ConSettings^.WriteFormatSettings.DateTimeFormat := ConSettings^.WriteFormatSettings.DateFormat+' '+ConSettings^.WriteFormatSettings.TimeFormat
-    else
-      ConSettings^.WriteFormatSettings.DateTimeFormat := Info.Values['datetimewriteformat'];
+    {timestamp formats}
+    SetNotEmptyFormat(Info.Values['DatetimeWriteFormat'],
+      ConSettings^.WriteFormatSettings.DateFormat+' '+ConSettings^.WriteFormatSettings.TimeFormat,
+      ConSettings^.WriteFormatSettings.DateTimeFormat);
 
-    if Info.Values['datetimereadformat'] = '' then
-      ConSettings^.ReadFormatSettings.DateTimeFormat := ConSettings^.ReadFormatSettings.DateFormat+' '+ConSettings^.ReadFormatSettings.TimeFormat
-    else
-      ConSettings^.ReadFormatSettings.DateTimeFormat := UpperCase(Info.Values['datetimereadformat']);
+    SetNotEmptyFormat(Info.Values['DatetimeReadFormat'],
+      ConSettings^.ReadFormatSettings.DateFormat+' '+ConSettings^.ReadFormatSettings.TimeFormat,
+      ConSettings^.ReadFormatSettings.DateTimeFormat);
 
-    if Info.Values['datetimedisplayformat'] = '' then
-      ConSettings^.DisplayFormatSettings.DateTimeFormat := ConSettings^.DisplayFormatSettings.DateFormat+' '+ConSettings^.DisplayFormatSettings.TimeFormat
-    else
-      ConSettings^.DisplayFormatSettings.DateTimeFormat := UpperCase(Info.Values['datetimedisplayformat']);
+    SetNotEmptyFormat(Info.Values['DatetimeDisplayFormat'],
+      ConSettings^.DisplayFormatSettings.DateFormat+' '+ConSettings^.DisplayFormatSettings.TimeFormat,
+      ConSettings^.DisplayFormatSettings.DateTimeFormat);
   end;
 
   ConSettings^.WriteFormatSettings.DateFormatLen := Length(ConSettings^.WriteFormatSettings.DateFormat);
@@ -675,7 +701,8 @@ begin
     fRegisteredStatements.Add(Pointer(Value))
 end;
 
-procedure TZAbstractConnection.ResetCurrentClientCodePage(const Name: String);
+procedure TZAbstractConnection.ResetCurrentClientCodePage(const Name: String;
+  IsStringFieldCPConsistent: Boolean);
 var NewCP, tmp: PZCodePage;
 begin
   FDisposeCodePage := True;
@@ -683,12 +710,12 @@ begin
   ConSettings^.ClientCodePage := New(PZCodePage);
   NewCP := GetIZPlainDriver.ValidateCharEncoding(Name);
   ConSettings^.ClientCodePage^.Name := Tmp^.Name;
-  ConSettings^.ClientCodePage^.ID := Tmp^.ID;
-  ConSettings^.ClientCodePage^.CharWidth := Tmp^.CharWidth;
+  ConSettings^.ClientCodePage^.ID := NewCP^.ID;
+  ConSettings^.ClientCodePage^.CharWidth := NewCP^.CharWidth;
   ConSettings^.ClientCodePage^.Encoding := NewCP^.Encoding;
   ConSettings^.ClientCodePage^.CP := NewCP^.CP;
   ConSettings^.ClientCodePage^.ZAlias := '';
-  ConSettings^.ClientCodePage^.IsStringFieldCPConsistent := Tmp^.IsStringFieldCPConsistent;
+  ConSettings^.ClientCodePage^.IsStringFieldCPConsistent := IsStringFieldCPConsistent;
   {Also reset the MetaData ConSettings}
   (FMetadata as TZAbstractDatabaseMetadata).ConSettings := ConSettings;
   {$IFDEF WITH_LCONVENCODING}
@@ -773,7 +800,7 @@ end;
   @param Password a user password.
   @param Info a string list with extra connection parameters.
 }
-{$WARNINGS OFF} //suppress the deprecatad warning of calling create from internal
+{$WARN SYMBOL_DEPRECATED OFF}
 constructor TZAbstractConnection.Create(const Driver: IZDriver; const Url: string;
   const PlainDriver: IZPlainDriver;
   const HostName: string; Port: Integer; const Database: string;
@@ -785,13 +812,12 @@ begin
   Create(TempURL);
   TempURL.Free;
 end;
-{$WARNINGS ON}
+{$WARN SYMBOL_DEPRECATED ON}
 
 {**
   Constructs this object and assignes the main properties.
   @param Url a connection ZURL-class which exports all connection parameters.
 }
-{$WARNINGS OFF} //suppress the deprecatad warning of calling create from internal
 constructor TZAbstractConnection.Create(const ZUrl: TZURL);
 begin
   FClosed := True;
@@ -803,7 +829,7 @@ begin
   FDriverManager := DriverManager; //just keep refcount high
   FDriver := DriverManager.GetDriver(ZURL.URL);
   FIZPlainDriver := FDriver.GetPlainDriver(ZUrl);
-  fRegisteredStatements := TList.Create;
+  fRegisteredStatements := {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF}.Create;
   FURL.OnPropertiesChange := OnPropertiesChange;
   FURL.URL := ZUrl.URL;
 
@@ -829,7 +855,6 @@ begin
   FTestMode := 0;
   {$ENDIF}
 end;
-{$WARNINGS ON}
 
 {**
   Destroys this object and cleanups the memory.
@@ -1203,7 +1228,7 @@ end;
 }
 function TZAbstractConnection.EscapeString(const Value : RawByteString) : RawByteString;
 begin
-  Result := AnsiString(EncodeCString(String(Value)));
+  Result := EncodeCString(Value);
 end;
 
 {**
@@ -1221,6 +1246,7 @@ var RefCountAdded: Boolean;
 begin
   //while killing pending statements which keep the Connection.RefCount greater than 0
   //we need to take care about calling Destroy which calls Close again.
+  DriverManager.ClearGarbageCollector;
   if RefCount > 0 then begin //manual close called
     RefCountAdded := True;
     _AddRef;
@@ -1262,6 +1288,7 @@ end;
 function TZAbstractConnection.IsClosed: Boolean;
 begin
   Result := FClosed;
+  DriverManager.ClearGarbageCollector;
 end;
 
 {**
@@ -1498,10 +1525,9 @@ function TZAbstractConnection.GetEscapeString(const Value: RawByteString): RawBy
 var P: PAnsiChar;
 begin
   P := Pointer(Value);
-  if (P <> nil) and (Length(Value)>1) and (P^=#39) and ((P+Length(Value)-1)^=#39) then
-    Result := Value
-  else
-    Result := SQLQuotedStr(Value, #39);
+  if (P <> nil) and (Length(Value)>1) and (AnsiChar(P^)=AnsiChar(#39)) and (AnsiChar((P+Length(Value)-1)^)=AnsiChar(#39))
+  then Result := Value
+  else Result := SQLQuotedStr(Value, AnsiChar(#39));
 end;
 
 {**

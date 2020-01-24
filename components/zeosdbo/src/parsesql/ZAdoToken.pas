@@ -54,7 +54,12 @@ unit ZAdoToken;
 interface
 
 {$I ZParseSql.inc}
-{$IFDEF ENABLE_ADO}
+
+{$IF not defined(MSWINDOWS)}
+  {$DEFINE ZEOS_DISABLE_ADO}
+{$IFEND}
+
+{$IFNDEF ZEOS_DISABLE_ADO}
 
 uses
   Classes, SysUtils, ZTokenizer, ZGenericSqlToken, ZCompatibility;
@@ -76,9 +81,11 @@ type
     procedure CreateTokenStates; override;
   end;
 
-{$ENDIF ENABLE_ADO}
+{$ENDIF ZEOS_DISABLE_ADO}
+
 implementation
-{$IFDEF ENABLE_ADO}
+
+{$IFNDEF ZEOS_DISABLE_ADO}
 
 {$IFDEF FAST_MOVE}
 uses ZFastCode;
@@ -197,6 +204,6 @@ begin
 
   SetCharacterState('/', '/', CommentState);
 end;
+{$ENDIF ZEOS_DISABLE_ADO}
 
-{$ENDIF ENABLE_ADO}
 end.

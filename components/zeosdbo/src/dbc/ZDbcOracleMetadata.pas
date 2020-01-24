@@ -54,6 +54,7 @@ unit ZDbcOracleMetadata;
 interface
 
 {$I ZDbc.inc}
+{$IFNDEF ZEOS_DISABLE_ORACLE}
 
 uses
   Types, Classes, SysUtils, ZSysUtils, ZDbcIntfs, ZDbcMetadata,
@@ -246,7 +247,9 @@ type
   public
   end;
 
+{$ENDIF ZEOS_DISABLE_ORACLE}
 implementation
+{$IFNDEF ZEOS_DISABLE_ORACLE}
 
 uses
   ZFastCode, ZDbcUtils, ZSelectSchema;
@@ -1314,8 +1317,8 @@ var
     ProcName := Source.GetString(ColumnIndexes[9]);
 
     Result.MoveToInsertRow;
-    Result.UpdateNull(CatalogNameIndex);    //PROCEDURE_CAT
-    Result.UpdateNull(SchemaNameIndex);    //PROCEDURE_SCHEM
+    //Result.UpdateNull(CatalogNameIndex);    //PROCEDURE_CAT
+    //Result.UpdateNull(SchemaNameIndex);    //PROCEDURE_SCHEM
     Result.UpdateString(ProcColProcedureNameIndex, Source.GetString(ColumnIndexes[1]));
     ColName := Source.GetString(ColumnIndexes[2]);
 
@@ -1512,7 +1515,7 @@ end;
 function TZOracleDatabaseMetadata.UncachedGetProcedures(const Catalog: string;
   const SchemaPattern: string; const ProcedureNamePattern: string): IZResultSet;
 const
-  {%H-}PROCEDURE_CAT_Index = FirstDbcIndex + 0;
+  //PROCEDURE_CAT_Index      = FirstDbcIndex + 0; unused
   PROCEDURE_SCHEM_Index    = FirstDbcIndex + 1;
   OBJECT_NAME_Index        = FirstDbcIndex + 2;
   PROCEDURE_NAME_Index     = FirstDbcIndex + 3;
@@ -1686,7 +1689,7 @@ var
   SQL, oDataType: string;
   SQLType: TZSQLType;
   OwnerCondition,TableCondition,ColumnCondition: String;
-  FieldSize: Integer;
+  FieldSize, Precision: Integer;
 
   function CreateWhere: String;
   begin
@@ -1727,23 +1730,29 @@ begin
       Result.UpdatePAnsiChar(TableNameIndex, GetPAnsiChar(TABLE_NAME_Index, Len), @Len);
       Result.UpdatePAnsiChar(ColumnNameIndex, GetPAnsiChar(COLUMN_NAME_Index, Len), @Len);
       oDataType := GetString(DATA_TYPE_Index);
+      Precision := GetInt(DATA_PRECISION_Index);
       SQLType := ConvertOracleTypeToSQLType(oDataType,
-        GetInt(DATA_PRECISION_Index), GetInt(DATA_SCALE_Index), ConSettings.CPType);
+        Precision, GetInt(DATA_SCALE_Index), ConSettings.CPType);
       Result.UpdateByte(TableColColumnTypeIndex, Ord(SQLType));
       Result.UpdatePAnsiChar(TableColColumnTypeNameIndex, GetPAnsiChar(DATA_TYPE_Index, Len), @Len);
       FieldSize := GetInt(DATA_LENGTH_Index);
       if SQLType = stString then begin
         Result.UpdateInt(TableColColumnBufLengthIndex, FieldSize * ConSettings^.ClientCodePage^.CharWidth +1);
         Result.UpdateInt(TableColColumnCharOctetLengthIndex, FieldSize * ConSettings^.ClientCodePage^.CharWidth);
+        Result.UpdateInt(TableColColumnSizeIndex, FieldSize);
       end else if SQLType = stUnicodeString then begin
         Result.UpdateInt(TableColColumnBufLengthIndex, (FieldSize+1) shl 1);
         Result.UpdateInt(TableColColumnCharOctetLengthIndex, FieldSize shl 1);
-      end else if SQLType = stBytes then
-        Result.UpdateInt(TableColColumnBufLengthIndex, FieldSize)
-      else if not (SQLType in [stAsciiStream, stUnicodeStream, stBinaryStream]) then
+        Result.UpdateInt(TableColColumnSizeIndex, FieldSize);
+      end else if SQLType = stBytes then begin
+        Result.UpdateInt(TableColColumnBufLengthIndex, FieldSize);
+        Result.UpdateInt(TableColColumnSizeIndex, FieldSize);
+        Result.UpdateInt(TableColColumnCharOctetLengthIndex, FieldSize);
+      end else begin
         Result.UpdateInt(TableColColumnBufLengthIndex, ZSQLTypeToBuffSize(SQLType));
-      Result.UpdateInt(TableColColumnDecimalDigitsIndex, GetInt(DATA_PRECISION_Index));
-      Result.UpdateInt(TableColColumnNumPrecRadixIndex, GetInt(DATA_SCALE_Index));
+        Result.UpdateInt(TableColColumnSizeIndex, Precision);
+        Result.UpdateInt(TableColColumnDecimalDigitsIndex, GetInt(DATA_SCALE_Index));
+      end;
 
       if UpperCase(GetString(NULLABLE_Index)) = 'N' then
       begin
@@ -2361,5 +2370,7 @@ begin
     Close;
   end;
 end;
+
+{$ENDIF ZEOS_DISABLE_ORACLE}
 
 end.

@@ -55,26 +55,23 @@ interface
 
 {$I ZParseSql.inc}
 
+{$IFNDEF ZEOS_DISABLE_ORACLE}
 uses
-  Classes, ZTokenizer, ZGenericSqlToken, ZPostgreSqlToken,
-  ZSybaseToken;
+  Classes, ZTokenizer, ZGenericSqlToken;
 
 type
 
   {** Implements a Oracle-specific number state object. }
-  TZOracleNumberState = class (TZPostgreSQLNumberState)
-  end;
+  TZOracleNumberState = TZGenericSQLNoHexNumberState;
 
   {** Implements a Oracle-specific quote string state object. }
-  TZOracleQuoteState = class (TZGenericSQLQuoteState)
-  end;
+  TZOracleQuoteState = TZGenericSQLQuoteState;
 
   {**
     This state will either delegate to a comment-handling
     state, or return a token with just a slash in it.
   }
-  TZOracleCommentState = class (TZSybaseCommentState)
-  end;
+  TZOracleCommentState = TZGenericSQLCommentState;
 
   {** Implements a symbol state object. }
   TZOracleSymbolState = class (TZSymbolState)
@@ -94,7 +91,11 @@ type
     procedure CreateTokenStates; override;
   end;
 
+{$ENDIF ZEOS_DISABLE_ORACLE}
+
 implementation
+
+{$IFNDEF ZEOS_DISABLE_ORACLE}
 
 { TZOracleSymbolState }
 
@@ -162,6 +163,8 @@ begin
   SetCharacterState('/', '/', CommentState);
   SetCharacterState('-', '-', CommentState);
 end;
+
+{$ENDIF ZEOS_DISABLE_ORACLE}
 
 end.
 

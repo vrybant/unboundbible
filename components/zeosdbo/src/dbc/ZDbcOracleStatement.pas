@@ -54,14 +54,10 @@ unit ZDbcOracleStatement;
 interface
 
 {$I ZDbc.inc}
-
-{$IFOPT R+}
-  {$DEFINE RangeCheck}
-{$ENDIF}
+{$IFNDEF ZEOS_DISABLE_ORACLE}
 
 uses
   Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils, Types,
-  {$IFDEF MSWINDOWS}{%H-}Windows,{$ENDIF}
   ZSysUtils, ZDbcIntfs, ZDbcStatement, ZDbcLogging, ZPlainOracleDriver,
   ZCompatibility, ZVariant, ZDbcOracleUtils, ZPlainOracleConstants,
   ZDbcOracle;
@@ -92,6 +88,7 @@ type
     procedure PrepareInParameters; override;
     procedure BindInParameters; override;
     procedure UnPrepareInParameters; override;
+    procedure ReleaseConnection; override;
   public
     constructor Create(const PlainDriver: IZOraclePlainDriver;
       const Connection: IZConnection; const SQL: string; Info: TStrings); overload;
@@ -150,7 +147,9 @@ type
     procedure ClearParameters; override;
   end;
 
+{$ENDIF ZEOS_DISABLE_ORACLE}
 implementation
+{$IFNDEF ZEOS_DISABLE_ORACLE}
 
 uses
   Math, {$IFDEF WITH_UNITANSISTRINGS}AnsiStrings, {$ENDIF}
@@ -200,16 +199,13 @@ begin
   SelectFound := False;
   N := 0;
   Result := '';
-  for I := 0 to High(CachedQueryRaw) do
-  begin
+  for I := 0 to High(CachedQueryRaw) do begin
     SelectFound := (I = 0) and (AnsiUpperCase(CachedQueryRaw[i]) = 'SELECT');
-    if IsParamIndex[i] then
-    begin
+    if IsParamIndex[i] then begin
       FServerStmtCache := True;
       Inc(N);
       Result := Result + ':P' + IntToRaw(N);
-    end else
-    begin
+    end else begin
       if SelectFound and not FServerStmtCache then
         SelectFound := AnsiUpperCase(CachedQueryRaw[i]) <> 'WHERE';
       Result := Result + CachedQueryRaw[i];
@@ -220,12 +216,10 @@ end;
 
 function TZOraclePreparedStatement.CreateResultSet: IZResultSet;
 begin
-  if FOpenResultSet = nil then
-  begin
+  if FOpenResultSet = nil then begin
     Result := CreateOracleResultSet(FPlainDriver, Self, SQL, FHandle, FErrorHandle, FZBufferSize);
     FOpenResultSet := Pointer(Result);
-  end
-  else
+  end else
     Result := IZResultSet(FOpenResultSet);
 end;
 
@@ -251,7 +245,7 @@ begin
   begin
     {$R-}
     CurrentVar := @FParams.Variables[I];
-    {$IFDEF RangeCheck} {$R+} {$ENDIF}
+    {$IFDEF RangeCheckEnabled} {$R+} {$ENDIF}
     CurrentVar.Handle := nil;
 
     { Artificially define Oracle internal type. }
@@ -289,6 +283,12 @@ begin
   FIteration := Max(FIteration, 1);
 end;
 
+procedure TZOraclePreparedStatement.ReleaseConnection;
+begin
+  inherited;
+  FOracleConnection := nil;
+end;
+
 {**
   Binds the input parameters
 }
@@ -301,7 +301,7 @@ begin
   for I := 0 to FParams^.AllocNum - 1 do
     LoadOracleVar(FPlainDriver, Connection, FErrorHandle, @FParams.Variables[I],
       InParamValues[i], ChunkSize, Max(1, Min(FIteration, ArrayCount)));
-  {$IFDEF RangeCheck} {$R+} {$ENDIF}
+  {$IFDEF RangeCheckEnabled} {$R+} {$ENDIF}
   inherited BindInParameters;
 end;
 
@@ -336,7 +336,7 @@ begin
 end;
 
 procedure TZOraclePreparedStatement.UnPrepare;
-const {%H-}RELEASE_MODE: array[boolean] of integer = (OCI_DEFAULT,OCI_STMTCACHE_DELETE);
+const RELEASE_MODE: array[boolean] of integer = (OCI_DEFAULT,OCI_STMTCACHE_DELETE);
 begin
   try
     if False and FServerStmtCache then
@@ -487,10 +487,8 @@ begin
   end;
 end;
 
-
-{$WARNINGS OFF} //unreachable code as long FServerStmtCache isn't really used
 procedure TZOracleCallableStatement.UnPrepare;
-const {%H-}RELEASE_MODE: array[boolean] of integer = (OCI_DEFAULT,OCI_STMTCACHE_DELETE);
+const RELEASE_MODE: array[boolean] of integer = (OCI_DEFAULT,OCI_STMTCACHE_DELETE);
 begin
   try
     if False{FServerStmtCache} then
@@ -503,7 +501,6 @@ begin
     inherited Unprepare;
   end;
 end;
-{$WARNINGS OFF}
 
 procedure TZOracleCallableStatement.RegisterOutParameter(ParameterIndex,
   SQLType: Integer);
@@ -525,10 +522,9 @@ begin
     SetLength(FOracleParams, ParameterIndex{$IFDEF GENERIC_INDEX}+1{$ENDIF});
   if ParameterIndex{$IFDEF GENERIC_INDEX}+1{$ENDIF} > FOracleParamsCount then
     FOracleParamsCount := ParameterIndex{$IFDEF GENERIC_INDEX}+1{$ENDIF};
-  FOracleParams[ParameterIndex{$IFNDEF GENERIC_INDEX}-1{$ENDIF}].pType := ParamType;
+  FOracleParams[ParameterIndex{$IFNDEF GENERIC_INDEX}-1{$ENDIF}].pType := TZProcedureColumnType(ParamType);
   FOracleParams[ParameterIndex{$IFNDEF GENERIC_INDEX}-1{$ENDIF}].pParamIndex := ParameterIndex;
-  if ParamType in [2,3,4] then //ptInOut, ptOut, ptResult
-  begin
+  if ParamType >= Ord(pctInOut) then  begin
     FOracleParams[ParameterIndex{$IFNDEF GENERIC_INDEX}-1{$ENDIF}].pOutIndex := FOutParamCount;
     Inc(FOutParamCount);
   end;
@@ -608,7 +604,7 @@ begin
     FParamNames[I] := Self.FOracleParams[I].pName;
     {$R-}
     CurrentVar := @FParams.Variables[I];
-    {$IFDEF RangeCheck} {$R+} {$ENDIF}
+    {$IFDEF RangeCheckEnabled} {$R+} {$ENDIF}
     CurrentVar.Handle := nil;
     SQLType := TZSQLType(FOracleParams[I].pSQLType);
     { Artificially define Oracle internal type. }
@@ -634,7 +630,7 @@ begin
   begin
     {$R-}
     CurrentVar := @FParams.Variables[I];
-    {$IFDEF RangeCheck} {$R+} {$ENDIF}
+    {$IFDEF RangeCheckEnabled} {$R+} {$ENDIF}
     CurrentVar.Handle := nil;
     SetVariableDataEntrys(CurrentBufferEntry, CurrentVar, FIteration);
     AllocDesriptors(FPlainDriver, (Connection as IZOracleConnection).GetConnectionHandle,
@@ -659,7 +655,7 @@ begin
   if FParams^.AllocNum > 0 then
     {$R-}
     for I := 0 to FParams^.AllocNum - 1 do
-      if (FOracleParams[i].pType in [1,3]) then
+      if (FOracleParams[i].pType in [pctIn, pctInOut]) then
         LoadOracleVar(FPlainDriver, Connection, FErrorHandle, @FParams.Variables[I],
           InParamValues[FOracleParams[i].pParamIndex{$IFNDEF GENERIC_INDEX}-1{$ENDIF}],
             ChunkSize, Max(1, Min(FIteration, ArrayCount)))
@@ -667,7 +663,7 @@ begin
         LoadOracleVar(FPlainDriver, Connection, FErrorHandle,
           @FParams.Variables[I], NullVariant, ChunkSize,
             Max(1, Min(FIteration, ArrayCount)));
-    {$IFDEF RangeCheck} {$R+} {$ENDIF}
+    {$IFDEF RangeCheckEnabled} {$R+} {$ENDIF}
   inherited BindInParameters;
 end;
 
@@ -688,22 +684,16 @@ begin
   NewProcIndex := -1;
   StartProcIndex := 0;
   if IsFunction then
-    for i := 0 to high(FOracleParams) do
-    begin
-      if not ( FOracleParams[i].pProcIndex = NewProcIndex ) then
-      begin
+    for i := 0 to high(FOracleParams) do begin
+      if not ( FOracleParams[i].pProcIndex = NewProcIndex ) then begin
         NewProcIndex := FOracleParams[i].pProcIndex;
         StartProcIndex := I;
       end;
-      if ( FOracleParams[i].pType = 4 ) then //Result value
-      begin
-        if not (i = StartProcIndex) then
-        begin
-          TempOraVar := FOracleParams[I];
-          for J := I downto StartProcIndex+1 do
-            FOracleParams[j] := FOracleParams[j-1];
-          FOracleParams[StartProcIndex] := TempOraVar;
-        end;
+      if ( FOracleParams[i].pType = pctReturn) and not (i = StartProcIndex) then begin
+        TempOraVar := FOracleParams[I];
+        for J := I downto StartProcIndex+1 do
+          FOracleParams[j] := FOracleParams[j-1];
+        FOracleParams[StartProcIndex] := TempOraVar;
       end;
     end;
 end;
@@ -727,7 +717,7 @@ var
       outParamValues[Index] := NullVariant
     else
       case CurrentVar^.TypeCode of
-        SQLT_INT: outParamValues[Index] := EncodeInteger(PLongInt(CurrentVar^.Data)^ );
+        SQLT_INT: outParamValues[Index] := EncodeInteger(PInteger(CurrentVar^.Data)^ );
         SQLT_FLT: outParamValues[Index] := EncodeFloat(PDouble(CurrentVar^.Data)^ );
         SQLT_STR:
           begin
@@ -773,9 +763,9 @@ var
 begin
   {$R-}
   for I := 0 to FOracleParamsCount -1 do
-    if FOracleParams[i].pType in [2,3,4] then
+    if Ord(FOracleParams[i].pType) >= Ord(pctInOut) then
       SetOutParam(@FParams^.Variables[I], FOracleParams[i].pParamIndex{$IFNDEF GENERIC_INDEX}-1{$ENDIF});
-  {$IFDEF RangeCheck} {$R+} {$ENDIF}
+  {$IFDEF RangeCheckEnabled} {$R+} {$ENDIF}
 end;
 
 function TZOracleCallableStatement.GetProcedureSql: RawByteString;
@@ -792,7 +782,7 @@ var
     Result := '';
     for I := 0 to Count - 1 do
     begin
-      if ( FDBParamTypes[I] = 4 ) then //ptResult
+      if ( FDBParamTypes[I] = pctReturn ) then
       begin
         sFunc := ' :'+FOracleParams[0].pName+' := ';
         continue;
@@ -824,16 +814,12 @@ begin
         if IncludeCount = FOracleParams[i].pProcIndex then
         begin
           sName := RemoveChar('.', FOracleParams[I].pName);
-          if ( FOracleParams[I].pType = 4 ) then //ptResult
+          if ( FOracleParams[I].pType = pctReturn ) then
             sFunc := ' :'+sName+' := '
-          else
-            if InParams <> '' then
-              InParams := InParams +', :'+sName
-            else
-              InParams := InParams +':'+sName
-        end
-        else
-        begin
+          else if InParams <> ''
+            then InParams := InParams +', :'+sName
+            else InParams := InParams +':'+sName
+        end else begin
           LastIndex := I;
           break;
         end;
@@ -927,4 +913,5 @@ begin
   end;
 end;
 
+{$ENDIF ZEOS_DISABLE_ORACLE}
 end.

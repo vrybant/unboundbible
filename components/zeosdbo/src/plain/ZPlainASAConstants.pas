@@ -46,6 +46,12 @@ interface
 
 {$I ZPlain.inc}
 
+{$IFNDEF ZEOS_DISABLE_ASA}
+
+{$IFDEF NO_ANSICHAR}
+uses ZCompatibility;
+{$ENDIF}
+
 {$J+}
 
 { ***************** Plain API Constants definition **************** }
@@ -789,15 +795,15 @@ type
 
   PZASASQLDateTime = ^TZASASQLDateTime;
   TZASASQLDateTime = packed record
-    Year             : SmallInt;  //* e.g. 1992	 *//
-    Month            : Byte;      //* 0-11	 *//
-    Day_of_Week      : Byte;      //* 0-6  0=Sunday, 1=Monday, ... *//
-    Day_of_Year      : SmallInt;  //* 0-365		           *//
-    Day              : Byte;      //* 1-31			   *//
-    Hour             : Byte;      //* 0-23			   *//
-    Minute           : Byte;      //* 0-59			   *//
-    Second           : Byte;      //* 0-59			   *//
-    MicroSecond      : LongInt;   //* 0-999999			   *//
+    Year             : SmallInt;  //* e.g. 1992
+    Month            : Byte;      //* 0-11
+    Day_of_Week      : Byte;      //* 0-6  0=Sunday, 1=Monday, ...
+    Day_of_Year      : SmallInt;  //* 0-365
+    Day              : Byte;      //* 1-31
+    Hour             : Byte;      //* 0-23
+    Minute           : Byte;      //* 0-59
+    Second           : Byte;      //* 0-59
+    MicroSecond      : LongInt;   //* 0-999999
   end;
 
   PZASABlobStruct = ^TZASABlobStruct;
@@ -805,7 +811,7 @@ type
     array_len        : Longword;
     stored_len       : Longword;
     untrunc_len      : Longword;
-    arr: array[0..312756] of AnsiChar;
+    arr: array[0..0] of AnsiChar;
   end;
 
   ZASA_db_callback_index = (             //Markus
@@ -823,6 +829,8 @@ type
     );
 
   TZASASQLCallback = procedure() {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+
+{$ENDIF ZEOS_DISABLE_ASA}
 
 implementation
 

@@ -55,6 +55,8 @@ interface
 
 {$I ZPlain.inc}
 
+{$IFNDEF ZEOS_DISABLE_INTERBASE}
+
 uses
    ZCompatibility; 
 
@@ -78,6 +80,12 @@ const
   DSQL_DROP                     = 2;
   DSQL_UNPREPARE                = 4;
 
+  ISC_STATUS_LENGTH             = 20;
+
+  METADATALEN_V1                = 32; // Max length of any DB object name [v.1 - IB < 7.0, FB]
+
+  ISC_TIME_SECONDS_PRECISION       = 10000;
+  ISC_TIME_SECONDS_PRECISION_SCALE = (-4);
 
   SQLDA_VERSION1                = 1;
   SQLDA_VERSION2                = 2;
@@ -106,6 +114,13 @@ const
   SQL_NULL                       = 32766;
   // FB30
   SQL_BOOLEAN_FB                 = 32764;
+  // FB40
+  SQL_TIMESTAMP_TZ_FB            = 32754;
+  SQL_TIME_TZ_FB                 = 32756;
+  SQL_DEC_FIXED_FB               = 32758;
+  SQL_DEC16_FB                   = 32760;
+  SQL_DEC34_FB                   = 32762;
+  
   // deprecated alias for pre V6 applications
   SQL_DATE                       = SQL_TIMESTAMP;
 
@@ -143,6 +158,11 @@ const
   blr_column_name     = 21;
   blr_column_name2    = 22;
   blr_bool            = 23;
+  blr_dec64           = 24;
+  blr_dec128          = 25;
+  blr_dec_fixed       = 26;
+  blr_sql_time_tz     = 28;
+  blr_timestamp_tz    = 29;
 
   // Historical alias for pre V6 applications
   blr_date		      = blr_timestamp;
@@ -201,8 +221,9 @@ const
 #define blr_maximum		(unsigned char)29
 #define blr_minimum		(unsigned char)30
 #define blr_total		(unsigned char)31
+#define blr_receive_batch	(unsigned char)32
 
-// unused codes: 32..33
+// unused code: 33
 
 #define blr_add			(unsigned char)34
 #define blr_subtract		(unsigned char)35
@@ -352,6 +373,8 @@ const
 #define blr_extract_yearday		(unsigned char)7
 #define blr_extract_millisecond	(unsigned char)8
 #define blr_extract_week		(unsigned char)9
+#define blr_extract_timezone_hour	(unsigned char)10
+#define blr_extract_timezone_minute	(unsigned char)11
 
 #define blr_current_date	(unsigned char)160
 #define blr_current_timestamp	(unsigned char)161
@@ -480,6 +503,30 @@ const
 #define blr_subfunc_decl			(unsigned char) 207
 #define blr_subfunc					(unsigned char) 208
 #define blr_record_version2			(unsigned char) 209
+#define blr_gen_id2                 (unsigned char) 210 
+
+// FB 4.0 specific BLR
+
+#define blr_window_win              (unsigned char) 211
+
+#define blr_window_win_partition    (unsigned char) 1
+#define blr_window_win_order        (unsigned char) 2
+#define blr_window_win_map          (unsigned char) 3
+#define blr_window_win_extent_unit  (unsigned char) 4
+#define blr_window_win_extent_frame_bound (unsigned char) 5
+#define blr_window_win_extent_frame_value (unsigned char) 6
+#define blr_window_win_exclusion    (unsigned char) 7
+
+#define blr_default                 (unsigned char) 212
+#define blr_store3                  (unsigned char) 213
+
+#define blr_local_timestamp         (unsigned char) 214
+#define blr_local_time              (unsigned char) 215
+
+#define blr_at                      (unsigned char) 216
+
+#define blr_at_local                (unsigned char) 0
+#define blr_at_zone                 (unsigned char) 1
 
 #endif // JRD_BLR_H
 *)
@@ -571,6 +618,10 @@ const
   isc_blob_dbase_ole             = 23;
   isc_blob_typed_binary          = 24;
 { FB2.5 down < }
+
+  // beware - these might be wrong - in SQL things are just the other way around - binary is 0 and text is 1.
+  fb_text_subtype_text           = 0;
+  fb_text_subtype_binary         = 1;
 
   {* Blob information items *}
   isc_info_blob_num_segments = 4;
@@ -1710,7 +1761,9 @@ const
   isc_dpb_nolinger				       = 88;
   isc_dpb_reset_icu				       = 89;
   isc_dpb_map_attach             = 90;
-  isc_dpb_last_dpb_constant      = isc_dpb_map_attach;
+  isc_dpb_session_time_zone      = 91;
+  isc_dpb_set_db_replica         = 92;
+  isc_dpb_last_dpb_constant      = isc_dpb_set_db_replica;
 
   { isc_dpb_verify specific flags }
   isc_dpb_pages                  = 1;
@@ -1752,7 +1805,8 @@ const
   isc_tpb_commit_time            = 13;
   isc_tpb_ignore_limbo           = 14;
   isc_tpb_read_committed         = 15;
-  isc_tpb_autocommit             = 16; //EH: Please do not use this JDBC option!
+  //http://firebird-devel.narkive.com/TPNAp4sB/semantics-of-isc-tpb-autocommit
+  isc_tpb_autocommit             = 16; //EH: Please do not use this borland option!
                                        //It kills the performance. Let Zeos do the Job by settting AutoCommit = True
                                        //see ZDbcInterbase.pas e.g. StartTransaction
   isc_tpb_rec_version            = 17;
@@ -1763,6 +1817,8 @@ const
   isc_tpb_no_savepoint            = 21;
   // Since FB20
   isc_tpb_lock_timeout            = 21;
+  // Since FB40
+  isc_tpb_read_consistency        = 22;
 
   { Blob Parameter Block }
   isc_bpb_version1               = 1;
@@ -1801,6 +1857,12 @@ const
   isc_info_sql_get_plan          = 22;
   isc_info_sql_records           = 23;
   isc_info_sql_batch_fetch       = 24;
+  isc_info_sql_relation_alias    = 25;
+  isc_info_sql_explain_plan      = 26;
+  isc_info_sql_stmt_flags        = 27;
+  isc_info_sql_stmt_timeout_user = 28;
+  isc_info_sql_stmt_timeout_run  = 29;
+  isc_info_sql_stmt_blob_align   = 30;
 
   { SQL information return values }
   isc_info_sql_stmt_select         = 1;
@@ -1917,25 +1979,67 @@ const
   isc_info_active_tran_count     = 110;
   isc_info_creation_date         = 111;
   isc_info_db_file_size          = 112;
+  
+  fb_info_page_contents          = 113;
+
+  fb_info_implementation         = 114;
+
+  fb_info_page_warns             = 115;
+  fb_info_record_warns           = 116;
+  fb_info_bpage_warns            = 117;
+  fb_info_dpage_warns            = 118;
+  fb_info_ipage_warns            = 119;
+  fb_info_ppage_warns            = 120;
+  fb_info_tpage_warns            = 121;
+  fb_info_pip_errors             = 122;
+  fb_info_pip_warns              = 123;
+
+  fb_info_pages_used             = 124;
+  fb_info_pages_free             = 125;
+
+  fb_info_ses_idle_timeout_db    = 129;
+  fb_info_ses_idle_timeout_att   = 130;
+  fb_info_ses_idle_timeout_run   = 131;
+
+  fb_info_conn_flags             = 132;
+
+  fb_info_crypt_key              = 133;
+  fb_info_crypt_state            = 134;
+
+  fb_info_statement_timeout_db   = 135;
+  fb_info_statement_timeout_att  = 136;
+
+  fb_info_protocol_version       = 137;
+  fb_info_crypt_plugin           = 138;
+
+  fb_info_creation_timestamp_tz  = 139;
 
 type
-  ULong                = Cardinal;
-  UChar                = AnsiChar;
-  Short                = SmallInt;
 
-  ISC_LONG             = LongInt;
-  UISC_LONG            = ULong;
+  ISC_SCHAR            = AnsiChar;
+  ISC_UCHAR            = AnsiChar;
+  ISC_SHORT            = SmallInt;
+  ISC_USHORT           = Word;
+  ISC_LONG             = Integer;
+  ISC_ULONG            = Cardinal;
   ISC_INT64            = Int64;
+  ISC_UINT64           = UInt64;
   ISC_STATUS           = NativeInt;
-  UISC_STATUS          = ULong;
+  ISC_BOOLEAN          = Smallint;
+  ISC_BOOLEAN_FB       = Byte;
+  PISC_SCHAR           = ^ISC_SCHAR;
+  PISC_SHORT           = ^ISC_SHORT;
   PISC_LONG            = ^ISC_LONG;
-  PUISC_LONG           = ^UISC_LONG;
+  PISC_ULONG           = ^ISC_ULONG;
+  PISC_INT64           = ^ISC_INT64;
   PISC_STATUS          = ^ISC_STATUS;
+  PISC_UCHAR           = ^ISC_UCHAR;
   PPISC_STATUS         = ^PISC_STATUS;
-  PUISC_STATUS         = ^UISC_STATUS;
+  PISC_BOOLEAN         = ^ISC_BOOLEAN;
+  PISC_BOOLEAN_FB      = ^ISC_BOOLEAN_FB;
+
+  Short                = SmallInt;
   PShort               = ^Short;
-  PPAnsiChar           = ^PAnsiChar;
-  UShort               = Word;
   PVoid                = Pointer;
 
   { C Date/Time Structure }
@@ -1955,8 +2059,8 @@ type
   PTM = ^TM;
 
   TISC_VARYING = record
-    strlen:       Short;
-    str:          array[0..0] of AnsiChar; //AVZ - was AnsiChar
+    strlen:       ISC_USHORT;
+    str:          array[0..0] of ISC_UCHAR; //AVZ - was AnsiChar
   end;
   PISC_VARYING = ^TISC_VARYING;
 
@@ -1970,30 +2074,54 @@ type
   PISC_STMT_HANDLE              = ^TISC_STMT_HANDLE;
   TISC_TR_HANDLE                = LongWord;
   PISC_TR_HANDLE                = ^TISC_TR_HANDLE;
-  TISC_CALLBACK                 = procedure;
+
+  TISC_CALLBACK = procedure (UserData: PVoid; Length: ISC_USHORT; Updated: PISC_UCHAR); cdecl;
 
   { Time & Date Support }
   ISC_DATE = LongInt;
   PISC_DATE = ^ISC_DATE;
-  ISC_TIME = ULong;
+  ISC_TIME = Cardinal;
   PISC_TIME = ^ISC_TIME;
 
+  // why do we prefix records with a T (TISC_TIMESTAMP) while we don't prefix
+  // simple types (ISC_DATE)?
+  TISC_TIME_TZ = record
+    utc_time: ISC_TIME;
+	time_zone: ISC_USHORT;
+  end;
+  PISC_TIME_TZ = ^TISC_TIME_TZ;
+  
   TISC_TIMESTAMP = record
-    timestamp_date: ISC_DATE; 
+    timestamp_date: ISC_DATE;
     timestamp_time: ISC_TIME;
   end;
   PISC_TIMESTAMP = ^TISC_TIMESTAMP;
+  
+  TISC_TIMESTAMP_TZ = record
+    utc_timestamp: TISC_TIMESTAMP;
+	  time_zone: ISC_USHORT;
+  end;
+  PTISC_TIMESTAMP_TZ = ^TISC_TIMESTAMP_TZ;
 
+  TFB_DEC16 = record
+    fb_data: array[0..0] of ISC_UINT64;
+  end;
+  PFB_DEC16 = ^TFB_DEC16;
+  
+  TFB_DEC34 = record
+    fb_data: array[0..1] of ISC_UINT64;
+  end;  
+  
   { Blob id structure }
   TGDS_QUAD = record
     gds_quad_high:  ISC_LONG;
-    gds_quad_low:   UISC_LONG;
+    gds_quad_low:   ISC_ULONG;
   end;
   PGDS_QUAD            = ^TGDS_QUAD;
 
   TISC_QUAD            = TGDS_QUAD;
   PISC_QUAD            = ^TISC_QUAD;
-
+  
   TISC_ARRAY_BOUND = record
     array_bound_lower:  Short;
     array_bound_upper:  Short;
@@ -2004,8 +2132,8 @@ type
     array_desc_dtype:   Byte;
     array_desc_scale:   ShortInt;
     array_desc_length:  Word;
-    array_desc_field_name: array[0..31] of AnsiChar;
-    array_desc_relation_name: array[0..31] of AnsiChar;
+    array_desc_field_name: array[0..METADATALEN_V1-1] of ISC_SCHAR;
+    array_desc_relation_name: array[0..METADATALEN_V1-1] of ISC_SCHAR;
     array_desc_dimensions: Short;
     array_desc_flags: Short;
     array_desc_bounds: array[0..15] of TISC_ARRAY_BOUND;
@@ -2016,43 +2144,43 @@ type
     blob_desc_subtype:          Short;
     blob_desc_charset:          Short;
     blob_desc_segment_size:     Short;
-    blob_desc_field_name:       array[0..31] of UChar;
-    blob_desc_relation_name:    array[0..31] of UChar;
+    blob_desc_field_name:       array[0..METADATALEN_V1-1] of ISC_UCHAR;
+    blob_desc_relation_name:    array[0..METADATALEN_V1-1] of ISC_UCHAR;
   end;
   PISC_BLOB_DESC = ^TISC_BLOB_DESC;
 
   { Declare the extended SQLDA }
   TXSQLVAR = record
-    sqltype:            Short;     { datatype of field }
-    sqlscale:           Short;     { scale factor }
-    sqlsubtype:         Short;     { datatype subtype - BLOBs }
+    sqltype:            ISC_SHORT;     { datatype of field }
+    sqlscale:           ISC_SHORT;     { scale factor }
+    sqlsubtype:         ISC_SHORT;     { datatype subtype - BLOBs }
 			           { & text types only }
-    sqllen:             Short;     { length of data area }
+    sqllen:             ISC_SHORT;     { length of data area }
     sqldata:            PAnsiChar;     { address of data }
-    sqlind:             PSmallInt;  { address of indicator } 
+    sqlind:             PISC_SHORT;    { address of indicator }
                                    { variable }
-    sqlname_length:     Short;     { length of sqlname field }
+    sqlname_length:     ISC_SHORT;     { length of sqlname field }
     { name of field, name length + space for NULL }
-    sqlname:            array[0..31] of AnsiChar;
-    relname_length:     Short;     { length of relation name }
+    sqlname:            array[0..METADATALEN_V1-1] of ISC_SCHAR;
+    relname_length:     ISC_SHORT;     { length of relation name }
     { field's relation name + space for NULL }
-    relname:            array[0..31] of AnsiChar;
-    ownname_length:     Short;     { length of owner name }
+    relname:            array[0..METADATALEN_V1-1] of ISC_SCHAR;
+    ownname_length:     ISC_SHORT;     { length of owner name }
     { relation's owner name + space for NULL }
-    ownname:            array[0..31] of AnsiChar;
-    aliasname_length:   Short;     { length of alias name }
+    ownname:            array[0..METADATALEN_V1-1] of ISC_SCHAR;
+    aliasname_length:   ISC_SHORT;     { length of alias name }
     { relation's alias name + space for NULL }
-    aliasname:          array[0..31] of AnsiChar;
+    aliasname:          array[0..METADATALEN_V1-1] of ISC_SCHAR;
   end;
   PXSQLVAR = ^TXSQLVAR;
 
   TXSQLDA = record
-    version:            Short;     { version of this XSQLDA }
+    version:            ISC_SHORT;     { version of this XSQLDA }
     { XSQLDA name field }
-    sqldaid:            array[0..7] of AnsiChar;
+    sqldaid:            array[0..7] of ISC_SCHAR;
     sqldabc:            ISC_LONG;  { length in bytes of SQLDA }
-    sqln:               Short;     { number of fields allocated }
-    sqld:               Short;     { actual number of fields }
+    sqln:               ISC_SHORT;     { number of fields allocated }
+    sqld:               ISC_SHORT;     { actual number of fields }
     { first field address }
     sqlvar:             array[0..0] of TXSQLVAR;
   end;
@@ -2083,7 +2211,11 @@ type
 
   { Interbase status array }
   PARRAY_ISC_STATUS = ^TARRAY_ISC_STATUS;
-  TARRAY_ISC_STATUS = array[0..20] of ISC_STATUS;
+  TARRAY_ISC_STATUS = array[0..ISC_STATUS_LENGTH-1] of ISC_STATUS;
+
+  { Interbase event counts array }
+  PARRAY_ISC_EVENTCOUNTS = ^TARRAY_ISC_EVENTCOUNTS;
+  TARRAY_ISC_EVENTCOUNTS = array[0..ISC_STATUS_LENGTH-1] of ISC_ULONG;
 
 { ************** Plain API Function types definition ************* }
 
@@ -2101,6 +2233,10 @@ type
   Tisc_drop_database = function(status_vector: PISC_STATUS;
     db_handle: PISC_DB_HANDLE): ISC_STATUS;
     {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+
+  Tisc_create_database = function(status_vector: PISC_STATUS; db_name_len: Smallint;
+    db_name: PAnsiChar; handle: PISC_DB_HANDLE; dpb_len: Smallint; dpb: PAnsiChar;
+    db_type: Smallint{UNUSED}): ISC_STATUS; {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
 
   Tisc_database_info = function(status_vector: PISC_STATUS;
     db_handle: PISC_DB_HANDLE; item_list_buffer_length: Short;
@@ -2288,9 +2424,9 @@ type
 
   Tisc_event_block = function(event_buffer: PPAnsiChar; result_buffer: PPAnsiChar;
     id_count: Word; event_list: array of PAnsiChar): ISC_LONG;
-    {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+    cdecl; // ! always cdecl. Parameter list is wrong here!
 
-  Tisc_event_counts = procedure(status_vector: PISC_STATUS;
+  Tisc_event_counts = procedure(event_counts: PARRAY_ISC_EVENTCOUNTS;
     buffer_length: Short; event_buffer: PAnsiChar; result_buffer: PAnsiChar);
     {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
 
@@ -2337,12 +2473,21 @@ type
   Tisc_portable_integer = function(ptr: pbyte; length: Smallint): Int64;
     {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
 
+  { client version information routines - available since FB 1.5 / Interbase 7}
+  Tisc_get_client_version = procedure(version: PAnsiChar);
+    {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+  Tisc_get_client_major_version = function(): NativeInt;
+    {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+  Tisc_get_client_minor_version = function(): NativeInt;
+    {$IFDEF MSWINDOWS} stdcall {$ELSE} cdecl {$ENDIF};
+
 { ************** Collection of Plain API Function types definition ************* }
 TZFirebird_API = record
   { General database routines }
   isc_attach_database:  Tisc_attach_database;
   isc_detach_database:  Tisc_detach_database;
   isc_drop_database:    Tisc_drop_database;
+  isc_create_database:  Tisc_create_database;
   isc_database_info:    Tisc_database_info;
   isc_free:             Tisc_free;
   isc_sqlcode:          Tisc_sqlcode;
@@ -2410,8 +2555,13 @@ TZFirebird_API = record
 
   isc_encode_timestamp: Tisc_encode_timestamp;
   isc_decode_timestamp: Tisc_decode_timestamp;
-end;
 
+  {client version information routines}
+  isc_get_client_version: Tisc_get_client_version;
+  isc_get_client_major_version: Tisc_get_client_major_version;
+  isc_get_client_minor_version: Tisc_get_client_minor_version;
+end;
+{$ENDIF ZEOS_DISABLE_INTERBASE}
 implementation
 
 end.

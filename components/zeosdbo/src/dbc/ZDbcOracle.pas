@@ -54,9 +54,11 @@ unit ZDbcOracle;
 interface
 
 {$I ZDbc.inc}
+{$IFNDEF ZEOS_DISABLE_ORACLE}
 
 uses
-  Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils, Contnrs,
+  Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
+  {$IFNDEF NO_UNIT_CONTNRS}Contnrs{$ELSE}ZClasses{$ENDIF},
   ZCompatibility, ZDbcIntfs, ZDbcConnection, ZPlainOracleDriver, ZDbcLogging,
   ZTokenizer, ZDbcGenericResolver, ZURL, ZGenericSqlAnalyser,
   ZPlainOracleConstants;
@@ -64,7 +66,6 @@ uses
 type
 
   {** Implements Oracle Database Driver. }
-  {$WARNINGS OFF}
   TZOracleDriver = class(TZAbstractDriver)
   public
     constructor Create; override;
@@ -75,7 +76,6 @@ type
     function GetTokenizer: IZTokenizer; override;
     function GetStatementAnalyser: IZStatementAnalyser; override;
   end;
-  {$WARNINGS ON}
 
   {** Represents a Oracle specific connection interface. }
   IZOracleConnection = interface (IZConnection)
@@ -166,11 +166,14 @@ var
   {** The common driver manager object. }
   OracleDriver: IZDriver;
 
+{$ENDIF ZEOS_DISABLE_ORACLE}
 implementation
+{$IFNDEF ZEOS_DISABLE_ORACLE}
 
 uses
   ZMessages, ZGenericSqlToken, ZDbcOracleStatement, ZSysUtils, ZFastCode,
-  ZDbcOracleUtils, ZDbcOracleMetadata, ZOracleToken, ZOracleAnalyser;
+  ZDbcOracleUtils, ZDbcOracleMetadata, ZOracleToken, ZOracleAnalyser
+  {$IFNDEF NO_UNIT_CONTNRS}, ZClasses{$ENDIF};
 
 { TZOracleDriver }
 
@@ -207,12 +210,10 @@ end;
   @return a <code>Connection</code> object that represents a
     connection to the URL
 }
-{$WARNINGS OFF}
 function TZOracleDriver.Connect(const Url: TZURL): IZConnection;
 begin
   Result := TZOracleConnection.Create(Url);
 end;
-{$WARNINGS ON}
 
 {**
   Gets the driver's major version number. Initially this should be 1.
@@ -382,9 +383,9 @@ begin
   GetPlainDriver.AttrSet(FContextHandle, OCI_HTYPE_SVCCTX, FServerHandle, 0,
     OCI_ATTR_SERVER, FErrorHandle);
   GetPlainDriver.HandleAlloc(FHandle, FSessionHandle, OCI_HTYPE_SESSION, 0, nil);
-  GetPlainDriver.AttrSet(FSessionHandle, OCI_HTYPE_SESSION, PAnsiChar(AnsiString(User)),
-    Length(User), OCI_ATTR_USERNAME, FErrorHandle);
-  GetPlainDriver.AttrSet(FSessionHandle, OCI_HTYPE_SESSION, PAnsiChar(AnsiString(Password)),
+  GetPlainDriver.AttrSet(FSessionHandle, OCI_HTYPE_SESSION, PAnsiChar(ConSettings^.User),
+    Length(ConSettings^.User), OCI_ATTR_USERNAME, FErrorHandle);
+  GetPlainDriver.AttrSet(FSessionHandle, OCI_HTYPE_SESSION, PAnsiChar({$IFDEF UNICODE}UnicodeStringToAscii7{$ENDIF}(Password)),
     Length(Password), OCI_ATTR_PASSWORD, FErrorHandle);
   GetPlainDriver.AttrSet(FSessionHandle,OCI_HTYPE_SESSION,@fBlobPrefetchSize,0,
     OCI_ATTR_DEFAULT_LOBPREFETCH_SIZE,FErrorHandle);
@@ -593,6 +594,7 @@ var
 begin
   if Closed or not Assigned(PlainDriver) then
     Exit;
+  LogMessage := 'DISCONNECT FROM "'+ConSettings^.Database+'"';
   { Closes started transaction }
   CheckOracleError(GetPlainDriver, FErrorHandle,
     GetPlainDriver.TransRollback(FContextHandle, FErrorHandle, OCI_DEFAULT),
@@ -609,7 +611,6 @@ begin
   CheckOracleError(GetPlainDriver, FErrorHandle,
     GetPlainDriver.ServerDetach(FServerHandle, FErrorHandle, OCI_DEFAULT),
     lcDisconnect, LogMessage, ConSettings);
-  LogMessage := 'DISCONNECT FROM "'+ConSettings^.Database+'"';
 
   { Frees all handlers }
   GetPlainDriver.HandleFree(FDescibeHandle, OCI_HTYPE_DESCRIBE);
@@ -893,5 +894,6 @@ finalization
   if DriverManager <> nil then
     DriverManager.DeregisterDriver(OracleDriver);
   OracleDriver := nil;
+{$ENDIF ZEOS_DISABLE_ORACLE}
 end.
 

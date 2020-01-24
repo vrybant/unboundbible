@@ -56,7 +56,9 @@ interface
 {$I ZDbc.inc}
 
 uses
-  Types, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils, Contnrs,
+  Types, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
+  {$IFNDEF NO_UNIT_CONTNRS}Contnrs,{$ENDIF}
+  {$IFDEF TLIST_IS_DEPRECATED}ZSysUtils,{$ENDIF}
   ZClasses, ZDbcIntfs, ZDbcResultSet, ZDbcCache, ZCompatibility;
 
 type
@@ -109,9 +111,9 @@ type
   TZAbstractCachedResultSet = class (TZAbstractResultSet, IZCachedResultSet)
   private
     FCachedUpdates: Boolean;
-    FRowsList: TList;
-    FInitialRowsList: TList;
-    FCurrentRowsList: TList;
+    FRowsList: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF};
+    FInitialRowsList: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF};
+    FCurrentRowsList: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF};
     FSelectedRow: PZRowBuffer;
     FUpdatedRow: PZRowBuffer;
     FInsertedRow: PZRowBuffer;
@@ -132,15 +134,15 @@ type
     procedure CalculateRowDefaults(RowAccessor: TZRowAccessor); virtual;
     procedure PostRowUpdates(OldRowAccessor,
       NewRowAccessor: TZRowAccessor); virtual;
-    function LocateRow(RowsList: TList; RowIndex: Integer): Integer;
+    function LocateRow(RowsList: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF}; RowIndex: Integer): Integer;
     function AppendRow(Row: PZRowBuffer): PZRowBuffer;
     procedure PrepareRowForUpdates;
 
     property CachedUpdates: Boolean read FCachedUpdates write FCachedUpdates;
-    property RowsList: TList read FRowsList write FRowsList;
-    property InitialRowsList: TList read FInitialRowsList
+    property RowsList: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF} read FRowsList write FRowsList;
+    property InitialRowsList: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF} read FInitialRowsList
       write FInitialRowsList;
-    property CurrentRowsList: TList read FCurrentRowsList
+    property CurrentRowsList: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF} read FCurrentRowsList
       write FCurrentRowsList;
     property SelectedRow: PZRowBuffer read FSelectedRow write FSelectedRow;
     property UpdatedRow: PZRowBuffer read FUpdatedRow write FUpdatedRow;
@@ -159,10 +161,12 @@ type
     constructor CreateWithStatement(const SQL: string; const Statement: IZStatement;
       ConSettings: PZConSettings);
     constructor CreateWithColumns(ColumnsInfo: TObjectList; const SQL: string;
-      ConSettings: PZConSettings);
+      ConSettings: PZConSettings); overload;
+    constructor CreateWithColumns(const Statement: IZStatement;
+      ColumnsInfo: TObjectList; const SQL: string; ConSettings: PZConSettings); overload;
     destructor Destroy; override;
 
-    procedure Close; override;
+    procedure AfterClose; override;
     procedure ResetCursor; override;
 
     //======================================================================
@@ -174,8 +178,12 @@ type
     function GetPAnsiChar(ColumnIndex: Integer; out Len: NativeUInt): PAnsiChar; override;
     function GetPWideChar(ColumnIndex: Integer; out Len: NativeUInt): PWideChar; override;
     function GetString(ColumnIndex: Integer): String; override;
+    {$IFNDEF NO_ANSISTRING}
     function GetAnsiString(ColumnIndex: Integer): AnsiString; override;
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
     function GetUTF8String(ColumnIndex: Integer): UTF8String; override;
+    {$ENDIF}
     function GetRawByteString(ColumnIndex: Integer): RawByteString; override;
     function GetUnicodeString(ColumnIndex: Integer): ZWidestring; override;
     function GetBoolean(ColumnIndex: Integer): Boolean; override;
@@ -232,8 +240,12 @@ type
     procedure UpdatePWideChar(ColumnIndex: Integer; Value: PWideChar); override;
     procedure UpdatePWideChar(ColumnIndex: Integer; Value: PWideChar; Len: PNativeUint); override;
     procedure UpdateString(ColumnIndex: Integer; const Value: String); override;
+    {$IFNDEF NO_ANSISTRING}
     procedure UpdateAnsiString(ColumnIndex: Integer; const Value: AnsiString); override;
+    {$ENDIF}
+    {$IFNDEF NO_UTF8STRING}
     procedure UpdateUTF8String(ColumnIndex: Integer; const Value: UTF8String); override;
+    {$ENDIF}
     procedure UpdateRawByteString(ColumnIndex: Integer; const Value: RawByteString); override;
     procedure UpdateUnicodeString(ColumnIndex: Integer; const Value: ZWideString); override;
     procedure UpdateBytes(ColumnIndex: Integer; const Value: TBytes); override;
@@ -307,7 +319,7 @@ type
       const ResultSet: IZResultSet; const SQL: string;
       const Resolver: IZCachedResolver; ConSettings: PZConSettings);
 
-    procedure Close; override;
+    procedure AfterClose; override;
     procedure ResetCursor; override;
     function GetMetaData: IZResultSetMetaData; override;
 
@@ -324,6 +336,17 @@ uses ZMessages, ZDbcResultSetMetadata, ZDbcGenericResolver, ZDbcUtils, ZEncoding
 
 
 { TZAbstractCachedResultSet }
+
+constructor TZAbstractCachedResultSet.CreateWithColumns(
+  const Statement: IZStatement; ColumnsInfo: TObjectList; const SQL: string;
+  ConSettings: PZConSettings);
+begin
+  inherited Create(Statement, SQL, nil, ConSettings);
+
+  CopyColumnsInfo(ColumnsInfo, Self.ColumnsInfo);
+  FCachedUpdates := False;
+  Open;
+end;
 
 {**
   Creates this object and assignes the main properties.
@@ -357,11 +380,11 @@ end;
 }
 destructor TZAbstractCachedResultSet.Destroy;
 begin
+  inherited Destroy;
   FResolver := nil;
   {BEGIN PATCH [1214009] CalcDefaults in TZUpdateSQL and Added Methods to GET the DB NativeResolver}
   FNativeResolver := nil;
   {END PATCH [1214009] CalcDefaults in TZUpdateSQL and Added Methods to GET the DB NativeResolver}
-  inherited Destroy;
 end;
 
 {**
@@ -400,7 +423,7 @@ end;
   @param Index a row index.
   @return a found row buffer of <code>null</code> otherwise.
 }
-function TZAbstractCachedResultSet.LocateRow(RowsList: TList;
+function TZAbstractCachedResultSet.LocateRow(RowsList: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF};
   RowIndex: Integer): Integer;
 var
   I: Integer;
@@ -425,7 +448,7 @@ function TZAbstractCachedResultSet.AppendRow(Row: PZRowBuffer): PZRowBuffer;
 begin
   if LocateRow(FInitialRowsList, Row.Index) < 0 then
   begin
-    FRowAccessor.AllocBuffer(Result{%H-});
+    Result := FRowAccessor.AllocBuffer;
     FRowAccessor.CopyBuffer(Row, Result);
     FInitialRowsList.Add(Result);
     FCurrentRowsList.Add(Row);
@@ -581,7 +604,7 @@ begin
       NewRowAccessor.RowBuffer := PZRowBuffer(FCurrentRowsList[0]);
 
       { Updates default field values. }
-      if NewRowAccessor.RowBuffer.UpdateType = utInserted then
+      if NewRowAccessor.RowBuffer.UpdateType in [utInserted, utModified] then
         CalculateRowDefaults(NewRowAccessor);
 
       { Posts row updates and processes the exceptions. }
@@ -622,7 +645,7 @@ begin
       Inc(i);
 
       { Updates default field values. }
-      if NewRowAccessor.RowBuffer.UpdateType = utInserted then
+      if NewRowAccessor.RowBuffer.UpdateType in [utInserted, utModified] then
         CalculateRowDefaults(NewRowAccessor);
 
       { Posts row updates. }
@@ -729,16 +752,16 @@ begin
   if not Closed then
     raise EZSQLException.Create(SResultsetIsAlreadyOpened);
 
-  FRowsList := TList.Create;
-  FInitialRowsList := TList.Create;
-  FCurrentRowsList := TList.Create;
+  FRowsList := {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF}.Create;
+  FInitialRowsList := {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF}.Create;
+  FCurrentRowsList := {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF}.Create;
 
   FRowAccessor := TZRowAccessor.Create(ColumnsInfo, ConSettings);
   FOldRowAccessor := TZRowAccessor.Create(ColumnsInfo, ConSettings);
   FNewRowAccessor := TZRowAccessor.Create(ColumnsInfo, ConSettings);
 
-  FRowAccessor.AllocBuffer(FUpdatedRow);
-  FRowAccessor.AllocBuffer(FInsertedRow);
+  FUpdatedRow :=FRowAccessor.AllocBuffer;
+  FInsertedRow := FRowAccessor.AllocBuffer;
   FSelectedRow := nil;
 
   FNextRowIndex := 0;
@@ -762,14 +785,12 @@ end;
   sequence of multiple results. A <code>ResultSet</code> object
   is also automatically closed when it is garbage collected.
 }
-procedure TZAbstractCachedResultSet.Close;
+procedure TZAbstractCachedResultSet.AfterClose;
 var
   I: Integer;
 begin
-  inherited Close;
-
-  if Assigned(FRowAccessor) then
-  begin
+  inherited AfterClose;
+  if Assigned(FRowAccessor) then begin
     for I := 0 to FRowsList.Count - 1 do
       FRowAccessor.DisposeBuffer(PZRowBuffer(FRowsList[I]));
     for I := 0 to FInitialRowsList.Count - 1 do
@@ -899,6 +920,7 @@ end;
   @return the column value; if the value is SQL <code>NULL</code>, the
     value returned is <code>null</code>
 }
+{$IFNDEF NO_ANSISTRING}
 function TZAbstractCachedResultSet.GetAnsiString(ColumnIndex: Integer): AnsiString;
 begin
 {$IFNDEF DISABLE_CHECKING}
@@ -906,6 +928,7 @@ begin
 {$ENDIF}
   Result := FRowAccessor.GetAnsiString(ColumnIndex, LastWasNull);
 end;
+{$ENDIF}
 
 {**
   Gets the value of the designated column in the current row
@@ -916,6 +939,7 @@ end;
   @return the column value; if the value is SQL <code>NULL</code>, the
     value returned is <code>null</code>
 }
+{$IFNDEF NO_UTF8STRING}
 function TZAbstractCachedResultSet.GetUTF8String(ColumnIndex: Integer): UTF8String;
 begin
 {$IFNDEF DISABLE_CHECKING}
@@ -923,6 +947,7 @@ begin
 {$ENDIF}
   Result := FRowAccessor.GetUTF8String(ColumnIndex, LastWasNull);
 end;
+{$ENDIF}
 
 {**
   Gets the value of the designated column in the current row
@@ -1704,6 +1729,7 @@ end;
   @param columnIndex the first column is 1, the second is 2, ...
   @param x the new column value
 }
+{$IFNDEF NO_ANSISTRING}
 procedure TZAbstractCachedResultSet.UpdateAnsiString(ColumnIndex: Integer;
   const Value: AnsiString);
 begin
@@ -1713,6 +1739,7 @@ begin
   PrepareRowForUpdates;
   FRowAccessor.SetAnsiString(ColumnIndex, Value);
 end;
+{$ENDIF}
 
 {**
   Updates the designated column with a <code>UTF8String</code> value.
@@ -1724,6 +1751,7 @@ end;
   @param columnIndex the first column is 1, the second is 2, ...
   @param x the new column value
 }
+{$IFNDEF NO_UTF8STRING}
 procedure TZAbstractCachedResultSet.UpdateUTF8String(ColumnIndex: Integer;
   const Value: UTF8String);
 begin
@@ -1733,6 +1761,7 @@ begin
   PrepareRowForUpdates;
   FRowAccessor.SetUTF8String(ColumnIndex, Value);
 end;
+{$ENDIF}
 
 {**
   Updates the designated column with a <code>RawByteString</code> value.
@@ -1972,7 +2001,10 @@ end;
 function TZAbstractCachedResultSet.MoveAbsolute(Row: Integer): Boolean;
 begin
 {$IFNDEF DISABLE_CHECKING}
-  CheckClosed;
+  // 2018-09-16 commented out because it seems to be current policy for other
+  // result sets to not raise an exception if the result set is closed but simply
+  // return false here. What is our specification?
+  //CheckClosed;
   if (ResultSetType = rtForwardOnly) and (Row < RowNo) then
     RaiseForwardOnlyException;
 {$ENDIF}
@@ -2338,9 +2370,10 @@ begin
     RowAccessor.RowBuffer.Index := GetNextRowIndex;
     RowAccessor.RowBuffer.UpdateType := utUnmodified;
 
-    for I := FirstDbcIndex to ColumnsInfo.Count{$IFDEF GENERIC_INDEX}-1{$ENDIF} do
-    begin
-      case TZColumnInfo(ColumnsInfo[I{$IFNDEF GENERIC_INDEX}-1{$ENDIF}]).ColumnType of
+    for I := FirstDbcIndex to ColumnsInfo.Count{$IFDEF GENERIC_INDEX}-1{$ENDIF} do begin
+      if ResultSet.IsNull(i) then
+        continue
+      else case TZColumnInfo(ColumnsInfo[I{$IFNDEF GENERIC_INDEX}-1{$ENDIF}]).ColumnType of
         stBoolean: RowAccessor.SetBoolean(I, ResultSet.GetBoolean(I));
         stByte: RowAccessor.SetByte(I, ResultSet.GetByte(I));
         stShort: RowAccessor.SetShort(I, ResultSet.GetShort(I));
@@ -2348,7 +2381,7 @@ begin
         stSmall: RowAccessor.SetSmall(I, ResultSet.GetSmall(I));
         stLongWord: RowAccessor.SetUInt(I, ResultSet.GetUInt(I));
         stInteger: RowAccessor.SetInt(I, ResultSet.GetInt(I));
-        stULong: RowAccessor.SetLong(I, ResultSet.GetULong(I));
+        stULong: RowAccessor.SetULong(I, ResultSet.GetULong(I));
         stLong: RowAccessor.SetLong(I, ResultSet.GetLong(I));
         stFloat: RowAccessor.SetFloat(I, ResultSet.GetFloat(I));
         stDouble: RowAccessor.SetDouble(I, ResultSet.GetDouble(I));
@@ -2362,7 +2395,6 @@ begin
         stAsciiStream, stBinaryStream, stUnicodeStream:
           RowAccessor.SetBlob(I, ResultSet.GetBlob(I));
         stDataSet: RowAccessor.SetDataSet(i, ResultSet.GetDataSet(I));
-
       end;
       if ResultSet.WasNull then
         RowAccessor.SetNull(I);
@@ -2427,13 +2459,13 @@ end;
   sequence of multiple results. A <code>ResultSet</code> object
   is also automatically closed when it is garbage collected.
 }
-procedure TZCachedResultSet.Close;
+procedure TZCachedResultSet.AfterClose;
 begin
-  inherited Close;
-  ColumnsInfo.Clear;
-  If Assigned(FResultset) then
+  inherited AfterClose;
+  If Assigned(FResultset) then begin
     FResultset.Close;
-  FResultSet := nil;
+    FResultSet := nil;
+  end;
 end;
 
 constructor TZCachedResultSet.CreateWithColumns(const ColumnsInfo: TObjectList;
@@ -2457,9 +2489,11 @@ end;
 
 procedure TZCachedResultSet.ResetCursor;
 begin
-  If Assigned(FResultset) then
-    FResultset.ResetCursor;
-  inherited ResetCursor;
+  if not Closed then begin
+    If Assigned(FResultset) then
+      FResultset.ResetCursor;
+    inherited ResetCursor;
+  end;
 end;
 {**
   Retrieves the  number, types and properties of
@@ -2560,7 +2594,7 @@ function TZCachedResultSet.MoveAbsolute(Row: Integer): Boolean;
 begin
   { Checks for maximum row. }
   Result := False;
-  if (MaxRows > 0) and (Row > MaxRows) then
+  if ((MaxRows > 0) and (Row > MaxRows)) then
     Exit;
 
   { Processes negative rows }

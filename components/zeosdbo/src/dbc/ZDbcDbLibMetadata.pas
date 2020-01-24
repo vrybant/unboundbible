@@ -55,6 +55,7 @@ interface
 
 {$I ZDbc.inc}
 
+{$IFNDEF ZEOS_DISABLE_DBLIB} //if set we have an empty unit
 uses
   Types, Classes, SysUtils, ZSysUtils, ZDbcIntfs, ZDbcMetadata,
   ZCompatibility, ZSelectSchema;
@@ -309,7 +310,9 @@ type
     function RemoveQuotesFromIdentifier(const Identifier: String): String;
   end;
 
+{$ENDIF ZEOS_DISABLE_DBLIB} //if set we have an empty unit
 implementation
+{$IFNDEF ZEOS_DISABLE_DBLIB} //if set we have an empty unit
 
 uses ZFastCode, ZDbcDbLibUtils, ZDbcDbLib;
 
@@ -402,7 +405,7 @@ end;
 }
 function TZDbLibDatabaseInfo.StoresLowerCaseIdentifiers: Boolean;
 begin
-  Result := fCaseIdentifiers <> icSpecial;
+  Result := false;
 end;
 
 {**
@@ -412,7 +415,7 @@ end;
 }
 function TZDbLibDatabaseInfo.StoresMixedCaseIdentifiers: Boolean;
 begin
-  Result := fCaseIdentifiers = icSpecial;
+  Result := fCaseIdentifiers in [icMixed, icSpecial];
 end;
 
 {**
@@ -1219,11 +1222,11 @@ begin
 end;
 
 {**
-  Composes a object name, AnsiQuotedStr or NullText
+  Composes a object name, SQLQuotedStror NullText
   @param S the object string
   @param NullText the "NULL"-Text default: 'null'
   @param QuoteChar the QuoteChar default: '
-  @return 'null' if S is '' or S if s is already Quoted or AnsiQuotedStr(S, #39)
+  @return 'null' if S is '' or S if s is already Quoted or SQLQuotedStr(S, #39)
 }
 function TZDbLibBaseDatabaseMetadata.ComposeObjectString(const S: String;
   Const NullText: String = 'null'; QuoteChar: Char = #39): String;
@@ -1233,35 +1236,35 @@ begin
   else begin
     Result := ConvertEscapes(S);
     if not IC.IsQuoted(Result) then
-      Result := AnsiQuotedStr(Result, QuoteChar);
+      Result := SQLQuotedStr(Result, QuoteChar);
   end;
 end;
 
 {**
-  Decomposes a object name, AnsiQuotedStr or NullText
+  Decomposes a object name, SQLQuotedStr or NullText
   @param S the object string
-  @return 'null' if S is '' or S if s is already Quoted or AnsiQuotedStr(S, #39)
+  @return 'null' if S is '' or S if s is already Quoted or SQLQuotedStr(S, #39)
 }
 function TZDbLibBaseDatabaseMetadata.DecomposeObjectString(const S: String): String;
 begin
   if S = '' then
     Result := 'null'
   else
-    Result := AnsiQuotedStr(Inherited DecomposeObjectString(S), #39);
+    Result := SQLQuotedStr(Inherited DecomposeObjectString(S), #39);
 end;
 
 function TZDbLibBaseDatabaseMetadata.ConvertEscapes(const Pattern: String): String;
 var
-  EscapeChar: Char;
+  EscapeChar: PChar;
   P: PChar;
 begin
   Result := '';
-  if Length(Pattern) = 0 then Exit;
-  EscapeChar := GetDatabaseInfo.GetSearchStringEscape[1];
   P := Pointer(Pattern);
+  if P = nil then Exit;
+  EscapeChar := Pointer(GetDatabaseInfo.GetSearchStringEscape);
   ClearBuf;
   while P^ <> #0 do begin
-    if (P^ = EscapeChar) and (((P+1)^ = WildcardsArray[0]) or ((P+1)^=WildcardsArray[1])) then begin
+    if (P^ = EscapeChar^) and (((P+1)^ = WildcardsArray[0]) or ((P+1)^=WildcardsArray[1])) then begin
       ToBuf('[', Result);
       Inc(P);
       ToBuf(P^, Result);
@@ -1623,14 +1626,10 @@ begin
 
     TableTypes := '';
     for I := 0 to Length(Types) - 1 do
-    begin
-      if Length(TableTypes) > 0 then
-        TableTypes := TableTypes + ',';
-      TableTypes := TableTypes + AnsiQuotedStr(Types[I], '''');
-    end;
+      AppendSepString(TableTypes, SQLQuotedStr(Types[I], ''''), ',');
     if TableTypes = '' then
       TableTypes := 'null'
-    else TableTypes := AnsiQuotedStr(TableTypes, '"');
+    else TableTypes := SQLQuotedStr(TableTypes, '"');
 
     with GetStatement.ExecuteQuery(
       Format('exec sp_tables %s, %s, %s, %s',
@@ -1856,7 +1855,6 @@ begin
       Result.UpdateInt(TableColColumnCharOctetLengthIndex, GetIntByName('CHAR_OCTET_LENGTH'));
       Result.UpdateInt(TableColColumnOrdPosIndex, GetIntByName('ORDINAL_POSITION'));
       Result.UpdateString(TableColColumnIsNullableIndex, tmp);
-      Result.UpdateSmall(TableColColumnCharOctetLengthIndex, GetSmallByName('CHAR_OCTET_LENGTH'));
       if (GetConnection as IZDBLibConnection).GetProvider = dpMsSQL then
         Result.UpdateBoolean(TableColColumnSearchableIndex,
           not (GetSmallByName('SS_DATA_TYPE') in [34, 35]));
@@ -2611,6 +2609,7 @@ function TZSybaseDatabaseMetadata.UncachedGetProcedureColumns(const Catalog: str
   const ColumnNamePattern: string): IZResultSet;
 var
   ProcNamePart: string;
+  P: PChar absolute ProcNamePart;
   NumberPart: string;
   status2: Integer;
 begin
@@ -2653,15 +2652,14 @@ begin
 
   NumberPart := '1';
   ProcNamePart := '';
-  if AnsiPos(';', ProcNamePart) > 0 then
-  begin
+  if AnsiPos(';', ProcNamePart) > 0 then begin
     NumberPart := Copy(ProcNamePart, LastDelimiter(';', ProcNamePart) + 1,
       Length(ProcNamePart));
     if NumberPart = '' then
       NumberPart := '1';
 
     ProcNamePart := Copy(ProcNamePart, 1, LastDelimiter(';', ProcNamePart));
-    if ProcNamePart[Length(ProcNamePart)] = ';' then
+    if (P+Length(ProcNamePart)-1)^ = ';' then
       Delete(ProcNamePart, Length(ProcNamePart), 1);
   end;
 //status2 is added in sybase ASE 12.5 to store the storedprocedure parameters
@@ -2670,7 +2668,7 @@ begin
   with GetStatement.ExecuteQuery(
     Format('select c.* from syscolumns c inner join sysobjects o on'
     + ' (o.id = c.id) where o.name = %s and c.number = %s order by colid',
-    [AnsiQuotedStr(ProcNamePart, ''''), NumberPart])) do
+    [SQLQuotedStr(ProcNamePart, ''''), NumberPart])) do
   begin
     Result.Next;//Skip return parameter
     while Next do
@@ -2737,11 +2735,7 @@ begin
 
   TableTypes := '';
   for I := 0 to Length(Types) - 1 do
-  begin
-    if TableTypes <> '' then
-      TableTypes := TableTypes + ',';
-    TableTypes := TableTypes + AnsiQuotedStr(Types[I], '''');
-  end;
+    AppendSepString(TableTypes, SQLQuotedStr(Types[I], ''''), ',');
 
   StatementResult := GetStatement.ExecuteQuery(Format('exec sp_jdbc_tables %s, %s, %s, %s',
     [ComposeObjectString(TableNamePattern), ComposeObjectString(SchemaPattern), ComposeObjectString(Catalog), ComposeObjectString(TableTypes)]));
@@ -2923,8 +2917,8 @@ begin
       Result.UpdateString(TableNameIndex, GetStringByName('TABLE_NAME'));
       Result.UpdateString(ColumnNameIndex, GetStringByName('COLUMN_NAME'));
 //The value in the resultset will be used
-//      Result.UpdateSmall(TableColColumnTypeIndex,
-//        Ord(ConvertODBCToSqlType(GetSmallByName('DATA_TYPE'))));
+      Result.UpdateSmall(TableColColumnTypeIndex,
+        Ord(ConvertODBCToSqlType(GetSmallByName('DATA_TYPE'), ConSettings.CPType)));
       Result.UpdateString(TableColColumnTypeNameIndex, GetStringByName('TYPE_NAME'));
       Result.UpdateInt(TableColColumnSizeIndex, GetIntByName('COLUMN_SIZE'));
       Result.UpdateInt(TableColColumnBufLengthIndex, GetIntByName('BUFFER_LENGTH'));
@@ -3147,15 +3141,14 @@ end;
 function TZSybaseDatabaseMetadata.RemoveQuotesFromIdentifier(const Identifier: String): String;
 var
   QuoteStr: String;
+  pI, pQ: PChar;
 begin
   QuoteStr := GetDatabaseInfo.GetIdentifierQuoteString;
-  if Length(Identifier) > 0 then begin
-    if (Identifier[1] = QuoteStr) and (Identifier[Length(Identifier)] = QuoteStr)
-    then Result := Copy(Identifier, 2, length(Identifier) - 2)
-    else Result := Identifier;
-  end else begin
-    Result := Identifier;
-  end;
+  pI := Pointer(Identifier);
+  pQ := Pointer(QuoteStr);
+  if (pI <> nil) and (pQ <> nil) and (pI^ = pq^) and ((pI+Length(Identifier)-1)^ = pQ^)
+  then Result := Copy(Identifier, 2, length(Identifier) - 2)
+  else Result := Identifier;
 end;
 
 {**
@@ -3660,8 +3653,8 @@ var
 begin
   Result:=inherited UncachedGetIndexInfo(Catalog, Schema, Table, Unique, Approximate);
 
-  Is_Unique := AnsiQuotedStr(BoolStrInts[Unique], '''');
-  Accuracy := AnsiQuotedStr(BoolStrInts[Approximate], '''');
+  Is_Unique := SQLQuotedStr(BoolStrInts[Unique], '''');
+  Accuracy := SQLQuotedStr(BoolStrInts[Approximate], '''');
 
   with GetStatement.ExecuteQuery(
     Format('exec sp_jdbc_getindexinfo %s, %s, %s, %s, %s',
@@ -3735,11 +3728,7 @@ begin
 
   UDTypes := '';
   for I := 0 to Length(Types) - 1 do
-  begin
-    if Length(UDTypes) > 0 then
-      UDTypes := UDTypes + ',';
-    UDTypes := UDTypes + AnsiQuotedStr(ZFastCode.IntToStr(Types[I]), '''');
-  end;
+    AppendSepString(UDTypes, SQLQuotedStr(ZFastCode.IntToStr(Types[I]), ''''), ',');
 
   with GetStatement.ExecuteQuery(
     Format('exec sp_jdbc_getudts %s, %s, %s, %s',
@@ -3762,7 +3751,5 @@ begin
   end;
 end;
 
+{$ENDIF ZEOS_DISABLE_DBLIB} //if set we have an empty unit
 end.
-
-
-

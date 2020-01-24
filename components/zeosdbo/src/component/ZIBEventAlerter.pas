@@ -56,13 +56,15 @@ unit ZIBEventAlerter;
 
 interface
 
+{$IFNDEF ZEOS_DISABLE_INTERBASE} //if set we have an empty unit
 uses
   SysUtils, Classes,
 {$IF defined(MSWINDOWS)and not defined(FPC)}
   Windows,
 {$IFEND}
-  ZDbcInterbase6, ZConnection, ZDbcIntfs, ZFastCode,
-  ZPlainFirebirdDriver, ZPlainFirebirdInterbaseConstants;
+  ZDbcInterbase6, ZDbcInterbase6Utils, ZConnection, ZDbcIntfs, ZFastCode,
+  ZPlainFirebirdDriver, ZPlainFirebirdInterbaseConstants
+  {$IFDEF TLIST_IS_DEPRECATED}, ZSysUtils{$ENDIF};
 
 type
 
@@ -74,7 +76,7 @@ type
   private
     FEvents: TStrings;
     FOnEventAlert: TEventAlert;
-    FThreads: TList;
+    FThreads: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF};
     FNativeHandle: PISC_DB_HANDLE;
     ThreadException: boolean;
     FConnection: TZConnection;
@@ -82,15 +84,15 @@ type
     FAutoRegister: boolean;
     FRegistered: boolean;
 
-    procedure SetConnection(Value: TZConnection);
-    procedure SetEvents(Value: TStrings);
+    procedure SetConnection({$IFDEF AUTOREFCOUNT}const{$ENDIF}Value: TZConnection);
+    procedure SetEvents({$IFDEF AUTOREFCOUNT}const{$ENDIF}Value: TStrings);
     function GetRegistered: boolean;
     procedure SetRegistered(const Value: boolean);
     function GetPlainDriver: IZInterbasePlainDriver;
   protected
     { Protected declarations }
     function GetNativeHandle: PISC_DB_HANDLE; virtual;
-    procedure EventChange(Sender: TObject); virtual;
+    procedure EventChange({%H-}Sender: TObject); virtual;
     procedure ThreadEnded(Sender: TObject); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
@@ -113,16 +115,17 @@ type
     property OnError: TErrorEvent read FOnError write FOnError;
   end;
 
+{$ENDIF ZEOS_DISABLE_INTERBASE} //if set we have an empty unit
 implementation
+{$IFNDEF ZEOS_DISABLE_INTERBASE} //if set we have an empty unit
 
 uses
-  SyncObjs;
+  SyncObjs, ZClasses{$IFDEF UNICODE}, ZCompatibility{$ENDIF}
+  {$IFDEF UNICODE}, ZEncoding{$ENDIF};
 
 const
   IB_MAX_EVENT_BLOCK = 15;   // maximum events handled per block by InterBase
   IB_MAX_EVENT_LENGTH = 64;  // maximum event name length
-threadvar
-  FStatusVector: TARRAY_ISC_STATUS;
 
 type
 
@@ -131,10 +134,12 @@ type
   private
     // IB API call parameters
     WhichEvent: integer;
+    CountForEvent: longint;
     EventID: ISC_LONG;
     EventBuffer: PAnsiChar;
     EventBufferLen: Short;
     ResultBuffer: PAnsiChar;
+    StatusVector: TARRAY_ISC_STATUS;
     // Local use variables
     Signal: TSimpleEvent;
     EventsReceived,
@@ -145,26 +150,29 @@ type
     FExceptObject: TObject;
     FExceptAddr: Pointer;
     FCancelAlerts: boolean;
+    {$IFDEF UNICODE}
+    FCodePage: Word;
+    {$ENDIF}
   protected
     procedure Execute; override;
-    procedure SignalEvent; virtual;
-    procedure SignalTerminate; virtual;
-    procedure RegisterEvents; virtual;
-    procedure UnRegisterEvents; virtual;
-    procedure QueueEvents; virtual;
+    procedure SignalEvent;
+    procedure SignalTerminate;
+    procedure RegisterEvents;
+    procedure UnRegisterEvents;
+    procedure QueueEvents;
     procedure SQueEvents;
-    procedure ProcessEvents; virtual;
+    procedure ProcessEvents;
     procedure DoEvent;
     procedure DoHandleException;
-    function HandleException: boolean; virtual;
-    procedure UpdateResultBuffer(Length: UShort; Updated: PAnsiChar);
+    function HandleException: boolean;
+    procedure UpdateResultBuffer(Length: Integer; Updated: Pointer);
   public
     constructor Create(Owner: TZIBEventAlerter; EventGrp: integer;
-      TermEvent: TNotifyEvent); virtual;
+      TermEvent: TNotifyEvent);
     destructor Destroy; override;
   end;
 
-  Tsib_event_block = function(EventBuffer, ResultBuffer: PPAnsiChar; IDCount: UShort;
+  Tsib_event_block = function(EventBuffer, ResultBuffer: PPAnsiChar; IDCount: ISC_USHORT;
     Event1, Event2, Event3, Event4, Event5, Event6, Event7, Event8, Event9,
     Event10, Event11, Event12, Event13, Event14, Event15: PAnsiChar): ISC_LONG;
   cdecl;
@@ -172,16 +180,6 @@ type
 function TZIBEventAlerter.GetNativeHandle: PISC_DB_HANDLE;
 begin
   Result := (FConnection.DbcConnection as IZInterbase6Connection).GetDBHandle;
-end;
-
-function StatusVector: PISC_STATUS;
-begin
-  Result := @FStatusVector;
-end;
-
-function StatusVectorArray: TARRAY_ISC_STATUS;
-begin
-  Result := FStatusVector;
 end;
 
 { TZIBEventAlerter }
@@ -196,13 +194,12 @@ begin
   FConnection := nil;
   FAutoRegister := False;
   FEvents := TStringList.Create;
-  with TStringList(FEvents) do
-  begin
+  with TStringList(FEvents) do begin
     Sorted := True;  // dupIgnore only works when the TStringList is sorted
     OnChange := EventChange; // assign the routine which validates the event lenghts
     Duplicates := dupIgnore; // don't allow duplicate events
   end;
-  FThreads := TList.Create;
+  FThreads := {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF}.Create;
 end;
 
 destructor TZIBEventAlerter.Destroy;
@@ -274,7 +271,7 @@ End; // RegisterEvents
 //    Modified so that the native DB handle will now be retrieved by
 //    method RegisterEvents. Retrieving it here caused an Exception
 //    even if DB was connected.
-Procedure TZIBEventAlerter.SetConnection(Value: TZConnection);
+Procedure TZIBEventAlerter.SetConnection({$IFDEF AUTOREFCOUNT}const{$ENDIF}Value: TZConnection);
 Var
   WasRegistered: boolean;
 Begin
@@ -293,7 +290,7 @@ Begin
 End; // SetConnection
 
 
-procedure TZIBEventAlerter.SetEvents(Value: TStrings);
+procedure TZIBEventAlerter.SetEvents({$IFDEF AUTOREFCOUNT}const{$ENDIF}Value: TStrings);
 begin
   FEvents.Assign(Value);
 end;
@@ -338,22 +335,22 @@ end;
 
 { TIBEventThread }
 
-procedure EventCallback(P: Pointer; Length: Short; Updated: PAnsiChar); cdecl;
+procedure EventCallback(UserData: PVoid; Length: ISC_USHORT; Updated: PISC_UCHAR); cdecl;
 begin
-  if (Assigned(P) and Assigned(Updated)) then
+  if (Assigned(UserData) and Assigned(Updated)) then
   begin
-    TIBEventThread(P).UpdateResultBuffer(Length, Updated);
-    TIBEventThread(P).SignalEvent;
+    TIBEventThread(UserData).UpdateResultBuffer(Length, Updated);
+    TIBEventThread(UserData).SignalEvent;
   end;
 end;
 
 procedure TIBEventThread.DoEvent;
 begin
   Parent.FOnEventAlert(Parent, Parent.FEvents[((EventGroup * IB_MAX_EVENT_BLOCK) + WhichEvent)],
-    StatusVectorArray[WhichEvent], FCancelAlerts)
+    CountForEvent, FCancelAlerts)
 end;
 
-procedure TIBEventThread.UpdateResultBuffer(Length: UShort; Updated: PAnsiChar);
+procedure TIBEventThread.UpdateResultBuffer(Length: Integer; Updated: Pointer);
 begin
   {$IFDEF FAST_MOVE}ZFastCode{$ELSE}System{$ENDIF}.Move(Updated^, ResultBuffer^, Length);
 end;
@@ -368,17 +365,19 @@ end;
 procedure TIBEventThread.ProcessEvents;
 var
   i: integer;
+  EventCounts: TARRAY_ISC_EVENTCOUNTS;
 begin
-  Parent.PlainDriver.isc_event_counts(StatusVector, EventBufferLen,
+  Parent.PlainDriver.isc_event_counts(@EventCounts, EventBufferLen,
     EventBuffer, ResultBuffer);
   if (Assigned(Parent.FOnEventAlert) and (not FirstTime)) then
   begin
     FCancelAlerts := False;
     for i := 0 to (EventCount - 1) do
     begin
-      if (StatusVectorArray[i] <> 0) then
+      if (EventCounts[i] <> 0) then
       begin
         WhichEvent := i;
+        CountForEvent := EventCounts[i];
         Synchronize(DoEvent)
       end;
     end;
@@ -388,7 +387,7 @@ end;
 
 procedure TIBEventThread.UnRegisterEvents;
 begin
-  Parent.PlainDriver.isc_cancel_events(StatusVector, Parent.FNativeHandle, @EventID);
+  Parent.PlainDriver.isc_cancel_events(@StatusVector, Parent.FNativeHandle, @EventID);
   Parent.PlainDriver.isc_free(EventBuffer);
   EventBuffer := nil;
   Parent.PlainDriver.isc_free(ResultBuffer);
@@ -398,12 +397,13 @@ end;
 procedure TIBEventThread.RegisterEvents;
 var
   sib_event_block: Tsib_event_block;
-  {$IFDEF UNICODE}
+{$IFDEF UNICODE}
+var
   // Holder for ANSI strings converted from Unicode items of FEvents.
   // Obligatory! Otherwise pointer returned from EBP will point to
   // invalid (released) memory.
-  EBPArray: array[1..IB_MAX_EVENT_BLOCK] of AnsiString;
-  {$ENDIF}
+  EBPArray: array[1..IB_MAX_EVENT_BLOCK] of RawByteString;
+{$ENDIF}
 
   function EBP(Index: integer): PAnsiChar;
   var EvListIndex: Integer;
@@ -415,11 +415,11 @@ var
     else
     {$IFDEF UNICODE}
     begin
-      EBPArray[Index] := AnsiString(Parent.FEvents[EvListIndex]);
-      Result := PAnsiChar(EBPArray[Index]);
+      EBPArray[Index] := ZUnicodeToRaw(Parent.FEvents[EvListIndex], FCodePage);
+      Result := Pointer(EBPArray[Index]);
     end;
     {$ELSE}
-    Result := PAnsiChar(Parent.FEvents[EvListIndex]);
+    Result := Pointer(Parent.FEvents[EvListIndex]);
     {$ENDIF}
   end;
 
@@ -432,34 +432,11 @@ begin
   if (EventCount > IB_MAX_EVENT_BLOCK) then
     EventCount := IB_MAX_EVENT_BLOCK;
 
-{
-  if Parent.Connection.Protocol='interbase-6' then
-    sib_event_block := Tsib_event_block(ZPlainInterbase6.isc_event_block)
-    else if Parent.Connection.Protocol='firebird-1.0' then
-      sib_event_block := Tsib_event_block(ZPlainFirebird10.isc_event_block)
-    else if Parent.Connection.Protocol='firebird-1.5' then
-      sib_event_block := Tsib_event_block(ZPlainFirebird15.isc_event_block)
-    else if Parent.Connection.Protocol='firebirdd-1.5' then
-      sib_event_block := Tsib_event_block(ZPlainFirebird15.isc_event_block)
-    else if Parent.Connection.Protocol='firebird-2.0' then
-      sib_event_block := Tsib_event_block(ZPlainFirebird20.isc_event_block)
-    else if Parent.Connection.Protocol='firebirdd-2.0' then
-      sib_event_block := Tsib_event_block(ZPlainFirebird20.isc_event_block)
-    else if Parent.Connection.Protocol='firebird-2.1' then
-      sib_event_block := Tsib_event_block(ZPlainFirebird21.isc_event_block)
-    else if Parent.Connection.Protocol='firebirdd-2.1' then
-      sib_event_block := Tsib_event_block(ZPlainFirebird21.isc_event_block)
-
-  else
-    sib_event_block := Tsib_event_block(ZPlainInterbase6.isc_event_block);
-  }
   sib_event_block := Tsib_event_block(Parent.GetPlainDriver.GetFirebirdAPI.isc_event_block);
   EventBufferLen := sib_event_block(@EventBuffer,
     @ResultBuffer, EventCount,
     EBP(1), EBP(2),  EBP(3),  EBP(4),  EBP(5),  EBP(6),  EBP(7), EBP(8),
     EBP(9), EBP(10), EBP(11), EBP(12), EBP(13), EBP(14), EBP(15));
-
-
 end;
 
 procedure TIBEventThread.SignalEvent;
@@ -470,8 +447,7 @@ end;
 
 procedure TIBEventThread.SignalTerminate;
 begin
-  if not Terminated then
-  begin
+  if not Terminated then begin
     Terminate;
     Signal.SetEvent;
   end;
@@ -484,8 +460,7 @@ end;
 
 function TIBEventThread.HandleException: boolean;
 begin
-  if not Parent.ThreadException then
-  begin
+  if not Parent.ThreadException then begin
     Result := True;
     Parent.ThreadException := True;
     FExceptObject := ExceptObject;
@@ -509,44 +484,44 @@ begin
   try
     repeat
       Signal.WaitFor(INFINITE);
-      if EventsReceived then
-      begin
+      if EventsReceived then begin
         ProcessEvents;
         QueueEvents;
       end;
     until Terminated;
     ReturnValue := 0;
   except
-    if HandleException then
-      ReturnValue := 1
-    else
-      ReturnValue := 0;
+    if HandleException
+    then ReturnValue := 1
+    else ReturnValue := 0;
   end;
 end;
 
-{$WARNINGS OFF}
 constructor TIBEventThread.Create(Owner: TZIBEventAlerter;
   EventGrp: integer; TermEvent: TNotifyEvent);
 begin
-  inherited Create(True);
+  // NB: we call inherited constructor after custom stuff because thread can't
+  // start itself from within constructor (it gets started 2nd time in AfterConstruction
+  // thus raising exception)
   FCancelAlerts := False;
   Signal := TSimpleEvent.Create;
   Parent := Owner;
   EventGroup := EventGrp;
   OnTerminate := TermEvent;
-  Resume;
+  {$IFDEF UNICODE}
+  FCodePage := Owner.Connection.DbcConnection.GetConSettings.ClientCodePage.CP;
+  {$ENDIF}
+  inherited Create(False);
 end;
-{$WARNINGS ON}
 
 destructor TIBEventThread.Destroy;
 begin
   try
     UnRegisterEvents;
   except
-    if HandleException then
-      ReturnValue := 1
-    else
-      ReturnValue := 0;
+    if HandleException
+    then ReturnValue := 1
+    else ReturnValue := 0;
   end;
   Signal.Free;
   inherited Destroy;
@@ -564,16 +539,10 @@ begin
     TStringList(FEvents).OnChange := nil;
     try
       for i := (FEvents.Count - 1) downto 0 do
-      begin
         if (FEvents[i] = EmptyStr) then
-        begin
-          FEvents.Delete(i);
-        end
+          FEvents.Delete(i)
         else if (Length(FEvents[i]) > (IB_MAX_EVENT_LENGTH - 1)) then
-        begin
           FEvents[i] := Copy(FEvents[i], 1, (IB_MAX_EVENT_LENGTH - 1));
-        end;
-      end;
     finally
       TStringList(FEvents).OnChange := EventChange;
     end;
@@ -592,13 +561,11 @@ procedure TZIBEventAlerter.ThreadEnded(Sender: TObject);
 var
   ThreadIdx: integer;
 begin
-  if (Sender is TIBEventThread) then
-  begin
+  if (Sender is TIBEventThread) then begin
     ThreadIdx := FThreads.IndexOf(Sender);
     if (ThreadIdx > -1) then
       FThreads.Delete(ThreadIdx);
-    if (TIBEventThread(Sender).ReturnValue = 1) then
-    begin
+    if (TIBEventThread(Sender).ReturnValue = 1) then begin
       if Registered then
         UnRegisterEvents;
       ThreadException := False;
@@ -608,8 +575,7 @@ end;
 
 procedure TZIBEventAlerter.SetAutoRegister(const Value: boolean);
 begin
-  if FAutoRegister <> Value then
-  begin
+  if FAutoRegister <> Value then begin
     FAutoRegister := Value;
     if FAutoRegister and (not Registered) and
       Assigned(FConnection) and FConnection.Connected then
@@ -623,24 +589,25 @@ begin
 end;
 
 procedure TIBEventThread.SQueEvents;
-var
-  Status: ISC_STATUS;
 begin
-  Status := -999999;
-  try
-    Status := Parent.PlainDriver.isc_que_events(StatusVector,
-      Parent.FNativeHandle, @EventID, EventBufferLen,
-      EventBuffer, TISC_CALLBACK(@EventCallback), PVoid(Self));
-  except
-    on E: Exception do
-      if Status <> -999999 then
-        if Assigned(Parent.OnError) then
-          if E is EZSQLException then
-            Parent.OnError(Parent, EZSQLException(E).ErrorCode)
-          else
-            Parent.OnError(Parent, 0);
-  end;
+  Parent.PlainDriver.isc_que_events(@StatusVector,
+    Parent.FNativeHandle, @EventID, EventBufferLen,
+    EventBuffer, TISC_CALLBACK(@EventCallback), PVoid(Self));
+
+  if not StatusSucceeded(StatusVector) then
+    if Assigned(Parent.OnError) then // only if someone handles errors
+    // Very Ugly! OnError should accept Exception as parameter.
+    // But we keep backward compatibility here
+    try
+      CheckInterbase6Error(Parent.PlainDriver, StatusVector, nil);
+    except on E: Exception do
+      if E is EZSQLException then
+        Parent.OnError(Parent, EZSQLException(E).ErrorCode)
+      else
+        Parent.OnError(Parent, 0);
+    end;
 end;
 
+{$ENDIF ZEOS_DISABLE_INTERBASE} //if set we have an empty unit
 end.
 

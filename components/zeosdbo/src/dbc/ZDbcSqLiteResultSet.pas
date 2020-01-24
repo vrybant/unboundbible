@@ -55,8 +55,13 @@ interface
 
 {$I ZDbc.inc}
 
+{$IFNDEF ZEOS_DISABLE_SQLITE} //if set we have an empty unit
 uses
-  {$IFDEF WITH_TOBJECTLIST_INLINE}System.Types, System.Contnrs{$ELSE}Contnrs{$ENDIF},
+  {$IFDEF WITH_TOBJECTLIST_REQUIRES_SYSTEM_TYPES}
+    System.Types, System.Contnrs
+  {$ELSE}
+    {$IFNDEF NO_UNIT_CONTNRS} Contnrs{$ELSE}ZClasses{$ENDIF}
+  {$ENDIF},
   Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
   ZSysUtils, ZDbcIntfs, ZDbcResultSet, ZDbcResultSetMetadata, ZPlainSqLiteDriver,
   ZCompatibility, ZDbcCache, ZDbcCachedResultSet, ZDbcGenericResolver,
@@ -65,9 +70,14 @@ uses
 type
   {** Implements SQLite ResultSet Metadata. }
   TZSQLiteResultSetMetadata = class(TZAbstractResultSetMetadata)
+  private
+    FHas_ExtendedColumnInfos: Boolean;
   protected
     procedure ClearColumn(ColumnInfo: TZColumnInfo); override;
     procedure LoadColumns; override;
+  public
+    constructor Create(const Metadata: IZDatabaseMetadata; const SQL: string;
+      ParentResultSet: TZAbstractResultSet);
   public
     function GetCatalogName(ColumnIndex: Integer): string; override;
     function GetColumnName(ColumnIndex: Integer): string; override;
@@ -86,13 +96,14 @@ type
     FPlainDriver: IZSQLitePlainDriver;
     FFirstRow: Boolean;
     FUndefinedVarcharAsStringLength: Integer;
+    FExtendedErrorMessage: Boolean;
   protected
     procedure Open; override;
     function InternalGetString(ColumnIndex: Integer): RawByteString; override;
   public
     constructor Create(const PlainDriver: IZSQLitePlainDriver; const Statement: IZStatement;
       const SQL: string; const Handle: Psqlite; const StmtHandle: Psqlite_vm;
-      const UndefinedVarcharAsStringLength: Integer);
+      const UndefinedVarcharAsStringLength: Integer; ExtendedErrorMessage: Boolean);
 
     procedure ResetCursor; override;
 
@@ -122,6 +133,8 @@ type
     FHandle: Psqlite;
     FPlainDriver: IZSQLitePlainDriver;
     FAutoColumnIndex: Integer;
+  protected
+    function CheckKeyColumn(ColumnIndex: Integer): Boolean; override;
   public
     constructor Create(const PlainDriver: IZSQLitePlainDriver; Handle: Psqlite;
       const Statement: IZStatement; const Metadata: IZResultSetMetadata);
@@ -135,11 +148,13 @@ type
       OldRowAccessor, NewRowAccessor: TZRowAccessor; Resolver: IZCachedResolver); override;
   end;
 
+{$ENDIF ZEOS_DISABLE_SQLITE} //if set we have an empty unit
 implementation
+{$IFNDEF ZEOS_DISABLE_SQLITE} //if set we have an empty unit
 
 uses
-  ZMessages, ZDbcSqLite, ZDbcSQLiteUtils, ZEncoding, ZDbcLogging, ZFastCode,
-  ZVariant, ZDbcSqLiteStatement, ZDbcMetadata
+  ZMessages, ZDbcSQLiteUtils, ZEncoding, ZDbcLogging, ZFastCode, ZDbcSqLite,
+  ZVariant, ZDbcMetadata, ZDbcSqLiteStatement {$IFNDEF NO_UNIT_CONTNRS},ZClasses{$ENDIF}
   {$IFDEF WITH_UNITANSISTRINGS}, AnsiStrings{$ENDIF};
 
 {**
@@ -151,6 +166,19 @@ begin
   ColumnInfo.ReadOnly := True;
   ColumnInfo.Writable := False;
   ColumnInfo.DefinitelyWritable := False;
+end;
+
+{**
+  Constructs this object and assignes the main properties.
+  @param Metadata a database metadata object.
+  @param SQL an SQL query statement.
+  @param ColumnsInfo a collection of columns info.
+}
+constructor TZSQLiteResultSetMetadata.Create(const Metadata: IZDatabaseMetadata;
+  const SQL: string; ParentResultSet: TZAbstractResultSet);
+begin
+  inherited Create(Metadata, SQL, ParentResultSet);
+  FHas_ExtendedColumnInfos := (MetaData.GetConnection.GetIZPlainDriver as IZSQLitePlainDriver).Has_sqlite3_column_table_name;
 end;
 
 {**
@@ -170,6 +198,8 @@ end;
 }
 function TZSQLiteResultSetMetadata.GetColumnName(ColumnIndex: Integer): string;
 begin
+  if not FHas_ExtendedColumnInfos and not Loaded
+  then LoadColumns;
   Result := TZColumnInfo(ResultSet.ColumnsInfo[ColumnIndex {$IFNDEF GENERIC_INDEX}-1{$ENDIF}]).ColumnName;
 end;
 
@@ -190,6 +220,8 @@ end;
 }
 function TZSQLiteResultSetMetadata.GetTableName(ColumnIndex: Integer): string;
 begin
+  if not FHas_ExtendedColumnInfos and not Loaded
+  then LoadColumns;
   Result := TZColumnInfo(ResultSet.ColumnsInfo[ColumnIndex {$IFNDEF GENERIC_INDEX}-1{$ENDIF}]).TableName;
 end;
 
@@ -212,17 +244,14 @@ end;
   Initializes columns with additional data.
 }
 procedure TZSQLiteResultSetMetadata.LoadColumns;
-{$IFNDEF ZEOS_TEST_ONLY}
 var
   Current: TZColumnInfo;
   I: Integer;
   TableColumns: IZResultSet;
-{$ENDIF}
 begin
-  {$IFDEF ZEOS_TEST_ONLY}
-  inherited LoadColumns;
-  {$ELSE}
-  if Metadata.GetConnection.GetDriver.GetStatementAnalyser.DefineSelectSchemaFromQuery(Metadata.GetConnection.GetDriver.GetTokenizer, SQL) <> nil then
+  if not FHas_ExtendedColumnInfos
+  then inherited LoadColumns
+  else if Metadata.GetConnection.GetDriver.GetStatementAnalyser.DefineSelectSchemaFromQuery(Metadata.GetConnection.GetDriver.GetTokenizer, SQL) <> nil then
     for I := 0 to ResultSet.ColumnsInfo.Count - 1 do begin
       Current := TZColumnInfo(ResultSet.ColumnsInfo[i]);
       ClearColumn(Current);
@@ -239,7 +268,6 @@ begin
       end;
     end;
   Loaded := True;
-  {$ENDIF}
 end;
 
 { TZSQLiteResultSet }
@@ -255,11 +283,14 @@ end;
 }
 constructor TZSQLiteResultSet.Create(const PlainDriver: IZSQLitePlainDriver;
   const Statement: IZStatement; const SQL: string; const Handle: Psqlite;
-  const StmtHandle: Psqlite_vm; const UndefinedVarcharAsStringLength: Integer);
+  const StmtHandle: Psqlite_vm; const UndefinedVarcharAsStringLength: Integer;
+  ExtendedErrorMessage: Boolean);
+var Metadata: TContainedObject;
 begin
-  inherited Create(Statement, SQL, TZSQLiteResultSetMetadata.Create(
-    Statement.GetConnection.GetMetadata, SQL, Self),
-    Statement.GetConnection.GetConSettings);
+  if PlainDriver.CompiledWith_SQLITE_ENABLE_COLUMN_METADATA
+  then MetaData := TZSQLiteResultSetMetadata.Create(Statement.GetConnection.GetMetadata, SQL, Self)
+  else MetaData := TZAbstractResultSetMetadata.Create(Statement.GetConnection.GetMetadata, SQL, Self);
+  inherited Create(Statement, SQL, MetaData, Statement.GetConnection.GetConSettings);
 
   FHandle := Handle;
   FStmtHandle := StmtHandle;
@@ -267,6 +298,7 @@ begin
   ResultSetConcurrency := rcReadOnly;
   FUndefinedVarcharAsStringLength := UndefinedVarcharAsStringLength;
   FFirstRow := True;
+  FExtendedErrorMessage := ExtendedErrorMessage;
 
   Open;
 end;
@@ -318,7 +350,7 @@ begin
       ColumnName := ColAttributeToStr(FPlainDriver.column_origin_name(FStmtHandle, i));
       ColumnLabel := ColAttributeToStr(FPlainDriver.column_name(FStmtHandle, i));
       TableName := ColAttributeToStr(FPlainDriver.column_table_name(FStmtHandle, i));
-      SchemaName := ColAttributeToStr(FPlainDriver.column_database_name(FStmtHandle, i));
+      CatalogName := ColAttributeToStr(FPlainDriver.column_database_name(FStmtHandle, i));
       ReadOnly := TableName <> '';
       P := FPlainDriver.column_decltype(FStmtHandle, i);
       if P = nil then
@@ -326,7 +358,7 @@ begin
       else
         ZSetString(P, ZFastCode.StrLen(P), tmp);
       ColumnType := ConvertSQLiteTypeToSQLType(tmp, FUndefinedVarcharAsStringLength,
-        FieldPrecision{%H-}, FieldDecimals{%H-}, ConSettings.CPType);
+        FieldPrecision, FieldDecimals, ConSettings.CPType);
 
       if ColumnType in [stString, stUnicodeString, stAsciiStream, stUnicodeStream] then
       begin
@@ -367,10 +399,9 @@ begin
   if Assigned(FStmtHandle) then
   begin
     CheckSQLiteError(FPlainDriver, FHandle, FPlainDriver.reset(FStmtHandle),
-      lcOther, 'Reset Prepared Stmt', ConSettings);
+      lcOther, 'Reset Prepared Stmt', ConSettings, FExtendedErrorMessage);
     FStmtHandle := nil;
   end;
-  inherited ResetCursor;
 end;
 
 {**
@@ -607,6 +638,7 @@ end;
   @return the column value; if the value is SQL <code>NULL</code>, the
     value returned is <code>0</code>
 }
+{$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R-}{$IFEND}
 function TZSQLiteResultSet.GetULong(ColumnIndex: Integer): UInt64;
 var
   ColType: Integer;
@@ -633,6 +665,7 @@ begin
         Result := 0;
     end;
 end;
+{$IF defined (RangeCheckEnabled) and defined(WITH_UINT64_C1118_ERROR)}{$R+}{$IFEND}
 {**
   Gets the value of the designated column in the current row
   of this <code>ResultSet</code> object as
@@ -777,7 +810,7 @@ begin
         Len := ZFastCode.StrLen(Buffer);
 
         if (Len = ConSettings^.ReadFormatSettings.DateFormatLen) then
-          Result := RawSQLDateToDateTime(Buffer,  Len, ConSettings^.ReadFormatSettings, Failed{%H-})
+          Result := RawSQLDateToDateTime(Buffer,  Len, ConSettings^.ReadFormatSettings, Failed)
         else
           Result := {$IFDEF USE_FAST_TRUNC}ZFastCode.{$ENDIF}Trunc(
             RawSQLTimeStampToDateTime(Buffer,  Len, ConSettings^.ReadFormatSettings, Failed));
@@ -823,7 +856,7 @@ begin
         Len := ZFastCode.StrLen(Buffer);
 
         if ((Buffer)+2)^ = ':' then //possible date if Len = 10 then
-          Result := RawSQLTimeToDateTime(Buffer, Len, ConSettings^.ReadFormatSettings, Failed{%H-})
+          Result := RawSQLTimeToDateTime(Buffer, Len, ConSettings^.ReadFormatSettings, Failed)
         else
           Result := Frac(RawSQLTimeStampToDateTime(Buffer, Len,
             ConSettings^.ReadFormatSettings, Failed));
@@ -867,7 +900,7 @@ begin
       else
       begin
         Buffer := FPlainDriver.column_text(FStmtHandle, ColumnIndex);
-        Result := RawSQLTimeStampToDateTime(Buffer, ZFastCode.StrLen(Buffer), ConSettings^.ReadFormatSettings, Failed{%H-});
+        Result := RawSQLTimeStampToDateTime(Buffer, ZFastCode.StrLen(Buffer), ConSettings^.ReadFormatSettings, Failed);
       end;
       LastWasNull := Result = 0;
     end;
@@ -936,7 +969,7 @@ begin
     { Free handle when EOF. }
 ResetHndl:
     CheckSQLiteError(FPlainDriver, FHandle, FPlainDriver.reset(FStmtHandle),
-      lcOther, 'sqlite3_reset', ConSettings);
+      lcOther, 'sqlite3_reset', ConSettings, FExtendedErrorMessage);
     FErrorCode := SQLITE_DONE;
     Exit;
   end;
@@ -944,7 +977,7 @@ ResetHndl:
   if (FStmtHandle <> nil ) and not FFirstRow then
   begin
     FErrorCode := FPlainDriver.Step(FStmtHandle);
-    CheckSQLiteError(FPlainDriver, FHandle, FErrorCode, lcOther, 'FETCH', ConSettings);
+    CheckSQLiteError(FPlainDriver, FHandle, FErrorCode, lcOther, 'FETCH', ConSettings, FExtendedErrorMessage);
   end;
 
   if FFirstRow then //avoid incrementing issue on fetching since the first row is allready fetched by stmt
@@ -974,6 +1007,20 @@ ResetHndl:
 end;
 
 { TZSQLiteCachedResolver }
+
+{**
+  Checks is the specified column can be used in where clause.
+  @param ColumnIndex an index of the column.
+  @returns <code>true</code> if column can be included into where clause.
+}
+function TZSQLiteCachedResolver.CheckKeyColumn(ColumnIndex: Integer): Boolean;
+begin
+  Result := (Metadata.GetTableName(ColumnIndex) <> '')
+    and (Metadata.GetColumnName(ColumnIndex) <> '')
+    and Metadata.IsSearchable(ColumnIndex)
+    and not (Metadata.GetColumnType(ColumnIndex)
+    in [stUnknown, stBinaryStream]);
+end;
 
 {**
   Creates a SQLite specific cached resolver object.
@@ -1075,4 +1122,5 @@ begin
 end;
 // <-- ms
 
+{$ENDIF ZEOS_DISABLE_SQLITE} //if set we have an empty unit
 end.

@@ -56,9 +56,10 @@ interface
 
 {$I ZDbc.inc}
 
+{$IFNDEF ZEOS_DISABLE_MYSQL} //if set we have an empty unit
 uses
   Types, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
-  {%H-}ZClasses, ZSysUtils, ZDbcIntfs, ZDbcMetadata, ZCompatibility,
+  ZClasses, ZSysUtils, ZDbcIntfs, ZDbcMetadata, ZCompatibility,
   ZURL, ZDbcConnection;
 
 type
@@ -67,7 +68,7 @@ type
   {** Implements MySQL Database Information. }
   TZMySQLDatabaseInfo = class(TZAbstractDatabaseInfo)
   protected
-    procedure GetVersion(var MajorVersion, MinorVersion: integer);
+    procedure GetVersion(out MajorVersion, MinorVersion: integer);
   public
     constructor Create(const Metadata: TZAbstractDatabaseMetadata);
 
@@ -208,6 +209,8 @@ type
     ['{204A7ABF-36B2-4753-9F48-4942619C31FA}']
     procedure SetMySQL_FieldType_Bit_1_IsBoolean(Value: Boolean);
     procedure SetDataBaseName(const Value: String);
+    function isMySQL: Boolean;
+    function isMariaDB: Boolean;
   end;
   {** Implements MySQL Database Metadata. }
   TZMySQLDatabaseMetadata = class(TZAbstractDatabaseMetadata, IZMySQLDatabaseMetadata)
@@ -215,7 +218,11 @@ type
     FInfo: TStrings;
     FMySQL_FieldType_Bit_1_IsBoolean: Boolean;
     FBoolCachedResultSets: IZCollection;
+    FKnowServerType: Boolean;
+    FIsMariaDB: Boolean;
+    FIsMySQL: Boolean;
   protected
+    procedure detectServerType;
     function CreateDatabaseInfo: IZDatabaseInfo; override; // technobot 2008-06-26
 
     procedure GetCatalogAndNamePattern(const Catalog, SchemaPattern,
@@ -246,9 +253,19 @@ type
 //      const SequenceNamePattern: string): IZResultSet; override; -> Not implemented
     function UncachedGetProcedures(const Catalog: string; const SchemaPattern: string;
       const ProcedureNamePattern: string): IZResultSet; override;
+    function GetProceduresFromInformationSchema (const Catalog: string; const SchemaPattern: string;
+      const ProcedureNamePattern: string): IZResultSet; virtual;
+    function GetProceduresFromProcTable (const Catalog: string; const SchemaPattern: string;
+      const ProcedureNamePattern: string): IZResultSet; virtual;
     function UncachedGetProcedureColumns(const Catalog: string; const SchemaPattern: string;
       const ProcedureNamePattern: string; const ColumnNamePattern: string):
       IZResultSet; override;
+    function GetProcedureColumnsFromProcTable(const Catalog: string; const SchemaPattern: string;
+      const ProcedureNamePattern: string; const ColumnNamePattern: string):
+      IZResultSet; virtual;
+    function GetProcedureColumnsFromInformationSchema(const Catalog: string; const SchemaPattern: string;
+      const ProcedureNamePattern: string; const ColumnNamePattern: string):
+      IZResultSet; virtual;
     function UncachedGetVersionColumns(const Catalog: string; const Schema: string;
       const Table: string): IZResultSet; override;
     function UncachedGetTypeInfo: IZResultSet; override;
@@ -264,13 +281,17 @@ type
     procedure SetMySQL_FieldType_Bit_1_IsBoolean(Value: Boolean);
     procedure SetDataBaseName(const Value: String);
     procedure ClearCache; override;
+    function isMySQL: Boolean;
+    function isMariaDB: Boolean;
   end;
 
+{$ENDIF ZEOS_DISABLE_MYSQL} //if set we have an empty unit
 implementation
+{$IFNDEF ZEOS_DISABLE_MYSQL} //if set we have an empty unit
 
 uses
-  Math,
-  ZFastCode, ZMessages, ZDbcMySqlUtils, ZDbcUtils, ZDbcMySql, ZCollections,
+  Math, {$IFDEF WITH_UNITANSISTRINGS}AnsiStrings,{$ENDIF}
+  ZFastCode, ZMessages, ZDbcMySqlUtils, ZDbcUtils, ZCollections,
   ZSelectSchema;
 
 { TZMySQLDatabaseInfo }
@@ -372,7 +393,7 @@ begin
     + 'OUTFILE,REPLACE,SET,TEXT,UNSIGNED,ZEROFILL';
   { mdaems : added all reserved words indicated by mysql documentation (up to mysql 5.1)}
   Result := Result + 'ACCESSIBLE,ADD,ALL,ANALYZE,AND,ASC,ASENSITIVE,'
-    + ' BEFORE,BETWEEN,BIGINT,BOTH,CALL,CASCADE,CASE,CHANGE,CHARACTER,CHECK,'
+    + 'BEFORE,BETWEEN,BIGINT,BOTH,CALL,CASCADE,CASE,CHANGE,CHARACTER,CHECK,'
     + 'COLLATE,CONDITION,CONSTRAINT,CONTINUE,CONVERT,CROSS,CURSOR,'
     + 'DATABASE,DATABASES,DAY_HOUR,DAY_MICROSECOND,DAY_MINUTE,DAY_SECOND,'
     + 'DEC,DECIMAL,DECLARE,DEFAULT,DELAYED,DESC,DESCRIBE,DETERMINISTIC,'
@@ -387,7 +408,7 @@ begin
     + 'MOD,MODIFIES,NATURAL,NOT,NO_WRITE_TO_BINLOG,NUMERIC,OPTIMIZE,'
     + 'OPTIONALLY,OR,OUT,OUTER,PRECISION,PROCEDURE,PURGE,RANGE,READ,READS,'
     + 'READ_ONLY,READ_WRITE,REAL,REFERENCES,REGEXP,RELEASE,RENAME,REPEAT,'
-    + 'REQUIRE,RESIGNAL SIGNAL,RESTRICT,RETURN,REVOKE,RIGHT,RLIKE,SCHEMA,SCHEMAS,'
+    + 'REQUIRE,RESIGNAL,SIGNAL,RESTRICT,RETURN,REVOKE,RIGHT,RLIKE,SCHEMA,SCHEMAS,'
     + 'SECOND_MICROSECOND,SENSITIVE,SEPARATOR,SHOW,SLOW,SMALLINT,SPATIAL,'
     + 'SPECIFIC,SQL,SQLEXCEPTION,SQLSTATE,SQLWARNING,SQL_BIG_RESULT,'
     + 'SQL_CALC_FOUND_ROWS,SQL_SMALL_RESULT,SSL,STARTING,STRAIGHT_JOIN,'
@@ -506,7 +527,7 @@ var
   MajorVersion: Integer;
   MinorVersion: Integer;
 begin
-  GetVersion(MajorVersion{%H-}, MinorVersion{%H-});
+  GetVersion(MajorVersion, MinorVersion);
   // changed from False by mdaems. After testing with lower versions, please correct.
   Result := MajorVersion >= 5;
 end;
@@ -575,7 +596,7 @@ var
   MajorVersion: Integer;
   MinorVersion: Integer;
 begin
-  GetVersion(MajorVersion{%H-}, MinorVersion{%H-});
+  GetVersion(MajorVersion, MinorVersion);
   Result := ((MajorVersion = 3) and (MinorVersion >= 22)) or (MajorVersion > 3);
 end;
 
@@ -904,7 +925,7 @@ end;
   @param MajorVesion the major version of MySQL server.
   @param MinorVersion the minor version of MySQL server.
 }
-procedure TZMySQLDatabaseInfo.GetVersion(var MajorVersion,
+procedure TZMySQLDatabaseInfo.GetVersion(out MajorVersion,
   MinorVersion: Integer);
 var
   VersionList: TStrings;
@@ -945,6 +966,10 @@ begin
   FInfo.Assign(Url.Properties);
   FInfo.Values['UseResult'] := 'True';
   FBoolCachedResultSets := TZCollection.Create;
+
+  FIsMariaDB := false;
+  FIsMySQL := false;
+  FKnowServerType := false;
 end;
 
 {**
@@ -1101,21 +1126,10 @@ end;
   catalog name
 }
 function TZMySQLDatabaseMetadata.UncachedGetCatalogs: IZResultSet;
-var
-  Len: NativeUInt;
 begin
-    Result:=inherited UncachedGetCatalogs;
-
-    with GetConnection.CreateStatementWithParams(FInfo).ExecuteQuery('SHOW DATABASES') do
-    begin
-      while Next do
-      begin
-        Result.MoveToInsertRow;
-        Result.UpdatePAnsiChar(CatalogNameIndex, GetPAnsiChar(FirstDbcIndex, Len), @Len);
-        Result.InsertRow;
-      end;
-      Close;
-    end;
+  Result := CopyToVirtualResultSet(
+    GetConnection.CreateStatementWithParams(FInfo).ExecuteQuery('SHOW DATABASES'),
+    ConstructVirtualResultSet(CatalogColumnsDynArray));
 end;
 
 {**
@@ -1134,7 +1148,7 @@ end;
 }
 function TZMySQLDatabaseMetadata.UncachedGetTableTypes: IZResultSet;
 begin
-    Result:=inherited UncachedGetTableTypes;
+  Result := inherited UncachedGetTableTypes;
 
     Result.MoveToInsertRow;
     Result.UpdateString(TableTypeColumnTableTypeIndex, 'TABLE');
@@ -1273,20 +1287,16 @@ begin
             { Sets nullable fields. }
             Nullable := GetString(ColumnIndexes[3]);
             if Nullable <> '' then
-              if Nullable = 'YES' then
-              begin
+              if Nullable = 'YES' then begin
                 Result.UpdateInt(TableColColumnNullableIndex, Ord(ntNullable));
-                Result.UpdateString(TableColColumnIsNullableIndex, 'YES');
-              end
-              else
-              begin
+                Result.UpdateRawByteString(TableColColumnIsNullableIndex, 'YES');
+              end else begin
                 Result.UpdateInt(TableColColumnNullableIndex, Ord(ntNoNulls));
-                Result.UpdateString(TableColColumnIsNullableIndex, 'NO');
+                Result.UpdateRawByteString(TableColColumnIsNullableIndex, 'NO');
               end
-            else
-            begin
+            else begin
               Result.UpdateInt(TableColColumnNullableIndex, 0);
-              Result.UpdateString(TableColColumnIsNullableIndex, 'NO');
+              Result.UpdateRawByteString(TableColColumnIsNullableIndex, 'NO');
             end;
             Result.UpdatePAnsiChar(TableColColumnRemarksIndex, GetPAnsiChar(ColumnIndexes[4], Len), @Len);
             // MySQL is a bit bizarre.
@@ -1330,12 +1340,12 @@ begin
                 // Since we changed date/time-related columntypes to be presented
                 // as strings, we need to move the CURRENT_TIMESTAMP-check to here.
                 // Also left the other line in order to minimize the changes in ZeosLib
-                if DefaultValue <> 'CURRENT_TIMESTAMP' then
-                DefaultValue := '''' + DefaultValue + ''''
+                if not StartsWith({$IFDEF WITH_UNITANSISTRINGS}AnsiStrings.{$ENDIF}UpperCase(DefaultValue), RawByteString('CURRENT_TIMESTAMP')) then
+                  DefaultValue := '''' + DefaultValue + ''''
               end
               else if (MySQLType in [stDate, stTime, stTimestamp]) then
               begin
-                if DefaultValue <> 'CURRENT_TIMESTAMP' then
+                if not StartsWith({$IFDEF WITH_UNITANSISTRINGS}AnsiStrings.{$ENDIF}UpperCase(DefaultValue), RawByteString('CURRENT_TIMESTAMP')) then
                   DefaultValue := '''' + DefaultValue + ''''
               end
               else if (MySQLType = stBoolean) and (TypeName = 'enum') then
@@ -1415,7 +1425,7 @@ const
   db_Index              = FirstDbcIndex + 1;
   grantor_Index         = FirstDbcIndex + 2;
   user_Index            = FirstDbcIndex + 3;
-  {%H-}table_name_Index = FirstDbcIndex + 4;
+  //table_name_Index      = FirstDbcIndex + 4; unused
   column_name_Index     = FirstDbcIndex + 5;
   column_priv_Index     = FirstDbcIndex + 6;
 var
@@ -1426,7 +1436,7 @@ var
   PrivilegesList: TStrings;
   ColumnNameCondition, TableNameCondition, SchemaCondition: string;
 begin
-  Result:=inherited UncachedGetColumnPrivileges(Catalog, Schema, Table, ColumnNamePattern);
+  Result := inherited UncachedGetColumnPrivileges(Catalog, Schema, Table, ColumnNamePattern);
 
     If Catalog = '' then
       If Schema <> '' then
@@ -1437,12 +1447,6 @@ begin
       SchemaCondition := ConstructNameCondition(Catalog,'c.db');
     TableNameCondition := ConstructNameCondition(Table,'c.table_name');
     ColumnNameCondition := ConstructNameCondition(ColumnNamePattern,'c.column_name');
-    If SchemaCondition <> '' then
-      SchemaCondition := ' and ' + SchemaCondition;
-    If TableNameCondition <> '' then
-      TableNameCondition := ' and ' + TableNameCondition;
-    If ColumnNameCondition <> '' then
-      ColumnNameCondition := ' and ' + ColumnNameCondition;
 
     PrivilegesList := TStringList.Create;
     try
@@ -1451,7 +1455,8 @@ begin
         + ' c.column_name, c.column_priv FROM mysql.columns_priv c,'
         + ' mysql.tables_priv t WHERE c.host=t.host AND c.db=t.db'
         + ' AND c.table_name=t.table_name'
-        + SchemaCondition + TableNameCondition + ColumnNameCondition
+      + AppendCondition(SchemaCondition) + AppendCondition(TableNameCondition)
+      + AppendCondition(ColumnNameCondition)
       ) do
       begin
         while Next do
@@ -1537,7 +1542,7 @@ var
   PrivilegesList: TStrings;
   TableNameCondition, SchemaCondition: string;
 begin
-    Result:=inherited UncachedGetTablePrivileges(Catalog, SchemaPattern, TableNamePattern);
+  Result := inherited UncachedGetTablePrivileges(Catalog, SchemaPattern, TableNamePattern);
 
     If Catalog = '' then
       If SchemaPattern <> '' then
@@ -1547,17 +1552,13 @@ begin
     else
       SchemaCondition := ConstructNameCondition(Catalog,'db');
     TableNameCondition := ConstructNameCondition(TableNamePattern,'table_name');
-    If SchemaCondition <> '' then
-      SchemaCondition := ' and ' + SchemaCondition;
-    If TableNameCondition <> '' then
-      TableNameCondition := ' and ' + TableNameCondition;
 
     PrivilegesList := TStringList.Create;
     try
       with GetConnection.CreateStatementWithParams(FInfo).ExecuteQuery(
         'SELECT host,db,table_name,grantor,user,table_priv'
         + ' from mysql.tables_priv WHERE 1=1'
-        + SchemaCondition + TableNameCondition
+      + AppendCondition(SchemaCondition) + AppendCondition(TableNameCondition)
       ) do
       begin
         while Next do
@@ -2355,31 +2356,80 @@ end;
 function TZMySQLDatabaseMetadata.UncachedGetProcedures(const Catalog: string;
   const SchemaPattern: string; const ProcedureNamePattern: string): IZResultSet;
 var
+  ResultSet: IZResultSet;
+  RequiresInformationSchema: boolean;
+begin
+  // I do check the server version because I don't know how to check for the server type.
+  // MariaDB 10 supports the information_schema too, so we can use it there too.
+  RequiresInformationSchema := isMySQL and (GetConnection.GetHostVersion >= EncodeSQLVersioning(8,0,0));
+
+  if RequiresInformationSchema
+  then ResultSet := GetProceduresFromInformationSchema(Catalog, SchemaPattern, ProcedureNamePattern)
+  else ResultSet := GetProceduresFromProcTable(Catalog, SchemaPattern, ProcedureNamePattern);
+
+  Result := CopyToVirtualResultSet(ResultSet, ConstructVirtualResultSet(ProceduresColumnsDynArray));
+end;
+
+function TZMySQLDatabaseMetadata.GetProceduresFromInformationSchema (const Catalog: string; const SchemaPattern: string;
+      const ProcedureNamePattern: string): IZResultSet;
+var
   SQL: string;
   ProcedureNameCondition, SchemaCondition: string;
 begin
-  If Catalog = '' then
-    If SchemaPattern <> ''
-    then SchemaCondition := ConstructNameCondition(SchemaPattern,'p.db')
-    else SchemaCondition := ConstructNameCondition(FDatabase,'p.db')
-  else
-    SchemaCondition := ConstructNameCondition(Catalog,'p.db');
-  ProcedureNameCondition := ConstructNameCondition(ProcedureNamePattern,'p.name');
-  If SchemaCondition <> '' then
-    SchemaCondition := ' and ' + SchemaCondition;
-  If ProcedureNameCondition <> '' then
-    ProcedureNameCondition := ' and ' + ProcedureNameCondition;
+  If SchemaPattern <> ''
+  then SchemaCondition := ConstructNameCondition(Catalog, 'R.ROUTINE_SCHEMA')
+  else If Catalog <> ''
+    then SchemaCondition := ConstructNameCondition(Catalog, 'R.ROUTINE_SCHEMA')
+    else SchemaCondition := ConstructNameCondition(FDatabase, 'R.ROUTINE_SCHEMA');
 
-  SQL := 'SELECT NULL AS PROCEDURE_CAT, p.db AS PROCEDURE_SCHEM, '+
-      'p.name AS PROCEDURE_NAME, NULL AS RESERVED1, NULL AS RESERVED2, '+
-      'NULL AS RESERVED3, p.comment AS REMARKS, '+
-      ZFastCode.IntToStr(Ord(ProcedureReturnsResult))+' AS PROCEDURE_TYPE  from  mysql.proc p '+
-      'WHERE 1=1' + SchemaCondition + ProcedureNameCondition+
-      ' ORDER BY p.db, p.name';
-    Result := CopyToVirtualResultSet(
-    GetConnection.CreateStatement.ExecuteQuery(SQL),
-    ConstructVirtualResultSet(ProceduresColumnsDynArray));
+  ProcedureNameCondition := ConstructNameCondition(ProcedureNamePattern, 'R.ROUTINE_NAME');
+
+  SQL := 'select '
+       + '  ROUTINE_CATALOG as PROCEDURE_CAT, '
+       + '  ROUTINE_SCHEMA as PROCEDURE_SCHEM, '
+       + '  ROUTINE_NAME as PROCEDURE_NAME, '
+       + '  null as RESERVED1, '
+       + '  null as RESERVED2, '
+       + '  null as RESERVED3, '
+       + '  ROUTINE_COMMENT as REMARKS, '
+       + '  case ROUTINE_TYPE when ''FUNCTION'' then 2 when ''PROCEDURE'' then 1 else 0 end as PROCEDURE_TYPE '
+       + 'from information_schema.ROUTINES R '
+       + 'where 1=1' + AppendCondition(SchemaCondition) + AppendCondition(ProcedureNameCondition)
+       + ' ORDER BY R.ROUTINE_SCHEMA, R.ROUTINE_NAME';
+
+  Result := GetConnection.CreateStatement.ExecuteQuery(SQL);
 end;
+
+function TZMySQLDatabaseMetadata.GetProceduresFromProcTable (const Catalog: string; const SchemaPattern: string;
+      const ProcedureNamePattern: string): IZResultSet;
+var
+  SQL: string;
+  ProcedureNameCondition, SchemaCondition: string;
+begin
+  If SchemaPattern <> ''
+  then SchemaCondition := ConstructNameCondition(SchemaPattern, 'p.db')
+  else If Catalog <> ''
+    then SchemaCondition := ConstructNameCondition(Catalog, 'p.db')
+    else SchemaCondition := ConstructNameCondition(FDatabase, 'p.db');
+
+  ProcedureNameCondition := ConstructNameCondition(ProcedureNamePattern,'p.name');
+
+  SQL := 'SELECT '
+       + '  ''def'' AS PROCEDURE_CAT, '
+       + '  p.db AS PROCEDURE_SCHEM, '
+       + '  p.name AS PROCEDURE_NAME, '
+       + '  NULL AS RESERVED1, '
+       + '  NULL AS RESERVED2, '
+       + '  NULL AS RESERVED3, '
+       + '  p.comment AS REMARKS, '
+       + '  case p.type when ''FUNCTION'' then 2 when ''PROCEDURE'' then 1 else 0 end as PROCEDURE_TYPE '
+       + 'FROM mysql.proc p '
+       + 'WHERE 1=1' + AppendCondition(SchemaCondition) + AppendCondition(ProcedureNameCondition)
+       + ' ORDER BY p.db, p.name';
+
+  Result := GetConnection.CreateStatement.ExecuteQuery(SQL);
+end;
+
 
 {**
   Gets a description of a catalog's stored procedure parameters
@@ -2440,13 +2490,28 @@ end;
 function TZMySQLDatabaseMetadata.UncachedGetProcedureColumns(const Catalog: string;
   const SchemaPattern: string; const ProcedureNamePattern: string;
   const ColumnNamePattern: string): IZResultSet;
+var
+  RequiresInformationSchema: boolean;
+begin
+  // I do check the server version because I don't know how to check for the server type.
+  // MariaDB 10 supports the information_schema too, so we can use it there too.
+  RequiresInformationSchema := isMySQL and (GetConnection.GetHostVersion >= EncodeSQLVersioning(8,0,0));
+
+  if RequiresInformationSchema
+  then Result := GetProcedureColumnsFromInformationSchema(Catalog, SchemaPattern, ProcedureNamePattern, ColumnNamePattern)
+  else Result := GetProcedureColumnsFromProcTable(Catalog, SchemaPattern, ProcedureNamePattern, ColumnNamePattern);
+end;
+
+function TZMySQLDatabaseMetadata.GetProcedureColumnsFromProcTable(const Catalog: string;
+  const SchemaPattern: string; const ProcedureNamePattern: string;
+  const ColumnNamePattern: string): IZResultSet;
 const
-  {%H-}PROCEDURE_CAT_index  = FirstDbcIndex + 0;
+  //PROCEDURE_CAT_index  = FirstDbcIndex + 0; unused
   PROCEDURE_SCHEM_index     = FirstDbcIndex + 1;
   PROCEDURE_NAME_Index      = FirstDbcIndex + 2;
   PARAMS_Index              = FirstDbcIndex + 3;
-  {%H-}REMARKS_Index        = FirstDbcIndex + 4;
-  {%H-}PROCEDURE_TYPE_Index = FirstDbcIndex + 5;
+  //REMARKS_Index        = FirstDbcIndex + 4; unused
+  //PROCEDURE_TYPE_Index = FirstDbcIndex + 5; unused
   RETURN_VALUES_Index       = FirstDbcIndex + 6;
 var
   Len: NativeUInt;
@@ -2535,17 +2600,13 @@ begin
   else
     SchemaCondition := ConstructNameCondition(Catalog,'p.db');
   ProcedureNameCondition := ConstructNameCondition(ProcedureNamePattern,'p.name');
-  If SchemaCondition <> '' then
-    SchemaCondition := ' and ' + SchemaCondition;
-  If ProcedureNameCondition <> '' then
-    ProcedureNameCondition := ' and ' + ProcedureNameCondition;
 
   Result := inherited UncachedGetProcedureColumns(Catalog, SchemaPattern, ProcedureNamePattern, ColumnNamePattern);
 
-  SQL := 'SELECT NULL AS PROCEDURE_CAT, p.db AS PROCEDURE_SCHEM, '+
+  SQL := 'SELECT ''def'' AS PROCEDURE_CAT, p.db AS PROCEDURE_SCHEM, '+
       'p.name AS PROCEDURE_NAME, p.param_list AS PARAMS, p.comment AS REMARKS, '+
     ZFastCode.IntToStr(Ord(ProcedureReturnsResult))+' AS PROCEDURE_TYPE, p.returns AS RETURN_VALUES '+
-    ' from  mysql.proc p where 1 = 1'+SchemaCondition+ProcedureNameCondition+
+    ' from mysql.proc p where 1=1'+ AppendCondition(SchemaCondition) + AppendCondition(ProcedureNameCondition)+
     ' ORDER BY p.db, p.name';
 
     try
@@ -2584,8 +2645,8 @@ begin
                   Params.Insert(0,'IN'); //Function in value
 
             Result.MoveToInsertRow;
-            Result.UpdatePAnsiChar(CatalogNameIndex, GetPAnsiChar(PROCEDURE_SCHEM_index, Len), @Len); //PROCEDURE_CAT
-            //Result.UpdateNull(SchemaNameIndex); //PROCEDURE_SCHEM
+            Result.UpdateRawByteString(CatalogNameIndex, 'def');
+            Result.UpdatePAnsiChar(SchemaNameIndex, GetPAnsiChar(PROCEDURE_SCHEM_index, Len), @Len); //PROCEDURE_SCHEM
             Result.UpdatePAnsiChar(ProcColProcedureNameIndex, GetPAnsiChar(PROCEDURE_NAME_Index, Len), @Len); //PROCEDURE_NAME
             TypeName := ConSettings^.ConvFuncs.ZStringToRaw(Params[2], ConSettings^.CTRL_CP, ConSettings^.ClientCodePage^.CP);
             ConvertMySQLColumnInfoFromString(TypeName, ConSettings, Temp, FieldType, ColumnSize, Precision,
@@ -2593,7 +2654,7 @@ begin
             { process COLUMN_NAME }
             if Params[1] = '' then
               if Params[0] = 'RETURNS' then
-                Result.UpdateString(ProcColColumnNameIndex, 'ReturnValue')
+                Result.UpdateRawByteString(ProcColColumnNameIndex, 'ReturnValue')
               else
                 Result.UpdateString(ProcColColumnNameIndex, GetNextName('$', True))
             else
@@ -2639,6 +2700,241 @@ begin
     end;
 end;
 
+function TZMySQLDatabaseMetadata.GetProcedureColumnsFromInformationSchema(const Catalog: string;
+  const SchemaPattern: string; const ProcedureNamePattern: string;
+  const ColumnNamePattern: string): IZResultSet;
+const
+  myProcColProcedureNameIndex = FirstDbcIndex + 2;
+  myProcColColumnNameIndex    = FirstDbcIndex + 3;
+  myProcColColumnTypeIndex    = FirstDbcIndex + 4;
+  myProcColTypeNameIndex      = FirstDbcIndex + 5;
+  myProcColLengthIndex        = FirstDbcIndex + 6;
+  myProcColScaleIndex         = FirstDbcIndex + 7;
+  myExtraNumericPrecisionIndex = FirstDbcIndex + 8;
+  myExtraMaxCharLength         = FirstDbcIndex + 9;
+var
+  SQL: string;
+  ProcedureNameCondition, SchemaCondition: string;
+  ZType, ZPrecision, ZScale: Integer;
+  Len: NativeUInt;
+
+  procedure MysqlTypeToZeos(TypeName: String; const MysqlPrecision, MySqlScale, MysqlCharLength: integer; out ZType, ZPrecision, ZScale: Integer);
+  begin
+    TypeName := LowerCase(TypeName);
+    if TypeName = 'tinyint' then begin
+      ZType := Ord(stShort);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'smallint' then begin
+      ZType := Ord(stSmall);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'mediumint' then begin
+      ZType := Ord(stInteger);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'integer' then begin
+      ZType := Ord(stInteger);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'int' then begin
+      ZType := Ord(stInteger);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'bigint' then begin
+      ZType := Ord(stLong);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'double' then begin
+      ZType := Ord(stDouble);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'float' then begin
+      ZType := Ord(stDouble);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'decimal' then begin
+      if MySqlScale = 0 then begin
+        ZType := Ord(stLong);
+        ZPrecision := -1;
+        ZScale := -1;
+      end else begin
+        ZType := Ord(stDouble);
+        ZPrecision := MysqlPrecision;
+        ZScale := MySqlScale;
+      end;
+    end else if TypeName = 'numeric' then begin
+      if MySqlScale = 0 then begin
+        ZType := Ord(stLong);
+        ZPrecision := -1;
+        ZScale := -1;
+      end else begin
+        ZType := Ord(stDouble);
+        ZPrecision := MysqlPrecision;
+        ZScale := MySqlScale;
+      end;
+    end else if TypeName = 'varchar' then begin
+      ZType := Ord(stUnicodeString);
+      ZPrecision := MysqlCharLength;
+      ZScale := -1;
+    end else if TypeName = 'date' then begin
+      ZType := Ord(stDate);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'time' then begin
+      ZType := Ord(stTime);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'year' then begin
+      ZType := Ord(stWord);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'timestamp' then begin
+      ZType := Ord(stTimestamp);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'datetime' then begin
+      ZType := Ord(stTimestamp);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'tinyblob' then begin
+      ZType := Ord(stBinaryStream);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'blob' then begin
+      ZType := Ord(stBinaryStream);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'mediumblob' then begin
+      ZType := Ord(stBinaryStream);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'longblob' then begin
+      ZType := Ord(stBinaryStream);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'tinytext' then begin
+      ZType := Ord(stUnicodeStream);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'text' then begin
+      ZType := Ord(stUnicodeStream);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'mediumtext' then begin
+      ZType := Ord(stUnicodeStream);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'longtext' then begin
+      ZType := Ord(stUnicodeStream);
+      ZPrecision := -1;
+      ZScale := -1;
+    end else if TypeName = 'varbinary' then begin
+      ZType := Ord(stBytes);
+      ZPrecision := MysqlCharLength;
+      ZScale := -1;
+    end else if TypeName = 'set' then begin
+      ZType := Ord(stUnicodeString);
+      ZPrecision := MysqlCharLength;
+      ZScale := -1;
+    end;
+  end;
+begin
+  If SchemaPattern <> ''
+  then SchemaCondition := ConstructNameCondition(Catalog, 'P.SPECIFIC_SCHEMA')
+  else If Catalog <> ''
+    then SchemaCondition := ConstructNameCondition(Catalog, 'P.SPECIFIC_SCHEMA')
+    else SchemaCondition := ConstructNameCondition(FDatabase, 'P.SPECIFIC_SCHEMA');
+
+  ProcedureNameCondition := ConstructNameCondition(ProcedureNamePattern, 'P.SPECIFIC_NAME');
+
+  Result := inherited UncachedGetProcedureColumns(Catalog, SchemaPattern, ProcedureNamePattern, ColumnNamePattern);
+
+  SQL := '(select '
+       + '  SPECIFIC_CATALOG as PROCEDURE_CAT, '
+       + '  SPECIFIC_SCHEMA as PROCEDURE_SCHEM, '
+       + '  SPECIFIC_NAME as PROCEDURE_NAME, '
+       + '  PARAMETER_NAME as COLUMN_NAME, '
+       + '  case when PARAMETER_MODE = ''IN'' then '+IntToStr(Ord(pctIn))+' when PARAMETER_MODE = ''INOUT'' then '+IntToStr(Ord(pctInOut))+' when PARAMETER_MODE = ''OUT'' then '+IntToStr(Ord(pctOut))+' when PARAMETER_MODE is null then '+IntToStr(Ord(pctReturn))+' else '+IntToStr(Ord(pctUnknown))+' end as COLUMN_TYPE, '
+       // don''t forget the DATA_TYPE column
+       + '  DATA_TYPE as TYPE_NAME, '
+       // don''t forget the PRECISION column -> mix of CHARACTER_MAXIMUM_LENGTH and NUMERIC_PRECISION
+       + '  CHARACTER_OCTET_LENGTH as LENGTH, '
+       + '  NUMERIC_SCALE as SCALE, '
+       // don''t forget to null the radix column?
+       // don''t forget nullable -> 2
+       // don''t forget remarks -> null
+       + '  NUMERIC_PRECISION, '
+       + '  CHARACTER_MAXIMUM_LENGTH '
+       + 'from information_schema.PARAMETERS P '
+       + 'where (P.ORDINAL_POSITION > 0)' + AppendCondition(SchemaCondition) + AppendCondition(ProcedureNameCondition) //position 0 is reserved for function results
+       + ' ORDER BY P.SPECIFIC_SCHEMA, P.SPECIFIC_NAME, P.ORDINAL_POSITION) '
+
+       + 'union all ' // the union all and all this stuff is necessary because the rest of the code expects the return value of functions to be the last parameter.
+
+       + '(select '
+       + '  SPECIFIC_CATALOG as PROCEDURE_CAT, '
+       + '  SPECIFIC_SCHEMA as PROCEDURE_SCHEM, '
+       + '  SPECIFIC_NAME as PROCEDURE_NAME, '
+       + '  ''ReturnValue'' as COLUMN_NAME, '
+       + '  case when PARAMETER_MODE = ''IN'' then 1 when PARAMETER_MODE = ''INOUT'' then 2 when PARAMETER_MODE = ''OUT'' then 3 when PARAMETER_MODE is null then 4 else 0 end as COLUMN_TYPE, '
+       // don''t forget the DATA_TYPE column
+       + '  DATA_TYPE as TYPE_NAME, '
+       // don''t forget the PRECISION column -> mix of CHARACTER_MAXIMUM_LENGTH and NUMERIC_PRECISION
+       + '  CHARACTER_OCTET_LENGTH as LENGTH, '
+       + '  NUMERIC_SCALE as SCALE, '
+       // don''t forget to null the radix column?
+       // don''t forget nullable -> 2
+       // don''t forget remarks -> null
+       + '  NUMERIC_PRECISION, '
+       + '  CHARACTER_MAXIMUM_LENGTH '
+       + 'from information_schema.PARAMETERS P '
+       + 'where (P.ORDINAL_POSITION = 0)' + AppendCondition(SchemaCondition) + AppendCondition(ProcedureNameCondition) //position 0 is reserved for function results
+       + ' ORDER BY P.SPECIFIC_SCHEMA, P.SPECIFIC_NAME, P.ORDINAL_POSITION)';
+
+  with GetConnection.CreateStatementWithParams(FInfo).ExecuteQuery(SQL) do begin
+    while Next do begin
+      MysqlTypeToZeos(GetString(myProcColTypeNameIndex), GetInt(myExtraNumericPrecisionIndex), GetInt(myProcColScaleIndex), GetInt(myExtraMaxCharLength), ZType, ZPrecision, ZScale);
+
+      Result.MoveToInsertRow;
+      if not IsNull(CatalogNameIndex) then
+        Result.UpdatePAnsiChar(CatalogNameIndex, GetPAnsiChar(CatalogNameIndex, Len), @Len);
+      if not IsNull(SchemaNameIndex) then
+        Result.UpdatePAnsiChar(SchemaNameIndex, GetPAnsiChar(SchemaNameIndex, Len), @Len);
+      if not IsNull(SchemaNameIndex) then
+        Result.UpdatePAnsiChar(ProcColProcedureNameIndex, GetPAnsiChar(myProcColProcedureNameIndex, Len), @Len);
+      //ProcColColumnNameIndex
+      if not IsNull(myProcColColumnNameIndex) then
+        Result.UpdateString(ProcColColumnNameIndex, GetString(myProcColColumnNameIndex));
+      //ProcColColumnTypeIndex
+      Result.UpdateShort(ProcColColumnTypeIndex, GetShort(myProcColColumnTypeIndex));
+      //ProcColDataTypeIndex
+      if ZType <> -1 then
+        Result.UpdateInt(ProcColDataTypeIndex, ZType);
+      //ProcColTypeNameIndex
+      if not IsNull(myProcColTypeNameIndex) then
+        Result.UpdatePAnsiChar(ProcColTypeNameIndex, GetPAnsiChar(myProcColTypeNameIndex, Len), @Len);
+      //ProcColPrecisionIndex
+      if ZPrecision <> -1 then
+        Result.UpdateInt(ProcColPrecisionIndex, ZPrecision);
+      //ProcColLengthIndex
+      if not IsNull(myProcColLengthIndex) then
+        Result.UpdateInt(ProcColLengthIndex, GetInt(myProcColLengthIndex));
+      //ProcColScaleIndex
+      if not IsNull(myProcColScaleIndex) then
+        Result.UpdateInt(ProcColScaleIndex, GetInt(myProcColScaleIndex));
+      //ProcColRadixIndex
+      Result.UpdateNull(ProcColRadixIndex);
+      //ProcColNullableIndex
+      Result.UpdateShort(ProcColNullableIndex, 2);
+      //ProcColRemarksIndex
+      Result.UpdateNull(ProcColRemarksIndex);
+      Result.InsertRow;
+    end;
+  end;
+end;
+
+
 {**
   Gets a description of a table's columns that are automatically
   updated when any value in a row is updated.  They are
@@ -2677,7 +2973,7 @@ begin
     Result.MoveToInsertRow;
     Result.UpdateNull(FirstDbcIndex);
     Result.UpdateString(FirstDbcIndex + 1, 'ctid');
-  //  Result.UpdateInt(FirstDbcIndex + 2, GetSQLType('tid')); //FIX IT
+//  Result.UpdateInt(FirstDbcIndex + 2, GetSQLType('tid')); //FIX IT
     Result.UpdateString(FirstDbcIndex + 3, 'tid');
     Result.UpdateNull(FirstDbcIndex + 4);
     Result.UpdateNull(FirstDbcIndex + 5);
@@ -2729,12 +3025,6 @@ begin
     SchemaCondition := ConstructNameCondition(Catalog,'TABLE_SCHEMA');
   TableNameCondition := ConstructNameCondition(TableNamePattern,'TABLE_NAME');
   ColumnNameCondition := ConstructNameCondition(ColumnNamePattern,'COLUMN_NAME');
-  If SchemaCondition <> '' then
-    SchemaCondition := ' and ' + SchemaCondition;
-  If TableNameCondition <> '' then
-    TableNameCondition := ' and ' + TableNameCondition;
-  If ColumnNameCondition <> '' then
-    ColumnNameCondition := ' and ' + ColumnNameCondition;
 
   Result:=inherited UncachedGetCollationAndCharSet(Catalog, SchemaPattern, TableNamePattern, ColumnNamePattern);
 
@@ -2748,7 +3038,8 @@ begin
           'FROM INFORMATION_SCHEMA.COLUMNS CLMS '+
           'LEFT JOIN INFORMATION_SCHEMA.CHARACTER_SETS CS '+
           'ON CS.DEFAULT_COLLATE_NAME = CLMS.COLLATION_NAME '+
-          'WHERE 1=1'+ SchemaCondition + TableNameCondition + ColumnNameCondition;
+          'WHERE 1=1'+ AppendCondition(SchemaCondition) + AppendCondition(TableNameCondition)
+          + AppendCondition(ColumnNameCondition);
         with GetConnection.CreateStatementWithParams(FInfo).ExecuteQuery(SQL) do
         begin
           if Next then
@@ -2772,7 +3063,7 @@ begin
           'FROM INFORMATION_SCHEMA.TABLES TBLS LEFT JOIN '+
           'INFORMATION_SCHEMA.CHARACTER_SETS CS ON '+
           'TBLS.TABLE_COLLATION = CS.DEFAULT_COLLATE_NAME '+
-          'WHERE 1=1'+ SchemaCondition + TableNameCondition;
+          'WHERE 1=1'+ AppendCondition(SchemaCondition) + AppendCondition(TableNameCondition);
         with GetConnection.CreateStatementWithParams(FInfo).ExecuteQuery(SQL) do
         begin
           if Next then
@@ -2792,12 +3083,11 @@ begin
     end
     else
     begin
-      SchemaCondition := ConstructNameCondition(LCatalog, 'and SCHEMA_NAME');
       SQL := 'SELECT S.DEFAULT_COLLATION_NAME, S.DEFAULT_CHARACTER_SET_NAME, '+
         'CS.MAXLEN FROM INFORMATION_SCHEMA.SCHEMATA S '+
         'LEFT JOIN INFORMATION_SCHEMA.CHARACTER_SETS CS '+
         'ON CS.DEFAULT_COLLATE_NAME = S.DEFAULT_COLLATION_NAME '+
-        'WHERE 1=1 '+ SchemaCondition;
+        'WHERE 1=1 '+ AppendCondition(ConstructNameCondition(LCatalog, 'and SCHEMA_NAME'));
       with GetConnection.CreateStatementWithParams(FInfo).ExecuteQuery(SQL) do
       begin
         if Next then
@@ -2822,22 +3112,74 @@ end;
   @return <code>ResultSet</code> - each row is a CharacterSetName and it's ID
 }
 function TZMySQLDatabaseMetadata.UncachedGetCharacterSets: IZResultSet; //EgonHugeist
-var Len: NativeUInt;
+var
+  SQL: string;
 begin
-  Result:=inherited UncachedGetCharacterSets;
+  SQL := 'SELECT CHARACTER_SET_NAME FROM INFORMATION_SCHEMA.CHARACTER_SETS';
 
-  with GetConnection.CreateStatementWithParams(FInfo).ExecuteQuery(
-    'SELECT CHARACTER_SET_NAME '+
-    'FROM INFORMATION_SCHEMA.CHARACTER_SETS') do
-  begin
-    while Next do
-    begin
-      Result.MoveToInsertRow;
-      Result.UpdatePAnsiChar(CharacterSetsNameIndex, GetPAnsiChar(FirstDbcIndex, Len), @Len);
-      Result.InsertRow;
+  Result := CopyToVirtualResultSet(
+    GetConnection.CreateStatementWithParams(FInfo).ExecuteQuery(SQL),
+    ConstructVirtualResultSet(CharacterSetsColumnsDynArray));
+end;
+
+{**
+  Tries to detect wether the Server is MAriaDB or MySQL. The result can be
+  queried with the methods isMariaDB and isMySQL.
+}
+procedure TZMySQLDatabaseMetadata.detectServerType;
+var
+  VersionString: String;
+begin
+  if not FKnowServerType then begin
+    VersionString := '';
+    FKnowServerType := true;
+    with GetConnection.CreateStatement.ExecuteQuery('show variables like ''version''') do begin
+      try
+        if Next
+        then VersionString := GetString(FirstDBCIndex + 1);
+      finally
+        Close;
+      end;
     end;
-    Close;
+    VersionString := LowerCase(VersionString);
+    FIsMariaDB := ZFastCode.Pos('mariadb', VersionString) > 0;
+    FIsMySQL := ZFastCode.Pos('mysql', VersionString) > 0;
+
+    if not FIsMariaDB and not FIsMySQL then begin
+      with GetConnection.CreateStatement.ExecuteQuery('show variables like ''version_comment''') do begin
+        try
+          if Next
+          then VersionString := GetString(FirstDBCIndex + 1);
+        finally
+          Close;
+        end;
+      end;
+      VersionString := LowerCase(VersionString);
+      FIsMariaDB := ZFastCode.Pos('mariadb', VersionString) > 0;
+      FIsMySQL := ZFastCode.Pos('mysql', VersionString) > 0;
+    end;
   end;
 end;
 
+{**
+  Tells us wether we can be certain that the connected server implementation is MySQL
+  @return <code>Boolean</code> - True if we are connected to MySQL
+}
+function TZMySQLDatabaseMetadata.isMySQL: Boolean;
+begin
+  if not FKnowServerType then detectServerType;
+  result := FIsMySQL;
+end;
+
+{**
+  Tells us wether we can be certain that the connected server implementation is MariaDB
+  @return <code>Boolean</code> - True if we are connected to MariaDB
+}
+function TZMySQLDatabaseMetadata.isMariaDB: Boolean;
+begin
+  if not FKnowServerType then detectServerType;
+  result := FIsMariaDB;
+end;
+
+{$ENDIF ZEOS_DISABLE_MYSQL} //if set we have an empty unit
 end.

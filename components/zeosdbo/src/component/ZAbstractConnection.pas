@@ -57,10 +57,8 @@ interface
 
 uses
   Types,
-{$IFNDEF UNIX}
 {$IFDEF ENABLE_ADO}
   ZDbcAdo,
-{$ENDIF}
 {$ENDIF}
 {$IFDEF ENABLE_DBLIB}
   ZDbcDbLib,
@@ -88,6 +86,7 @@ uses
 {$ENDIF}
 
   SysUtils, Classes, {$IFDEF MSEgui}mclasses, mdb{$ELSE}DB{$ENDIF},
+  {$IFDEF TLIST_IS_DEPRECATED}ZSysUtils,{$ENDIF}
   ZDbcIntfs, ZCompatibility, ZURL;
 
 
@@ -109,7 +108,6 @@ type
     {$ENDIF}
     function GetVersion: string;
     procedure SetUseMetadata(AValue: Boolean);
-    procedure SetVersion(const {%H-}Value: string);
     procedure SetControlsCodePage(const Value: TZControlsCodePage);
   protected
     FURL: TZURL;
@@ -118,9 +116,9 @@ type
     FReadOnly: Boolean;
     FTransactIsolationLevel: TZTransactIsolationLevel;
     FConnection: IZConnection;
-    FDatasets: TList;
+    FDatasets: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF};
     // Modified by cipto 8/1/2007 1:44:22 PM
-    FSequences: TList;
+    FSequences: {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF};
 
     FLoginPrompt: Boolean;
     FStreamedConnected: Boolean;
@@ -221,8 +219,8 @@ type
 
     procedure RegisterDataSet(DataSet: TDataset);
     procedure UnregisterDataSet(DataSet: TDataset);
-    function ExecuteDirect(SQL:string):boolean;overload;
-    function ExecuteDirect(SQL:string; var RowsAffected:integer):boolean;overload;
+    function ExecuteDirect(const SQL: string): boolean; overload;
+    function ExecuteDirect(const SQL: string; out RowsAffected: integer): boolean; overload;
     // Modified by cipto 8/2/2007 10:16:50 AM
     procedure RegisterSequence(Sequence: TComponent);
     procedure UnregisterSequence(Sequence: TComponent);
@@ -240,7 +238,7 @@ type
     procedure GetTriggerNames(const TablePattern, SchemaPattern: string; List: TStrings);
 
     //EgonHugeist
-    function GetBinaryEscapeStringFromString(const BinaryString: AnsiString): String; overload;
+    function GetBinaryEscapeStringFromString(const BinaryString: RawByteString): String; overload;
     function GetBinaryEscapeStringFromStream(const Stream: TStream): String; overload;
     function GetBinaryEscapeStringFromFile(const FileName: String): String; overload;
     function GetURL: String;
@@ -265,7 +263,7 @@ type
     procedure HideSQLHourGlass;
   published
     property ControlsCodePage: TZControlsCodePage read FControlsCodePage write SetControlsCodePage;
-    property AutoEncodeStrings: Boolean read GetAutoEncode write SetAutoEncode default True;
+    property AutoEncodeStrings: Boolean read GetAutoEncode write SetAutoEncode stored True default {$IFDEF UNICODDE}True{$ELSE}False{$ENDIF};
     property ClientCodepage: String read FClientCodepage write SetClientCodePage; //EgonHugeist
     property Catalog: string read FCatalog write FCatalog;
     property Properties: TStrings read GetProperties write SetProperties;
@@ -281,7 +279,7 @@ type
       default False;
     property LoginPrompt: Boolean read FLoginPrompt write FLoginPrompt
       default False;
-    property Version: string read GetVersion write SetVersion stored False;
+    property Version: string read GetVersion stored False;
     property DesignConnection: Boolean read FDesignConnection
       write FDesignConnection default False;
 
@@ -313,7 +311,8 @@ type
 
 implementation
 
-uses ZMessages, ZClasses, ZAbstractRODataset, ZSysUtils,
+uses ZMessages, ZClasses, ZAbstractRODataset,
+  {$IFNDEF TLIST_IS_DEPRECATED}ZSysUtils, {$ENDIF}
       // Modified by cipto 8/2/2007 10:00:22 AM
       ZSequence, ZAbstractDataset, ZEncoding;
 
@@ -332,6 +331,7 @@ begin
   {$IFDEF UNICODE}
   FControlsCodePage := cCP_UTF16;
   {$ELSE}
+    FAutoEncode := true;
     {$IFDEF FPC}
     FControlsCodePage := cCP_UTF8;
     {$ELSE}
@@ -345,9 +345,9 @@ begin
   FTransactIsolationLevel := tiNone;
   FConnection := nil;
   FUseMetadata := True;
-  FDatasets := TList.Create;
+  FDatasets := {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF}.Create;
   // Modified by cipto 8/1/2007 1:45:56 PM
-  FSequences:= TList.Create;
+  FSequences:= {$IFDEF TLIST_IS_DEPRECATED}TZSortedList{$ELSE}TList{$ENDIF}.Create;
   FLoginPrompt := False;
   FDesignConnection := False;
 end;
@@ -737,9 +737,23 @@ end;
   @returns a constructed connection URL.
 }
 function TZAbstractConnection.ConstructURL(const UserName, Password: string): string;
+var AURL: TZURL;
 begin
-  Result := DriverManager.ConstructURL(FURL.Protocol, FURL.HostName, FURL.Database, UserName,
-    Password, FURL.Port, FURL.Properties, FURL.LibLocation);
+  AURL := TZURL.Create;
+  Result := '';
+  try
+    AURL.Protocol := FURL.Protocol;
+    AURL.HostName := FURL.HostName;
+    AURL.Database := FURL.Database;
+    AURL.UserName := UserName;
+    AURL.Password := Password;
+    AURL.Port := Port;
+    AURL.Properties.AddStrings(FURL.Properties);
+    AURL.LibLocation := FURL.LibLocation;
+    Result := AURL.URL;
+  finally
+    FreeAndNil(AURL);
+  end;
 end;
 
 {**
@@ -868,11 +882,15 @@ begin
       FConnection := DriverManager.GetConnectionWithParams(
         ConstructURL(UserName, Password), FURL.Properties);
       try
-        with FConnection do
-        begin
+        with FConnection do begin
+          { assign main properties ... if a user did disconnect and clear the props the infos have been lost }
           SetAutoCommit(FAutoCommit);
           SetReadOnly(FReadOnly);
           SetCatalog(FCatalog);
+          SetClientCodePage(FClientCodePage);
+          {$IFNDEF UNICODE}
+          SetAutoEncode(FAutoEncode);
+          {$ENDIF}
           SetTransactionIsolation(FTransactIsolationLevel);
           SetUseMetadata(FUseMetadata);
           Open;
@@ -1161,8 +1179,8 @@ begin
   begin
     Current := TZAbstractRODataset(FDatasets[I]);
     try
-      Current.UnPrepare;
       Current.Close;
+      Current.UnPrepare;
     except
       // Ignore.
     end;
@@ -1418,7 +1436,7 @@ end;
   @param BinaryString Represents the BinaryString wich has to prepered
   @Result: A Prepared String like '~<|1023|<~''Binary-data-string(1023 Bytes)''~<|1023|<~
 }
-function TZAbstractConnection.GetBinaryEscapeStringFromString(const BinaryString: AnsiString): String;
+function TZAbstractConnection.GetBinaryEscapeStringFromString(const BinaryString: RawByteString): String;
 begin
   CheckConnected;
 
@@ -1436,7 +1454,7 @@ function TZAbstractConnection.GetBinaryEscapeStringFromStream(const Stream: TStr
 var
   FBlobSize: Integer;
   FBlobData: Pointer;
-  TempAnsi: AnsiString;
+  TempAnsi: RawByteString;
 begin
   CheckConnected;
 
@@ -1639,10 +1657,6 @@ begin
       SetValue;
 end;
 
-procedure TZAbstractConnection.SetVersion(const Value: string);
-begin
-end;
-
 procedure TZAbstractConnection.CloseAllSequences;
 var
   I: Integer;
@@ -1675,7 +1689,7 @@ end;
   @param SQL the statement to be executed.
   Returns an indication if execution was succesfull.
 }
-function TZAbstractConnection.ExecuteDirect(SQL : String) : boolean;
+function TZAbstractConnection.ExecuteDirect(const SQL : String) : boolean;
 var
   dummy : Integer;
 begin
@@ -1688,8 +1702,8 @@ end;
   @param RowsAffected the number of rows that were affected by the statement.
   Returns an indication if execution was succesfull.
 }
-function TZAbstractConnection.ExecuteDirect(SQL: string;
-  var RowsAffected: integer):boolean;
+function TZAbstractConnection.ExecuteDirect(const SQL: string;
+  out RowsAffected: integer): boolean;
 begin
   RowsAffected := -1;
   try

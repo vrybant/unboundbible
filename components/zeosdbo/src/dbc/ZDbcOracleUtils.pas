@@ -54,10 +54,7 @@ unit ZDbcOracleUtils;
 interface
 
 {$I ZDbc.inc}
-
-{$IFOPT R+}
-  {$DEFINE RangeCheck}
-{$ENDIF}
+{$IFNDEF ZEOS_DISABLE_ORACLE}
 
 uses
   Types, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
@@ -139,7 +136,7 @@ type
     pName: string;
     pSQLType: Integer;
     pTypeName: String;
-    pType: ShortInt;
+    pType: TZProcedureColumnType;
     pProcIndex: Integer;
     pParamIndex: Integer; //Current ZeosParameter index
     pOutIndex: Integer;
@@ -294,10 +291,12 @@ procedure OraWriteLob(const PlainDriver: IZOraclePlainDriver; const BlobData: Po
   const LobLocator: POCILobLocator; const ChunkSize: Integer;
   BlobSize: Int64; Const BinaryLob: Boolean; const ConSettings: PZConSettings);
 
+{$ENDIF ZEOS_DISABLE_ORACLE}
 implementation
+{$IFNDEF ZEOS_DISABLE_ORACLE}
 
 uses Math, ZMessages, ZDbcOracle, ZDbcOracleResultSet, ZDbcCachedResultSet,
-  ZDbcUtils, ZEncoding, ZFastCode
+  ZDbcUtils, ZEncoding, ZFastCode, ZClasses
   {$IFDEF WITH_UNITANSISTRINGS}, AnsiStrings{$ENDIF};
 
 {**
@@ -363,10 +362,11 @@ var
 begin
   if Variables <> nil then begin
     { Frees allocated memory for output variables }
+    if Variables.AllocNum > 0 then
     for I := 0 to Variables.AllocNum-1 do begin
       {$R-}
       CurrentVar := @Variables.Variables[I];
-      {$IFDEF RangeCheck} {$R+} {$ENDIF}
+      {$IFDEF RangeCheckEnabled} {$R+} {$ENDIF}
       if Assigned(CurrentVar^._Obj) then
         DisposeObject(CurrentVar^._Obj);
       if (CurrentVar^.Data <> nil) and (CurrentVar^.DescriptorType > 0) then
@@ -398,7 +398,7 @@ begin
       stBoolean, stByte, stShort, stWord, stSmall, stInteger:
         begin
           TypeCode := SQLT_INT;
-          Length := SizeOf(LongInt);
+          Length := SizeOf(Integer);
         end;
       stUlong:
         begin
@@ -575,8 +575,12 @@ var
   ZExtendedArray: TExtendedDynArray absolute ZData;
   ZDateTimeArray: TDateTimeDynArray absolute ZData;
   ZRawByteStringArray: TRawByteStringDynArray absolute ZData;
+  {$IFNDEF NO_ANSISTRING}
   ZAnsiStringArray: TAnsiStringDynArray absolute ZData;
+  {$ENDIF}
+  {$IFNDEF NO_UTF8STRING}
   ZUTF8StringArray: TUTF8StringDynArray absolute ZData;
+  {$ENDIF}
   ZStringArray: TStringDynArray absolute ZData;
   ZUnicodeStringArray: TUnicodeStringDynArray absolute ZData;
   ZCharRecArray: TZCharRecDynArray absolute ZData;
@@ -591,7 +595,7 @@ var
     {$R-}
     Variable^.oIndicatorArray^[I] := -1;
     Variable^.oDataSizeArray^[i] := 1; //place of #0
-    {$IFDEF RangeCheck} {$R+} {$ENDIF}
+    {$IFDEF RangeCheckEnabled} {$R+} {$ENDIF}
     ({%H-}PAnsiChar({%H-}NativeUInt(Variable^.Data)+I*Variable^.Length))^ := #0; //OCI expects the trailing $0 byte
   end;
   procedure MoveString(Const Data: Pointer; Iter: LongWord);
@@ -599,13 +603,13 @@ var
     {$R-}
     {$IFDEF FAST_MOVE}ZFastCode{$ELSE}System{$ENDIF}.Move(Data^, {%H-}Pointer({%H-}NativeUInt(Variable^.Data)+Iter*Variable^.Length)^, Variable^.oDataSizeArray^[Iter]);
     ({%H-}PAnsiChar({%H-}NativeUInt(Variable^.Data)+Iter*Variable^.Length)+Variable^.oDataSizeArray^[Iter]-1)^ := #0; //improve  StrLCopy... set a leadin #0 if truncation happens
-    {$IFDEF RangeCheck} {$R+} {$ENDIF}
+    {$IFDEF RangeCheckEnabled} {$R+} {$ENDIF}
   end;
 begin
   OracleConnection := Connection as IZOracleConnection;
   ClientVarManager := Connection.GetClientVariantManager;
   ConSettings := Connection.GetConSettings;
-  if Iteration = 1 then
+  if (Iteration = 1) and (Value.VType <> vtArray) then
   { single row execution }
   begin
     if ClientVarManager.IsNull(Value) then
@@ -618,7 +622,7 @@ begin
           if Variable^.Length = 8 then
             PInt64(Variable^.Data)^ := ClientVarManager.GetAsInteger(Value)
           else
-            PLongInt(Variable^.Data)^ := ClientVarManager.GetAsInteger(Value);
+            PInteger(Variable^.Data)^ := ClientVarManager.GetAsInteger(Value);
         SQLT_FLT:
           PDouble(Variable^.Data)^ := ClientVarManager.GetAsFloat(Value);
         SQLT_STR:
@@ -779,15 +783,15 @@ begin
     if ZData <> nil then
       case Variable^.ColType of
         stBoolean: //Oracle doesn't support boolean types so lets use integers and OCI converts it..
-          for i := 0 to Iteration -1 do {%H-}PLongInt({%H-}NativeUInt(Variable^.Data)+I*SizeOf(LongInt))^ := Ord(ZBooleanArray[I]);
+          for i := 0 to Iteration -1 do {%H-}PInteger({%H-}NativeUInt(Variable^.Data)+I*SizeOf(Integer))^ := Ord(ZBooleanArray[I]);
         stByte: //Oracle doesn't support byte type so lets use integers and OCI converts it..
-          for i := 0 to Iteration -1 do {%H-}PLongInt({%H-}NativeUInt(Variable^.Data)+I*SizeOf(LongInt))^ := ZByteArray[I];
+          for i := 0 to Iteration -1 do {%H-}PInteger({%H-}NativeUInt(Variable^.Data)+I*SizeOf(Integer))^ := ZByteArray[I];
         stShort: //Oracle doesn't support ShortInt type so lets use integers and OCI converts it..
-          for i := 0 to Iteration -1 do {%H-}PLongInt({%H-}NativeUInt(Variable^.Data)+I*SizeOf(LongInt))^ := ZShortIntArray[I];
+          for i := 0 to Iteration -1 do {%H-}PInteger({%H-}NativeUInt(Variable^.Data)+I*SizeOf(Integer))^ := ZShortIntArray[I];
         stWord: //Oracle doesn't support word type so lets use integers and OCI converts it..
-          for i := 0 to Iteration -1 do {%H-}PLongInt({%H-}NativeUInt(Variable^.Data)+I*SizeOf(LongInt))^ := ZWordArray[I];
+          for i := 0 to Iteration -1 do {%H-}PInteger({%H-}NativeUInt(Variable^.Data)+I*SizeOf(Integer))^ := ZWordArray[I];
         stSmall: //Oracle doesn't support smallint type so lets use integers and OCI converts it..
-          for i := 0 to Iteration -1 do {%H-}PLongInt({%H-}NativeUInt(Variable^.Data)+I*SizeOf(LongInt))^ := ZSmallIntArray[I];
+          for i := 0 to Iteration -1 do {%H-}PInteger({%H-}NativeUInt(Variable^.Data)+I*SizeOf(Integer))^ := ZSmallIntArray[I];
         stLongWord:
           //since 11.2 we can use Int64 types too
           if Connection.GetClientVersion >= 11002000 then
@@ -795,7 +799,7 @@ begin
           else
             for i := 0 to Iteration -1 do {%H-}PDouble({%H-}NativeUInt(Variable^.Data)+I*SizeOf(Double))^ := ZLongWordArray[I];
         stInteger: { no conversion required }
-          {$IFDEF FAST_MOVE}ZFastCode{$ELSE}System{$ENDIF}.Move(ZIntegerArray[0], Variable^.Data^, Iteration*SizeOf(LongInt));
+          {$IFDEF FAST_MOVE}ZFastCode{$ELSE}System{$ENDIF}.Move(ZIntegerArray[0], Variable^.Data^, Iteration*SizeOf(Integer));
         stULong: //we use String types here
           for i := 0 to Iteration -1 do
           begin
@@ -830,6 +834,7 @@ begin
                   Variable^.oDataSizeArray^[i] := Math.Min(Length(AnsiTemp)+1, LengthInt(Variable^.Length));
                   MoveString(Pointer(AnsiTemp), I);
                 end;
+            {$IFNDEF NO_ANSISTRING}
             vtAnsiString:
               for i := 0 to Iteration -1 do
                 if (Variable^.oIndicatorArray^[I] = -1) or (Pointer(ZAnsiStringArray[I]) = nil) then //Length = 0
@@ -840,6 +845,8 @@ begin
                   Variable^.oDataSizeArray^[i] := Math.Min(Length(AnsiTemp)+1, LengthInt(Variable^.Length));
                   MoveString(Pointer(AnsiTemp), I);
                 end;
+            {$ENDIF}
+            {$IFNDEF NO_UTF8STRING}
             vtUTF8String:
               if ZCompatibleCodePages(zCP_UTF8, ConSettings^.ClientCodePage^.CP) then
                 for i := 0 to Iteration -1 do
@@ -860,6 +867,7 @@ begin
                     Variable^.oDataSizeArray^[i] := Math.Min(Length(AnsiTemp)+1, LengthInt(Variable^.Length));
                     MoveString(Pointer(AnsiTemp), I);
                   end;
+            {$ENDIF}
             vtRawByteString:
               for i := 0 to Iteration -1 do
                 if (Variable^.oIndicatorArray^[I] = -1) or (Pointer(ZRawByteStringArray[I]) = nil) then //Length = 0
@@ -946,7 +954,7 @@ begin
           for i := 0 to Iteration -1 do
             if (Variable^.oIndicatorArray^[I] = 0) then
             begin
-              AnsiTemp := {$IFDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(GuidToString(ZGUIDArray[I]));
+              AnsiTemp := GUIDToRaw(ZGUIDArray[I]);
               Variable^.oDataSizeArray^[i] := 39;
               {$IFDEF FAST_MOVE}ZFastCode{$ELSE}System{$ENDIF}.Move(Pointer(AnsiTemp)^, {%H-}Pointer({%H-}NativeUInt(Variable^.Data)+I*39)^, 39);
             end;
@@ -1008,7 +1016,7 @@ begin
             end;
       end;
   end;
- {$IFDEF RangeCheck} {$R+} {$ENDIF}
+  {$IFDEF RangeCheckEnabled} {$R+} {$ENDIF}
 end;
 
 {**
@@ -1020,12 +1028,13 @@ var
   I: Integer;
   J: LongWord;
 begin
+  if Variables^.AllocNum > 0 then
   for i := 0 to Variables^.AllocNum -1 do
+    {$R-}
     if (Variables^.Variables[i].DescriptorType > 0) and (Length(Variables^.Variables[i].Lobs) > 0) then
-      for j := 0 to Iteration -1 do
-        {$R-}
+      for j := 0 to High(Variables^.Variables[i].Lobs) do
         Variables^.Variables[i].Lobs[j] := nil;
-        {$IFDEF RangeCheck} {$R+} {$ENDIF}
+    {$IFDEF RangeCheckEnabled} {$R+} {$ENDIF}
 end;
 
 {**
@@ -1059,6 +1068,8 @@ begin
     Result := stAsciiStream
   else if TypeNameUp = 'LONG' then
     Result := stAsciiStream
+  else if (TypeNameUp = 'ROWID') or (TypeNameUp = 'UROWID') then
+    Result := stString
   else if StartsWith(TypeNameUp, 'TIMESTAMP') then
     Result := stTimestamp
   else if TypeNameUp = 'BFILE' then
@@ -1103,10 +1114,10 @@ procedure CheckOracleError(const PlainDriver: IZOraclePlainDriver;
   const ConSettings: PZConSettings);
 var
   ErrorMessage: RawByteString;
-  ErrorBuffer: array[0..255] of AnsiChar;
+  ErrorBuffer: TRawBuff;
   ErrorCode: SB4;
 begin
-  ErrorMessage := '';
+  ErrorBuffer.Pos := 0;
   ErrorCode := Status;
 
   case Status of
@@ -1114,21 +1125,20 @@ begin
       Exit;
     OCI_SUCCESS_WITH_INFO:
       begin
-        PlainDriver.ErrorGet(ErrorHandle, 1, nil, ErrorCode, ErrorBuffer, 255,
-          OCI_HTYPE_ERROR);
-        ErrorMessage := 'OCI_SUCCESS_WITH_INFO: ' + RawByteString(ErrorBuffer);
+        PlainDriver.ErrorGet(ErrorHandle, 1, nil, ErrorCode, @ErrorBuffer.Buf[0], SizeOf(ErrorBuffer.Buf)-1, OCI_HTYPE_ERROR);
+        ErrorBuffer.Pos := StrLen(@ErrorBuffer.Buf[0])+1;
+        ErrorMessage := 'OCI_SUCCESS_WITH_INFO: ';
       end;
-    OCI_NEED_DATA:
-      ErrorMessage := 'OCI_NEED_DATA';
-    OCI_NO_DATA:
-      ErrorMessage := 'OCI_NO_DATA';
+    OCI_NEED_DATA:  ErrorMessage := 'OCI_NEED_DATA';
+    OCI_NO_DATA:    ErrorMessage := 'OCI_NO_DATA';
     OCI_ERROR:
       begin
-        if PlainDriver.ErrorGet(ErrorHandle, 1, nil, ErrorCode, ErrorBuffer, 255,
-          OCI_HTYPE_ERROR) = 100 then
-          ErrorMessage := 'OCI_ERROR: Unkown(OCI_NO_DATA)'
-        else
-          ErrorMessage := 'OCI_ERROR: ' + RawByteString(ErrorBuffer);
+        if PlainDriver.ErrorGet(ErrorHandle, 1, nil, ErrorCode, @ErrorBuffer.Buf[0], SizeOf(ErrorBuffer.Buf)-1, OCI_HTYPE_ERROR) = 100
+        then ErrorMessage := 'OCI_ERROR: Unkown(OCI_NO_DATA)'
+        else begin
+          ErrorMessage := 'OCI_ERROR: ';
+          ErrorBuffer.Pos := StrLen(@ErrorBuffer.Buf[0])+1;
+      end;
       end;
     OCI_INVALID_HANDLE:
       ErrorMessage := 'OCI_INVALID_HANDLE';
@@ -1136,16 +1146,21 @@ begin
       ErrorMessage := 'OCI_STILL_EXECUTING';
     OCI_CONTINUE:
       ErrorMessage := 'OCI_CONTINUE';
+    else ErrorMessage := '';
   end;
+  FlushBuff(ErrorBuffer, ErrorMessage);
 
-  if (Status <> OCI_SUCCESS) and (Status <> OCI_SUCCESS_WITH_INFO) and (ErrorMessage <> '') then
+  if (Status <> OCI_SUCCESS_WITH_INFO) and (ErrorMessage <> '') then
   begin
     if Assigned(DriverManager) then //Thread-Safe patch
       DriverManager.LogError(LogCategory, ConSettings^.Protocol, LogMessage,
         ErrorCode, ErrorMessage);
     if not ( ( LogCategory = lcDisconnect ) and ( ErrorCode = 3314 ) ) then //patch for disconnected Server
       //on the other hand we can't close the connction  MantisBT: #0000227
-      raise EZSQLException.CreateWithCode(ErrorCode,
+      if LogMessage <> ''
+      then raise EZSQLException.CreateWithCode(ErrorCode,
+        Format(cSSQLError3, [ConSettings^.ConvFuncs.ZRawToString(ErrorMessage, ConSettings^.ClientCodePage^.CP, ConSettings^.CTRL_CP), ErrorCode, LogMessage]))
+      else raise EZSQLException.CreateWithCode(ErrorCode,
         Format(SSQLError1, [ConSettings^.ConvFuncs.ZRawToString(ErrorMessage, ConSettings^.ClientCodePage^.CP, ConSettings^.CTRL_CP)]));
   end;
   if (Status = OCI_SUCCESS_WITH_INFO) and (ErrorMessage <> '') then
@@ -1585,6 +1600,7 @@ begin
   CheckOracleError(PlainDriver, ErrorHandle, Status, lcOther, 'Close Large Object', ConSettings);
 end;
 
+{$ENDIF ZEOS_DISABLE_ORACLE}
 
 end.
 
