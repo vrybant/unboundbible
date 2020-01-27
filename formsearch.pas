@@ -19,7 +19,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormActivate(Sender: TObject);
   public
-    procedure Translate;
+    procedure Localize;
   end;
 
 var
@@ -72,7 +72,7 @@ begin
   end;
 end;
 
-procedure TSearchForm.Translate;
+procedure TSearchForm.Localize;
 begin
   Caption := ' ' + T('Search');
 

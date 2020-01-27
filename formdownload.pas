@@ -14,7 +14,7 @@ type
     Memo: TUnboundMemo;
     procedure FormCreate(Sender: TObject);
   public
-    procedure Translate;
+    procedure Localize;
   end;
 
 var
@@ -31,7 +31,7 @@ begin
   //
 end;
 
-procedure TDownloadForm.Translate;
+procedure TDownloadForm.Localize;
 begin
   Caption := ' ' + T('Modules');
   ButtonOK.Caption := T('OK');

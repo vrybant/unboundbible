@@ -22,7 +22,7 @@ begin
   Application.CreateForm(TTranslateForm,  TranslateForm);
   Application.CreateForm(TCommentaryForm, CommentaryForm);
   Application.CreateForm(TDownloadForm,   DownloadForm);
-  TranslateAll;
+  LocalizeApplication;
   Application.Run;
 end.
 

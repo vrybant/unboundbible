@@ -22,7 +22,7 @@ var
   InterfaceLang : string;
 
 function T(const id : string): string;
-procedure TranslateAll;
+procedure LocalizeApplication;
 function GetDefaultLanguage: string;
 
 implementation
@@ -91,23 +91,23 @@ end;
 
 //-------------------------------------------------------------------------------------------------
 
-procedure TranslateAll;
+procedure LocalizeApplication;
 var
   filename : string;
 begin
   filename := SharePath + Slash + LangDirectory + Slash + InterfaceLang + '.lng';
   IniFile := TIniFile.Create(filename);
 
-  MainForm      .Translate;
-  SearchForm    .Translate;
-  CompareForm   .Translate;
-  AboutBox      .Translate;
-  CopyForm      .Translate;
-  TranslateForm .Translate;
-  CommentaryForm.Translate;
-  DownloadForm  .Translate;
+  MainForm      .Localize;
+  SearchForm    .Localize;
+  CompareForm   .Localize;
+  AboutBox      .Localize;
+  CopyForm      .Localize;
+  TranslateForm .Localize;
+  CommentaryForm.Localize;
+  DownloadForm  .Localize;
 
-  Translate_Tools;
+  Localize_Tools;
 
   IniFile.Free;
 end;

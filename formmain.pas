@@ -237,7 +237,7 @@ type
     procedure VersesToClipboard;
     procedure ShowPopup;
   public
-    procedure Translate;
+    procedure Localize;
   end;
 
 var
@@ -386,7 +386,7 @@ begin
     end;
 end;
 
-procedure TMainForm.Translate;
+procedure TMainForm.Localize;
 begin
   miTools.Caption := T('Tools');
   miEdit.Caption := T('Edit');
@@ -942,7 +942,7 @@ begin
     miLocalization.Items[i].Checked := False;
   (Sender as TMenuItem).Checked := True;
 
-  TranslateAll;
+  LocalizeApplication;
 end;
 
 procedure TMainForm.LangMenuInit;

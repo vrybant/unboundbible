@@ -14,7 +14,7 @@ type
     procedure SaveIniFile;
     procedure ReadIniFile;
   public
-    procedure Translate;
+    procedure Localize;
   end;
 
 var
@@ -26,7 +26,7 @@ uses UnitLang, UnitData;
 
 {$R *.lfm}
 
-procedure TTranslateForm.Translate;
+procedure TTranslateForm.Localize;
 begin
   Caption := ' ' + T('Translation');
 end;

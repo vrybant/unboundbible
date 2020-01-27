@@ -20,7 +20,7 @@ type
     procedure ShelfToListBox;
     procedure ListBoxToShelf;
   public
-    procedure Translate;
+    procedure Localize;
   end;
 
 var
@@ -32,7 +32,7 @@ uses UnitShelf, UnitLang;
 
 {$R *.lfm}
 
-procedure TCompareForm.Translate;
+procedure TCompareForm.Localize;
 begin
   Caption := ' ' + T('Compare');
   ButtonOK.Caption := T('OK');

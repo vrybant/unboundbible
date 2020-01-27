@@ -4,7 +4,7 @@ interface
 
 uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UmLib, UnitLib;
 
-procedure Translate_Tools;
+procedure Localize_Tools;
 
 function Load_Chapter: string;
 function Search_Text(st: string; var count: integer): string;
@@ -24,7 +24,7 @@ uses
 
 var ms_File, ms_Language, ms_MoreInfo, ms_NoModules, ms_NoResults : string;
 
-procedure Translate_Tools;
+procedure Localize_Tools;
 begin
   ms_File := T('File');
   ms_Language := T('Language');

@@ -25,7 +25,7 @@ type
     procedure SaveIniFile;
     procedure ReadIniFile;
   public
-    procedure Translate;
+    procedure Localize;
   end;
 
 var
@@ -37,7 +37,7 @@ uses FormMain, UnitLang, UnitData;
 
 {$R *.lfm}
 
-procedure TCommentaryForm.Translate;
+procedure TCommentaryForm.Localize;
 begin
   Caption := ' ' + T('Commentaries');
 end;

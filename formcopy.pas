@@ -27,7 +27,7 @@ type
   public
     ParagraphStart : integer;
     ParagraphEnd : integer;
-    procedure Translate;
+    procedure Localize;
   end;
 
 var
@@ -46,7 +46,7 @@ const
 
 {$R *.lfm}
 
-procedure TCopyForm.Translate;
+procedure TCopyForm.Localize;
 begin
   Caption := ' ' + T('Copy Verses');
 

@@ -19,7 +19,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure ImageFacebookClick(Sender: TObject);
   public
-    procedure Translate;
+    procedure Localize;
   end;
 
 var
@@ -36,7 +36,7 @@ begin
   {$ifdef linux} Width := 390; {$endif}
 end;
 
-procedure TAboutBox.Translate;
+procedure TAboutBox.Localize;
 var
   Developer : string;
 begin
