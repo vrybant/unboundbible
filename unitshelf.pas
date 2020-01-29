@@ -151,7 +151,7 @@ begin
       end
     else
       begin
-        Books[i].title := 'Apocrypha ' + ToStr(Books[i].id);
+        Books[i].title := 'Unknown ' + ToStr(Books[i].id);
         Books[i].abbr := Books[i].title;
         Books[i].sorting := 99;
       end;
