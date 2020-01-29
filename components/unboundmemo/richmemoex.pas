@@ -54,7 +54,7 @@ type
 
 implementation
 
-uses UmLib;
+uses RichMemoUtils, UmLib;
 
 function ToStr(value: longint): string;
 begin
@@ -243,6 +243,7 @@ var
 begin
   Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
   Buffer := gtk_text_view_get_buffer(GetTextView);
+// try GetWidgetBuffer from TRichEdit
   gtk_text_buffer_copy_clipboard(Buffer, Clipboard);
 end;
 
@@ -285,24 +286,13 @@ begin
 end;
 
 procedure TRichMemoEx.LoadFromFile(const FileName : string);
-var
-  Stream : TMemoryStream;
 begin
-  Stream := TMemoryStream.Create;
-  Stream.LoadFromFile(FileName);
-  LoadRichText(Stream);
-  Stream.Free;
+  LoadRTFFile(self, FileName);
 end;
 
 procedure TRichMemoEx.SaveToFile(const FileName : string);
-var
-  Stream : TMemoryStream;
 begin
-  Stream := TMemoryStream.Create;
-  SaveRichText(Stream);
-  Stream.Seek(0,soFromBeginning);
-  Stream.SaveToFile(FileName);
-  Stream.Free;
+  SaveRTFFile(self, FileName);
 end;
 
 end.
