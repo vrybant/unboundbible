@@ -16,6 +16,7 @@ type
     procedure SetAttributes(const value: TFontParams);
     procedure DoAttributesChange;
     {$ifdef linux} function GetTextView: PGtkTextView; {$endif}
+    {$ifdef linux} function GetTextBuffer: PGtkTextBuffer; {$endif}
     {$ifdef windows} function  GetModified: boolean; {$endif}
     {$ifdef windows} procedure SetModified(value: boolean); {$endif}
   protected
@@ -236,35 +237,33 @@ begin
   Result := PGtkTextView(TextWidget);
 end;
 
+function TRichMemoEx.GetTextBuffer: PGtkTextBuffer;
+begin
+  Result := gtk_text_view_get_buffer(GetTextView);
+end;
+
 procedure TRichMemoEx.CopyToClipboard;
 var
   Clipboard: PGtkClipboard;
-  Buffer: PGtkTextBuffer;
 begin
   Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-  Buffer := gtk_text_view_get_buffer(GetTextView);
-// try GetWidgetBuffer from TRichEdit
-  gtk_text_buffer_copy_clipboard(Buffer, Clipboard);
+  gtk_text_buffer_copy_clipboard(GetTextBuffer, Clipboard);
 end;
 
 procedure TRichMemoEx.CutToClipboard;
 var
   Clipboard: PGtkClipboard;
-  Buffer: PGtkTextBuffer;
 begin
   Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-  Buffer := gtk_text_view_get_buffer(GetTextView);
-  gtk_text_buffer_cut_clipboard(Buffer, Clipboard, True);
+  gtk_text_buffer_cut_clipboard(GetTextBuffer, Clipboard, True);
 end;
 
 procedure TRichMemoEx.PasteFromClipboard;
 var
   Clipboard: PGtkClipboard;
-  Buffer: PGtkTextBuffer;
 begin
   Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-  Buffer := gtk_text_view_get_buffer(GetTextView);
-  gtk_text_buffer_paste_clipboard(Buffer, Clipboard, NULL, True);
+  gtk_text_buffer_paste_clipboard(GetTextBuffer, Clipboard, NULL, True);
 end;
 
 {$endif}
