@@ -22,6 +22,9 @@ type
     FParagraphic : boolean;
     SelStartTemp : integer;
     SelLengthTemp : integer;
+    procedure SetSel(x1,x2: integer);
+    procedure GetSel(var x1,x2: integer);
+    function Selected: boolean;
     {$ifdef unix} function  Colored: boolean; {$endif}
     function  GetColorLink: string;
     function  GetLink: string;
@@ -69,6 +72,31 @@ begin
   Cursor := crArrow;
 
   {$ifdef windows} if Font.Name = 'default' then Font.Name := 'Tahoma'; {$endif}
+end;
+
+procedure TUnboundMemo.SetSel(x1,x2: integer);
+begin
+  {$ifdef windows}
+  SendMessage(Handle, EM_SETSEL, x1, x2);
+  {$else}
+  SelStart  := x1;
+  SelLength := x2-x1;
+  {$endif}
+end;
+
+procedure TUnboundMemo.GetSel(var x1,x2: integer);
+begin
+  {$ifdef windows}
+  SendMessage(Handle, EM_GETSEL, {%H-}integer(@x1), {%H-}integer(@x2));
+  {$else}
+  x1 := SelStart;
+  x2 := SelStart + SelLength;
+  {$endif}
+end;
+
+function TUnboundMemo.Selected: boolean;
+begin
+  Result := SelLength > 0;
 end;
 
 function TUnboundMemo.Foreground: integer;

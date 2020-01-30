@@ -20,8 +20,6 @@ type
     {$ifdef windows} function  GetModified: boolean; {$endif}
     {$ifdef windows} procedure SetModified(value: boolean); {$endif}
   protected
-    procedure SetSel(x1,x2: integer);
-    procedure GetSel(var x1,x2: integer);
     {$ifdef windows} function LineCount: integer; {$endif}
     {$ifdef windows} function LineIndex(x: longint): integer; {$endif}
     procedure KeyUp(var Key: Word; Shift: TShiftState); override;
@@ -36,7 +34,6 @@ type
     procedure HideCursor;
     procedure Hide_Selection;
     procedure Show_Selection;
-    function Selected: boolean;
     procedure SelectAll;
     property SelAttributes: TFontParams read GetAttributes write SetAttributes;
     {$ifdef windows} function FindRightWordBreak(Pos: integer): integer; {$endif}
@@ -194,31 +191,6 @@ begin
   inherited MouseUp(Button, Shift, X, Y);
   DoAttributesChange;
   if ReadOnly then HideCursor;
-end;
-
-procedure TRichMemoEx.SetSel(x1,x2: integer);
-begin
-  {$ifdef windows}
-  SendMessage(Handle, EM_SETSEL, x1, x2);
-  {$else}
-  SelStart  := x1;
-  SelLength := x2-x1;
-  {$endif}
-end;
-
-procedure TRichMemoEx.GetSel(var x1,x2: integer);
-begin
-  {$ifdef windows}
-  SendMessage(Handle, EM_GETSEL, {%H-}integer(@x1), {%H-}integer(@x2));
-  {$else}
-  x1 := SelStart;
-  x2 := SelStart + SelLength;
-  {$endif}
-end;
-
-function TRichMemoEx.Selected: boolean;
-begin
-  Result := SelLength > 0;
 end;
 
 {$ifdef linux}
