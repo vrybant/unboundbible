@@ -154,15 +154,15 @@ begin
    {$ifdef windows} SendMessage(Handle, EM_HIDESELECTION, 0, 0); {$endif}
 end;
 
+function TRichMemoEx.GetAttributes: TFontParams;
+begin
+  GetTextAttributes(SelStart, Result{%H-});
+end;
+
 procedure TRichMemoEx.SetAttributes(const value: TFontParams);
 begin
   SetTextAttributes(SelStart, SelLength, value);
   DoAttributesChange;
-end;
-
-function TRichMemoEx.GetAttributes: TFontParams;
-begin
-  GetTextAttributes(SelStart, Result{%H-});
 end;
 
 function TRichMemoEx.CanUndo: boolean;
