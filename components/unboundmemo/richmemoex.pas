@@ -5,7 +5,8 @@ interface
 uses
   {$ifdef windows} Windows, RichEdit, Printers, OSPrinters, {$endif}
   {$ifdef linux} Gtk2, Glib2, Gdk2, {$endif}
-   Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls, RichMemo, LazUTF8;
+   Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls,
+   RichMemo, RichMemoUtils, LazUTF8, LCLVersion;
 
 type
 
@@ -30,7 +31,6 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function CanUndo: boolean;
-    function CanPaste: boolean; override;
     procedure HideCursor;
     procedure Hide_Selection;
     procedure Show_Selection;
@@ -50,13 +50,37 @@ type
     property OnAttrChange: TNotifyEvent read FOnAttrChange write FOnAttrChange;
   end;
 
-implementation
+function Utf8ToRTF(const s: string): string;
 
-uses RichMemoUtils, UmLib;
+implementation
 
 function ToStr(value: longint): string;
 begin
  System.Str(value, Result);
+end;
+
+function Utf8ToRTF(const s: string): string;
+var
+  p: PChar;
+  unicode: Cardinal;
+  CharLen: integer;
+const
+  endchar = {$ifdef linux} ' ' {$else} '?' {$endif};
+begin
+  Result := '';
+  p := PChar(s);
+  repeat
+    {$if lcl_major >= 2}
+      unicode := UTF8CodepointToUnicode(p,CharLen);
+    {$else}
+      unicode := UTF8CharacterToUnicode(p,CharLen);
+    {$endif}
+    if unicode = 0 then Continue;
+    if unicode < $80 then Result := Result + char(unicode)
+                     else Result := Result + '\u' + ToStr(unicode) + endchar;
+
+    inc(p,CharLen);
+  until (CharLen=0) or (unicode=0);
 end;
 
 constructor TRichMemoEx.Create(AOwner: TComponent);
@@ -145,15 +169,6 @@ function TRichMemoEx.CanUndo: boolean;
 begin
   {$ifdef windows}
   Result := SendMessage(Handle, EM_CANUNDO,  0, 0) <> 0;
-  {$else}
-  Result := True;
-  {$endif}
-end;
-
-function TRichMemoEx.CanPaste: boolean;
-begin
-  {$ifdef windows}
-  Result := SendMessage(Handle, EM_CANPASTE,  0, 0) <> 0;
   {$else}
   Result := True;
   {$endif}

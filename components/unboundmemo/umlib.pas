@@ -6,7 +6,7 @@ uses
   {$ifdef windows} Windows, Windirs, {$endif}
   {$ifdef linux} LazLogger, {$endif}
   SysUtils, StrUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  LCLVersion, LazUtf8, LCLProc, ExtCtrls, ClipBrd;
+  LazUtf8, LCLProc, ExtCtrls, ClipBrd;
 
 type
   TStringArray  = array of string;
@@ -26,10 +26,6 @@ function RemoveCRLF(s: string): string;
 function ListToString(const List: TStringArray): string;
 function ListToArray(const List: TStringList): TStringArray;
 function XmlToList(s: string): TStringArray;
-
-// unicode
-
-function Utf8ToRTF(const s: string): string;
 
 // system's functions
 
@@ -153,30 +149,6 @@ begin
     end;
 
   SetLength(Result,i);
-end;
-
-function Utf8ToRTF(const s: string): string;
-var
-  p: PChar;
-  unicode: Cardinal;
-  CharLen: integer;
-const
-  endchar = {$ifdef linux} ' ' {$else} '?' {$endif};
-begin
-  Result := '';
-  p := PChar(s);
-  repeat
-    {$if lcl_major >= 2}
-      unicode := UTF8CodepointToUnicode(p,CharLen);
-    {$else}
-      unicode := UTF8CharacterToUnicode(p,CharLen);
-    {$endif}
-    if unicode = 0 then Continue;
-    if unicode < $80 then Result := Result + char(unicode)
-                     else Result := Result + '\u' + ToStr(unicode) + endchar;
-
-    inc(p,CharLen);
-  until (CharLen=0) or (unicode=0);
 end;
 
 procedure Output(s: string);
