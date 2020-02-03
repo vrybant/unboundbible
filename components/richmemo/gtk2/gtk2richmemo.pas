@@ -109,10 +109,6 @@ type
     class procedure SetSelStart(const ACustomEdit: TCustomEdit; NewStart: integer); override;
     class procedure SetSelLength(const ACustomEdit: TCustomEdit; NewLength: integer); override;
 
-    class procedure CutToClipboard(const AWinControl: TWinControl); override;
-    class procedure CopyToClipboard(const AWinControl: TWinControl); override;
-    class procedure PasteFromClipboard(const AWinControl: TWinControl); override;
-
     class procedure SetZoomFactor(const AWinControl: TWinControl; AZoomFactor: Double); override;
 
     // inline handler
@@ -1588,39 +1584,6 @@ begin
   gtk_text_buffer_get_iter_at_offset(b, @EndIter, Offset+NewLength);
 
   gtk_text_buffer_select_range(b, @StartIter, @EndIter);
-end;
-
-class procedure TGtk2WSCustomRichMemo.CutToClipboard(const AWinControl: TWinControl);
-var
-  TextWidget : PGtkWidget;
-  buffer     : PGtkTextBuffer;
-  Clipboard  : PGtkClipboard;
-begin
-  GetWidgetBuffer(AWinControl, TextWidget, buffer);
-  Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-  gtk_text_buffer_cut_clipboard(buffer, Clipboard, True);
-end;
-
-class procedure TGtk2WSCustomRichMemo.CopyToClipboard(const AWinControl: TWinControl);
-var
-  TextWidget : PGtkWidget;
-  buffer     : PGtkTextBuffer;
-  Clipboard  : PGtkClipboard;
-begin
-  GetWidgetBuffer(AWinControl, TextWidget, buffer);
-  Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-  gtk_text_buffer_copy_clipboard(buffer, Clipboard);
-end;
-
-class procedure TGtk2WSCustomRichMemo.PasteFromClipboard(const AWinControl: TWinControl);
-var
-  TextWidget : PGtkWidget;
-  buffer     : PGtkTextBuffer;
-  Clipboard  : PGtkClipboard;
-begin
-  GetWidgetBuffer(AWinControl, TextWidget, buffer);
-  Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-  gtk_text_buffer_paste_clipboard(buffer, Clipboard, NULL, True);
 end;
 
 class procedure TGtk2WSCustomRichMemo.SetZoomFactor(
