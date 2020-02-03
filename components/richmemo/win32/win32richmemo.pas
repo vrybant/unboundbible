@@ -392,7 +392,13 @@ begin
         Windows.CallWindowProcW(PrevWndProc, Window, Msg, WParam, LParam);
         GetWin32WindowInfo(Window)^.TrackValid:=false;
       end;
+
+      WindowInfo := GetWin32WindowInfo(Window);
+      if WindowInfo^.WinControl is TCustomRichMemo then
+        if (WindowInfo^.WinControl as TCustomRichMemo).ReadOnly then HideCaret(Window);
+
     end;
+
       //When theming is enabled, and the component should have a border around it,
     WM_NCPAINT: begin
       if Assigned(NCPaint) then begin
