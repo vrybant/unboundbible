@@ -3,9 +3,10 @@ unit RichMemoEx;
 interface
 
 uses
-  {$ifdef windows} Windows, RichEdit, Printers, OSPrinters, {$endif}
-  {$ifdef linux} Gtk2, Glib2, Gdk2, {$endif}
    Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls,
+  {$ifdef windows} Windows, Printers, OSPrinters, {$endif}
+  {$ifdef windows} RichEdit, Win32RichMemoProc {$endif},
+  {$ifdef linux} Gtk2, Glib2, Gdk2, {$endif}
    RichMemo, RichMemoUtils, LazUTF8, LCLVersion;
 
 type
@@ -156,7 +157,11 @@ end;
 
 function TRichMemoEx.GetAttributes: TFontParams;
 begin
+  {$ifdef windows}
+  RichEditManager.GetSelectedTextStyle(Handle, Result{%H-});
+  {$else}
   GetTextAttributes(SelStart, Result{%H-});
+  {$endif}
 end;
 
 procedure TRichMemoEx.SetAttributes(const value: TFontParams);
