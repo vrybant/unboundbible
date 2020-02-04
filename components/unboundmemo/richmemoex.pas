@@ -5,8 +5,8 @@ interface
 uses
    Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls,
   {$ifdef windows} Windows, Printers, OSPrinters, {$endif}
-  {$ifdef windows} RichEdit, Win32RichMemoProc {$endif},
-  {$ifdef linux} Gtk2, Glib2, Gdk2, {$endif}
+  {$ifdef windows} RichEdit, Win32RichMemoProc, {$endif}
+  {$ifdef linux} rmGtk2ex, {$endif}
    RichMemo, RichMemoUtils, LazUTF8, LCLVersion;
 
 type
@@ -17,8 +17,6 @@ type
     function  GetAttributes: TFontParams;
     procedure SetAttributes(const value: TFontParams);
     procedure DoAttributesChange;
-    {$ifdef linux} function GetTextView: PGtkTextView; {$endif}
-    {$ifdef linux} function GetTextBuffer: PGtkTextBuffer; {$endif}
     {$ifdef windows} function  GetModified: boolean; {$endif}
     {$ifdef windows} procedure SetModified(value: boolean); {$endif}
   protected
@@ -142,7 +140,7 @@ end;
 procedure TRichMemoEx.HideCursor;
 begin
    {$ifdef windows} HideCaret(Handle); {$endif}
-   {$ifdef linux} gtk_text_view_set_cursor_visible(GetTextView, False); {$endif}
+   {$ifdef linux} Gtk2HideCursor(Handle); {$endif}
 end;
 
 procedure TRichMemoEx.Hide_Selection;
@@ -189,7 +187,8 @@ begin
   {$ifdef windows}
   SendMessage(Handle, EM_SETSEL, 0, -1);
   {$else}
-  SetSel(0,High(Int16));
+  SelStart := 0;
+  SelLength := High(Int16);
   {$endif}
 end;
 
@@ -215,47 +214,19 @@ end;
 
 {$ifdef linux}
 
-function TRichMemoEx.GetTextView: PGtkTextView;
-var
-  Widget, TextWidget: PGtkWidget;
-  List: PGList;
-begin
-  Result := nil;
-  Widget := {%H-}PGtkWidget(Handle);
-  List := gtk_container_get_children(PGtkContainer(Widget));
-  if not Assigned(List) then Exit;
-  TextWidget := PGtkWidget(List^.Data);
-  if not Assigned(TextWidget) then Exit;
-  Result := PGtkTextView(TextWidget);
-end;
-
-function TRichMemoEx.GetTextBuffer: PGtkTextBuffer;
-begin
-  Result := gtk_text_view_get_buffer(GetTextView);
-end;
-
 procedure TRichMemoEx.CopyToClipboard;
-var
-  Clipboard: PGtkClipboard;
 begin
-  Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-  gtk_text_buffer_copy_clipboard(GetTextBuffer, Clipboard);
+  Gtk2Copy(Handle);
 end;
 
 procedure TRichMemoEx.CutToClipboard;
-var
-  Clipboard: PGtkClipboard;
 begin
-  Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-  gtk_text_buffer_cut_clipboard(GetTextBuffer, Clipboard, True);
+  Gtk2Cut(Handle);
 end;
 
 procedure TRichMemoEx.PasteFromClipboard;
-var
-  Clipboard: PGtkClipboard;
 begin
-  Clipboard := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-  gtk_text_buffer_paste_clipboard(GetTextBuffer, Clipboard, NULL, True);
+  Gtk2Paste(Handle);
 end;
 
 {$endif}

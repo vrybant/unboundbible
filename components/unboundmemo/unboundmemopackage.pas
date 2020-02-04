@@ -4,10 +4,11 @@
 
 unit unboundmemopackage;
 
+{$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  UnboundMemo, UmParseWin, UmLib, LazarusPackageIntf;
+  UnboundMemo, UmParseWin, UmLib, rmGtk2ex, LazarusPackageIntf;
 
 implementation
 

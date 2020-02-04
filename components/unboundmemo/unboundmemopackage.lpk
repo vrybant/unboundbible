@@ -14,7 +14,7 @@
     </CompilerOptions>
     <Description Value="UnboundMemo control."/>
     <License Value="LGPL"/>
-    <Files Count="6">
+    <Files Count="7">
       <Item1>
         <Filename Value="unboundmemo.pas"/>
         <HasRegisterProc Value="True"/>
@@ -42,6 +42,10 @@
         <Filename Value="umlib.pas"/>
         <UnitName Value="UmLib"/>
       </Item6>
+      <Item7>
+        <Filename Value="rmgtk2ex.pas"/>
+        <UnitName Value="rmGtk2ex"/>
+      </Item7>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
