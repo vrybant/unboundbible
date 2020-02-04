@@ -895,7 +895,7 @@ begin
   {$ifdef windows}
     Response := MessageBox(Handle, PChar(ls.Save), PChar(ls.Confirm), MB_YESNOCANCEL or MB_ICONQUESTION);
   {$else}
-    Response := MessageDlg(ms.Save, mtConfirmation, mbYesNoCancel, 0);
+    Response := MessageDlg(ls.Save, mtConfirmation, mbYesNoCancel, 0);
     // этот вариант рисует кнопки с картинками
   {$endif}
 
@@ -1221,7 +1221,7 @@ begin
   if Shelf.Count = 0 then Exit;
   Cursor := crHourGlass;
   richtext := Search_Text(s, count);
-  {$ifdef linux} if count > max then richtext := Show_Message(ms.Message); {$endif}
+  {$ifdef linux} if count > max then richtext := Show_Message(ls.Narrow); {$endif}
   MemoSearch.Font.Assign(DefaultFont);
   MemoSearch.LoadText(richtext);
   Cursor := crArrow;

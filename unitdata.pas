@@ -67,7 +67,7 @@ type
 
 TLocalizableStrings = record
    Commentary, Confirm, lsFile, Footnote, Found, Language, MoreInfo,
-   NoModules, NoResults, Overwrite, Save, Strong : string;
+   Narrow, NoModules, NoResults, Overwrite, Save, Strong : string;
  end;
 
 const
@@ -298,8 +298,8 @@ begin
   ls.Overwrite := T('OK to overwrite %s?');
   ls.Save := T('Save changes?');
   ls.Strong := T('Strong''s Dictionary');
-//ls.Narrow := T('This search returned too many results.') + ' ' +
-//             T('Please narrow your search.');
+  ls.Narrow := T('This search returned too many results.') + ' ' +
+               T('Please narrow your search.');
 end;
 
 initialization
