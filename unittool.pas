@@ -127,7 +127,7 @@ var i : integer;
     Result += '</h><br>';
     if Module.Info <> '' then Result += Module.Info + '<br>';
     if Module.language <> '' then Result += ls.Language + ': ' + Module.language + '<br>';
-    Result += '<n>' + ls.msFile + ': ' + Module.Filename + '</n><br>';
+    Result += '<n>' + ls.lsFile + ': ' + Module.Filename + '</n><br>';
     Result += '<br>';
   end;
 

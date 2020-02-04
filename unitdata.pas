@@ -66,7 +66,7 @@ type
   end;
 
 TLocalizableStrings = record
-   Commentary, Confirm, msFile, Footnote, Found, Language, MoreInfo,
+   Commentary, Confirm, lsFile, Footnote, Found, Language, MoreInfo,
    NoModules, NoResults, Overwrite, Save, Strong : string;
  end;
 
@@ -288,7 +288,7 @@ procedure LocalizeStrings;
 begin
   ls.Commentary := T('Commentaries');
   ls.Confirm := T('Confirmation');
-  ls.msFile := T('File');
+  ls.lsFile := T('File');
   ls.Footnote := T('Footnote');
   ls.Found := T('verses found');
   ls.Language := T('Language');
