@@ -202,8 +202,6 @@ type
     procedure RadioButtonClick(Sender: TObject);
     procedure ToolButtonFBClick(Sender: TObject);
   private
-    ms_Commentary, ms_Confirm, ms_Strong : string;
-    ms_Footnote, ms_Found, ms_Message, ms_Overwrite, ms_Save : string;
     DefaultCurrent: string;
     NoteFileName: string;
     RecentList: TStringList;
@@ -456,16 +454,6 @@ begin
   ToolButtonCenter.Hint := T('Center');
   ToolButtonRight.Hint := T('Align Right');
   ToolButtonBullets.Hint := T('Bullets');
-
-  ms_Commentary := T('Commentaries');
-  ms_Confirm := T('Confirmation');
-  ms_Strong := T('Strong''s Dictionary');
-  ms_Footnote := T('Footnote');
-  ms_Found := T('verses found');
-  ms_Overwrite := T('OK to overwrite %s?');
-  ms_Save := T('Save changes?');
-  ms_Message := T('This search returned too many results.') + ' ' +
-                T('Please narrow your search.');
 end;
 
 //-------------------------------------------------------------------------------------------------
@@ -658,7 +646,7 @@ end;
 procedure TMainForm.CmdCommentary(Sender: TObject);
 begin
   if Shelf.Count = 0 then Exit;
-  CommentaryForm.Caption := ms_Commentary + ' - ' + Bible.VerseToStr(ActiveVerse, true);
+  CommentaryForm.Caption := ls.Commentary + ' - ' + Bible.VerseToStr(ActiveVerse, true);
   CommentaryForm.Memo.LoadHTML(Load_Commentary);
   if Sender = ActionCommentary then CommentaryForm.Show;
   CommentaryForm.Repaint;
@@ -710,7 +698,7 @@ begin
       SaveDialog.FileName := SaveDialog.FileName + '.rtf';
 
     if FileExists(SaveDialog.FileName) then
-      if MessageDlg(Format(ms_Overwrite, [SaveDialog.FileName]),
+      if MessageDlg(Format(ls.Overwrite, [SaveDialog.FileName]),
         mtConfirmation, mbYesNoCancel, 0) <> idYes then Exit;
 
     MemoNotes.SaveToFile(SaveDialog.FileName);
@@ -905,9 +893,9 @@ begin
   SelectPage(apNotes);
 
   {$ifdef windows}
-    Response := MessageBox(Handle, PChar(ms_Save), PChar(ms_Confirm), MB_YESNOCANCEL or MB_ICONQUESTION);
+    Response := MessageBox(Handle, PChar(ls.Save), PChar(ls.Confirm), MB_YESNOCANCEL or MB_ICONQUESTION);
   {$else}
-    Response := MessageDlg(ms_Save, mtConfirmation, mbYesNoCancel, 0);
+    Response := MessageDlg(ms.Save, mtConfirmation, mbYesNoCancel, 0);
     // этот вариант рисует кнопки с картинками
   {$endif}
 
@@ -1233,12 +1221,12 @@ begin
   if Shelf.Count = 0 then Exit;
   Cursor := crHourGlass;
   richtext := Search_Text(s, count);
-  {$ifdef linux} if count > max then richtext := Show_Message(ms_Message); {$endif}
+  {$ifdef linux} if count > max then richtext := Show_Message(ms.Message); {$endif}
   MemoSearch.Font.Assign(DefaultFont);
   MemoSearch.LoadText(richtext);
   Cursor := crArrow;
   SelectPage(apSearch);
-  UpdateStatus(ToStr(count) + ' ' + ms_found,'');
+  UpdateStatus(ToStr(count) + ' ' + ls.found,'');
 end;
 
 procedure TMainForm.LoadStrong(s: string);
@@ -1246,7 +1234,7 @@ var text : string;
 begin
   text := Load_Strong(s);
   if text = '' then Exit;
-  NotifyForm.Title.Caption := ms_Strong;
+  NotifyForm.Title.Caption := ls.Strong;
   NotifyForm.Compact := True;
   NotifyForm.Memo.LoadText(text);
   NotifyForm.ShowAtPos(Mouse.CursorPos);
@@ -1258,7 +1246,7 @@ var text : string;
 begin
   text := Load_Footnote(s);
   if text = '' then Exit;
-  NotifyForm.Title.Caption := ms_Footnote;
+  NotifyForm.Title.Caption := ls.Footnote;
   NotifyForm.Compact := False;
   NotifyForm.Memo.LoadText(text);
   NotifyForm.ShowAtPos(Mouse.CursorPos);

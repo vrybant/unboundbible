@@ -4,8 +4,6 @@ interface
 
 uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UmLib, UnitLib;
 
-procedure Localize_Tools;
-
 function Load_Chapter: string;
 function Search_Text(st: string; var count: integer): string;
 function Load_Compare: string;
@@ -21,17 +19,6 @@ implementation
 
 uses
   UnitData, UnitLang, UnitModule, UnitShelf, UnitDictionary, UnitCommentary, FormSearch;
-
-var ms_File, ms_Language, ms_MoreInfo, ms_NoModules, ms_NoResults : string;
-
-procedure Localize_Tools;
-begin
-  ms_File := T('File');
-  ms_Language := T('Language');
-  ms_MoreInfo := T('For more information, choose Menu > Help, then click «Module downloads».');
-  ms_NoModules := T('You don''t have any commentary modules.');
-  ms_NoResults := T('You search for % produced no results.');
-end;
 
 function Load_Chapter: string;
 var
@@ -104,7 +91,7 @@ begin
 
   if count = 0 then
     begin
-      text := ms_NoResults;
+      text := ls.NoResults;
       Replace(text,'%',DoubleQuotedStr(st));
       Result += text;
     end;
@@ -139,8 +126,8 @@ var i : integer;
     if Module.Abbreviation <> '' then Result += ' - ' + Module.Abbreviation;
     Result += '</h><br>';
     if Module.Info <> '' then Result += Module.Info + '<br>';
-    if Module.language <> '' then Result += ms_Language + ': ' + Module.language + '<br>';
-    Result += '<n>' + ms_File + ': ' + Module.Filename + '</n><br>';
+    if Module.language <> '' then Result += ls.Language + ': ' + Module.language + '<br>';
+    Result += '<n>' + ls.msFile + ': ' + Module.Filename + '</n><br>';
     Result += '<br>';
   end;
 
@@ -192,8 +179,8 @@ begin
 
   if Commentaries.Count = 0 then
     begin
-      Result += '<br> ' + ms_NoModules;
-      Result += '<br><br> ' + ms_MoreInfo;
+      Result += '<br> ' + ls.NoModules;
+      Result += '<br><br> ' + ls.MoreInfo;
     end;
 end;
 

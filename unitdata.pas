@@ -3,7 +3,7 @@ unit UnitData;
 interface
 
 uses
-  Classes, SysUtils, Graphics, FileUtil, IniFiles, UmLib, UnitLib;
+  Classes, SysUtils, Graphics, FileUtil, IniFiles, UmLib, UnitLang, UnitLib;
 
 const
   ApplicationName = 'Unbound Bible';
@@ -24,17 +24,12 @@ type
 
 type
   TRange = record
-    from : integer;
-    till : integer;
+    from, till : integer;
   end;
 
 type
   TBibleAlias = record
-    bible   : string;
-    book    : string;
-    chapter : string;
-    verse   : string;
-    text    : string;
+    bible, book, chapter, verse, text : string;
   end;
 
   TCommentaryAlias = record
@@ -48,17 +43,11 @@ type
   end;
 
   TDictionaryAlias = record
-    dictionary : string;
-    word       : string;
-    data       : string;
+    dictionary, word, data : string;
   end;
 
- type
   TVerse = record
-    book     : integer;
-    chapter  : integer;
-    number   : integer;
-    count    : integer;
+    book, chapter, number, count : integer;
   end;
 
  TContent = record
@@ -75,6 +64,11 @@ type
     cvParentheses : boolean;
     cvEnd         : boolean;
   end;
+
+TLocalizableStrings = record
+   Commentary, Confirm, msFile, Footnote, Found, Language, MoreInfo,
+   NoModules, NoResults, Overwrite, Save, Strong : string;
+ end;
 
 const
   unboundStringAlias : TBibleAlias = (
@@ -144,6 +138,7 @@ const
 var
   ActiveVerse : TVerse;
   Options : TCopyOptions;
+  ls : TLocalizableStrings;
 
   BibleHubArray : array [1..66] of string = (
     'genesis','exodus','leviticus','numbers','deuteronomy','joshua','judges','ruth','1_samuel','2_samuel',
@@ -157,13 +152,12 @@ var
 
 function unbound2mybible(id: integer): integer;
 function mybible2unbound(id: integer): integer;
-
 function IsNewTestament(n: integer): boolean;
-
 procedure CreateDataDirectory;
 function ConfigFile: string;
 function DataPath: string;
 function GetDatabaseList: TStringArray;
+procedure LocalizeStrings;
 
 implementation
 
@@ -288,6 +282,24 @@ begin
   ActiveVerse.count := IniFile.ReadInteger('Verse', 'Count', 0);
 
   IniFile.Free;
+end;
+
+procedure LocalizeStrings;
+begin
+  ls.Commentary := T('Commentaries');
+  ls.Confirm := T('Confirmation');
+  ls.msFile := T('File');
+  ls.Footnote := T('Footnote');
+  ls.Found := T('verses found');
+  ls.Language := T('Language');
+  ls.MoreInfo := T('For more information, choose Menu > Help, then click «Module downloads».');
+  ls.NoModules := T('You don''t have any commentary modules.');
+  ls.NoResults := T('You search for % produced no results.');
+  ls.Overwrite := T('OK to overwrite %s?');
+  ls.Save := T('Save changes?');
+  ls.Strong := T('Strong''s Dictionary');
+//ls.Narrow := T('This search returned too many results.') + ' ' +
+//             T('Please narrow your search.');
 end;
 
 initialization

@@ -29,7 +29,7 @@ implementation
 
 uses
   FormMain, FormAbout, FormSearch, FormCompare, UnitShelf, FormCopy, FormTranslate,
-  FormCommentary, FormDownload, UnitTool, UnitData;
+  FormCommentary, FormDownload, UnitData;
 
 var
   IniFile : TIniFile;
@@ -107,7 +107,7 @@ begin
   CommentaryForm.Localize;
   DownloadForm  .Localize;
 
-  Localize_Tools;
+  LocalizeStrings;
 
   IniFile.Free;
 end;
