@@ -11,6 +11,8 @@ const
   BibleDirectory = 'bibles';
   TitleDirectory = 'titles';
   LangDirectory = 'localization';
+  Untitled = 'Untitled';
+  RecentMax = 10;
 
 var
   ApplicationUpdate : boolean = false;
