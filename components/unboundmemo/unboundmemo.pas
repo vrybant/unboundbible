@@ -24,7 +24,6 @@ type
     SelLengthTemp : integer;
     procedure SetSel(x1,x2: integer);
     procedure GetSel(var x1,x2: integer);
-    function Selected: boolean;
     {$ifdef unix} function  Colored: boolean; {$endif}
     function  GetColorLink: string;
     function  GetLink: string;
@@ -90,11 +89,6 @@ begin
   x1 := SelStart;
   x2 := SelStart + SelLength;
   {$endif}
-end;
-
-function TUnboundMemo.Selected: boolean;
-begin
-  Result := SelLength > 0;
 end;
 
 function TUnboundMemo.Foreground: integer;
