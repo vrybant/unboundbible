@@ -20,8 +20,6 @@ type
   private
     FLinkable : boolean;
     FParagraphic : boolean;
-    SelStartTemp : integer;
-    SelLengthTemp : integer;
     procedure SetSel(x1,x2: integer);
     procedure GetSel(var x1,x2: integer);
     {$ifdef unix} function  Colored: boolean; {$endif}
@@ -64,8 +62,6 @@ begin
   Hyperlink := '';
   ParagraphStart := 0;
   ParagraphCount := 0;
-  SelStartTemp := 0;
-  SelLengthTemp := 0;
   Cursor := crArrow;
 
   {$ifdef windows} if Font.Name = 'default' then Font.Name := 'Tahoma'; {$endif}
@@ -75,6 +71,7 @@ procedure TUnboundMemo.SetSel(x1,x2: integer);
 begin
   {$ifdef windows}
   SendMessage(Handle, EM_SETSEL, x1, x2);
+  // использование обычных процедур производит дерганье текста
   {$else}
   SelStart  := x1;
   SelLength := x2-x1;
@@ -325,8 +322,7 @@ end;
 
 procedure TUnboundMemo.SelectWord;
 begin
-  SelStart  := GetStartSelection;
-  SelLength := GetEndSelection - SelStart;
+  SetSel(GetStartSelection, GetEndSelection);
 end;
 
 procedure TUnboundMemo.SelectAll;
