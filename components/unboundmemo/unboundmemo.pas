@@ -22,8 +22,7 @@ type
     FParagraphic : boolean;
     SelStartTemp : integer;
     SelLengthTemp : integer;
-    procedure SetSel(x1,x2: integer);
-    procedure GetSel(var x1,x2: integer);
+//  procedure SetSel(x1,x2: integer);
     function Selected: boolean;
     {$ifdef unix} function  Colored: boolean; {$endif}
     function  GetColorLink: string;
@@ -74,25 +73,11 @@ begin
   {$ifdef windows} if Font.Name = 'default' then Font.Name := 'Tahoma'; {$endif}
 end;
 
-procedure TUnboundMemo.SetSel(x1,x2: integer);
-begin
-  {$ifdef windows}
-  SendMessage(Handle, EM_SETSEL, x1, x2);
-  {$else}
-  SelStart  := x1;
-  SelLength := x2-x1;
-  {$endif}
-end;
-
-procedure TUnboundMemo.GetSel(var x1,x2: integer);
-begin
-  {$ifdef windows}
-  SendMessage(Handle, EM_GETSEL, {%H-}integer(@x1), {%H-}integer(@x2));
-  {$else}
-  x1 := SelStart;
-  x2 := SelStart + SelLength;
-  {$endif}
-end;
+//procedure TUnboundMemo.SetSel(x1,x2: integer);
+//begin
+//  SelStart  := x1;
+//  SelLength := x2-x1;
+//end;
 
 function TUnboundMemo.Selected: boolean;
 begin
@@ -122,20 +107,22 @@ function TUnboundMemo.GetColorLink: string;
 var
   fore : integer;
   x1,x2,x0 : integer;
-  n1,n2 : integer;
+  s,l : integer;
 begin
   Result := '';
   if SelLength > 0 then Exit;
 
   fore := Foreground;
   if fore = fgText then Exit;
-  GetSel(n1{%H-},n2{%H-});
+
+  s := SelStart;
+  l := SelLength;
 
   x0 := SelStart;
   x1 := x0;
   repeat
     dec(x1);
-    SetSel(x1, x1);
+    SelStart  := x1;
   until (Foreground <> fore) or (x1 < 0);
 
   inc(x1);
@@ -144,11 +131,16 @@ begin
   x2 := x0;
   repeat
     inc(x2);
-    SetSel(x2, x2);
+    SelStart := x2;
   until Foreground <> fore;
 
-  SetSel(x1, x2); Result := RemoveCRLF(SelText);
-  SetSel(n1, n2); Result := Trim(Result);
+  SelStart := x1;
+  SelLength := x2-x1;
+  Result := RemoveCRLF(SelText);
+
+  SelStart := s;
+  SelLength := l;
+  Result := Trim(Result);
 end;
 
 function TUnboundMemo.GetLink: string;
@@ -158,16 +150,22 @@ end;
 
 procedure TUnboundMemo.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
-  x1 : integer = 0;
-  x2 : integer = 0;
+  s, l : integer;
 begin
   if Linkable then Hyperlink := GetLink else Hyperlink := '';
 
+  s := SelStart;
+  l := SelLength;
+
   if Paragraphic and (Button = mbLeft) then
     begin
-      if Hyperlink <> '' then GetSel(x1,x2);
       GetParagraphRange;
-      if Hyperlink <> '' then SetSel(x1,x2);
+
+      if Hyperlink <> '' then
+        begin
+          SelStart  := s;
+          SelLength := l;
+        end;
     end;
 
   inherited;
@@ -189,7 +187,11 @@ begin
   GetParaRange(Pos, x1{%H-}, ln{%H-});
   x2 := FindRightWordBreak(x1+1);
   Result := ToInt(GetTextRange(x1, x2-x1));
-  if select then SetSel(x1,x1+1);
+  if select then
+    begin
+      SelStart := x1;
+      SelLength := 1;
+    end;
 end;
 {$endif}
 
@@ -216,7 +218,8 @@ var
   ParagraphEnd : integer;
   x1, x2 : integer;
 begin
-  GetSel(x1{%H-},x2{%H-});
+  x1 := SelStart;
+  x2 := SelStart + SelLength;
 
   ParagraphStart := GetParagraphNumber(x1, x1=x2);
   ParagraphCount := 1;
@@ -225,7 +228,10 @@ begin
     begin
       ParagraphEnd := GetParagraphNumber(x2, false);
       ParagraphCount := ParagraphEnd - ParagraphStart + 1;
-      {$ifdef unix} SetSel(x1,x2); {$endif}
+      {$ifdef unix}
+        SelStart  := x1;
+        SelLength := x2-x1
+      {$endif}
     end;
 end;
 
@@ -233,7 +239,7 @@ end;
 procedure TUnboundMemo.SelectParagraph(n : integer);
 var
   w, line : string;
-  i, len, x : integer;
+  i, len : integer;
 begin
   HideSelection := False; // important
 
@@ -246,8 +252,8 @@ begin
 
       if copy(line,1,len) = w then
          begin
-           x := LineIndex(i);
-           SetSel(x,x+1);
+           SelStart := LineIndex(i);
+           SelLength := 1;
            HideCursor;
          end;
     end;
@@ -301,34 +307,44 @@ begin
   temp := SelStart;
      i := SelStart;
 
-  SetSel(i-1,i);
+  SelStart := i-1;
+  SelLength := 1;
+
   while (SelText <> ' ') and (i > 0)  do
     begin
       dec(i);
-      SetSel(i-1,i);
+      SelStart := i-1;
+      SelLength := 1;
     end;
 
+  SelStart := temp;
+  SelLength := 0;
+
   Result := i;
-  SetSel(temp, temp);
 end;
 
 function TUnboundMemo.GetEndSelection: integer;
 var
-  i, len, temp : integer;
+  i, max, temp : integer;
 begin
   temp := SelStart;
      i := SelStart;
-   len := i + 50;
+   max := i + 50;
 
-  SetSel(i,i+1);
-  while (LowerCase(SelText) <> UpperCase(SelText)) and (i < len) do
+   SelStart := i;
+   SelLength := 1;
+
+  while (Utf8LowerCase(SelText) <> Utf8UpperCase(SelText)) and (i < max) do
     begin
       inc(i);
-      SetSel(i,i+1);
+      SelStart := i;
+      SelLength := 1;
     end;
 
+  SelStart := temp;
+  SelLength := 0;
+
   Result := i;
-  SetSel(temp, temp);
 end;
 
 procedure TUnboundMemo.SelectWord;
