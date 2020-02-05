@@ -301,21 +301,10 @@ begin
   {$ifdef linux}
   StandardToolBar.ParentColor := True;
   ActionFilePrint.Visible := False;
+  ActionEditUndo.Visible := False;
+  ActionBullets.Visible := False;
   IdleMessage := '';
   IdleTimer.Enabled := true;
-  {$endif}
-
-  {$ifdef unix}
-  ActionEditUndo.Visible := False;
-  ActionLeft    .Visible := False;
-  ActionCenter  .Visible := False;
-  ActionRight   .Visible := False;
-  ActionBullets .Visible := False;
-  ToolSeparator1.Visible := False;
-  ToolSeparator2.Visible := False;
-  ToolSeparator3.Visible := False;
-  ToolSeparator4.Visible := False;
-  ToolSeparator5.Visible := False;
   {$endif}
 
   UpdateActionImage;
@@ -523,25 +512,24 @@ end;
 procedure TMainForm.CmdStyle2(Sender: TObject);
 {$ifdef windows} var ParaNumbering : TParaNumbering; {$endif}
 begin
-  {$ifdef windows}
   with MemoNotes do
     begin
       if Sender = ActionLeft    then SetParaAlignment(SelStart, SelLength, paLeft   );
       if Sender = ActionCenter  then SetParaAlignment(SelStart, SelLength, paCenter );
       if Sender = ActionRight   then SetParaAlignment(SelStart, SelLength, paRight  );
 
+      {$ifdef windows}
       if Sender = ActionBullets then
         begin
           GetParaNumbering(SelStart, ParaNumbering );
-          if ToolButtonBullets.Down
-            then ParaNumbering.Style := pnBullet
-            else ParaNumbering.Style := pnNone;
+          if ToolButtonBullets.Down then ParaNumbering.Style := pnBullet
+                                    else ParaNumbering.Style := pnNone;
           SetParaNumbering(SelStart, SelLength, ParaNumbering );
         end;
+      {$endif}
     end;
 
   MemoNotes.Repaint;
-  {$endif}
 end;
 
 procedure TMainForm.ComboBoxChange(Sender: TObject);
@@ -611,6 +599,7 @@ end;
 
 procedure TMainForm.CmdCopyAs(Sender: TObject);
 begin
+  // saving selection because of strange bug in the gtk2's richmemo
   {$ifdef linux} MemoBible.SaveSelection; {$endif}
   CopyForm.ShowModal;
   {$ifdef linux} MemoBible.RestoreSelection; {$endif}
@@ -618,7 +607,6 @@ end;
 
 procedure TMainForm.CmdCopyVerses(Sender: TObject);
 begin
-  // saving selection because of strange bug in the gtk2's richmemo
   {$ifdef linux} MemoBible.SaveSelection; {$endif}
   VersesToClipboard;
   {$ifdef linux} MemoBible.RestoreSelection; {$endif}
