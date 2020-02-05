@@ -20,6 +20,8 @@ type
   private
     FLinkable : boolean;
     FParagraphic : boolean;
+    SelStartTemp : integer;
+    SelLengthTemp : integer;
     procedure SetSel(x1,x2: integer);
     procedure GetSel(var x1,x2: integer);
     {$ifdef unix} function  Colored: boolean; {$endif}
@@ -38,6 +40,8 @@ type
     procedure SelectParagraph(n : integer);
     procedure SelectWord;
     procedure SelectAll;
+    procedure SaveSelection;
+    procedure RestoreSelection;
     procedure LoadText(Source: string; jtag: boolean = false);
     procedure LoadHtml(Source: string);
   published
@@ -331,6 +335,18 @@ begin
   inherited;
   GetParagraphRange;
   Show_Selection;
+end;
+
+procedure TUnboundMemo.SaveSelection;
+begin
+  SelStartTemp  := SelStart;
+  SelLengthTemp := SelLength;
+end;
+
+procedure TUnboundMemo.RestoreSelection;
+begin
+  SelStart  := SelStartTemp;
+  SelLength := SelLengthTemp;
 end;
 
 procedure TUnboundMemo.LoadText(Source: string; jtag: boolean = false);
