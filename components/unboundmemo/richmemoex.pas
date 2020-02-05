@@ -188,7 +188,7 @@ begin
   SendMessage(Handle, EM_SETSEL, 0, -1);
   {$else}
   SelStart := 0;
-  SelLength := MaxInt;
+  SelLength := High(Int16);
   {$endif}
 end;
 
