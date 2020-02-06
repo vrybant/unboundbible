@@ -262,8 +262,7 @@ const
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  Caption := ApplicationName + ' ' + ApplicationVersion
-    {$ifdef windows} + ' - Open Source Application' {$endif};
+  Caption := ApplicationName + ' ' + ApplicationVersion;
 
   RecentList := TStringList.Create;
   SaveDialog.InitialDir := DocumentsPath;
