@@ -453,13 +453,9 @@ end;
 procedure TMainForm.CmdStyle(Sender: TObject);
 var
   fp: TFontParams;
-  tempStart, tempLength: integer;
 begin
   fp := MemoNotes.SelAttributes;
-
-  tempStart  := MemoNotes.SelStart;
-  tempLength := MemoNotes.SelLength;
-
+  MemoNotes.SaveSelection;
   if MemoNotes.SelLength = 0 then MemoNotes.SelectWord;
 
   if Sender = ActionBold then
@@ -502,15 +498,12 @@ begin
     end;
 
   MemoNotes.SelAttributes := fp;
-
-  MemoNotes.SelStart := tempStart; // unselect word
-  MemoNotes.SelLength := tempLength;
-
+  MemoNotes.RestoreSelection; // unselect word
   MemoNotes.Repaint;
 end;
 
 procedure TMainForm.CmdStyle2(Sender: TObject);
-{$ifdef windows} var ParaNumbering : TParaNumbering; {$endif}
+{$ifdef windows} var pn : TParaNumbering; {$endif}
 begin
   with MemoNotes do
     begin
@@ -521,10 +514,9 @@ begin
       {$ifdef windows}
       if Sender = ActionBullets then
         begin
-          GetParaNumbering(SelStart, ParaNumbering );
-          if ToolButtonBullets.Down then ParaNumbering.Style := pnBullet
-                                    else ParaNumbering.Style := pnNone;
-          SetParaNumbering(SelStart, SelLength, ParaNumbering );
+          GetParaNumbering(SelStart, pn);
+          if ToolButtonBullets.Down then pn.Style := pnBullet else pn.Style := pnNone;
+          SetParaNumbering(SelStart, SelLength, pn);
         end;
       {$endif}
     end;
