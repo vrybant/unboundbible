@@ -14,8 +14,8 @@ type
   TRichMemoEx = class(TRichMemo)
   private
     FOnAttrChange: TNotifyEvent;
-    function  GetAttributes: TFontParams;
-    procedure SetAttributes(const value: TFontParams);
+    function  GetSelAttributes: TFontParams;
+    procedure SetSelAttributes(const value: TFontParams);
     procedure DoAttributesChange;
     {$ifdef windows} function  GetModified: boolean; {$endif}
     {$ifdef windows} procedure SetModified(value: boolean); {$endif}
@@ -34,7 +34,9 @@ type
     procedure Hide_Selection;
     procedure Show_Selection;
     procedure SelectAll;
-    property SelAttributes: TFontParams read GetAttributes write SetAttributes;
+    property SelAttributes: TFontParams read GetSelAttributes write SetSelAttributes;
+    function SelParaAlignment: TParaAlignment;
+    {$ifdef windows} function SelParaNumbering: TParaNumbering; {$endif}
     {$ifdef windows} function FindRightWordBreak(Pos: integer): integer; {$endif}
     {$ifdef windows} property Modified: boolean read GetModified write SetModified; {$endif}
     {$ifdef linux} procedure CopyToClipboard; override; {$endif}
@@ -137,7 +139,7 @@ begin
    {$ifdef windows} SendMessage(Handle, EM_HIDESELECTION, 0, 0); {$endif}
 end;
 
-function TRichMemoEx.GetAttributes: TFontParams;
+function TRichMemoEx.GetSelAttributes: TFontParams;
 begin
   {$ifdef windows}
   Result := GetSelectedTextAttributes(Handle);
@@ -146,11 +148,27 @@ begin
   {$endif}
 end;
 
-procedure TRichMemoEx.SetAttributes(const value: TFontParams);
+procedure TRichMemoEx.SetSelAttributes(const value: TFontParams);
 begin
   SetTextAttributes(SelStart, SelLength, value);
   DoAttributesChange;
 end;
+
+function TRichMemoEx.SelParaAlignment: TParaAlignment;
+begin
+  {$ifdef windows}
+  Result := GetSelectedParaAlignment(Handle);
+  {$else}
+  GetParaAlignment(SelStart, Result{%H-});
+  {$endif}
+end;
+
+{$ifdef windows}
+function TRichMemoEx.SelParaNumbering: TParaNumbering;
+begin
+  Result := GetSelectedParaNumbering(Handle);
+end;
+{$endif}
 
 function TRichMemoEx.CanUndo: boolean;
 begin
