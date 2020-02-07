@@ -14,8 +14,6 @@ type
   TRichMemoEx = class(TRichMemo)
   private
     FOnAttrChange: TNotifyEvent;
-    function  GetSelAttributes: TFontParams;
-    procedure SetSelAttributes(const value: TFontParams);
     procedure DoAttributesChange;
     {$ifdef windows} function  GetModified: boolean; {$endif}
     {$ifdef windows} procedure SetModified(value: boolean); {$endif}
@@ -34,7 +32,7 @@ type
     procedure Hide_Selection;
     procedure Show_Selection;
     procedure SelectAll;
-    property SelAttributes: TFontParams read GetSelAttributes write SetSelAttributes;
+    function  SelAttributes: TFontParams;
     function SelParaAlignment: TParaAlignment;
     {$ifdef windows} function SelParaNumbering: TParaNumbering; {$endif}
     {$ifdef windows} function FindRightWordBreak(Pos: integer): integer; {$endif}
@@ -139,19 +137,13 @@ begin
    {$ifdef windows} SendMessage(Handle, EM_HIDESELECTION, 0, 0); {$endif}
 end;
 
-function TRichMemoEx.GetSelAttributes: TFontParams;
+function TRichMemoEx.SelAttributes: TFontParams;
 begin
   {$ifdef windows}
   Result := GetSelectedTextAttributes(Handle);
   {$else}
   GetTextAttributes(SelStart, Result{%H-});
   {$endif}
-end;
-
-procedure TRichMemoEx.SetSelAttributes(const value: TFontParams);
-begin
-  SetTextAttributes(SelStart, SelLength, value);
-  DoAttributesChange;
 end;
 
 function TRichMemoEx.SelParaAlignment: TParaAlignment;

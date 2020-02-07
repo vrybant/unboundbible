@@ -496,7 +496,7 @@ begin
         end;
     end;
 
-  MemoNotes.SelAttributes := fp;
+  MemoNotes.SetTextAttributes(MemoNotes.SelStart, MemoNotes.SelLength, fp);
   MemoNotes.RestoreSelection; // unselect word
   MemoNotes.Repaint;
 end;
