@@ -7,7 +7,7 @@ unit UnboundMemo;
 interface
 
 uses
-  {$ifdef windows} Windows, {$endif}
+  {$ifdef windows} Windows, rmWinEx, {$endif}
   Forms, SysUtils, LResources, Classes, Graphics, Controls, ExtCtrls,
   LCLProc, LCLType, LazUTF8, RichMemo, RichMemoEx, UmLib,
   {$ifdef winmode} UmParseWin; {$else} UmParse; {$endif}
@@ -85,7 +85,7 @@ end;
 procedure TUnboundMemo.GetSel(var x1,x2: integer);
 begin
   {$ifdef windows}
-  SendMessage(Handle, EM_GETSEL, {%H-}integer(@x1), {%H-}integer(@x2));
+  SendMessage(Handle, EM_GETSEL, integer(@x1), integer(@x2));
   {$else}
   x1 := SelStart;
   x2 := SelStart + SelLength;
@@ -122,7 +122,7 @@ begin
 
   fore := Foreground;
   if fore = fgText then Exit;
-  GetSel(n1{%H-},n2{%H-});
+  GetSel(n1,n2);
 
   x0 := SelStart;
   x1 := x0;
@@ -177,30 +177,32 @@ end;
 {$ifdef windows}
 function TUnboundMemo.GetParagraphNumber(Pos: integer; select: boolean): integer;
 var
-  x1, x2, ln : integer;
+  p : TParaRange;
+  x : integer;
 begin
-  GetParaRange(Pos, x1{%H-}, ln{%H-});
-  x2 := FindRightWordBreak(x1+1);
-  Result := ToInt(GetTextRange(x1, x2-x1));
-  if select then SetSel(x1,x1+1);
+  GetParaRange(Pos, p);
+  x := FindRightWordBreak(p.start +1);
+  Result := ToInt(GetTextRange(Handle, p.start, x-p.start));
+  if select then SetSel(p.start,p.start+1);
 end;
 {$endif}
 
 {$ifdef unix}
 function TUnboundMemo.GetParagraphNumber(Pos: integer; select: boolean): integer;
 var
-  x1, x2, ln : integer;
+  p : TParaRange;
+  x : integer;
 begin
-  GetParaRange(Pos, x1{%H-}, ln{%H-});
+  GetParaRange(Pos, p);
 
-  x2 := x1;
+  x := p.start;
   repeat
-    inc(x2);
-    SetSel(x2, x2);
+    inc(x);
+    SetSel(x, x);
   until not Colored;
 
-  SetSel(x1,x2); Result := ToInt(SelText);
-  if select then SetSel(x1,x1+1);
+  SetSel(p.start, x); Result := ToInt(SelText);
+  if select then SetSel(p.start,p.start+1);
 end;
 {$endif}
 
@@ -209,7 +211,7 @@ var
   ParagraphEnd : integer;
   x1, x2 : integer;
 begin
-  GetSel(x1{%H-},x2{%H-});
+  GetSel(x1,x2);
 
   ParagraphStart := GetParagraphNumber(x1, x1=x2);
   ParagraphCount := 1;

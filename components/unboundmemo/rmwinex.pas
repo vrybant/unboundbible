@@ -9,7 +9,7 @@ function GetSelectedTextAttributes(Handle: THandle): TFontParams;
 function isSelectedTextLink(Handle: THandle): Boolean;
 function GetSelectedParaAlignment(Handle: THandle): TParaAlignment;
 function GetSelectedParaNumbering(Handle: THandle): TParaNumbering;
-function GetTextRange(Handle: THandle; Pos, Length: Integer): string;
+function GetTextRange(Handle: THandle; Pos, Length: integer): string;
 
 implementation
 
@@ -86,7 +86,7 @@ begin
   Result.Indent := pf.wNumberingTab/TwipsInPoint;
 end;
 
-function GetTextRange(Handle: THandle; Pos, Length: Integer): string;
+function GetTextRange(Handle: THandle; Pos, Length: integer): string;
 var
   TextRange : RichEdit.TEXTRANGEW;
   w : UnicodeString;
