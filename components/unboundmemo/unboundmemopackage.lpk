@@ -14,7 +14,7 @@
     </CompilerOptions>
     <Description Value="UnboundMemo control."/>
     <License Value="LGPL"/>
-    <Files Count="7">
+    <Files Count="8">
       <Item1>
         <Filename Value="unboundmemo.pas"/>
         <HasRegisterProc Value="True"/>
@@ -46,6 +46,10 @@
         <Filename Value="rmgtk2ex.pas"/>
         <UnitName Value="rmGtk2ex"/>
       </Item7>
+      <Item8>
+        <Filename Value="rmwinex.pas"/>
+        <UnitName Value="rmWinEx"/>
+      </Item8>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>

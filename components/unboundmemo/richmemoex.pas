@@ -5,7 +5,7 @@ interface
 uses
    Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls,
   {$ifdef windows} Windows, Printers, OSPrinters, {$endif}
-  {$ifdef windows} RichEdit, Win32RichMemoProc, {$endif}
+  {$ifdef windows} RichEdit, rmWinEx, {$endif}
   {$ifdef linux} rmGtk2ex, {$endif}
    RichMemo, RichMemoUtils, LazUTF8, LCLVersion;
 
@@ -156,7 +156,7 @@ end;
 function TRichMemoEx.GetAttributes: TFontParams;
 begin
   {$ifdef windows}
-  RichEditManager.GetSelectedTextStyle(Handle, Result{%H-});
+  Result := GetSelectedTextAttributes(Handle);
   {$else}
   GetTextAttributes(SelStart, Result{%H-});
   {$endif}

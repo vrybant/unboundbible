@@ -8,7 +8,7 @@ unit unboundmemopackage;
 interface
 
 uses
-  UnboundMemo, UmParseWin, UmLib, rmGtk2ex, LazarusPackageIntf;
+  UnboundMemo, UmParseWin, UmLib, rmGtk2ex, rmWinEx, LazarusPackageIntf;
 
 implementation
 
