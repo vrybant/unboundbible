@@ -5,7 +5,7 @@ interface
 uses
   {$ifdef windows} Windirs, {$endif}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  LazUtf8, LCLProc, ExtCtrls, ClipBrd, Process, UmLib, RichMemoEx;
+  LazUtf8, LCLProc, ExtCtrls, ClipBrd, Process, UmLib;
 
 // string's functions
 

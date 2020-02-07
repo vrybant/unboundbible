@@ -3,11 +3,11 @@ unit RichMemoEx;
 interface
 
 uses
-   Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls,
+  Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls,
   {$ifdef windows} Windows, Printers, OSPrinters, {$endif}
-  {$ifdef windows} RichEdit, rmWinEx, {$endif}
+  {$ifdef windows} RichEdit, rmWinEx, UmLib, {$endif}
   {$ifdef linux} rmGtk2ex, {$endif}
-   RichMemo, RichMemoUtils, LazUTF8, LCLVersion;
+  RichMemo, RichMemoUtils, LazUTF8;
 
 type
 
@@ -48,37 +48,11 @@ type
     property OnAttrChange: TNotifyEvent read FOnAttrChange write FOnAttrChange;
   end;
 
-function Utf8ToRTF(const s: string): string;
-
 implementation
 
 function ToStr(value: longint): string;
 begin
  System.Str(value, Result);
-end;
-
-function Utf8ToRTF(const s: string): string;
-var
-  p: PChar;
-  unicode: Cardinal;
-  CharLen: integer;
-const
-  endchar = {$ifdef linux} ' ' {$else} '?' {$endif};
-begin
-  Result := '';
-  p := PChar(s);
-  repeat
-    {$if lcl_major >= 2}
-      unicode := UTF8CodepointToUnicode(p,CharLen);
-    {$else}
-      unicode := UTF8CharacterToUnicode(p,CharLen);
-    {$endif}
-    if unicode = 0 then Continue;
-    if unicode < $80 then Result := Result + char(unicode)
-                     else Result := Result + '\u' + ToStr(unicode) + endchar;
-
-    inc(p,CharLen);
-  until (CharLen=0) or (unicode=0);
 end;
 
 constructor TRichMemoEx.Create(AOwner: TComponent);
