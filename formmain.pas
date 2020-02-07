@@ -244,7 +244,7 @@ var
 implementation
 
 uses
-  {$ifdef windows} UmParseWin, {$endif}
+  {$ifdef windows} rmWinEx, UmParseWin, {$endif}
   FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLang,
   UnitShelf, FormCopy, FormTranslate, FormCommentary, FormDownload;
 
@@ -990,31 +990,33 @@ begin
 end;
 
 procedure TMainForm.UpDownButtons;
-{$ifdef windows} var ParaNumbering : TParaNumbering; {$endif}
+var
+  fp : TFontParams;
+  {$ifdef windows} pn : TParaNumbering; {$endif}
 begin
   if PageControl.ActivePageIndex <> apNotes then Exit;
 
   with MemoNotes do
-    try
-      ToolButtonBold.Down := fsBold in SelAttributes.Style;
-      ToolButtonItalic.Down := fsItalic in SelAttributes.Style;
-      ToolButtonUnderline.Down := fsUnderline in SelAttributes.Style;
+    begin
+      fp := GetSelectedTextAttributes(Handle);
+
+      ToolButtonBold.Down := fsBold in fp.Style;
+      ToolButtonItalic.Down := fsItalic in fp.Style;
+      ToolButtonUnderline.Down := fsUnderline in fp.Style;
       ToolButtonLink.Down := clNavy = SelAttributes.Color;
 
       {$ifdef windows}
 
-      case GetParaAlignment(SelStart) of
+      case GetSelectedParaAlignment(Handle) of
         paLeft: ToolButtonLeft.Down := True;
         paRight: ToolButtonRight.Down := True;
         paCenter: ToolButtonCenter.Down := True;
       end;
 
-      GetParaNumbering(SelStart, ParaNumbering );
-      ToolButtonBullets.Down := ParaNumbering.Style = pnBullet;
+      pn := GetSelectedParaNumbering(Handle);
+      ToolButtonBullets.Down := pn.Style <> pnNone;
 
       {$endif}
-    except
-      //
     end;
 end;
 
