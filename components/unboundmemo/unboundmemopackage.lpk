@@ -9,6 +9,7 @@
       <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
+        <OtherUnitFiles Value="win32"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
@@ -49,10 +50,12 @@
       </Item6>
       <Item7>
         <Filename Value="rmgtk2ex.pas"/>
+        <AddToUsesPkgSection Value="False"/>
         <UnitName Value="rmGtk2ex"/>
       </Item7>
       <Item8>
         <Filename Value="rmwinex.pas"/>
+        <AddToUsesPkgSection Value="False"/>
         <UnitName Value="rmWinEx"/>
       </Item8>
     </Files>
