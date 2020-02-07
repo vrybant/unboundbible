@@ -1010,7 +1010,7 @@ begin
         paCenter: ToolButtonCenter.Down := True;
       end;
 
-      {$ifdef windows} ToolButtonBullets.Down := SelParaNumbering.Style <> pnNone; {$endif}
+      {$ifdef windows} ToolButtonBullets.Down := SelParaNumbering.Style = pnBullet; {$endif}
     end;
 end;
 
