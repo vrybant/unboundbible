@@ -37,9 +37,9 @@ type
     {$ifdef windows} function SelParaNumbering: TParaNumbering; {$endif}
     {$ifdef windows} function FindRightWordBreak(Pos: integer): integer; {$endif}
     {$ifdef windows} property Modified: boolean read GetModified write SetModified; {$endif}
-    {$ifdef linux} procedure CopyToClipboard; override; {$endif}
-    {$ifdef linux} procedure CutToClipboard; override; {$endif}
-    {$ifdef linux} procedure PasteFromClipboard; override; {$endif}
+    procedure CopyToClipboard; override;
+    procedure CutToClipboard; override;
+    procedure PasteFromClipboard; override;
     function LoadRichText(Source: TStream): Boolean; override;
     function LoadRichText(Source: string): Boolean;
     procedure LoadFromFile(const FileName : string);
@@ -206,24 +206,24 @@ begin
   if ReadOnly then HideCursor;
 end;
 
-{$ifdef linux}
 
 procedure TRichMemoEx.CopyToClipboard;
 begin
-  Gtk2Copy(Handle);
+  inherited;
+  {$ifdef linux} Gtk2Copy(Handle); {$endif}
 end;
 
 procedure TRichMemoEx.CutToClipboard;
 begin
-  Gtk2Cut(Handle);
+  inherited;
+  {$ifdef linux} Gtk2Cut(Handle); {$endif}
 end;
 
 procedure TRichMemoEx.PasteFromClipboard;
 begin
-  Gtk2Paste(Handle);
+  inherited;
+  {$ifdef linux} Gtk2Paste(Handle); {$endif}
 end;
-
-{$endif}
 
 function TRichMemoEx.LoadRichText(Source: TStream): Boolean;
 begin
