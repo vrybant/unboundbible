@@ -36,7 +36,6 @@ type
     procedure SelectAll;
     property SelAttributes: TFontParams read GetAttributes write SetAttributes;
     {$ifdef windows} function FindRightWordBreak(Pos: integer): integer; {$endif}
-    {$ifdef windows} function GetTextRange(Pos, Length: Integer): string; {$endif}
     {$ifdef windows} property Modified: boolean read GetModified write SetModified; {$endif}
     {$ifdef linux} procedure CopyToClipboard; override; {$endif}
     {$ifdef linux} procedure CutToClipboard; override; {$endif}
@@ -118,21 +117,6 @@ end;
 function TRichMemoEx.FindRightWordBreak(Pos: integer): integer;
 begin
   Result := SendMessage(Handle, EM_FINDWORDBREAK, WB_MOVEWORDRIGHT, Pos);
-end;
-
-function TRichMemoEx.GetTextRange(Pos, Length: Integer): string;
-var
-  TextRange : RichEdit.TEXTRANGEW;
-  w : UnicodeString;
-  res : LResult;
-begin
-  FillChar(TextRange{%H-}, sizeof(TextRange), 0);
-  TextRange.chrg.cpMin := Pos;
-  TextRange.chrg.cpMax := Pos + Length;
-  SetLength(w, Length);
-  TextRange.lpstrText := @w[1];
-  res := SendMessage(Handle, EM_GETTEXTRANGE, 0, {%H-}Longint(@TextRange));
-  Result := UTF8Encode(Copy(w, 1, res));
 end;
 
 {$endif}

@@ -9,6 +9,7 @@ function GetSelectedTextAttributes(Handle: THandle): TFontParams;
 function isSelectedTextLink(Handle: THandle): Boolean;
 function GetSelectedParaAlignment(Handle: THandle): TParaAlignment;
 function GetSelectedParaNumbering(Handle: THandle): TParaNumbering;
+function GetTextRange(Handle: THandle; Pos, Length: Integer): string;
 
 implementation
 
@@ -83,6 +84,21 @@ begin
   if ((pf.wNumberingStyle and PFNS_SOMESEPCHAR)= 0) and (Result.Style<>pnNone) then Result.SepChar := SepPar;
 
   Result.Indent := pf.wNumberingTab/TwipsInPoint;
+end;
+
+function GetTextRange(Handle: THandle; Pos, Length: Integer): string;
+var
+  TextRange : RichEdit.TEXTRANGEW;
+  w : UnicodeString;
+  res : LResult;
+begin
+  FillChar(TextRange, sizeof(TextRange), 0);
+  TextRange.chrg.cpMin := Pos;
+  TextRange.chrg.cpMax := Pos + Length;
+  SetLength(w, Length);
+  TextRange.lpstrText := @w[1];
+  res := SendMessage(Handle, EM_GETTEXTRANGE, 0, PtrInt(@TextRange));
+  Result := UTF8Encode(Copy(w, 1, res));
 end;
 
 end.
