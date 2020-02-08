@@ -194,7 +194,7 @@ type
     procedure MemoMouseLeave(Sender: TObject);
     procedure MemoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
-    procedure MemoAttrChange(Sender: TObject);
+    procedure MemoSelectionChange(Sender: TObject);
     procedure miBibleFolderClick(Sender: TObject);
     procedure miDownloadClick(Sender: TObject);
     procedure miHomeClick(Sender: TObject);
@@ -751,11 +751,10 @@ begin
     if Memo.Foreground = fgStrong then LoadStrong(Memo.hyperlink);
 end;
 
-procedure TMainForm.MemoAttrChange(Sender: TObject);
+procedure TMainForm.MemoSelectionChange(Sender: TObject);
 begin
   EnableButtons;
   if Sender = MemoNotes then UpDownButtons;
-  // Calling UpDownButtons on SelectionChange event works with bugs.
 end;
 
 procedure TMainForm.MemoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);

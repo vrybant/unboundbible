@@ -13,8 +13,6 @@ type
 
   TRichMemoEx = class(TRichMemo)
   private
-    FOnAttrChange: TNotifyEvent;
-    procedure DoAttributesChange;
     {$ifdef windows} function  GetModified: boolean; {$endif}
     {$ifdef windows} procedure SetModified(value: boolean); {$endif}
   protected
@@ -44,8 +42,6 @@ type
     function LoadRichText(Source: string): Boolean;
     procedure LoadFromFile(const FileName : string);
     procedure SaveToFile(const FileName : string);
-  published
-    property OnAttrChange: TNotifyEvent read FOnAttrChange write FOnAttrChange;
   end;
 
 implementation
@@ -145,11 +141,6 @@ begin
   {$endif}
 end;
 
-procedure TRichMemoEx.DoAttributesChange;
-begin
-  if Assigned(OnAttrChange) then OnAttrChange(self);
-end;
-
 procedure TRichMemoEx.SelectAll;
 begin
   {$ifdef windows}
@@ -163,7 +154,6 @@ end;
 procedure TRichMemoEx.KeyUp(var Key: Word; Shift: TShiftState);
 begin
   inherited KeyUp(Key, Shift);
-  DoAttributesChange;
   {$ifdef unix} Modified := True; {$endif}
 end;
 
@@ -176,7 +166,6 @@ end;
 procedure TRichMemoEx.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   inherited MouseUp(Button, Shift, X, Y);
-  DoAttributesChange;
   if ReadOnly then HideCursor;
 end;
 
