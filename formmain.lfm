@@ -305,7 +305,6 @@ object MainForm: TMainForm
         ScrollBars = ssBoth
         TabOrder = 0
         ZoomFactor = 1
-        OnAttrChange = MemoAttrChange
         Linkable = True
         Paragraphic = True
       end
@@ -334,7 +333,6 @@ object MainForm: TMainForm
         ScrollBars = ssBoth
         TabOrder = 0
         ZoomFactor = 1
-        OnAttrChange = MemoAttrChange
         Linkable = True
       end
     end
@@ -365,7 +363,6 @@ object MainForm: TMainForm
         ScrollBars = ssBoth
         TabOrder = 0
         ZoomFactor = 1
-        OnAttrChange = MemoAttrChange
         Linkable = True
       end
     end
@@ -391,7 +388,6 @@ object MainForm: TMainForm
         ScrollBars = ssBoth
         TabOrder = 0
         ZoomFactor = 1
-        OnAttrChange = MemoAttrChange
         Linkable = True
       end
     end
