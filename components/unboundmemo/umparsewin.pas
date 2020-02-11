@@ -45,7 +45,7 @@ var
 const
   jColor : boolean = false;
 begin
-//r := '\cf2 ' + Tag + '\cf1 '; Result := true; exit; // show tags
+//r := '\cf2 ' + Tag + '\cf1 '; Result := r; exit; // show tags
   if jColor then color := '\cf7';
 
   if Tag =  '<J>' then begin r := '\cf7 '; jColor := true  end;
