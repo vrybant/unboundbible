@@ -11,7 +11,7 @@ function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 implementation
 
 const
-  Max = 11;
+  Max = 18;
   Dictionary : array [1..Max,1..2] of string = (
     ('<FR>', '<J>'),
     ('<Fr>','</J>'),
@@ -21,9 +21,16 @@ const
     ('<Fo>','</t>'),
     ('<TS>', '<h>'), // title
     ('<Ts>','</h>'),
+    ('<E>',  '<n>'), // english translation
+    ('<e>', '</n>'),
+    ('<T>',  '<n>'), // translation
+    ('<t>', '</n>'),
+    ('<x>', '</x>'), // transliteration
+    ('<X>',  '<x>'),
     ('<RF>', '<f>'), // footnote
     ('<RF ', '<f '),
-    ('<Rf>','</f>'));
+    ('<Rf>','</f>'),
+    (   '¶',    ''));
 
 procedure ReplaceMyswordTags(var s: string);
 var i : integer;
@@ -65,8 +72,9 @@ var
 begin
   List := XmlToList(s);
 
+  // WT ?
   for i:=Low(List) to High(List) do
-    if Prefix('<W', List[i]) then
+    if Prefix('<WH', List[i]) or Prefix('<WG', List[i]) then
       begin
         number := List[i];
         Replace(number,'<W','');
@@ -122,8 +130,8 @@ begin
     begin
       if Pos('<S>',s) > 0 then s := MybibleStrongsToUnbound(s, nt);
       CutStr(s,'<f','</f>');
-      Replace(s,'<t>',' ');
-      Replace(s,'</t>',' ');
+      Replace(s, '<t>', ' ');
+      Replace(s,'</t>', ' ');
       Replace(s,'<pb/>',' ');
       Replace(s,'<br/>',' ');
     end;
@@ -140,6 +148,7 @@ begin
     begin
       if Pos('<W',s) > 0 then s := MyswordStrongsToUnbound(s);
       ReplaceMyswordTags(s);
+      CutStr(s,'<x>','</x>');
     end;
 
   if format in [unbound, mysword] then
@@ -157,6 +166,7 @@ begin
     Replace(s,'</S><S>','</S>  <S>'); // ?
   {$else}
     Replace(s,'</S><S>','</S> <S>');
+    Replace(s,'</S><m>','</S> <m>');
   {$endif}
 
   Result := s;
