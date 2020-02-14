@@ -31,8 +31,16 @@ type
 
 type
   TBibleAlias = record
-    bible, book, chapter, verse, text : string;
+    bible, book, chapter, verse, text, titles, number, name, abbr : string;
   end;
+
+type
+  TTitle = record
+    name, abbr : string;
+    number, sorting : integer;
+  end;
+
+  TTitles = array of TTitle;
 
   TCommentaryAlias = record
     commentary : string;
@@ -79,6 +87,10 @@ const
     chapter : 'Chapter';
     verse   : 'Verse';
     text    : 'Scripture';
+    titles  : 'Titles';
+    number  : 'Number';
+    name    : 'Name';
+    abbr    : 'Abbreviation';
     );
 
   mybibleStringAlias : TBibleAlias = (
@@ -87,6 +99,10 @@ const
     chapter : 'chapter';
     verse   : 'verse';
     text    : 'text';
+    titles  : 'books_all';
+    number  : 'book_number';
+    name    : 'long_name';
+    abbr    : 'short_name';
     );
 
   unboundCommentaryAlias : TCommentaryAlias = (
@@ -135,6 +151,13 @@ const
     chapter : 1;
     number  : 1;
     count   : 1;
+    );
+
+  noneTitle : TTitle = (
+    name    : '';
+    abbr    : '';
+    number  : 0;
+    sorting : 0;
     );
 
 var

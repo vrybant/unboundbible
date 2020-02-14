@@ -24,16 +24,17 @@ type
     z : TBibleAlias;
     function RankContents(const Contents: TContentArray): TContentArray;
     function ExtractFootnotes(s: string; marker: string): string;
+    procedure SetTitles;
   public
     compare : boolean;
     constructor Create(filePath: string);
     procedure LoadDatabase;
+    function GetEmbeddedTitles: TTitles;
     function MinBook: integer;
     function BookByNum(n: integer): TBook;
     function BookByName(s: string): TBook;
     function VerseToStr(Verse: TVerse; full: boolean): string;
     function SrtToVerse(link : string): TVerse;
-    procedure SetTitles;
     function GetChapter(Verse: TVerse): TStringArray;
     function GetRange(Verse: TVerse; preparation: boolean=true): TStringArray;
     function GoodLink(Verse: TVerse): boolean;
@@ -84,8 +85,15 @@ constructor TBible.Create(filePath: string);
 begin
   inherited Create(filePath);
   Books := TBooks.Create;
+
   z := unboundStringAlias;
-  if format = mybible then z := mybibleStringAlias;
+  if format = mybible then
+    begin
+      z := mybibleStringAlias;
+      if not TableExists(z.titles) then z.titles := 'books';
+    end;
+
+  embtitles := TableExists(z.titles);
   if connected and not TableExists(z.bible) then connected := false;
 end;
 
@@ -117,46 +125,84 @@ begin
           Query.Next;
         end;
 
-      SetTitles;
-      firstVerse := minVerse;
-      firstVerse.book := MinBook;
-      Books.Sort(BookComparison);
-
       loaded := true;
     except
       //
     end;
   finally
     Query.Close;
+    SetTitles;
+    firstVerse := minVerse;
+    firstVerse.book := MinBook;
+    Books.Sort(BookComparison);
   end;
 
 //Output(self.fileName + ' loaded');
 //ShowTags;
 end;
 
+function TBible.GetEmbeddedTitles: TTitles;
+var
+  T : TTitle;
+  i : integer;
+begin
+  SetLength(Result,0);
+
+  try
+    try
+      Query.SQL.Text := 'SELECT * FROM ' + z.titles;
+      Query.Open;
+      Query.Last;
+      SetLength(Result, Query.RecordCount);
+      Query.First;
+
+      for i:=Low(Result) to High(Result) do
+        begin
+          T := noneTitle;
+          try T.name := Query.FieldByName(z.name).AsString; except end;
+          try T.number := Query.FieldByName(z.number).AsInteger; except end;
+          try T.abbr := Query.FieldByName(z.abbr).AsString; except end;
+
+          T.sorting := i;
+          if (format = unbound) and not IsNewTestament(T.number) then T.sorting := i+100;
+
+          Result[i] := T;
+          Query.Next;
+        end;
+    except
+      //
+    end;
+  finally
+    Query.Close;
+  end;
+end;
+
 procedure TBible.SetTitles;
 var
   Titles : TTitles;
   Title  : TTitle;
-  i : integer;
+  i, n : integer;
 begin
-  Titles := TTitles.Create(Language);
+  if embtitles then Titles := GetEmbeddedTitles
+               else Titles := GetExternalTitles(language);
 
   for i:=0 to Books.Count-1 do
-    if Titles.GetTitle(Books[i].number, Title) then
-      begin
-        Books[i].title := Title.name;
-        Books[i].abbr := Title.abbr;
-        Books[i].sorting := Title.sorting;
-      end
-    else
-      begin
-        Books[i].title := 'Unknown ' + ToStr(Books[i].id);
-        Books[i].abbr := Books[i].title;
-        Books[i].sorting := 99;
-      end;
+    begin
+      Books[i].title := 'Unknown ' + ToStr(Books[i].id);
+      Books[i].abbr := '';
+      Books[i].sorting := 999;
 
-  Titles.Free;
+      n := Books[i].id;
+      if (format = mybible) and not embtitles then n := DecodeID(n);
+
+      for Title in Titles do
+        if Title.number = n then
+          begin
+            Books[i].title := Title.name;
+            Books[i].abbr := Title.abbr;
+            Books[i].sorting := Title.sorting;
+          end;
+    end;
 end;
 
 function TBible.MinBook: integer;

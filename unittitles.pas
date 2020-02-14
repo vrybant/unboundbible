@@ -7,24 +7,12 @@ unit UnitTitles;
 interface
 
 uses
-  Classes, SysUtils, Math, DB, SQLdb, UmLib, UnitLib,
+  Classes, SysUtils, Math, DB, SQLdb, UmLib, UnitLib, UnitData,
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite; {$else} SQLite3conn,  IBConnection; {$endif}
 
 type
-  TTitle = record
-    name    : string;
-    abbr    : string;
-    number  : integer;
-    sorting : integer;
-  end;
-
-type
-  TTitles = class
-  public
-    constructor Create(language: string);
-    function GetTitle(n: integer; out Title: TTitle): boolean;
+  TExternalTitles = class
   private
-    Data : array of TTitle;
     {$ifdef zeos}
       Connection : TZConnection;
       Query : TZReadOnlyQuery;
@@ -33,26 +21,18 @@ type
       Transaction : TSQLTransaction;
       Query : TSQLQuery;
     {$endif}
-    procedure LoadData;
     function GetFileName(language: string): string;
-    procedure Extract;
+  public
+    constructor Create(language: string);
+    function GetData: TTitles;
+    destructor Destroy; override;
   end;
 
+function GetExternalTitles(language: string): TTitles;
 
 implementation
 
-uses
-  UnitData;
-
-const
-  noneTitle : TTitle = (
-    name    : '';
-    abbr    : '';
-    number  : 0;
-    sorting : 0;
-    );
-
-constructor TTitles.Create(language: string);
+constructor TExternalTitles.Create(language: string);
 var
   FileName : string;
   FilePath : string;
@@ -61,7 +41,6 @@ begin
 
   FileName := GetFileName(language) + '.sqlite';
   FilePath := SharePath + TitleDirectory + Slash + FileName;
-  SetLength(Data,0);
 
   {$ifdef zeos}
     Connection := TZConnection.Create(nil);
@@ -86,17 +65,20 @@ begin
       Connection.Open;
       Transaction.Active := True;
     {$endif}
-    LoadData;
   except
     Output('Failed connection to title database');
   end;
+end;
 
+destructor TExternalTitles.Destroy;
+begin
   Query.Free;
   {$ifndef zeos} Transaction.Free; {$endif}
   Connection.Free;
+  inherited Destroy;
 end;
 
-function TTitles.GetFileName(language: string): string;
+function TExternalTitles.GetFileName(language: string): string;
 var
   List : TStringArray;
   path, name : string;
@@ -115,19 +97,22 @@ begin
     end;
 end;
 
-procedure TTitles.LoadData;
+function TExternalTitles.GetData: TTitles;
 var
   T : TTitle;
-  k : integer = 0;
+  i : integer;
 begin
-  SetLength(Data,100);
+  SetLength(Result,0);
 
   try
     try
       Query.SQL.Text := 'SELECT * FROM Books';
       Query.Open;
+      Query.Last;
+      SetLength(Result, Query.RecordCount);
+      Query.First;
 
-      while not Query.Eof do
+      for i:=Low(Result) to High(Result) do
         begin
           T := noneTitle;
           try T.name := Query.FieldByName('Name').AsString; except end;
@@ -135,11 +120,9 @@ begin
           try T.number := Query.FieldByName('Number').AsInteger; except end;
 
           if T.abbr = '' then T.abbr := T.name;
-          T.sorting := ifthen(not IsNewTestament(T.number), k, k+100);
+          T.sorting := ifthen(not IsNewTestament(T.number), i, i+100);
 
-          Data[k] := T;
-          inc(k);
-
+          Result[i] := T;
           Query.Next;
         end;
 
@@ -148,33 +131,32 @@ begin
     end;
   finally
     Query.Close;
-    SetLength(Data,k);
   end;
 end;
 
-function TTitles.GetTitle(n: integer; out Title: TTitle): boolean;
+function GetExternalTitles(language: string): TTitles;
 var
-  i : integer;
+  ExternalTitles : TExternalTitles;
 begin
-  Title := noneTitle;
-  for i:=0 to Length(Data)-1 do
-    if Data[i].number = n then Title := Data[i];
-  Result := Title.name <> '';
+  ExternalTitles := TExternalTitles.Create(language);
+  Result := ExternalTitles.GetData;
+  ExternalTitles.Free;
 end;
 
-procedure TTitles.Extract;
+procedure ExtractExternalTitles(language: string);
 var
-  f : System.Text;
+  Titles : TTitles;
   Title : TTitle;
+  f : System.Text;
   filepath : string;
-  i : integer;
 begin
+  Titles := GetExternalTitles(language);
+
   filepath := GetUserDir + ApplicationName + Slash + 'out.txt';
   AssignFile(f,filepath); Rewrite(f);
 
-  for i:=0 to Length(Data)-1 do
+  for Title in Titles do
     begin
-      Title := Data[i];
       write(f,Title.number ); write(f,char($09));
       write(f,Title.name   ); write(f,char($09));
       write(f,Title.abbr   ); writeln(f);
@@ -184,4 +166,3 @@ begin
 end;
 
 end.
-

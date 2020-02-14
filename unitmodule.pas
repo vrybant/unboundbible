@@ -42,6 +42,7 @@ type
     strong       : boolean;
     footnotes    : boolean;
     interlinear  : boolean;
+    embtitles    : boolean;
   public
     constructor Create(FilePath: string);
     procedure OpenDatabase;
@@ -88,6 +89,7 @@ begin
   strong       := false;
   footnotes    := false;
   interlinear  := false;
+  embtitles    := false;
 
   self.FilePath := FilePath;
   self.FileName := ExtractFileName(FilePath);
