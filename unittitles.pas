@@ -28,8 +28,6 @@ type
     destructor Destroy; override;
   end;
 
-function GetExternalTitles(language: string): TTitles;
-
 implementation
 
 constructor TExternalTitles.Create(language: string);
@@ -132,37 +130,6 @@ begin
   finally
     Query.Close;
   end;
-end;
-
-function GetExternalTitles(language: string): TTitles;
-var
-  ExternalTitles : TExternalTitles;
-begin
-  ExternalTitles := TExternalTitles.Create(language);
-  Result := ExternalTitles.GetData;
-  ExternalTitles.Free;
-end;
-
-procedure ExtractExternalTitles(language: string);
-var
-  Titles : TTitles;
-  Title : TTitle;
-  f : System.Text;
-  filepath : string;
-begin
-  Titles := GetExternalTitles(language);
-
-  filepath := GetUserDir + ApplicationName + Slash + 'out.txt';
-  AssignFile(f,filepath); Rewrite(f);
-
-  for Title in Titles do
-    begin
-      write(f,Title.number ); write(f,char($09));
-      write(f,Title.name   ); write(f,char($09));
-      write(f,Title.abbr   ); writeln(f);
-    end;
-
-  CloseFile(f);
 end;
 
 end.

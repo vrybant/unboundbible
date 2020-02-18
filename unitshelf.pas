@@ -30,6 +30,7 @@ type
     constructor Create(filePath: string);
     procedure LoadDatabase;
     function GetEmbeddedTitles: TTitles;
+    function GetExternalTitles: TTitles;
     function MinBook: integer;
     function BookByNum(n: integer): TBook;
     function BookByName(s: string): TBook;
@@ -177,6 +178,15 @@ begin
   end;
 end;
 
+function TBible.GetExternalTitles: TTitles;
+var
+  ExternalTitles : TExternalTitles;
+begin
+  ExternalTitles := TExternalTitles.Create(language);
+  Result := ExternalTitles.GetData;
+  ExternalTitles.Free;
+end;
+
 procedure TBible.SetTitles;
 var
   Titles : TTitles;
@@ -184,7 +194,7 @@ var
   i, n : integer;
 begin
   if embtitles then Titles := GetEmbeddedTitles
-               else Titles := GetExternalTitles(language);
+               else Titles := GetExternalTitles;
 
   for i:=0 to Books.Count-1 do
     begin
