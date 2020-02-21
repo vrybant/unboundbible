@@ -216,16 +216,15 @@ begin
 
   for i:=Low(Strings) to High(Strings) do
     begin
-      if Options.cvEnumerated then
-        if ActiveVerse.Count > 1 then
-          if (i>0) or ((i=0) and Options.cvEnd) then
-            begin
-              n := ToStr(ActiveVerse.Number + i);
-              if Options.cvParentheses then n := '(' + n + ')';
-              quote := quote + n + ' ';
-            end;
+      if Options.cvEnumerated and (ActiveVerse.Count > 1) then
+        if (i>0) or ((i=0) and Options.cvEnd) then
+          begin
+            n := ToStr(ActiveVerse.Number + i);
+            if Options.cvParentheses then n := '(' + n + ')';
+            quote := quote + n + ' ';
+          end;
 
-      quote := quote + Strings[i] + ' ';
+      quote += Strings[i] + ' ';
     end;
 
   quote := Trim(quote);
