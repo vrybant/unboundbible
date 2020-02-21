@@ -201,10 +201,11 @@ end;
 function Load_Verses: string;
 var
   Book : TBook;
-  Strings : TStringArray;
+  List : TStringArray;
   quote : string = '';
-  link, n : string;
-  i : integer;
+  line, link, n : string;
+  number : integer;
+  l : boolean = False;
 begin
   if Bible.RightToLeft then Result := '<rtl>' else Result := '';
   if Shelf.Count = 0 then Exit;
@@ -212,19 +213,22 @@ begin
   Book := Bible.BookByNum(ActiveVerse.Book);
   if not Assigned(Book) then Exit;
 
-  Strings := Bible.GetRange(ActiveVerse);
+  List := Bible.GetRange(ActiveVerse);
+  number := ActiveVerse.number;
 
-  for i:=Low(Strings) to High(Strings) do
+  for line in List do
     begin
       if Options.cvEnumerated and (ActiveVerse.Count > 1) then
-        if (i>0) or ((i=0) and Options.cvEnd) then
+        if l or (not l and Options.cvEnd) then
           begin
-            n := ToStr(ActiveVerse.Number + i);
+            n := ToStr(number);
             if Options.cvParentheses then n := '(' + n + ')';
-            quote := quote + n + ' ';
+            quote += n + ' ';
           end;
 
-      quote += Strings[i] + ' ';
+      quote += line + ' ';
+      number += 1;
+      l := True;
     end;
 
   quote := Trim(quote);
