@@ -202,18 +202,11 @@ function Load_Verses: string;
 var
   Book : TBook;
   Strings : TStringArray;
-  s, q : string;
+  quote : string = '';
+  link, n : string;
   i : integer;
-
-  function Link: string;
-  begin
-    Result := Bible.VerseToStr(ActiveVerse,not Options.cvAbbreviate);
-    Result := '<l>' + Result + '</l>';
-    if Options.cvParentheses then Result := '(' + Result + ')';
-  end;
-
 begin
-  Result := '';
+  if Bible.RightToLeft then Result := '<rtl>' else Result := '';
   if Shelf.Count = 0 then Exit;
 
   Book := Bible.BookByNum(ActiveVerse.Book);
@@ -221,25 +214,29 @@ begin
 
   Strings := Bible.GetRange(ActiveVerse);
 
-  q := '';
   for i:=Low(Strings) to High(Strings) do
     begin
       if Options.cvEnumerated then
         if ActiveVerse.Count > 1 then
           if (i>0) or ((i=0) and Options.cvEnd) then
-            q := q + '(' + ToStr(ActiveVerse.Number + i) + ') ';
+            begin
+              n := ToStr(ActiveVerse.Number + i);
+              if Options.cvParentheses then n := '(' + n + ')';
+              quote := quote + n + ' ';
+            end;
 
-      q := q + Strings[i] + ' ';
+      quote := quote + Strings[i] + ' ';
     end;
 
-  q := Trim(q);
-  s := '';
+  quote := Trim(quote);
+  if Options.cvGuillemets then quote := '«' + quote + '»';
 
-  if Options.cvGuillemets then q := '«' + q + '»';
-  if Options.cvEnd then s := q + ' '+ Link else s := Link + ' ' + q;
+  link := Bible.VerseToStr(ActiveVerse, not Options.cvAbbreviate);
+  link := '<l>' + link + '</l>';
+  if Options.cvParentheses then link := '(' + link + ')';
+  if Options.cvEnd then quote := quote + ' '+ link else quote := link + ' ' + quote;
 
-  if Bible.RightToLeft then Result += '<rtl>';
-  Result += s + '<br> ';
+  Result += quote + '<br> ';
 end;
 
 function Show_Message(s: string): string;
