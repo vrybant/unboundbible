@@ -3,7 +3,7 @@ unit UnitData;
 interface
 
 uses
-  Classes, SysUtils, Graphics, FileUtil, IniFiles, UmLib, UnitLang, UnitLib;
+  Classes, Fgl, SysUtils, Graphics, FileUtil, IniFiles, UmLib, UnitLang, UnitLib;
 
 const
   ApplicationName = 'Unbound Bible';
@@ -60,14 +60,25 @@ type
     book, chapter, number, count : integer;
   end;
 
- TContent = record
+  TBook = class
+  public
+    title   : string;
+    abbr    : string;
+    number  : integer;
+    id      : integer;
+    sorting : integer;
+  end;
+
+  TBooks = TFPGList<TBook>;
+
+  TContent = record
     verse : TVerse;
     text : string;
   end;
 
- TContentArray = array of TContent;
+  TContentArray = array of TContent;
 
- TCopyOptions = record
+  TCopyOptions = record
     cvAbbreviate  : boolean;
     cvEnumerated  : boolean;
     cvGuillemets  : boolean;
@@ -75,7 +86,7 @@ type
     cvEnd         : boolean;
   end;
 
-TLocalizableStrings = record
+  TLocalizableStrings = record
    Commentary, Confirm, lsFile, Footnote, Found, Language, MoreInfo,
    Narrow, NoModules, NoResults, Overwrite, Save, Strong : string;
  end;
