@@ -4,7 +4,7 @@ object MainForm: TMainForm
   Top = 279
   Width = 795
   Caption = 'Unbound Bible'
-  ClientHeight = 385
+  ClientHeight = 365
   ClientWidth = 795
   Menu = MainMenu
   OnActivate = FormActivate
@@ -205,11 +205,11 @@ object MainForm: TMainForm
   end
   object PanelLeft: TPanel
     Left = 0
-    Height = 335
+    Height = 310
     Top = 32
     Width = 195
     Align = alLeft
-    ClientHeight = 335
+    ClientHeight = 310
     ClientWidth = 195
     Font.CharSet = GREEK_CHARSET
     Font.Color = clWindowText
@@ -242,25 +242,24 @@ object MainForm: TMainForm
     end
     object ComboBox: TComboBox
       Left = 4
-      Height = 20
+      Height = 25
       Top = 2
       Width = 185
       DropDownCount = 12
       Font.Color = clWindowText
       Font.Height = -13
-      ItemHeight = 26
+      ItemHeight = 17
       OnChange = ComboBoxChange
       OnDrawItem = ComboBoxDrawItem
       ParentFont = False
       Style = csDropDownList
       TabOrder = 2
-      Text = '0'
     end
   end
   object StatusBar: TStatusBar
     Left = 0
-    Height = 18
-    Top = 367
+    Height = 23
+    Top = 342
     Width = 795
     Panels = <>
     ParentShowHint = False
@@ -268,38 +267,39 @@ object MainForm: TMainForm
   end
   object PageControl: TPageControl
     Left = 200
-    Height = 335
+    Height = 310
     Top = 32
     Width = 595
-    ActivePage = TabSheetBible
+    ActivePage = TabSheetNotes
     Align = alClient
     Font.Color = clWindowText
     Font.Height = -13
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 2
     OnChange = PageControlChange
     object TabSheetBible: TTabSheet
       Caption = 'Bible'
-      ClientHeight = 305
-      ClientWidth = 589
+      ClientHeight = 280
+      ClientWidth = 587
       Font.Color = clWindowText
       Font.Height = -12
       ParentFont = False
       object MemoBible: TUnboundMemo
         Cursor = crArrow
         Left = 0
-        Height = 305
+        Height = 280
         Top = 0
-        Width = 589
+        Width = 587
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
+        Font.Name = 'Tahoma'
         HideSelection = False
-        Lines.Strings = (        )
         OnContextPopup = MemoContextPopup
         OnMouseLeave = MemoMouseLeave
         OnMouseUp = MemoMouseUp
+        OnSelectionChange = MemoSelectionChange
         ParentFont = False
         ReadOnly = True
         ScrollBars = ssBoth
@@ -311,23 +311,24 @@ object MainForm: TMainForm
     end
     object TabSheetSearch: TTabSheet
       Caption = 'Search'
-      ClientHeight = 279
+      ClientHeight = 280
       ClientWidth = 587
       ImageIndex = 1
       object MemoSearch: TUnboundMemo
         Cursor = crArrow
         Left = 0
-        Height = 279
+        Height = 280
         Top = 0
         Width = 587
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
+        Font.Name = 'Tahoma'
         HideSelection = False
-        Lines.Strings = (        )
         OnContextPopup = MemoContextPopup
         OnMouseLeave = MemoMouseLeave
         OnMouseUp = MemoMouseUp
+        OnSelectionChange = MemoSelectionChange
         ParentFont = False
         ReadOnly = True
         ScrollBars = ssBoth
@@ -338,7 +339,7 @@ object MainForm: TMainForm
     end
     object TabSheetCompare: TTabSheet
       Caption = 'Compare'
-      ClientHeight = 279
+      ClientHeight = 280
       ClientWidth = 587
       Font.Color = clWindowText
       Font.Height = -12
@@ -347,17 +348,18 @@ object MainForm: TMainForm
       object MemoCompare: TUnboundMemo
         Cursor = crArrow
         Left = 0
-        Height = 279
+        Height = 280
         Top = 0
         Width = 587
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
+        Font.Name = 'Tahoma'
         HideSelection = False
-        Lines.Strings = (        )
         OnContextPopup = MemoContextPopup
         OnMouseLeave = MemoMouseLeave
         OnMouseUp = MemoMouseUp
+        OnSelectionChange = MemoSelectionChange
         ParentFont = False
         ReadOnly = True
         ScrollBars = ssBoth
@@ -368,22 +370,23 @@ object MainForm: TMainForm
     end
     object TabSheetNotes: TTabSheet
       Caption = 'Notes'
-      ClientHeight = 279
+      ClientHeight = 280
       ClientWidth = 587
       ImageIndex = 2
       object MemoNotes: TUnboundMemo
         Cursor = crArrow
         Left = 0
-        Height = 279
+        Height = 280
         Top = 0
         Width = 587
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
+        Font.Name = 'Tahoma'
         HideSelection = False
-        Lines.Strings = (        )
         OnContextPopup = MemoContextPopup
         OnMouseUp = MemoMouseUp
+        OnSelectionChange = MemoSelectionChange
         ParentFont = False
         ScrollBars = ssBoth
         TabOrder = 0
@@ -394,7 +397,7 @@ object MainForm: TMainForm
   end
   object Splitter: TSplitter
     Left = 195
-    Height = 335
+    Height = 310
     Top = 32
     Width = 5
   end
