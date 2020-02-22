@@ -128,7 +128,7 @@ begin
   x1 := x0;
   repeat
     dec(x1);
-    SetSel(x1, x1);
+    SetSel(x1, x1 {$ifdef windows}+1{$endif} );
   until (Foreground <> fore) or (x1 < 0);
 
   inc(x1);
@@ -137,7 +137,7 @@ begin
   x2 := x0;
   repeat
     inc(x2);
-    SetSel(x2, x2);
+    SetSel(x2, x2 {$ifdef windows}+1{$endif} );
   until Foreground <> fore;
 
   SetSel(x1, x2); Result := RemoveCRLF(SelText);
