@@ -83,10 +83,6 @@ var
 begin
   List := XmlToList(s);
 
-  // <WTCode> - Morphological tag where Code is the morph code
-  // e.g. <WTN-NSF>
-  // Check TR or Byzantine modules for examples.
-
   for i:=Low(List) to High(List) do
     if Prefix('<WH', List[i]) or Prefix('<WG', List[i]) then
       begin
@@ -94,6 +90,13 @@ begin
         Replace(number,'<W','');
         Replace(number,'>' ,'');
         List[i] := '<S>' + number + '</S>';
+      end
+    else if Prefix('<WT', List[i]) then
+      begin
+        number := List[i];
+        Replace(number,'<WT','');
+        Replace(number,'>' ,'');
+        List[i] := '<m>' + number + '</m>';
       end;
 
   Result := Trim(ListToString(List));
@@ -160,7 +163,7 @@ end;
 procedure CleanUnabledTags(var s: string);
 var
   List : TStringArray;
-  i,j : integer;
+  i : integer;
 begin
   List := XmlToList(s);
 
