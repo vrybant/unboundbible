@@ -11,12 +11,14 @@ function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 implementation
 
 const
-  Max = 19;
+  Max = 21;
   TagsDictionary : array [1..Max,1..2] of string = (
     ('<FR>', '<J>'),
     ('<Fr>','</J>'),
     ('<-->', '<S>'), // strong
     ('<-->','</S>'),
+    ('<-->', '<m>'), // morphology
+    ('<-->','</m>'),
     ('<FI>', '<i>'), // italic
     ('<Fi>','</i>'),
     ('<FO>', '<t>'), // quote
@@ -81,7 +83,10 @@ var
 begin
   List := XmlToList(s);
 
-  // WT ?
+  // <WTCode> - Morphological tag where Code is the morph code
+  // e.g. <WTN-NSF>
+  // Check TR or Byzantine modules for examples.
+
   for i:=Low(List) to High(List) do
     if Prefix('<WH', List[i]) or Prefix('<WG', List[i]) then
       begin
