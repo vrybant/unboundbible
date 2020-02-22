@@ -11,10 +11,12 @@ function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 implementation
 
 const
-  Max = 18;
-  Dictionary : array [1..Max,1..2] of string = (
+  Max = 19;
+  TagsDictionary : array [1..Max,1..2] of string = (
     ('<FR>', '<J>'),
     ('<Fr>','</J>'),
+    ('<-->', '<S>'), // strong
+    ('<-->','</S>'),
     ('<FI>', '<i>'), // italic
     ('<Fi>','</i>'),
     ('<FO>', '<t>'), // quote
@@ -29,13 +31,20 @@ const
     ('<X>',  '<x>'),
     ('<RF>', '<f>'), // footnote
     ('<RF ', '<f '),
-    ('<Rf>','</f>'),
-    (   '¶',    ''));
+    ('<Rf>','</f>'));
+
+function EnabledTag(tag: string): boolean;
+var i : integer;
+begin
+  Result := True;
+  for i:=1 to Max do if tag = TagsDictionary[i,2] then Exit;
+  Result := false;
+end;
 
 procedure ReplaceMyswordTags(var s: string);
 var i : integer;
 begin
-  for i:=1 to Max do Replace(s, Dictionary[i,1], Dictionary[i,2]);
+  for i:=1 to Max do Replace(s, TagsDictionary[i,1], TagsDictionary[i,2]);
 end;
 
 function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
@@ -115,6 +124,7 @@ begin
   Replace(s, '<f ','<f><'  );
   Replace(s,'</f>','~]</f>');
   ExtractMarkers(s);
+  output(s);
   CutStr(s,'[~','~]');
 end;
 
@@ -142,23 +152,40 @@ begin
   Result := Trim(s);
 end;
 
+procedure CleanUnabledTags(var s: string);
+var
+  List : TStringArray;
+  i,j : integer;
+begin
+  List := XmlToList(s);
+
+  for i:=Low(List) to High(List) do
+    if Prefix('<', List[i]) then
+      if not EnabledTag(List[i]) then List[i] := '';
+
+  s := Trim(ListToString(List));
+end;
+
 function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 begin
   if format = mysword then
     begin
       if Pos('<W',s) > 0 then s := MyswordStrongsToUnbound(s);
       ReplaceMyswordTags(s);
-      CutStr(s,'<x>','</x>');
+      Replace(s,'¶','');
     end;
 
   if format in [unbound, mysword] then
     begin
-      if not purge and (Pos('<f>',s) > 0) then Footnotes(s);
-      if not purge and (Pos('<f ',s) > 0) then FootnotesEx(s);
+      if Pos('<f>',s) > 0 then Footnotes(s);
+      if Pos('<f ',s) > 0 then FootnotesEx(s);
     end;
 
   CutStr(s,'<h>','</h>');
-  if purge then CutStr(s,'<f','</f>');
+  CutStr(s,'<x>','</x>');
+
+  if purge then CutStr(s,'<f>','</f>');
+  CleanUnabledTags(s);
 
   {$ifdef linux}
     Replace(s,'><','>  <'); // ?
