@@ -114,8 +114,8 @@ end;
 function TUnboundMemo.GetColorLink: string;
 var
   fore : integer;
-  x1,x2,x0 : integer;
-  n1,n2 : integer;
+  n1,n2,x0,x1,x2 : integer;
+  limit : integer;
 begin
   Result := '';
   if SelLength > 0 then Exit;
@@ -133,12 +133,13 @@ begin
 
   inc(x1);
   if x1 < 0 then inc(x1);
+  limit := Utf8Length(Text);
 
   x2 := x0;
   repeat
     inc(x2);
     SetSel(x2, x2 {$ifdef windows}+1{$endif} );
-  until Foreground <> fore;
+  until (Foreground <> fore) or (x2 > limit);
 
   SetSel(x1, x2); Result := RemoveCRLF(SelText);
   SetSel(n1, n2); Result := Trim(Result);
