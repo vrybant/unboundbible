@@ -45,28 +45,28 @@ var
 const
   jColor : boolean = false;
 begin
-//r := '\cf2 ' + Tag + '\cf1 '; Result := r; exit; // show tags
+//r := '\cf2_' + Tag + '\cf1_'; Result := r; exit; // show tags
   if jColor then color := '\cf7';
 
-  if Tag =  '<J>' then begin r := '\cf7 '; jColor := true  end;
-  if Tag = '</J>' then begin r := '\cf1 '; jColor := false end;
+  if Tag =  '<J>' then begin r := '\cf7_'; jColor := true  end;
+  if Tag = '</J>' then begin r := '\cf1_'; jColor := false end;
 
-  if Tag =  '<l>' then r := '\cf3 ';
-  if Tag = '</l>' then r := '\cf1 ';
-  if Tag =  '<r>' then r := '\cf2 ';
-  if Tag = '</r>' then r := '\cf1 ';
-  if Tag =  '<n>' then r := '\cf5 ';       // note
-  if Tag = '</n>' then r := color + ' ';
-  if Tag =  '<v>' then r := '\cf5 ';
-  if Tag = '</v>' then r := color + ' ';
-  if Tag =  '<f>' then r := '\cf6\super ';
-  if Tag = '</f>' then r := color + '\nosupersub ';
-  if Tag =  '<m>' then r := '\cf5\super '; // morphology
-  if Tag = '</m>' then r := color + '\nosupersub ';
-  if Tag =  '<S>' then r := '\cf8\super ';
-  if Tag = '</S>' then r := color + '\nosupersub ';
-  if Tag =  '<i>' then r := '\cf5\i ';
-  if Tag = '</i>' then r := color + '\i0 ';
+  if Tag =  '<l>' then r := '\cf3_';
+  if Tag = '</l>' then r := '\cf1_';
+  if Tag =  '<r>' then r := '\cf2_';
+  if Tag = '</r>' then r := '\cf1_';
+  if Tag =  '<n>' then r := '\cf5_';       // note
+  if Tag = '</n>' then r := color + '_';
+  if Tag =  '<v>' then r := '\cf5_';
+  if Tag = '</v>' then r := color + '_';
+  if Tag =  '<f>' then r := '\cf6\super_';
+  if Tag = '</f>' then r := color + '\nosupersub_';
+  if Tag =  '<m>' then r := '\cf5\super_';
+  if Tag = '</m>' then r := color + '\nosupersub_';
+  if Tag =  '<S>' then r := '\cf8\super_';
+  if Tag = '</S>' then r := color + '\nosupersub_';
+  if Tag =  '<i>' then r := '\cf5\i_';
+  if Tag = '</i>' then r := color + '\i0_';
 
   Result := r;
 end;
@@ -78,23 +78,23 @@ begin
   Tag := LowerCase(Tag);
   if Prefix('<a ', Tag) then Tag := '<a>';
 
-  if Tag =   '<i>' then r := '\cf5\i ';
-  if Tag =  '</i>' then r := '\cf1\i0 ';
-  if Tag =   '<a>' then r := '\cf5 ';
-  if Tag =  '</a>' then r := '\cf1 ';
-  if Tag =   '<b>' then r := '\cf8\b ' ;
-  if Tag =  '</b>' then r := '\cf1\b0 ';
-  if Tag =   '<h>' then r := '\cf3 ';
-  if Tag =  '</h>' then r := '\cf1 ';
-  if Tag =  '</p>' then r := '\par ';
-  if Tag =  '<br>' then r := '\par ';
+  if Tag =   '<i>' then r := '\cf5\i_';
+  if Tag =  '</i>' then r := '\cf1\i0_';
+  if Tag =   '<a>' then r := '\cf5_';
+  if Tag =  '</a>' then r := '\cf1_';
+  if Tag =   '<b>' then r := '\cf8\b_' ;
+  if Tag =  '</b>' then r := '\cf1\b0_';
+  if Tag =   '<h>' then r := '\cf3_';
+  if Tag =  '</h>' then r := '\cf1_';
+  if Tag =  '</p>' then r := '\par_';
+  if Tag =  '<br>' then r := '\par_';
 
-  if Tag = '<tab>' then r := '\tab ';
-  if Tag = '<rtl>' then r := '\rtlpar\qr ';
-  if Tag = '<ltr>' then r := '\ltrpar\qr ';
+  if Tag = '<tab>' then r := '\tab_';
+  if Tag = '<rtl>' then r := '\rtlpar\qr_';
+  if Tag = '<ltr>' then r := '\ltrpar\qr_';
 
-  if Tag =  '<sup>' then r := '\super ';
-  if Tag = '</sup>' then r := '\nosupersub ';
+  if Tag =  '<sup>' then r := '\super_';
+  if Tag = '</sup>' then r := '\nosupersub_';
 
   Result := r;
 end;
@@ -109,17 +109,21 @@ end;
 function ParseWin(s: string; Font: TFont; html: boolean = false): string;
 var
   List : TStringArray;
-  i : integer;
+  item, p : string;
 begin
+  Result := '';
   if html then HtmlReplacement(s);
   List := XmlToList(s);
 
-  for i:=Low(List) to High(List) do
-    if Prefix('<', List[i]) then
-      List[i] := Apply(List[i], html);
+  for item in List do
+    begin
+      if Prefix('<', item) then p := Apply(item, html) else p := item;
+      Result += p;
+    end;
 
-  Result := Trim(ListToString(List));
-  Result := rtf_open(Font) + Result + rtf_close;
+  DelDoubleSpace(Result);
+  Replace(Result,'_',' ');
+  Result := rtf_open(Font) + Trim(Result) + rtf_close;
 end;
 
 end.
