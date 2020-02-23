@@ -121,7 +121,7 @@ begin
       Result += p;
     end;
 
-  DelDoubleSpace(Result);
+  RemoveDoubleSpace(Result);
   Replace(Result,'_',' ');
   Result := rtf_open(Font) + Trim(Result) + rtf_close;
 end;

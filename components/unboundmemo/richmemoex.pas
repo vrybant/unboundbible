@@ -5,9 +5,9 @@ interface
 uses
   Forms, SysUtils, Classes, Graphics, Controls, ExtCtrls,
   {$ifdef windows} Windows, Printers, OSPrinters, {$endif}
-  {$ifdef windows} RichEdit, rmWinEx, UmLib, {$endif}
+  {$ifdef windows} RichEdit, rmWinEx, {$endif}
   {$ifdef linux} rmGtk2ex, {$endif}
-  RichMemo, RichMemoUtils, LazUTF8;
+  RichMemo, RichMemoUtils, LazUTF8, UmLib;
 
 type
 
@@ -22,7 +22,6 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
   public
-    {$ifdef darwin} Modified : boolean; {$endif}
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function CanUndo: boolean;

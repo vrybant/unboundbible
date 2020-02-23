@@ -18,7 +18,7 @@ function ToInt(s: string): integer;
 function ToStr(value: longint): string;
 function ToBoolean(s: string): boolean;
 procedure Replace(var s: string; const oldPattern, newPattern: string);
-procedure DelDoubleSpace(var s: string);
+procedure RemoveDoubleSpace(var s: string);
 function RemoveTags(s: string): string;
 function RemoveCRLF(s: string): string;
 function Utf8ToRTF(const s: string): string;
@@ -70,7 +70,7 @@ begin
   s := StringReplace(s, oldPattern, newPattern, [rfReplaceAll]);
 end;
 
-procedure DelDoubleSpace(var s: string);
+procedure RemoveDoubleSpace(var s: string);
 begin
   s := DelSpace1(s);
 end;

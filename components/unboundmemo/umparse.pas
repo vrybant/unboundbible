@@ -32,7 +32,7 @@ begin
   if Pos('</p>',s) = 0 then Replace(s,'<p>','<br><tab>');
   Replace(s,'</p>','<br><tab>');
 
-  DelDoubleSpace(s);
+  RemoveDoubleSpace(s);
 end;
 
 procedure Replacement(var s: string);
