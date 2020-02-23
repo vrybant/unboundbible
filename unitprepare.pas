@@ -61,6 +61,7 @@ begin
       if not EnabledTag(List[i]) then List[i] := '';
 
   s := Trim(ListToString(List));
+  RemoveDoubleSpace(s);
 end;
 
 function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
@@ -194,7 +195,6 @@ begin
 
   if purge then CutStr(s,'<f>','</f>');
   CleanUnabledTags(s);
-  RemoveDoubleSpace(s);
 
   {$ifdef linux}
     Replace(s,'><','>  <'); // ?
