@@ -194,6 +194,7 @@ begin
 
   if purge then CutStr(s,'<f>','</f>');
   CleanUnabledTags(s);
+  RemoveDoubleSpace(s);
 
   {$ifdef linux}
     Replace(s,'><','>  <'); // ?
