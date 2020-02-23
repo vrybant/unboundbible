@@ -35,6 +35,12 @@ const
     ('<RF ', '<f '),
     ('<Rf>','</f>'));
 
+procedure ReplaceMyswordTags(var s: string);
+var i : integer;
+begin
+  for i:=1 to Max do Replace(s, TagsDictionary[i,1], TagsDictionary[i,2]);
+end;
+
 function EnabledTag(tag: string): boolean;
 var i : integer;
 begin
@@ -43,10 +49,18 @@ begin
   Result := false;
 end;
 
-procedure ReplaceMyswordTags(var s: string);
-var i : integer;
+procedure CleanUnabledTags(var s: string);
+var
+  List : TStringArray;
+  i : integer;
 begin
-  for i:=1 to Max do Replace(s, TagsDictionary[i,1], TagsDictionary[i,2]);
+  List := XmlToList(s);
+
+  for i:=Low(List) to High(List) do
+    if Prefix('<', List[i]) then
+      if not EnabledTag(List[i]) then List[i] := '';
+
+  s := Trim(ListToString(List));
 end;
 
 function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
@@ -155,23 +169,9 @@ begin
     end;
 
 //CutStr(s,'<S>','</S>');
-  DelDoubleSpace(s);
+  RemoveDoubleSpace(s);
 
   Result := Trim(s);
-end;
-
-procedure CleanUnabledTags(var s: string);
-var
-  List : TStringArray;
-  i : integer;
-begin
-  List := XmlToList(s);
-
-  for i:=Low(List) to High(List) do
-    if Prefix('<', List[i]) then
-      if not EnabledTag(List[i]) then List[i] := '';
-
-  s := Trim(ListToString(List));
 end;
 
 function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
