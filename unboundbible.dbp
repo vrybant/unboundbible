@@ -1,7 +1,7 @@
 [DEBREATE-0.7.13]
 <<CTRL>>
 Package: unboundbible
-Version: 3.5
+Version: 4.0
 Maintainer: Vladimir Rybant <vrybant@gmail.com>
 Section: text
 Homepage: http://vladimirrybant.org
@@ -14,11 +14,11 @@ Description: Open Source Bible Application
 <</CTRL>>
 <<FILES>>
 1
-/home/vladimir/Dropbox/Unbound-Bible/localization -> localization -> /usr/share/unboundbible
-/home/vladimir/Dropbox/Unbound-Bible/titles -> titles -> /usr/share/unboundbible
-/home/vladimir/Dropbox/Unbound-Bible/bibles -> bibles -> /usr/share/unboundbible
-/home/vladimir/Dropbox/Unbound-Bible/unboundbible.png -> unboundbible.png -> /usr/share/pixmaps
 /home/vladimir/Dropbox/Unbound-Bible/unboundbible* -> unboundbible -> /usr/bin
+/home/vladimir/Dropbox/Unbound-Bible/unboundbible.png -> unboundbible.png -> /usr/share/pixmaps
+/home/vladimir/Dropbox/Unbound-Bible/bibles -> bibles -> /usr/share/unboundbible
+/home/vladimir/Dropbox/Unbound-Bible/titles -> titles -> /usr/share/unboundbible
+/home/vladimir/Dropbox/Unbound-Bible/localization -> localization -> /usr/share/unboundbible
 <</FILES>>
 <<SCRIPTS>>
 <<PREINST>>
@@ -36,6 +36,25 @@ Description: Open Source Bible Application
 <</SCRIPTS>>
 <<CHANGELOG>>
 <<DEST>>DEFAULT<</DEST>>
+unboundbible (4.0) ; urgency=medium
+
+  * Best support for interlinear translations.
+  * Best support for mybible modules.
+
+ -- Vladimir Rybant <vrybant@gmail.com> Mart 2020
+
+unboundbible (3.5) ; urgency=medium
+
+  * Russian module updated.
+  * One bug fixed.
+
+ -- Vladimir Rybant <vrybant@gmail.com> October 2019
+
+  * Russian module updated.
+  * One bug fixed.
+
+ -- Vladimir Rybant <vrybant@gmail.com> October 2019
+
 unboundbible (3.5) ; urgency=medium
 
   * Russian module updated.
