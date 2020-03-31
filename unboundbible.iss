@@ -2,7 +2,6 @@
 ; -- unboundbible.iss --
                              
 #define MyAppName "Unbound Bible"
-#define MyAppVerName "Unbound Bible 4.0"
 #define MyAppVersion "4.0"
 #define MyAppCopyright "GNU GPL"
 #define MyAppPublisher "Vladimir Rybant"
@@ -12,7 +11,7 @@
 
 [Setup]
  AppName={#MyAppName}
- AppVerName={#MyAppVerName}                     
+ AppVerName="{#MyAppName} {#MyAppVersion}"                     
  AppVersion={#MyAppVersion}
  AppCopyright={#MyAppCopyright}         
  AppPublisher={#MyAppPublisher}
