@@ -5,7 +5,7 @@ interface
 uses
   {$ifdef windows} Windirs, {$endif}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  LazUtf8, LCLProc, ExtCtrls, ClipBrd, Process, UmLib;
+  LazUtf8, LCLProc, ExtCtrls, ClipBrd, Process, UTF8Process, UmLib;
 
 // string's functions
 
@@ -233,7 +233,7 @@ end;
 
 procedure OpenFolder(path : string);
 begin
- with TProcess.Create(nil) do
+ with TProcessUTF8.Create(nil) do
   try
     {$ifdef windows} Executable := 'explorer'; {$endif}
     {$ifdef darwin } Executable := 'open ';    {$endif}
