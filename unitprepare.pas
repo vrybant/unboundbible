@@ -35,7 +35,7 @@ function EnabledTag(tag: string): boolean;
 var i : integer;
 begin
   Result := True;
-  for i:=1 to Max do if tag = TagsDictionary[i,2] then Exit;
+  for i:=1 to Max do if Pos(TagsDictionary[i,2], tag) > 0 then Exit;
   Result := false;
 end;
 
@@ -137,7 +137,6 @@ begin
   Replace(s, '<f ','<f><'  );
   Replace(s,'</f>','~]</f>');
   ExtractMarkers(s);
-  output(s);
   CutStr(s,'[~','~]');
 end;
 
@@ -160,6 +159,7 @@ begin
       Replace(s,'<br/>',' ');
     end;
 
+  CleanUnabledTags(s);
   RemoveDoubleSpace(s);
   Result := Trim(s);
 end;
@@ -178,7 +178,6 @@ begin
     end;
 
   if purge then CutStr(s,'<f>','</f>');
-  CleanUnabledTags(s);
 
   {$ifdef linux}
     Replace(s,'><','>  <'); // ?
