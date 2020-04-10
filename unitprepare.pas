@@ -158,15 +158,14 @@ begin
       Replace(s,'<br/>',' ');
     end;
 
-  if format <> unbound then CleanUnabledTags(s);
-
+  CleanUnabledTags(s);
   RemoveDoubleSpace(s);
   Result := Trim(s);
 end;
 
 function Preparation(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
 begin
-  s := Coercion(s, format, nt);
+  if format <> unbound then s := Coercion(s, format, nt);
 
   CutStr(s,'<h>','</h>');
   CutStr(s,'<x>','</x>');
