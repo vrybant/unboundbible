@@ -5,34 +5,24 @@ interface
 uses
   Classes, SysUtils, UnitData, UmLib, UnitLib;
 
-function Convert(s: string; format: TFileFormat; nt: boolean): string;
-function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
+function Coercion(s: string; format: TFileFormat; nt: boolean): string;
+function Prepare(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
 
 implementation
 
 const
   Max = 21;
   TagsDictionary : array [1..Max,1..2] of string = (
-    ('<FR>', '<J>'),
-    ('<Fr>','</J>'),
-    ('<-->', '<S>'), // strong
-    ('<-->','</S>'),
-    ('<-->', '<m>'), // morphology
-    ('<-->','</m>'),
-    ('<FI>', '<i>'), // italic
-    ('<Fi>','</i>'),
-    ('<FO>', '<t>'), // quote
-    ('<Fo>','</t>'),
-    ('<TS>', '<h>'), // title
-    ('<Ts>','</h>'),
-    ('<E>',  '<n>'), // english translation
-    ('<e>', '</n>'),
-    ('<T>',  '<n>'), // translation
-    ('<t>', '</n>'),
-    ('<x>', '</x>'), // transliteration
-    ('<X>',  '<x>'),
-    ('<RF>', '<f>'), // footnote
-    ('<RF ', '<f '),
+    ('<FR>', '<J>'),('<Fr>','</J>'),
+    ('<-->', '<S>'),('<-->','</S>'), // strong
+    ('<-->', '<m>'),('<-->','</m>'), // morphology
+    ('<FI>', '<i>'),('<Fi>','</i>'), // italic
+    ('<FO>', '<t>'),('<Fo>','</t>'), // quote
+    ('<TS>', '<h>'),('<Ts>','</h>'), // title
+    ('<E>',  '<n>'),('<e>', '</n>'), // english translation
+    ('<T>',  '<n>'),('<t>', '</n>'), // translation
+    ('<x>', '</x>'),('<X>',  '<x>'), // transliteration
+    ('<RF>', '<f>'),('<RF ', '<f '), // footnote
     ('<Rf>','</f>'));
 
 procedure ReplaceMyswordTags(var s: string);
@@ -151,12 +141,13 @@ begin
   CutStr(s,'[~','~]');
 end;
 
-function Convert(s: string; format: TFileFormat; nt: boolean): string;
+function Coercion(s: string; format: TFileFormat; nt: boolean): string;  // coerce
 begin
   if format = mysword then
     begin
       if Pos('<W',s) > 0 then s := MyswordStrongsToUnbound(s);
       ReplaceMyswordTags(s);
+      Replace(s,'¶','');
     end;
 
   if format = mybible then
@@ -169,20 +160,13 @@ begin
       Replace(s,'<br/>',' ');
     end;
 
-//CutStr(s,'<S>','</S>');
   RemoveDoubleSpace(s);
-
   Result := Trim(s);
 end;
 
-function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
+function Prepare(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
 begin
-  if format = mysword then
-    begin
-      if Pos('<W',s) > 0 then s := MyswordStrongsToUnbound(s);
-      ReplaceMyswordTags(s);
-      Replace(s,'¶','');
-    end;
+  s := Coercion(s, format, nt);
 
   if format in [unbound, mysword] then
     begin

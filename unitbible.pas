@@ -273,9 +273,11 @@ function TBible.GetChapter(Verse: TVerse): TStringArray;
 var
   id, i : integer;
   line : string;
+  nt : boolean;
 begin
   SetLength(Result,0);
   id := EncodeID(Verse.book);
+  nt := IsNewTestament(Verse.book);
 
   try
     try
@@ -289,7 +291,7 @@ begin
       for i:=Low(Result) to High(Result) do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
-          Result[i] := Prepare(line, format, false);
+          Result[i] := Prepare(line, format, nt, false);
           Query.Next;
         end;
     except
@@ -304,9 +306,11 @@ function TBible.GetRange(Verse: TVerse; preparation: boolean=true): TStringArray
 var
   id, i : integer;
   line : string;
+  nt : boolean;
 begin
   SetLength(Result,0);
   id := EncodeID(Verse.book);
+  nt := IsNewTestament(Verse.book);
 
   try
     try
@@ -322,7 +326,7 @@ begin
       for i:=Low(Result) to High(Result) do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
-          if preparation then Result[i] := Prepare(line, format) else Result[i] := line;
+          if preparation then Result[i] := Prepare(line, format, nt) else Result[i] := line;
           Query.Next;
         end;
     except
@@ -357,6 +361,7 @@ function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Rang
 var
   Contents : TContentArray;
   queryRange, from, till : string;
+  nt : boolean;
   i : integer;
 begin
   SetLength(Result,0);
@@ -388,7 +393,8 @@ begin
           try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
           Contents[i].verse.book := DecodeID(Contents[i].verse.book);
-          Contents[i].text := Prepare(Contents[i].text, format);
+          nt := IsNewTestament(Contents[i].verse.book);
+          Contents[i].text := Prepare(Contents[i].text, format, nt);
           Query.Next;
         end;
     finally
@@ -403,8 +409,8 @@ end;
 
 function TBible.GetAll: TContentArray;
 var
+  nt : boolean;
   i : integer;
-  n : boolean;
 begin
   SetLength(Result,0);
 
@@ -426,8 +432,8 @@ begin
           try Result[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
 
           Result[i].verse.book := DecodeID(Result[i].verse.book);
-          n := IsNewTestament(Result[i].verse.book);
-          Result[i].text := Convert(Result[i].text, format, n);
+          nt := IsNewTestament(Result[i].verse.book);
+          Result[i].text := Coercion(Result[i].text, format, nt);
 
           Query.Next;
         end;
