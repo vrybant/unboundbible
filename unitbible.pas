@@ -26,7 +26,7 @@ type
     function VerseToStr(Verse: TVerse; full: boolean): string;
     function SrtToVerse(link : string): TVerse;
     function GetChapter(Verse: TVerse): TStringArray;
-    function GetRange(Verse: TVerse; preparation: boolean=true): TStringArray;
+    function GetRange(Verse: TVerse; prepare: boolean=true): TStringArray;
     function GoodLink(Verse: TVerse): boolean;
     function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     function GetAll: TContentArray;
@@ -291,7 +291,7 @@ begin
       for i:=Low(Result) to High(Result) do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
-          Result[i] := Prepare(line, format, nt, false);
+          Result[i] := Preparation(line, format, nt, false);
           Query.Next;
         end;
     except
@@ -302,7 +302,7 @@ begin
   end;
 end;
 
-function TBible.GetRange(Verse: TVerse; preparation: boolean=true): TStringArray;
+function TBible.GetRange(Verse: TVerse; prepare: boolean=true): TStringArray;
 var
   id, i : integer;
   line : string;
@@ -326,7 +326,7 @@ begin
       for i:=Low(Result) to High(Result) do
         begin
           try line := Query.FieldByName(z.text).AsString; except line := '' end;
-          if preparation then Result[i] := Prepare(line, format, nt) else Result[i] := line;
+          if prepare then Result[i] := Preparation(line, format, nt) else Result[i] := line;
           Query.Next;
         end;
     except
@@ -394,7 +394,7 @@ begin
           try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
           Contents[i].verse.book := DecodeID(Contents[i].verse.book);
           nt := IsNewTestament(Contents[i].verse.book);
-          Contents[i].text := Prepare(Contents[i].text, format, nt);
+          Contents[i].text := Preparation(Contents[i].text, format, nt);
           Query.Next;
         end;
     finally

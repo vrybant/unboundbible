@@ -6,7 +6,7 @@ uses
   Classes, SysUtils, UnitData, UmLib, UnitLib;
 
 function Coercion(s: string; format: TFileFormat; nt: boolean): string;
-function Prepare(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
+function Preparation(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
 
 implementation
 
@@ -164,7 +164,7 @@ begin
   Result := Trim(s);
 end;
 
-function Prepare(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
+function Preparation(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
 begin
   s := Coercion(s, format, nt);
 
