@@ -44,11 +44,14 @@ type
     interlinear  : boolean;
     embtitles    : boolean;
   public
-    constructor Create(FilePath: string);
+    constructor Create(FilePath: string; new: boolean = false);
+    procedure CreateDatabase;
     procedure OpenDatabase;
     function EncodeID(id: integer): integer;
     function DecodeID(id: integer): integer;
     function TableExists(table: string): boolean;
+    procedure InsertDetails;
+    procedure InsertRows(Content : TContentArray);
     destructor Destroy; override;
   end;
 
@@ -56,7 +59,7 @@ implementation
 
 uses UnitSQLiteEx;
 
-constructor TModule.Create(FilePath: string);
+constructor TModule.Create(FilePath: string; new: boolean = false);
 var
   ext : string;
 begin
@@ -78,6 +81,9 @@ begin
     Query.DataBase := Connection;
   {$endif}
 
+  self.FilePath := FilePath;
+  self.FileName := ExtractFileName(FilePath);
+
   name         := '';
   abbreviation := '';
   copyright    := '';
@@ -90,15 +96,13 @@ begin
   footnotes    := false;
   interlinear  := false;
   embtitles    := false;
+  format       := unbound;
 
-  self.FilePath := FilePath;
-  self.FileName := ExtractFileName(FilePath);
-
-  format := unbound;
   ext := ExtractFileExt(FilePath);
   if  (ext = '.mybible') or (ext = '.bbli') then format := mysword;
 
-  OpenDatabase;
+  if new then CreateDatabase else OpenDatabase;
+  //output(FilePath);
 end;
 
 function TModule.EncodeID(id: integer): integer;
@@ -130,6 +134,33 @@ begin
   Connection.Free;
   inherited Destroy;
 end;
+
+procedure TModule.CreateDatabase;
+begin
+  if FileExists(Connection.DatabaseName) then DeleteFile(Connection.DatabaseName);
+  if FileExists(Connection.DatabaseName) then Exit;
+
+  try
+    {$ifdef zeos}
+      Connection.Connect;
+    {$else}
+      Connection.Open;
+      Transaction.Active := True;
+    {$endif}
+    try
+      Connection.ExecuteDirect('CREATE TABLE "Bible"'+
+          '("Book" INT, "Chapter" INT, "Verse" INT, "Scripture" TEXT);');
+      Connection.ExecuteDirect('CREATE TABLE "Details"'+
+          '("Title" TEXT,"Abbreviation" TEXT,"Information" TEXT,"Language" TEXT);');
+
+      Transaction.Commit;
+    except
+      // unable to create database
+    end;
+  except
+    //
+  end;
+ end;
 
 procedure TModule.OpenDatabase;
 var
@@ -213,6 +244,50 @@ begin
       RightToLeft := IsRightToLeft(language);
       info := RemoveTags(info);
     end;
+end;
+
+procedure TModule.InsertDetails;
+begin
+  try
+    try
+      Query.SQL.Text := 'INSERT INTO Details VALUES (:t,:a,:i,:l);';
+      Query.ParamByName('t').AsString := name;
+      Query.ParamByName('a').AsString := abbreviation;
+      Query.ParamByName('i').AsString := info;
+      Query.ParamByName('l').AsString := language;
+      Query.ExecSQL;
+      Transaction.Commit;
+    except
+      //
+    end;
+  finally
+    Query.Close;
+  end;
+end;
+
+procedure TModule.InsertRows(Content : TContentArray);
+var
+  line : TContent;
+begin
+  try
+    try
+      for line in Content do
+        begin
+          Query.SQL.Text := 'INSERT INTO Bible VALUES (:b,:c,:v,:s);';
+          Query.ParamByName('b').AsInteger := line.verse.book;
+          Query.ParamByName('c').AsInteger := line.verse.chapter;
+          Query.ParamByName('v').AsInteger := line.verse.number;
+          Query.ParamByName('s').AsString  := line.text;
+          Query.ExecSQL;
+        end;
+
+      Transaction.Commit;
+    except
+      //
+    end;
+  finally
+    Query.Close;
+  end;
 end;
 
 end.

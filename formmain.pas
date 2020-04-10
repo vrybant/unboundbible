@@ -27,6 +27,7 @@ type
     MenuItem3: TMenuItem;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
+    ToolButton1: TToolButton;
     ToolButtonCommentary: TToolButton;
     ToolSeparator1: TToolButton;
     ToolButtonVerses: TToolButton;

@@ -3,7 +3,8 @@ unit FormDownload;
 interface
 
 uses
-  Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, UnboundMemo, SysUtils;
+  Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, Grids,
+  UnboundMemo, SysUtils;
 
 type
 
@@ -12,6 +13,7 @@ type
   TDownloadForm = class(TForm)
     ButtonOK: TButton;
     Memo: TUnboundMemo;
+    StringGrid1: TStringGrid;
     procedure FormCreate(Sender: TObject);
   public
     procedure Localize;

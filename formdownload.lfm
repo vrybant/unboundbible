@@ -1,21 +1,21 @@
 object DownloadForm: TDownloadForm
-  Left = 576
-  Height = 400
-  Top = 290
+  Left = 607
+  Height = 538
+  Top = 187
   Width = 550
   BorderStyle = bsDialog
   Caption = ' Modules'
-  ClientHeight = 400
+  ClientHeight = 538
   ClientWidth = 550
   Color = clBtnFace
   OnCreate = FormCreate
   ParentFont = True
   Position = poScreenCenter
-  LCLVersion = '2.0.0.4'
+  LCLVersion = '2.0.6.0'
   object ButtonOK: TButton
     Left = 232
     Height = 25
-    Top = 367
+    Top = 504
     Width = 80
     AutoSize = True
     Caption = 'OK'
@@ -28,15 +28,23 @@ object DownloadForm: TDownloadForm
   object Memo: TUnboundMemo
     Cursor = crArrow
     Left = 8
-    Height = 352
-    Top = 8
+    Height = 240
+    Top = 256
     Width = 533
     Font.Height = -13
+    Font.Name = 'Tahoma'
     HideSelection = False
     ParentFont = False
     ReadOnly = True
     ScrollBars = ssAutoVertical
     TabOrder = 1
     ZoomFactor = 1
+  end
+  object StringGrid1: TStringGrid
+    Left = 8
+    Height = 236
+    Top = 8
+    Width = 533
+    TabOrder = 2
   end
 end

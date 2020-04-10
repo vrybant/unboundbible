@@ -30,8 +30,8 @@ type
     function GoodLink(Verse: TVerse): boolean;
     function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     function GetAll: TContentArray;
-    procedure ShowTags;
     procedure Extract;
+    procedure ShowTags;
     procedure GetTitles(var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
     function  GetFootnote(Verse: TVerse; marker: string): string;
@@ -402,7 +402,9 @@ begin
 end;
 
 function TBible.GetAll: TContentArray;
-var i : integer;
+var
+  i : integer;
+  n : boolean;
 begin
   SetLength(Result,0);
 
@@ -422,7 +424,11 @@ begin
           try Result[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Result[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
+
           Result[i].verse.book := DecodeID(Result[i].verse.book);
+          n := IsNewTestament(Result[i].verse.book);
+          Result[i].text := Convert(Result[i].text, format, n);
+
           Query.Next;
         end;
     except
@@ -431,6 +437,24 @@ begin
   finally
     Query.Close;
   end;
+end;
+
+procedure TBible.Extract;
+var
+  Module : TModule;
+  filePath : string;
+begin
+  filePath := 'D:\test.unbound';
+  Module := TModule.Create(filePath, true);
+
+  Module.name := name;
+  Module.abbreviation := abbreviation;
+  Module.info := info;
+  Module.language := language;
+
+  Module.InsertDetails;
+  Module.InsertRows(GetAll);
+  Module.Free;
 end;
 
 procedure TBible.ShowTags;
@@ -451,34 +475,6 @@ begin
             if Pos(item, r) = 0 then r += item;
     end;
   output(r);
-end;
-
-procedure TBible.Extract;
-var
-  f : System.Text;
-  Contents : TContentArray;
-  Content : TContent;
-  filepath, text : string;
-  nt : boolean;
-const
-  tab = char(09);
-begin
-  filepath := GetUserDir + ApplicationName + Slash + 'out.txt';
-  AssignFile(f,filepath); Rewrite(f);
-
-  Contents := GetAll;
-  for Content in Contents do
-    begin
-      text := Content.text;
-      nt := IsNewTestament(Content.verse.book);
-      text := Convert(text, format, nt);
-      write(f,Content.verse.book   ); write(f, tab);
-      write(f,Content.verse.chapter); write(f, tab);
-      write(f,Content.verse.number ); write(f, tab);
-      write(f,text                 ); writeln(f);
-    end;
-
-  CloseFile(f);
 end;
 
 procedure TBible.GetTitles(var List: TStringList);
