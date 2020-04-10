@@ -152,14 +152,15 @@ begin
   if format = mybible then
     begin
       if Pos('<S>',s) > 0 then s := MybibleStrongsToUnbound(s, nt);
-      CutStr(s,'<f','</f>');
+   // CutStr(s,'<f','</f>'); // for clean export
       Replace(s, '<t>', ' ');
       Replace(s,'</t>', ' ');
       Replace(s,'<pb/>',' ');
       Replace(s,'<br/>',' ');
     end;
 
-  CleanUnabledTags(s);
+  if format <> unbound then CleanUnabledTags(s);
+
   RemoveDoubleSpace(s);
   Result := Trim(s);
 end;
