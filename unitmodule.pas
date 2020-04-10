@@ -159,7 +159,7 @@ begin
   try
     Connection.ExecuteDirect('CREATE TABLE "Details"'+
         '("Title" TEXT,"Abbreviation" TEXT,"Information" TEXT,"Language" TEXT);');
-    Transaction.Commit;
+    {$ifndef zeos} Transaction.Commit; {$endif}
   except
     //
   end;
@@ -239,7 +239,7 @@ begin
       Query.ParamByName('i').AsString := info;
       Query.ParamByName('l').AsString := language;
       Query.ExecSQL;
-      Transaction.Commit;
+      {$ifndef zeos} Transaction.Commit; {$endif}
     except
       //
     end;

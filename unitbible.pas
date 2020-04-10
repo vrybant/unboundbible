@@ -68,7 +68,7 @@ begin
   try
     Connection.ExecuteDirect('CREATE TABLE "Bible"'+
         '("Book" INT, "Chapter" INT, "Verse" INT, "Scripture" TEXT);');
-    Transaction.Commit;
+    {$ifdef windows} Transaction.Commit; {$endif}
   except
     //
   end;
@@ -569,7 +569,7 @@ begin
           Query.ParamByName('s').AsString  := line.text;
           Query.ExecSQL;
         end;
-      Transaction.Commit;
+      {$ifdef windows} Transaction.Commit; {$endif}
     except
       //
     end;
