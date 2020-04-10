@@ -140,7 +140,7 @@ begin
   CutStr(s,'[~','~]');
 end;
 
-function Coercion(s: string; format: TFileFormat; nt: boolean): string;  // coerce
+function Coercion(s: string; format: TFileFormat; nt: boolean): string;
 begin
   if format = mysword then
     begin
@@ -152,7 +152,6 @@ begin
   if format = mybible then
     begin
       if Pos('<S>',s) > 0 then s := MybibleStrongsToUnbound(s, nt);
-   // CutStr(s,'<f','</f>'); // for clean export
       Replace(s, '<t>', ' ');
       Replace(s,'</t>', ' ');
       Replace(s,'<pb/>',' ');
