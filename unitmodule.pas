@@ -1,6 +1,6 @@
 unit UnitModule;
 
-  {$ifdef linux}
+  {$ifndef linux}
     {$define zeos}
   {$endif}
 
@@ -45,13 +45,15 @@ type
     embtitles    : boolean;
   public
     constructor Create(FilePath: string; new: boolean = false);
+    procedure CommitTransaction;
     procedure CreateTables;
-    procedure OpenDatabase;
     function EncodeID(id: integer): integer;
     function DecodeID(id: integer): integer;
     function TableExists(table: string): boolean;
     procedure InsertDetails;
     destructor Destroy; override;
+  private
+    procedure OpenDatabase;
   end;
 
 implementation
@@ -122,6 +124,11 @@ begin
 
   if not new then OpenDatabase;
   //output(FilePath);
+end;
+
+procedure TModule.CommitTransaction;
+begin
+  {$ifndef zeos} Transaction.Commit; {$endif}
 end;
 
 function TModule.EncodeID(id: integer): integer;
