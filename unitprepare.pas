@@ -168,14 +168,14 @@ function Preparation(s: string; format: TFileFormat; nt: boolean; purge: boolean
 begin
   s := Coercion(s, format, nt);
 
+  CutStr(s,'<h>','</h>');
+  CutStr(s,'<x>','</x>');
+
   if format in [unbound, mysword] then
     begin
       if Pos('<f>',s) > 0 then Footnotes(s);
       if Pos('<f ',s) > 0 then FootnotesEx(s);
     end;
-
-  CutStr(s,'<h>','</h>');
-  CutStr(s,'<x>','</x>');
 
   if purge then CutStr(s,'<f>','</f>');
   CleanUnabledTags(s);

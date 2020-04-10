@@ -110,9 +110,6 @@ begin
   if self.Count = 0 then Exit;
   if Prefix('ru', language) then filename := 'strongru.dct.unbound';
 
-  if not Prefix('H',number) and not Prefix('G',number) then
-    number := ifthen(IsNewTestament(verse.book),'G','H') + number;
-
   for i:=0 to self.Count-1 do
     begin
       if not self[i].strong then Continue;
