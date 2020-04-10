@@ -45,13 +45,12 @@ type
     embtitles    : boolean;
   public
     constructor Create(FilePath: string; new: boolean = false);
-    procedure CreateDatabase;
+    procedure CreateTables;
     procedure OpenDatabase;
     function EncodeID(id: integer): integer;
     function DecodeID(id: integer): integer;
     function TableExists(table: string): boolean;
     procedure InsertDetails;
-    procedure InsertRows(Content : TContentArray);
     destructor Destroy; override;
   end;
 
@@ -62,24 +61,9 @@ uses UnitSQLiteEx;
 constructor TModule.Create(FilePath: string; new: boolean = false);
 var
   ext : string;
+  dbhandle : Pointer;
 begin
   inherited Create;
-
-  {$ifdef zeos}
-    Connection := TZConnection.Create(nil);
-    Query := TZReadOnlyQuery.Create(nil);
-    Connection.Database := FilePath;
-    Connection.Protocol := 'sqlite-3';
-    Query.Connection := Connection;
-  {$else}
-    Connection := TSQLite3Connection.Create(nil);
-    Connection.CharSet := 'UTF8';
-    Connection.DatabaseName := FilePath;
-    Transaction := TSQLTransaction.Create(Connection);
-    Connection.Transaction := Transaction;
-    Query := TSQLQuery.Create(nil);
-    Query.DataBase := Connection;
-  {$endif}
 
   self.FilePath := FilePath;
   self.FileName := ExtractFileName(FilePath);
@@ -101,7 +85,42 @@ begin
   ext := ExtractFileExt(FilePath);
   if  (ext = '.mybible') or (ext = '.bbli') then format := mysword;
 
-  if new then CreateDatabase else OpenDatabase;
+  {$ifdef zeos}
+    Connection := TZConnection.Create(nil);
+    Query := TZReadOnlyQuery.Create(nil);
+    Connection.Database := FilePath;
+    Connection.Protocol := 'sqlite-3';
+    Query.Connection := Connection;
+  {$else}
+    Connection := TSQLite3Connection.Create(nil);
+    Connection.CharSet := 'UTF8';
+    Connection.DatabaseName := FilePath;
+    Transaction := TSQLTransaction.Create(Connection);
+    Connection.Transaction := Transaction;
+    Query := TSQLQuery.Create(nil);
+    Query.DataBase := Connection;
+  {$endif}
+
+  try
+    {$ifdef zeos}
+      Connection.Connect;
+      dbhandle := (Connection.DbcConnection as TZSQLiteConnection).GetConnectionHandle();
+    {$else}
+      Connection.Open;
+      Transaction.Active := True;
+      dbhandle := Connection.Handle;
+    {$endif}
+
+    if not Connection.Connected then Exit;
+    SQLite3CreateFunctions(dbhandle);
+ // Connection.ExecuteDirect('PRAGMA case_sensitive_like = 1');
+    if TableExists('info') then format := mybible;
+  except
+    output('connection failed ' + FilePath);
+    Exit;
+  end;
+
+  if not new then OpenDatabase;
   //output(FilePath);
 end;
 
@@ -135,28 +154,12 @@ begin
   inherited Destroy;
 end;
 
-procedure TModule.CreateDatabase;
+procedure TModule.CreateTables;
 begin
-  if FileExists(Connection.DatabaseName) then DeleteFile(Connection.DatabaseName);
-  if FileExists(Connection.DatabaseName) then Exit;
-
   try
-    {$ifdef zeos}
-      Connection.Connect;
-    {$else}
-      Connection.Open;
-      Transaction.Active := True;
-    {$endif}
-    try
-      Connection.ExecuteDirect('CREATE TABLE "Bible"'+
-          '("Book" INT, "Chapter" INT, "Verse" INT, "Scripture" TEXT);');
-      Connection.ExecuteDirect('CREATE TABLE "Details"'+
-          '("Title" TEXT,"Abbreviation" TEXT,"Information" TEXT,"Language" TEXT);');
-
-      Transaction.Commit;
-    except
-      // unable to create database
-    end;
+    Connection.ExecuteDirect('CREATE TABLE "Details"'+
+        '("Title" TEXT,"Abbreviation" TEXT,"Information" TEXT,"Language" TEXT);');
+    Transaction.Commit;
   except
     //
   end;
@@ -165,27 +168,7 @@ begin
 procedure TModule.OpenDatabase;
 var
   key, value : string;
-  dbhandle : Pointer;
 begin
-  try
-    {$ifdef zeos}
-      Connection.Connect;
-      dbhandle := (Connection.DbcConnection as TZSQLiteConnection).GetConnectionHandle();
-    {$else}
-      Connection.Open;
-      Transaction.Active := True;
-      dbhandle := Connection.Handle;
-    {$endif}
-
-    if not Connection.Connected then Exit;
-    SQLite3CreateFunctions(dbhandle);
- // Connection.ExecuteDirect('PRAGMA case_sensitive_like = 1');
-    if TableExists('info') then format := mybible;
-  except
-    output('connection failed ' + self.fileName);
-    Exit;
-  end;
-
   if format in [unbound, mysword] then
     try
       try
@@ -256,31 +239,6 @@ begin
       Query.ParamByName('i').AsString := info;
       Query.ParamByName('l').AsString := language;
       Query.ExecSQL;
-      Transaction.Commit;
-    except
-      //
-    end;
-  finally
-    Query.Close;
-  end;
-end;
-
-procedure TModule.InsertRows(Content : TContentArray);
-var
-  line : TContent;
-begin
-  try
-    try
-      for line in Content do
-        begin
-          Query.SQL.Text := 'INSERT INTO Bible VALUES (:b,:c,:v,:s);';
-          Query.ParamByName('b').AsInteger := line.verse.book;
-          Query.ParamByName('c').AsInteger := line.verse.chapter;
-          Query.ParamByName('v').AsInteger := line.verse.number;
-          Query.ParamByName('s').AsString  := line.text;
-          Query.ExecSQL;
-        end;
-
       Transaction.Commit;
     except
       //

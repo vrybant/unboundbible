@@ -16,7 +16,8 @@ type
     procedure SetTitles;
   public
     compare : boolean;
-    constructor Create(filePath: string);
+    constructor Create(FilePath: string; new: boolean = false);
+    procedure CreateTables;
     procedure LoadDatabase;
     function GetEmbeddedTitles: TTitles;
     function GetExternalTitles: TTitles;
@@ -30,13 +31,14 @@ type
     function GoodLink(Verse: TVerse): boolean;
     function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     function GetAll: TContentArray;
-    procedure Extract;
     procedure ShowTags;
     procedure GetTitles(var List: TStringList);
     function  ChaptersCount(Verse: TVerse): integer;
     function  GetFootnote(Verse: TVerse; marker: string): string;
     procedure SavePrivate(const IniFile: TIniFile);
     procedure ReadPrivate(const IniFile: TIniFile);
+    procedure InsertContent(Content : TContentArray);
+    procedure Extract;
     destructor Destroy; override;
   end;
 
@@ -44,9 +46,9 @@ implementation
 
 uses UnitSQLiteEx;
 
-constructor TBible.Create(filePath: string);
+constructor TBible.Create(FilePath: string; new: boolean = false);
 begin
-  inherited Create(filePath);
+  inherited Create(filePath, new);
   Books := TBooks.Create;
 
   z := unboundStringAlias;
@@ -59,6 +61,18 @@ begin
   embtitles := TableExists(z.titles);
   if connected and not TableExists(z.bible) then connected := false;
 end;
+
+procedure TBible.CreateTables;
+begin
+  inherited;
+  try
+    Connection.ExecuteDirect('CREATE TABLE "Bible"'+
+        '("Book" INT, "Chapter" INT, "Verse" INT, "Scripture" TEXT);');
+    Transaction.Commit;
+  except
+    //
+  end;
+ end;
 
 function BookComparison(const Item1: TBook; const Item2: TBook): integer;
 begin
@@ -445,24 +459,6 @@ begin
   end;
 end;
 
-procedure TBible.Extract;
-var
-  Module : TModule;
-  filePath : string;
-begin
-  filePath := 'D:\test.unbound';
-  Module := TModule.Create(filePath, true);
-
-  Module.name := name;
-  Module.abbreviation := abbreviation;
-  Module.info := info;
-  Module.language := language;
-
-  Module.InsertDetails;
-  Module.InsertRows(GetAll);
-  Module.Free;
-end;
-
 procedure TBible.ShowTags;
 var
   Contents : TContentArray;
@@ -556,6 +552,52 @@ end;
 procedure TBible.ReadPrivate(const IniFile : TIniFile);
 begin
   Compare := IniFile.ReadBool(FileName, 'Compare', True);
+end;
+
+procedure TBible.InsertContent(Content : TContentArray);
+var
+  line : TContent;
+begin
+  try
+    try
+      for line in Content do
+        begin
+          Query.SQL.Text := 'INSERT INTO Bible VALUES (:b,:c,:v,:s);';
+          Query.ParamByName('b').AsInteger := line.verse.book;
+          Query.ParamByName('c').AsInteger := line.verse.chapter;
+          Query.ParamByName('v').AsInteger := line.verse.number;
+          Query.ParamByName('s').AsString  := line.text;
+          Query.ExecSQL;
+        end;
+      Transaction.Commit;
+    except
+      //
+    end;
+  finally
+    Query.Close;
+  end;
+end;
+
+procedure TBible.Extract;
+var
+  Module : TBible;
+  path : string;
+begin
+  path := 'D:\test.unbound';
+  if FileExists(path) then DeleteFile(path);
+  if FileExists(path) then Exit;
+
+  Module := TBible.Create(path, true);
+  Module.CreateTables;
+
+  Module.name := name;
+  Module.abbreviation := abbreviation;
+  Module.info := info;
+  Module.language := language;
+
+  Module.InsertDetails;
+  Module.InsertContent(GetAll);
+  Module.Free;
 end;
 
 destructor TBible.Destroy;
