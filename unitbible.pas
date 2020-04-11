@@ -555,17 +555,18 @@ begin
 end;
 
 procedure TBible.InsertContent(Content : TContentArray);
-var r : TContent;
+var
+  line : TContent;
 begin
   try
     try
-      for r in Content do
+      for line in Content do
         begin
-          Query.SQL.Text := 'INSERT INTO Bible VALUES ' +
-              '(' + ToStr(r.verse.book)    + ','
-                  + ToStr(r.verse.chapter) + ','
-                  + ToStr(r.verse.number)  + ','
-                  + '''' + EscapeString(r.text) + ''');';
+          Query.SQL.Text := 'INSERT INTO Bible VALUES (:b,:c,:v,:s);';
+          Query.ParamByName('b').AsInteger := line.verse.book;
+          Query.ParamByName('c').AsInteger := line.verse.chapter;
+          Query.ParamByName('v').AsInteger := line.verse.number;
+          Query.ParamByName('s').AsString  := line.text;
           Query.ExecSQL;
         end;
       CommitTransaction;
