@@ -1,6 +1,6 @@
 unit UnitModule;
 
-  {$ifndef linux}
+  {$ifdef linux}
     {$define zeos}
   {$endif}
 
@@ -92,6 +92,7 @@ begin
     Query := TZReadOnlyQuery.Create(nil);
     Connection.Database := FilePath;
     Connection.Protocol := 'sqlite-3';
+    Connection.AutoCommit := False;
     Query.Connection := Connection;
   {$else}
     Connection := TSQLite3Connection.Create(nil);
@@ -128,7 +129,7 @@ end;
 
 procedure TModule.CommitTransaction;
 begin
-  {$ifndef zeos} Transaction.Commit; {$endif}
+  {$ifdef zeos} Connection.Commit; {$else} Transaction.Commit; {$endif}
 end;
 
 function TModule.EncodeID(id: integer): integer;
@@ -166,7 +167,7 @@ begin
   try
     Connection.ExecuteDirect('CREATE TABLE "Details"'+
         '("Title" TEXT,"Abbreviation" TEXT,"Information" TEXT,"Language" TEXT);');
-    {$ifndef zeos} Transaction.Commit; {$endif}
+    CommitTransaction;
   except
     //
   end;
@@ -246,7 +247,7 @@ begin
       Query.ParamByName('i').AsString := info;
       Query.ParamByName('l').AsString := language;
       Query.ExecSQL;
-      {$ifndef zeos} Transaction.Commit; {$endif}
+      CommitTransaction;
     except
       //
     end;

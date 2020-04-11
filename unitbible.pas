@@ -68,7 +68,7 @@ begin
   try
     Connection.ExecuteDirect('CREATE TABLE "Bible"'+
         '("Book" INT, "Chapter" INT, "Verse" INT, "Scripture" TEXT);');
-    {$ifdef windows} Transaction.Commit; {$endif}
+    CommitTransaction;
   except
     //
   end;
@@ -555,21 +555,20 @@ begin
 end;
 
 procedure TBible.InsertContent(Content : TContentArray);
-var
-  line : TContent;
+var r : TContent;
 begin
   try
     try
-      for line in Content do
+      for r in Content do
         begin
-          Query.SQL.Text := 'INSERT INTO Bible VALUES (:b,:c,:v,:s);';
-          Query.ParamByName('b').AsInteger := line.verse.book;
-          Query.ParamByName('c').AsInteger := line.verse.chapter;
-          Query.ParamByName('v').AsInteger := line.verse.number;
-          Query.ParamByName('s').AsString  := line.text;
+          Query.SQL.Text := 'INSERT INTO Bible VALUES ' +
+              '(' + ToStr(r.verse.book)    + ','
+                  + ToStr(r.verse.chapter) + ','
+                  + ToStr(r.verse.number)  + ','
+                  + '''' + EscapeString(r.text) + ''');';
           Query.ExecSQL;
         end;
-      {$ifdef windows} Transaction.Commit; {$endif}
+      CommitTransaction;
     except
       //
     end;
@@ -583,7 +582,8 @@ var
   Module : TBible;
   path : string;
 begin
-  path := 'D:\test.unbound';
+  path := {$ifdef windows} 'D:\test.unbound'; {$else} DataPath + '/test.unbound'; {$endif}
+
   if FileExists(path) then DeleteFile(path);
   if FileExists(path) then Exit;
 

@@ -13,6 +13,7 @@ function IsNumeral(c: char): boolean;
 function IsLetter(c: char): boolean;
 function OneUpCase(st: string): string;
 function DoubleQuotedStr(s: string): string;
+function EscapeString(s: string): string;
 function CleanString(s: string): string;
 function StringPos(subst: string; s: string): TIntegerArray;
 procedure CutStr(var s: string; StartSt, EndSt: string);
@@ -72,6 +73,11 @@ end;
 function DoubleQuotedStr(s: string): string;
 begin
   Result := '"' + s + '"';
+end;
+
+function EscapeString(s: string): string;
+begin
+  Result := StringReplace(s, '''','''''', [rfReplaceAll]);
 end;
 
 function CleanString(s: string): string;
