@@ -29,6 +29,15 @@ procedure ReplaceMyswordTags(var s: string);
 var i : integer;
 begin
   for i:=1 to Max do Replace(s, TagsDictionary[i,1], TagsDictionary[i,2]);
+  Replace(s,'¶','');
+end;
+
+procedure ReplaceMybibleTags(var s: string);
+begin
+  Replace(s, '<t>', ' ');
+  Replace(s,'</t>', ' ');
+  Replace(s,'<pb/>',' ');
+  Replace(s,'<br/>',' ');
 end;
 
 function EnabledTag(tag: string): boolean;
@@ -55,29 +64,11 @@ begin
 end;
 
 function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
-var
-  List : TStringArray;
-  l : boolean = false;
-  i : integer;
+var symbol : string;
 begin
-  List := XmlToList(s);
-
-  for i:=Low(List) to High(List) do
-    begin
-      if List[i] = '<S>' then
-        begin
-          l := true;
-          Continue;
-        end;
-
-      if List[i] = '</S>' then l := false;
-
-      if l then
-        if NewTestament then List[i] := 'G' + List[i]
-                        else List[i] := 'H' + List[i];
-    end;
-
-  Result := ListToString(List);
+  if NewTestament then symbol := 'G' else symbol := 'H';
+  Replace(s, '<S>', '<S>' + symbol);
+  Result := s;
 end;
 
 function MyswordStrongsToUnbound(var s: string): string;
@@ -146,16 +137,12 @@ begin
     begin
       if Pos('<W',s) > 0 then s := MyswordStrongsToUnbound(s);
       ReplaceMyswordTags(s);
-      Replace(s,'¶','');
     end;
 
   if format = mybible then
     begin
       if Pos('<S>',s) > 0 then s := MybibleStrongsToUnbound(s, nt);
-      Replace(s, '<t>', ' ');
-      Replace(s,'</t>', ' ');
-      Replace(s,'<pb/>',' ');
-      Replace(s,'<br/>',' ');
+      ReplaceMybibleTags(s);
     end;
 
   CleanUnabledTags(s);
