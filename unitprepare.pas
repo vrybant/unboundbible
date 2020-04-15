@@ -126,8 +126,6 @@ end;
 
 function Coercion(s: string; format: TFileFormat; nt: boolean): string;
 begin
-  CutStr(s,'<h>','</h>');
-
   if format = mysword then
     begin
       MyswordStrongsToUnbound(s);
@@ -151,13 +149,9 @@ begin
     end;
 
   if purge then CutStr(s,'<f>','</f>');
+  CutStr(s,'<h>','</h>');
 
-  {$ifdef linux}
-    Replace(s,'><','>  <'); // ?
-  {$else}
-    Replace(s,'><','> <');
-  {$endif}
-
+  Replace(s,'><', {$ifdef linux} '>  <' {$else} '> <' {$endif} );
   Result := s;
 end;
 
