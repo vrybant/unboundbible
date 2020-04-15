@@ -63,14 +63,6 @@ begin
   RemoveDoubleSpace(s);
 end;
 
-function MybibleStrongsToUnbound(s: string; NewTestament: boolean): string;
-var symbol : string;
-begin
-  if NewTestament then symbol := 'G' else symbol := 'H';
-  Replace(s, '<S>', '<S>' + symbol);
-  Result := s;
-end;
-
 function MyswordStrongsToUnbound(var s: string): string;
 var
   List : TStringArray;
@@ -139,11 +131,7 @@ begin
       ReplaceMyswordTags(s);
     end;
 
-  if format = mybible then
-    begin
-      if Pos('<S>',s) > 0 then s := MybibleStrongsToUnbound(s, nt);
-      ReplaceMybibleTags(s);
-    end;
+  if format = mybible then ReplaceMybibleTags(s);
 
   CleanUnabledTags(s);
   RemoveDoubleSpace(s);
