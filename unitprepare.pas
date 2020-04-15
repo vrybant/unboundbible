@@ -21,7 +21,7 @@ const
     ('<TS>', '<h>'),('<Ts>','</h>'), // title
     ('<E>',  '<n>'),('<e>', '</n>'), // english translation
     ('<T>',  '<n>'),('<t>', '</n>'), // translation
-    ('<x>', '</x>'),('<X>',  '<x>'), // transliteration
+    ('<X>',  '<m>'),('<x>', '</m>'), // transliteration
     ('<RF>', '<f>'),('<RF ', '<f '), // footnote
     ('<Rf>','</f>'));
 
@@ -44,7 +44,7 @@ function EnabledTag(tag: string): boolean;
 var i : integer;
 begin
   Result := True;
-  for i:=1 to Max do if Pos(TagsDictionary[i,2], tag) > 0 then Exit;
+  for i:=1 to Max do if Prefix(TagsDictionary[i,2], tag) then Exit;
   Result := false;
 end;
 
@@ -63,12 +63,13 @@ begin
   RemoveDoubleSpace(s);
 end;
 
-function MyswordStrongsToUnbound(var s: string): string;
+procedure MyswordStrongsToUnbound(var s: string);
 var
   List : TStringArray;
   number : string;
   i : integer;
 begin
+  if Pos('<W',s) = 0 then Exit;
   List := XmlToList(s);
 
   for i:=Low(List) to High(List) do
@@ -87,7 +88,7 @@ begin
         List[i] := '<m>' + number + '</m>';
       end;
 
-  Result := Trim(ListToString(List));
+  s := Trim(ListToString(List));
 end;
 
 procedure ExtractMarkers(var s: string);
@@ -125,25 +126,23 @@ end;
 
 function Coercion(s: string; format: TFileFormat; nt: boolean): string;
 begin
+  CutStr(s,'<h>','</h>');
+
   if format = mysword then
     begin
-      if Pos('<W',s) > 0 then s := MyswordStrongsToUnbound(s);
+      MyswordStrongsToUnbound(s);
       ReplaceMyswordTags(s);
     end;
 
   if format = mybible then ReplaceMybibleTags(s);
 
   CleanUnabledTags(s);
-  RemoveDoubleSpace(s);
   Result := Trim(s);
 end;
 
 function Preparation(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
 begin
   if format <> unbound then s := Coercion(s, format, nt);
-
-  CutStr(s,'<h>','</h>');
-  CutStr(s,'<x>','</x>');
 
   if format in [unbound, mysword] then
     begin
