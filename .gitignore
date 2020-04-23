@@ -19,6 +19,7 @@ titles/text/*
 components/zeosdbo/packages/lazarus/lib/*
 components/zeosdbo/examples/*
 components/richmemo/lib/*
+components/richmemo/ide/lib/*
 components/unboundmemo/lib/*
 components/unboundmemo/backup/*
 unboundbible
