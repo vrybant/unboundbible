@@ -259,7 +259,7 @@ end;
 {$ifdef darwin}
 procedure PrintFile(filename : string);
 begin
-  with TProcess.Create(nil) do
+  with TProcessUTF8.Create(nil) do
   try
     CommandLine {%H-}:='lp "' + filename + '"';
     Options := [poUsePipes]; // poWaitOnExit
