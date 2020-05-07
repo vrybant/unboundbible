@@ -3,7 +3,7 @@ unit UnitDictionary;
 interface
 
 uses
-  Classes, Fgl, SysUtils, UnitModule, UnitData;
+  Classes, Fgl, SysUtils, UnitModule, UnitData, UmLib, UnitLib;
 
 type
   TDictionary = class(TModule)
@@ -12,6 +12,7 @@ type
   public
     constructor Create(filePath: string);
     function GetData(number: string): string;
+    function Get_Data(text: string): TStringArray;
   end;
 
   TDictionaries = class(TFPGList<TDictionary>)
@@ -27,8 +28,6 @@ var
   Dictionaries : TDictionaries;
 
 implementation
-
-uses UmLib, UnitLib;
 
 //========================================================================================
 //                                     TDictionary
@@ -51,6 +50,44 @@ begin
                         ' WHERE ' + z.word + ' = "' + number + '"';
       Query.Open;
       try Result := Query.FieldByName(z.data).AsString; except end;
+    except
+      //
+    end;
+  finally
+    Query.Close;
+  end;
+end;
+
+function TDictionary.Get_Data(text: string): TStringArray;
+var
+  line : string;
+  i : integer;
+  count : integer;
+begin
+  SetLength(Result,0);
+
+  try
+    try
+      Query.SQL.Text := 'SELECT * FROM ' + z.dictionary +
+                        ' WHERE ' + z.word + ' = "' + text + '"';
+      Query.Open;
+      Query.Last;
+      SetLength(Result, Query.RecordCount);
+      Query.First;
+
+      count := 0;
+      for i:=0 to Query.RecordCount-1 do
+        try
+          line := Query.FieldByName(z.data).AsString;
+          if line <> '' then
+             begin
+               Result[count] := line;
+               count += 1;
+             end;
+        finally
+          Query.Next;
+        end;
+      SetLength(Result, count);
     except
       //
     end;
@@ -95,7 +132,6 @@ begin
   for f in List do
     begin
       if Pos('.dct.',f) + Pos('.dictionary.',f) = 0 then continue;
-      if not Suffix('.unbound',f) then continue;
       Item := TDictionary.Create(f);
       if Item.connected then Add(Item) else Item.Free;
     end;

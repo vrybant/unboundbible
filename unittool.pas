@@ -10,6 +10,7 @@ function Load_Compare: string;
 function Load_ModulesInfo: string;
 function Load_Translate: string;
 function Load_Commentary: string;
+function Load_Dictionary(text: string = ''): string;
 function Load_Strong(number: string = ''): string;
 function Load_Footnote(marker: string = ''): string;
 function Load_Verses: string;
@@ -178,6 +179,35 @@ begin
     end;
 
   if Commentaries.Count = 0 then
+    begin
+      Result += '<br> ' + ls.NoModules;
+      Result += '<br><br> ' + ls.MoreInfo;
+    end;
+end;
+
+function Load_Dictionary(text: string = ''): string;
+var
+  Strings : TStringArray;
+  item : string;
+  i : integer;
+begin
+  Result := '';
+
+  text := Trim(text);
+  if text = '' then Exit;
+
+  for i:=0 to Dictionaries.Count-1 do
+    begin
+//    if Dictionaries[i].footnotes then Continue;
+      Strings := Dictionaries[i].Get_Data(text);
+
+      if Length(Strings) > 0 then
+        Result += '<br><h>' + Dictionaries[i].Name + '</h><br><br>';
+
+      for item in Strings  do Result += '<tab>' + item + '<br>';
+    end;
+
+  if Dictionaries.Count = 0 then
     begin
       Result += '<br> ' + ls.NoModules;
       Result += '<br><br> ' + ls.MoreInfo;

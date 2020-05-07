@@ -54,6 +54,12 @@ type
 
   TDictionaryAlias = record
     dictionary, word, data : string;
+
+    id         : string;
+    book       : string;
+    chapter    : string;
+    fromverse  : string;
+    toverse    : string;
   end;
 
   TVerse = record
@@ -142,12 +148,24 @@ const
     dictionary : 'Dictionary';
     word       : 'Word';
     data       : 'Data';
+
+    id         : '';
+    book       : '';
+    chapter    : '';
+    fromverse  : '';
+    toverse    : '';
     );
 
   mybibleDictionaryAlias : TDictionaryAlias = (
     dictionary : 'dictionary';
     word       : 'topic';
     data       : 'definition';
+
+    id         : '';
+    book       : '';
+    chapter    : '';
+    fromverse  : '';
+    toverse    : '';
   );
 
   noneVerse : TVerse = (
