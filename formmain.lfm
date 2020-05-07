@@ -1,11 +1,13 @@
 object MainForm: TMainForm
-  Left = 359
-  Height = 385
-  Top = 279
-  Width = 795
+  Left = 400
+  Height = 401
+  Top = 255
+  Width = 882
   Caption = 'Unbound Bible'
-  ClientHeight = 365
-  ClientWidth = 795
+  ClientHeight = 381
+  ClientWidth = 882
+  Constraints.MinHeight = 400
+  Constraints.MinWidth = 600
   Menu = MainMenu
   OnActivate = FormActivate
   OnClose = FormClose
@@ -13,12 +15,12 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
-  LCLVersion = '2.0.6.0'
+  LCLVersion = '2.0.8.0'
   object StandardToolBar: TToolBar
     Left = 0
     Height = 30
     Top = 0
-    Width = 795
+    Width = 882
     AutoSize = True
     BorderWidth = 2
     ButtonHeight = 28
@@ -40,7 +42,7 @@ object MainForm: TMainForm
       ParentShowHint = False
     end
     object ToolSeparator2: TToolButton
-      Left = 261
+      Left = 289
       Height = 28
       Top = 0
       Caption = 'ToolSeparator2'
@@ -74,34 +76,34 @@ object MainForm: TMainForm
       Action = ActionSearch
     end
     object ToolSeparator3: TToolButton
-      Left = 406
+      Left = 434
       Height = 28
       Top = 0
       ImageIndex = 3
       Style = tbsDivider
     end
     object ToolButtonCut: TToolButton
-      Left = 266
+      Left = 294
       Top = 0
       Action = ActionEditCut
     end
     object ToolButtonCopy: TToolButton
-      Left = 294
+      Left = 322
       Top = 0
       Action = ActionEditCopy
     end
     object ToolButtonPaste: TToolButton
-      Left = 350
+      Left = 378
       Top = 0
       Action = ActionEditPaste
     end
     object ToolButtonUndo: TToolButton
-      Left = 378
+      Left = 406
       Top = 0
       Action = ActionEditUndo
     end
     object ToolSeparator4: TToolButton
-      Left = 551
+      Left = 579
       Height = 28
       Top = 0
       Caption = 'ToolSeparator4'
@@ -116,7 +118,7 @@ object MainForm: TMainForm
       ShowHint = True
     end
     object ToolSeparator5: TToolButton
-      Left = 640
+      Left = 668
       Height = 28
       Top = 0
       Caption = 'ToolSeparator5'
@@ -125,31 +127,31 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButtonBold: TToolButton
-      Left = 439
+      Left = 467
       Top = 0
       Action = ActionBold
       Style = tbsCheck
     end
     object ToolButtonItalic: TToolButton
-      Left = 467
+      Left = 495
       Top = 0
       Action = ActionItalic
       Style = tbsCheck
     end
     object ToolButtonUnderline: TToolButton
-      Left = 495
+      Left = 523
       Top = 0
       Action = ActionUnderline
       Style = tbsCheck
     end
     object ToolButtonLink: TToolButton
-      Left = 523
+      Left = 551
       Top = 0
       Action = ActionLink
       Style = tbsCheck
     end
     object ToolButtonLeft: TToolButton
-      Left = 556
+      Left = 584
       Top = 0
       Action = ActionLeft
       Grouped = True
@@ -157,7 +159,7 @@ object MainForm: TMainForm
     end
     object ToolButtonCenter: TToolButton
       Tag = 2
-      Left = 584
+      Left = 612
       Top = 0
       Action = ActionCenter
       Grouped = True
@@ -165,25 +167,25 @@ object MainForm: TMainForm
     end
     object ToolButtonRight: TToolButton
       Tag = 1
-      Left = 612
+      Left = 640
       Top = 0
       Action = ActionRight
       Grouped = True
       Style = tbsCheck
     end
     object ToolButtonBullets: TToolButton
-      Left = 645
+      Left = 673
       Top = 0
       Action = ActionBullets
       Style = tbsCheck
     end
     object ToolButtonFont: TToolButton
-      Left = 411
+      Left = 439
       Top = 0
       Action = ActionFont
     end
     object ToolButtonVerses: TToolButton
-      Left = 322
+      Left = 350
       Top = 0
       Action = ActionCopyVerses
       ParentShowHint = False
@@ -207,14 +209,19 @@ object MainForm: TMainForm
       Top = 0
       Action = ActionModules
     end
+    object ToolButtonDictionary: TToolButton
+      Left = 261
+      Top = 0
+      Action = ActionDictionary
+    end
   end
   object PanelLeft: TPanel
     Left = 0
-    Height = 310
+    Height = 326
     Top = 32
     Width = 195
     Align = alLeft
-    ClientHeight = 310
+    ClientHeight = 326
     ClientWidth = 195
     Font.CharSet = GREEK_CHARSET
     Font.Color = clWindowText
@@ -231,6 +238,7 @@ object MainForm: TMainForm
       ItemHeight = 0
       OnClick = BookBoxClick
       ParentFont = False
+      ScrollWidth = 132
       TabOrder = 0
     end
     object ChapterBox: TListBox
@@ -243,6 +251,7 @@ object MainForm: TMainForm
       ItemHeight = 0
       OnClick = ChapterBoxClick
       ParentFont = False
+      ScrollWidth = 43
       TabOrder = 1
     end
     object ComboBox: TComboBox
@@ -264,17 +273,17 @@ object MainForm: TMainForm
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 342
-    Width = 795
+    Top = 358
+    Width = 882
     Panels = <>
     ParentShowHint = False
     ShowHint = True
   end
   object PageControl: TPageControl
     Left = 200
-    Height = 310
+    Height = 326
     Top = 32
-    Width = 595
+    Width = 682
     ActivePage = TabSheetBible
     Align = alClient
     Font.Color = clWindowText
@@ -285,17 +294,17 @@ object MainForm: TMainForm
     OnChange = PageControlChange
     object TabSheetBible: TTabSheet
       Caption = 'Bible'
-      ClientHeight = 280
-      ClientWidth = 587
+      ClientHeight = 296
+      ClientWidth = 674
       Font.Color = clWindowText
       Font.Height = -12
       ParentFont = False
       object MemoBible: TUnboundMemo
         Cursor = crArrow
         Left = 0
-        Height = 280
+        Height = 296
         Top = 0
-        Width = 587
+        Width = 674
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
@@ -316,15 +325,16 @@ object MainForm: TMainForm
     end
     object TabSheetSearch: TTabSheet
       Caption = 'Search'
-      ClientHeight = 280
-      ClientWidth = 587
+      ClientHeight = 295
+      ClientWidth = 674
       ImageIndex = 1
+      TabVisible = False
       object MemoSearch: TUnboundMemo
         Cursor = crArrow
         Left = 0
-        Height = 280
+        Height = 295
         Top = 0
-        Width = 587
+        Width = 674
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
@@ -345,7 +355,7 @@ object MainForm: TMainForm
     object TabSheetCompare: TTabSheet
       Caption = 'Compare'
       ClientHeight = 280
-      ClientWidth = 587
+      ClientWidth = 674
       Font.Color = clWindowText
       Font.Height = -12
       ImageIndex = 3
@@ -355,7 +365,62 @@ object MainForm: TMainForm
         Left = 0
         Height = 280
         Top = 0
-        Width = 587
+        Width = 674
+        Align = alClient
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        HideSelection = False
+        OnContextPopup = MemoContextPopup
+        OnMouseLeave = MemoMouseLeave
+        OnMouseUp = MemoMouseUp
+        OnSelectionChange = MemoSelectionChange
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssBoth
+        TabOrder = 0
+        ZoomFactor = 1
+        Linkable = True
+      end
+    end
+    object TabSheetCommentary: TTabSheet
+      Caption = 'Commentary'
+      ClientHeight = 295
+      ClientWidth = 674
+      object MemoCommentary: TUnboundMemo
+        Cursor = crArrow
+        Left = 0
+        Height = 295
+        Top = 0
+        Width = 674
+        Align = alClient
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        HideSelection = False
+        OnContextPopup = MemoContextPopup
+        OnMouseLeave = MemoMouseLeave
+        OnMouseUp = MemoMouseUp
+        OnSelectionChange = MemoSelectionChange
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssBoth
+        TabOrder = 0
+        ZoomFactor = 1
+        Linkable = True
+      end
+    end
+    object TabSheetDictionary: TTabSheet
+      Caption = 'Dictionary'
+      ClientHeight = 295
+      ClientWidth = 674
+      TabVisible = False
+      object MemoDictionary: TUnboundMemo
+        Cursor = crArrow
+        Left = 0
+        Height = 295
+        Top = 0
+        Width = 674
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
@@ -376,14 +441,14 @@ object MainForm: TMainForm
     object TabSheetNotes: TTabSheet
       Caption = 'Notes'
       ClientHeight = 280
-      ClientWidth = 587
+      ClientWidth = 674
       ImageIndex = 2
       object MemoNotes: TUnboundMemo
         Cursor = crArrow
         Left = 0
         Height = 280
         Top = 0
-        Width = 587
+        Width = 674
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
@@ -402,7 +467,7 @@ object MainForm: TMainForm
   end
   object Splitter: TSplitter
     Left = 195
-    Height = 310
+    Height = 326
     Top = 32
     Width = 5
   end
@@ -410,11 +475,19 @@ object MainForm: TMainForm
     Left = 0
     Height = 2
     Top = 30
-    Width = 795
+    Width = 882
     Align = alTop
     Alignment = taLeftJustify
     BevelOuter = bvNone
     TabOrder = 0
+  end
+  object Edit: TEdit
+    Left = 728
+    Height = 22
+    Top = 3
+    Width = 150
+    AutoSize = False
+    TabOrder = 6
   end
   object MainMenu: TMainMenu
     Images = Images
@@ -1995,6 +2068,10 @@ object MainForm: TMainForm
       }
       ImageIndex = 8
     end
+    object pmDictionary: TMenuItem
+      Action = ActionDictionary
+      Caption = 'Dictionary'
+    end
     object MenuItem4: TMenuItem
       Caption = '-'
     end
@@ -2235,11 +2312,6 @@ object MainForm: TMainForm
       Caption = 'ActionCommentary'
       OnExecute = CmdCommentary
     end
-    object ActionModules: TAction
-      Caption = 'ActionModules'
-      ImageIndex = 34
-      OnExecute = cmdModules
-    end
     object ActionIncrease: TAction
       Category = 'Memo'
       Caption = 'Increase'
@@ -2257,6 +2329,16 @@ object MainForm: TMainForm
         'Ctrl+-'
       )
       ShortCut = 16493
+    end
+    object ActionDictionary: TAction
+      Caption = 'ActionDictionary'
+      ImageIndex = 12
+      OnExecute = CmdDictionary
+    end
+    object ActionModules: TAction
+      Caption = 'ActionModules'
+      ImageIndex = 34
+      OnExecute = cmdModules
     end
   end
   object OpenDialog: TOpenDialog

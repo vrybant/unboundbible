@@ -12,12 +12,15 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ActionDictionary: TAction;
     ActionDecrease: TAction;
     ActionIncrease: TAction;
     ActionModules: TAction;
     ActionCommentary: TAction;
     ActionInterline: TAction;
+    Edit: TEdit;
     IdleTimer: TIdleTimer;
+    pmDictionary: TMenuItem;
     miModules: TMenuItem;
     MenuItem4: TMenuItem;
     PrintDialog: TPrintDialog;
@@ -27,7 +30,10 @@ type
     MenuItem3: TMenuItem;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
+    TabSheetCommentary: TTabSheet;
+    TabSheetDictionary: TTabSheet;
     ToolButton1: TToolButton;
+    ToolButtonDictionary: TToolButton;
     ToolButtonCommentary: TToolButton;
     ToolSeparator1: TToolButton;
     ToolButtonVerses: TToolButton;
@@ -160,8 +166,11 @@ type
     ToolSeparator3: TToolButton;
     ToolSeparator4: TToolButton;
     ToolSeparator5: TToolButton;
+    MemoCommentary: TUnboundMemo;
+    MemoDictionary: TUnboundMemo;
 
     procedure CmdCommentary(Sender: TObject);
+    procedure CmdDictionary(Sender: TObject);
     procedure CmdAbout(Sender: TObject);
     procedure CmdCompare(Sender: TObject);
     procedure CmdCopyAs(Sender: TObject);
@@ -250,10 +259,12 @@ uses
   UnitShelf, FormCopy, FormTranslate, FormCommentary, FormDownload;
 
 const
-  apBible   = 0; // active page
-  apSearch  = 1;
-  apCompare = 2;
-  apNotes   = 3;
+  apBible      = 0; // active page
+  apSearch     = 1;
+  apCompare    = 2;
+  apCommentary = 3;
+  apDictionary = 4;
+  apNotes      = 5;
 
 {$R *.lfm}
 
@@ -308,6 +319,8 @@ begin
   {$endif}
 
   UpdateActionImage;
+
+//////////////////////////////////////////////////////////////  TabSheetSearch.TabVisible := false;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -355,6 +368,9 @@ begin
   ChapterBox.Width := WidthInPixels(DefaultFont,'150') + 30;
   BookBox.Width := PanelLeft.Width - BookBox.Left - BookBox.Left - ChapterBox.Width - Streak;
   ChapterBox.Left := PanelLeft.Width - ChapterBox.Width - Streak;
+
+  Edit.Left := StandardToolBar.Width - Edit.Width - 4;
+  Edit.Visible := Edit.Left > ToolButtonBullets.Left + ToolButtonBullets.Width;
 end;
 
 procedure TMainForm.MemoMouseLeave(Sender: TObject);
@@ -622,10 +638,17 @@ end;
 procedure TMainForm.CmdCommentary(Sender: TObject);
 begin
   if Shelf.Count = 0 then Exit;
-  CommentaryForm.Caption := ls.Commentary + ' - ' + Bible.VerseToStr(ActiveVerse, true);
-  CommentaryForm.Memo.LoadHTML(Load_Commentary);
-  if Sender = ActionCommentary then CommentaryForm.Show;
-  CommentaryForm.Repaint;
+  MemoCommentary.Font.Assign(DefaultFont);
+  MemoCommentary.LoadText(Load_Commentary);
+  if Sender <> PageControl then SelectPage(apCommentary);
+end;
+
+procedure TMainForm.CmdDictionary(Sender: TObject);
+begin
+  if Shelf.Count = 0 then Exit;
+  MemoDictionary.Font.Assign(DefaultFont);
+  MemoDictionary.LoadText(Load_Dictionary(MemoBible.SelText));
+  if Sender <> PageControl then SelectPage(apDictionary);
 end;
 
 procedure TMainForm.CmdFileNew(Sender: TObject);
@@ -950,6 +973,8 @@ begin
     apBible      : Result := MemoBible;
     apSearch     : Result := MemoSearch;
     apCompare    : Result := MemoCompare;
+    apCommentary : Result := MemoNotes;
+    apDictionary : Result := MemoNotes;
     apNotes      : Result := MemoNotes;
     else
       Result := nil;
@@ -967,8 +992,9 @@ begin
   if B then x := 1 else x:= 0;
 
   ActionEditCopy.Enabled   := UnboundMemo.SelLength > x;
+  ActionDictionary.Enabled := UnboundMemo.SelLength > x;
   ActionEditCut.Enabled    := L and (UnboundMemo.SelLength > 0);
-  ActionEditDel.Enabled    := L and (UnboundMemo.SelLength > 0);;
+  ActionEditDel.Enabled    := L and (UnboundMemo.SelLength > 0);
   ActionEditPaste.Enabled  := L and UnboundMemo.CanPaste;
   ActionEditUndo.Enabled   := L and UnboundMemo.CanUndo;
 
@@ -1056,6 +1082,7 @@ end;
 procedure TMainForm.SelectPage(page: integer);
 begin
   PageControl.ActivePageIndex := page;
+  PageControl.ActivePage.TabVisible := true;
   EnableButtons;
   Refresh;
 end;
@@ -1111,9 +1138,11 @@ begin
   EnableButtons;
   UpDownButtons;
   UpdateStatus('','');
-  UnboundMemo.SetFocus;
+//UnboundMemo.SetFocus; //*******************************************************************************************************************
   UnboundMemo.Repaint;
-  if PageControl.ActivePageIndex = apCompare then CmdCompare(PageControl);
+  if PageControl.ActivePageIndex = apCompare    then CmdCompare(PageControl);
+  if PageControl.ActivePageIndex = apCommentary then CmdCommentary(PageControl);
+  if PageControl.ActivePageIndex = apDictionary then CmdDictionary(PageControl);
 end;
 
 procedure TMainForm.RadioButtonClick(Sender: TObject);
