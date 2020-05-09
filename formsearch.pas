@@ -9,16 +9,14 @@ uses
 type
   TSearchForm = class(TForm)
     OKButton: TButton;
-    Edit: TEdit;
     RadioGroupRange: TRadioGroup;
     GroupBoxOption: TGroupBox;
     CheckBoxCase: TCheckBox;
     CheckBoxWhole: TCheckBox;
-    procedure EditChange(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure FormCreate(Sender: TObject);
     procedure FormActivate(Sender: TObject);
   public
+    function ShowAtPos(Pos: TPoint): integer;
     procedure Localize;
   end;
 
@@ -74,10 +72,7 @@ end;
 
 procedure TSearchForm.Localize;
 begin
-  Caption := ' ' + T('Search');
-
-  RadioGroupRange.Caption := T('Range'  ) + ' ';
-  GroupBoxOption .Caption := T('Options') + ' ';
+  Caption := ' Настройки поиска'; // + T('Options');
 
   RadioGroupRange.Items[0] := T('Entire Bible'  );
   RadioGroupRange.Items[1] := T('Old Testament'     );
@@ -92,19 +87,14 @@ begin
   OKButton     .Caption := T('Find');
 end;
 
-procedure TSearchForm.FormCreate(Sender: TObject);
+function TSearchForm.ShowAtPos(Pos: TPoint): integer;
 begin
-  OKButton.Enabled := False;
-end;
+  Left := Pos.x;
+  Top  := Pos.y;
 
-procedure TSearchForm.EditChange(Sender: TObject);
-begin
-  OKButton.Enabled := Length(Trim(Edit.Text)) > 1;
-end;
+  if Left + Width > Screen.Width then Left := Screen.Width - Width - 14;
 
-procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if (Key=VK_ESCAPE) then Close;
+  Result := ShowModal;
 end;
 
 procedure TSearchForm.FormActivate(Sender: TObject);
@@ -116,6 +106,11 @@ begin
     end
   else
     RadioGroupRange.Enabled := True;
+end;
+
+procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then Close;
 end;
 
 end.

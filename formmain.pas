@@ -4,8 +4,9 @@ interface
 
 uses
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList, ClipBrd,
-  StdActns, PrintersDlgs, Types, RichMemo, UnboundMemo, UnitData, UmLib, UnitLib;
+  Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
+  ClipBrd, StdActns, Buttons, PrintersDlgs, Types, RichMemo, UnboundMemo,
+  UnitData, UmLib, UnitLib;
 
 type
 
@@ -20,6 +21,7 @@ type
     ActionInterline: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
+    ToolPanel: TPanel;
     pmDictionary: TMenuItem;
     miModules: TMenuItem;
     MenuItem4: TMenuItem;
@@ -192,6 +194,7 @@ type
 
     procedure ComboBoxChange(Sender: TObject);
     procedure ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
+    procedure EditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -211,6 +214,7 @@ type
     procedure PageControlChange(Sender: TObject);
     procedure RadioButtonClick(Sender: TObject);
     procedure ToolButtonFBClick(Sender: TObject);
+    procedure ToolButtonSearchClick(Sender: TObject);
   private
     DefaultCurrent: string;
     NoteFileName: string;
@@ -369,8 +373,12 @@ begin
   BookBox.Width := PanelLeft.Width - BookBox.Left - BookBox.Left - ChapterBox.Width - Streak;
   ChapterBox.Left := PanelLeft.Width - ChapterBox.Width - Streak;
 
-  Edit.Left := StandardToolBar.Width - Edit.Width - 4;
-  Edit.Visible := Edit.Left > ToolButtonBullets.Left + ToolButtonBullets.Width;
+
+  ToolPanel.Width := StandardToolBar.Width - ToolButtonBullets.Left - ToolButtonBullets.Width
+                                           - ToolButtonSearch.Width;
+
+  Edit.Left := StandardToolBar.Width - ToolButtonSearch.Width - Edit.Width - 4;
+  //Edit.Visible := Edit.Left > ToolButtonBullets.Left + ToolButtonBullets.Width;
 end;
 
 procedure TMainForm.MemoMouseLeave(Sender: TObject);
@@ -563,6 +571,11 @@ begin
   Canvas.TextOut(ARect.Left + 220, ARect.Top, '[ru]');
 end;
 
+procedure TMainForm.EditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_RETURN then SearchText(Edit.Text);
+end;
+
 procedure TMainForm.CmdCompare(Sender: TObject);
 begin
   if Shelf.Count = 0 then Exit;
@@ -622,8 +635,7 @@ end;
 
 procedure TMainForm.CmdSearch(Sender: TObject);
 begin
-  SearchForm.Edit.Font.Name := DefaultFont.Name;
-  if SearchForm.ShowModal = mrOk then SearchText(SearchForm.Edit.Text);
+  Edit.SetFocus;
 end;
 
 procedure TMainForm.CmdTrans(Sender: TObject);
@@ -1157,6 +1169,16 @@ begin
   FBPageVisited := True;
 end;
 
+procedure TMainForm.ToolButtonSearchClick(Sender: TObject);
+var
+  Pos: TPoint;
+begin
+  Pos.x := Width - (SearchForm.Width div 2);
+  Pos.y := PageControl.Top + 2;
+  Pos := ClientToScreen(Pos);
+  if SearchForm.ShowAtPos(Pos) = mrOk then SearchText(Edit.Text);
+end;
+
 procedure TMainForm.MakeBookList;
 var
   List: TStringList;
@@ -1216,14 +1238,18 @@ procedure TMainForm.SearchText(s: string);
 var
   richtext : string;
   count : integer = 0;
-{$ifdef linux} const max = 2000; {$endif}
+  {$ifdef linux} const max = 2000; {$endif}
 begin
+  s := Trim(s);
+  if Length(s) < 2 then Exit;
   if Shelf.Count = 0 then Exit;
+
   Cursor := crHourGlass;
   richtext := Search_Text(s, count);
   {$ifdef linux} if count > max then richtext := Show_Message(ls.Narrow); {$endif}
   MemoSearch.Font.Assign(DefaultFont);
   MemoSearch.LoadText(richtext);
+
   Cursor := crArrow;
   SelectPage(apSearch);
   UpdateStatus(ToStr(count) + ' ' + ls.found,'');
