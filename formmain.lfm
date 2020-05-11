@@ -41,11 +41,11 @@ object MainForm: TMainForm
       OnClick = ToolButtonFBClick
       ParentShowHint = False
     end
-    object ToolSeparator2: TToolButton
+    object ToolSeparatorEdit: TToolButton
       Left = 261
       Height = 28
       Top = 0
-      Caption = 'ToolSeparator2'
+      Caption = 'ToolSeparatorEdit'
       Style = tbsDivider
     end
     object ToolButtonNew: TToolButton
@@ -70,7 +70,7 @@ object MainForm: TMainForm
       Top = 0
       Action = ActionFilePrint
     end
-    object ToolSeparator3: TToolButton
+    object ToolSeparatorFont: TToolButton
       Left = 406
       Height = 28
       Top = 0
@@ -97,11 +97,11 @@ object MainForm: TMainForm
       Top = 0
       Action = ActionEditUndo
     end
-    object ToolSeparator4: TToolButton
+    object ToolSeparatorAlign: TToolButton
       Left = 551
       Height = 28
       Top = 0
-      Caption = 'ToolSeparator4'
+      Caption = 'ToolSeparatorAlign'
       ImageIndex = 15
       Style = tbsDivider
     end
@@ -112,11 +112,11 @@ object MainForm: TMainForm
       ParentShowHint = False
       ShowHint = True
     end
-    object ToolSeparator5: TToolButton
+    object ToolSeparatorBullets: TToolButton
       Left = 640
       Height = 28
       Top = 0
-      Caption = 'ToolSeparator5'
+      Caption = 'ToolSeparatorBullets'
       Grouped = True
       ImageIndex = 15
       Style = tbsDivider
@@ -186,11 +186,11 @@ object MainForm: TMainForm
       ParentShowHint = False
       ShowHint = True
     end
-    object ToolSeparator1: TToolButton
+    object ToolSeparatorCompare: TToolButton
       Left = 172
       Height = 28
       Top = 0
-      Caption = 'ToolSeparator1'
+      Caption = 'ToolSeparatorCompare'
       Style = tbsDivider
     end
     object ToolButtonCommentary: TToolButton
@@ -199,7 +199,7 @@ object MainForm: TMainForm
       Action = ActionCommentary
       ImageIndex = 38
     end
-    object ToolButton1: TToolButton
+    object ToolButtonCopyright: TToolButton
       Left = 32
       Top = 0
       Action = ActionModules
@@ -2022,7 +2022,7 @@ object MainForm: TMainForm
       ImageIndex = 38
       Visible = False
     end
-    object MenuItem3: TMenuItem
+    object pmSeparator1: TMenuItem
       Caption = '-'
       Visible = False
     end
@@ -2039,7 +2039,7 @@ object MainForm: TMainForm
       Action = ActionEditPaste
       Caption = 'Paste'
     end
-    object MenuItem1: TMenuItem
+    object pmSeparator2: TMenuItem
       Caption = '-'
     end
     object pmVerses: TMenuItem
@@ -2089,7 +2089,7 @@ object MainForm: TMainForm
       Action = ActionDictionary
       Caption = 'Dictionary'
     end
-    object MenuItem4: TMenuItem
+    object pmSeparator3: TMenuItem
       Caption = '-'
     end
     object pmInterlinear: TMenuItem

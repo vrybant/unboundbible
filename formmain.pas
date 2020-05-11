@@ -13,33 +13,13 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
-    ActionDictionary: TAction;
-    ActionDecrease: TAction;
-    ActionIncrease: TAction;
-    ActionModules: TAction;
-    ActionCommentary: TAction;
-    ActionInterline: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
-    ToolPanel: TPanel;
-    pmDictionary: TMenuItem;
-    miModules: TMenuItem;
-    MenuItem4: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
     FontDialogNotes: TFontDialog;
-    pmSearch: TMenuItem;
-    MenuItem3: TMenuItem;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
-    TabSheetCommentary: TTabSheet;
-    TabSheetDictionary: TTabSheet;
-    ToolButton1: TToolButton;
-    ToolButtonDictionary: TToolButton;
-    ToolButtonCommentary: TToolButton;
-    ToolSeparator1: TToolButton;
-    ToolButtonVerses: TToolButton;
-    ActionList: TActionList;
     ComboBox: TComboBox;
     FileOpen1: TFileOpen;
     EditCut1: TEditCut;
@@ -47,8 +27,11 @@ type
     MemoBible: TUnboundMemo;
     MemoSearch: TUnboundMemo;
     MemoCompare: TUnboundMemo;
+    MemoCommentary: TUnboundMemo;
+    MemoDictionary: TUnboundMemo;
     MemoNotes: TUnboundMemo;
 
+    ActionList: TActionList;
     ActionAbout: THelpAction;
     ActionBold: TAction;
     ActionBullets: TAction;
@@ -78,10 +61,15 @@ type
     ActionSearch: TAction;
     ActionTranslate: TAction;
     ActionUnderline: TAction;
+    ActionDictionary: TAction;
+    ActionDecrease: TAction;
+    ActionIncrease: TAction;
+    ActionModules: TAction;
+    ActionCommentary: TAction;
+    ActionInterline: TAction;
 
     ChapterBox: TListBox;
     BookBox: TListBox;
-    MenuItem1: TMenuItem;
     Ruler: TPanel;
     PanelLeft: TPanel;
     Splitter: TSplitter;
@@ -92,6 +80,8 @@ type
     TabSheetBible: TTabSheet;
     TabSheetSearch: TTabSheet;
     TabSheetCompare: TTabSheet;
+    TabSheetCommentary: TTabSheet;
+    TabSheetDictionary: TTabSheet;
     TabSheetNotes: TTabSheet;
 
     MainMenu: TMainMenu;
@@ -122,6 +112,7 @@ type
     miSelectAll: TMenuItem;
     miTools: TMenuItem;
     miUndo: TMenuItem;
+    miModules: TMenuItem;
     miVerses: TMenuItem;
     miInterlinear: TMenuItem;
     miTranslate: TMenuItem;
@@ -135,15 +126,21 @@ type
     N9: TMenuItem;
 
     PopupMenu: TPopupMenu;
-    pmCommentary: TMenuItem;
+    pmSearch: TMenuItem;
     pmCut: TMenuItem;
     pmCopy: TMenuItem;
     pmPaste: TMenuItem;
     pmCopyAs: TMenuItem;
     pmVerses: TMenuItem;
     pmInterlinear: TMenuItem;
+    pmCommentary: TMenuItem;
+    pmDictionary: TMenuItem;
+    pmSeparator1: TMenuItem;
+    pmSeparator2: TMenuItem;
+    pmSeparator3: TMenuItem;
 
     StandardToolBar: TToolBar;
+    ToolPanel: TPanel;
     ToolButtonBold: TToolButton;
     ToolButtonBullets: TToolButton;
     ToolButtonCenter: TToolButton;
@@ -164,12 +161,15 @@ type
     ToolButtonSearch: TToolButton;
     ToolButtonUnderline: TToolButton;
     ToolButtonUndo: TToolButton;
-    ToolSeparator2: TToolButton;
-    ToolSeparator3: TToolButton;
-    ToolSeparator4: TToolButton;
-    ToolSeparator5: TToolButton;
-    MemoCommentary: TUnboundMemo;
-    MemoDictionary: TUnboundMemo;
+    ToolButtonCopyright: TToolButton;
+    ToolButtonDictionary: TToolButton;
+    ToolButtonCommentary: TToolButton;
+    ToolSeparatorCompare: TToolButton;
+    ToolSeparatorEdit: TToolButton;
+    ToolSeparatorFont: TToolButton;
+    ToolSeparatorAlign: TToolButton;
+    ToolSeparatorBullets: TToolButton;
+    ToolButtonVerses: TToolButton;
 
     procedure CmdCommentary(Sender: TObject);
     procedure CmdDictionary(Sender: TObject);
@@ -318,6 +318,7 @@ begin
   ActionFilePrint.Visible := False;
   ActionEditUndo.Visible := False;
   ActionBullets.Visible := False;
+  ToolSeparatorBullets.Visible := False;
   IdleMessage := '';
   IdleTimer.Enabled := true;
   {$endif}
@@ -374,11 +375,11 @@ begin
   ChapterBox.Left := PanelLeft.Width - ChapterBox.Width - Streak;
 
 
-  ToolPanel.Width := StandardToolBar.Width - ToolButtonBullets.Left - ToolButtonBullets.Width
-                                           - ToolButtonSearch.Width;
+  ToolPanel.Width := StandardToolBar.Width - ToolButtonRight.Width - ToolButtonSearch.Width
+                   - {$ifdef linux} ToolButtonRight.Left {$else} ToolButtonBullets.Left {$endif};
 
   Edit.Left := StandardToolBar.Width - ToolButtonSearch.Width - Edit.Width - 4;
-  //Edit.Visible := Edit.Left > ToolButtonBullets.Left + ToolButtonBullets.Width;
+  Edit.Visible := ToolPanel.Width > Edit.Width;
 end;
 
 procedure TMainForm.MemoMouseLeave(Sender: TObject);
