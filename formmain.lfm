@@ -497,6 +497,7 @@ object MainForm: TMainForm
     Height = 23
     Top = 2
     Width = 150
+    AutoSize = False
     Color = clWhite
     DoubleBuffered = True
     Font.Height = 15
