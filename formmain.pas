@@ -224,7 +224,7 @@ type
     function UnboundMemo: TUnboundMemo;
     function CheckFileSave: boolean;
     procedure ComboBoxInit;
-    procedure EnableButtons;
+    procedure EnableActions;
     procedure UpDownButtons;
     procedure SelectBook(title: string; scroll: boolean);
     procedure GoToVerse(Verse: TVerse; select: boolean);
@@ -574,7 +574,9 @@ end;
 
 procedure TMainForm.EditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if Key = VK_RETURN then SearchText(Edit.Text);
+  if Key = VK_RETURN then
+    if PageControl.ActivePageIndex = apDictionary then CmdDictionary(Sender)
+      else SearchText(Edit.Text);
 end;
 
 procedure TMainForm.CmdCompare(Sender: TObject);
@@ -616,7 +618,7 @@ begin
       UnboundMemo.ClearSelection;
     end;
 
-  EnableButtons;
+  EnableActions;
 end;
 
 procedure TMainForm.CmdCopyAs(Sender: TObject);
@@ -660,7 +662,7 @@ procedure TMainForm.CmdDictionary(Sender: TObject);
 begin
   if Shelf.Count = 0 then Exit;
   MemoDictionary.Font.Assign(DefaultFont);
-  MemoDictionary.LoadText(Load_Dictionary(MemoBible.SelText));
+  MemoDictionary.LoadText(Load_Dictionary(Edit.Text));
   if Sender <> PageControl then SelectPage(apDictionary);
 end;
 
@@ -790,7 +792,7 @@ end;
 
 procedure TMainForm.MemoSelectionChange(Sender: TObject);
 begin
-  EnableButtons;
+  EnableActions;
   if Sender = MemoNotes then UpDownButtons;
 end;
 
@@ -994,7 +996,7 @@ begin
   end;
 end;
 
-procedure TMainForm.EnableButtons;
+procedure TMainForm.EnableActions;
 var
   B, L : boolean;
   x : integer;
@@ -1024,6 +1026,8 @@ begin
   ActionCenter.Enabled     := L;
   ActionRight.Enabled      := L;
   ActionBullets.Enabled    := L;
+
+  ToolButtonSearch.Enabled := PageControl.ActivePageIndex <> apDictionary;
 
   UpdateActionImage;
 end;
@@ -1096,7 +1100,7 @@ procedure TMainForm.SelectPage(page: integer);
 begin
   PageControl.ActivePageIndex := page;
   PageControl.ActivePage.TabVisible := true;
-  EnableButtons;
+  EnableActions;
   Refresh;
 end;
 
@@ -1148,14 +1152,14 @@ end;
 
 procedure TMainForm.PageControlChange(Sender: TObject);
 begin
-  EnableButtons;
+  EnableActions;
   UpDownButtons;
   UpdateStatus('','');
 //UnboundMemo.SetFocus; //*******************************************************************************************************************
   UnboundMemo.Repaint;
   if PageControl.ActivePageIndex = apCompare    then CmdCompare(PageControl);
   if PageControl.ActivePageIndex = apCommentary then CmdCommentary(PageControl);
-  if PageControl.ActivePageIndex = apDictionary then CmdDictionary(PageControl);
+//if PageControl.ActivePageIndex = apDictionary then CmdDictionary(PageControl);
 end;
 
 procedure TMainForm.RadioButtonClick(Sender: TObject);
