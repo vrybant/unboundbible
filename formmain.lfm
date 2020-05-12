@@ -425,7 +425,6 @@ object MainForm: TMainForm
       Caption = 'Dictionary'
       ClientHeight = 295
       ClientWidth = 674
-      TabVisible = False
       object MemoDictionary: TUnboundMemo
         Cursor = crArrow
         Left = 0
