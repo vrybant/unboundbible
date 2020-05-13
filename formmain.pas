@@ -15,6 +15,8 @@ type
   TMainForm = class(TForm)
     Edit: TEdit;
     IdleTimer: TIdleTimer;
+    MenuItem1: TMenuItem;
+    pmCommentary: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
     FontDialogNotes: TFontDialog;
@@ -133,11 +135,9 @@ type
     pmCopyAs: TMenuItem;
     pmVerses: TMenuItem;
     pmInterlinear: TMenuItem;
-    pmCommentary: TMenuItem;
     pmDictionary: TMenuItem;
     pmSeparator1: TMenuItem;
     pmSeparator2: TMenuItem;
-    pmSeparator3: TMenuItem;
 
     StandardToolBar: TToolBar;
     ToolPanel: TPanel;
@@ -429,7 +429,6 @@ begin
   miBibleFolder.Caption := T('Bible Folder');
   miHelpAbout.Caption := T('About');
 
-  pmCommentary.Caption := T('Commentaries');
   pmCut.Caption := T('Cut');
   pmCopy.Caption := T('Copy');
   pmPaste.Caption := T('Paste');
@@ -638,7 +637,8 @@ end;
 
 procedure TMainForm.CmdSearch(Sender: TObject);
 begin
-  Edit.SetFocus;
+  Edit.Text := Trim(UnboundMemo.SelText);
+  if Edit.Text <> '' then SearchText(Edit.Text);
 end;
 
 procedure TMainForm.CmdTrans(Sender: TObject);
@@ -988,8 +988,8 @@ begin
     apBible      : Result := MemoBible;
     apSearch     : Result := MemoSearch;
     apCompare    : Result := MemoCompare;
-    apCommentary : Result := MemoNotes;
-    apDictionary : Result := MemoNotes;
+    apCommentary : Result := MemoCommentary;
+    apDictionary : Result := MemoDictionary;
     apNotes      : Result := MemoNotes;
     else
       Result := nil;
@@ -1006,8 +1006,9 @@ begin
 
   if B then x := 1 else x:= 0;
 
-  ActionEditCopy.Enabled   := UnboundMemo.SelLength > x;
+  ActionSearch.Enabled     := UnboundMemo.SelLength > x;
   ActionDictionary.Enabled := UnboundMemo.SelLength > x;
+  ActionEditCopy.Enabled   := UnboundMemo.SelLength > x;
   ActionEditCut.Enabled    := L and (UnboundMemo.SelLength > 0);
   ActionEditDel.Enabled    := L and (UnboundMemo.SelLength > 0);
   ActionEditPaste.Enabled  := L and UnboundMemo.CanPaste;
