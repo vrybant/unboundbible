@@ -342,10 +342,12 @@ end;
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   {$ifdef linux}
-    MemoBible  .Clear;
-    MemoSearch .Clear;
-    MemoCompare.Clear;
-    MemoNotes  .Clear;
+    MemoBible     .Clear;
+    MemoSearch    .Clear;
+    MemoCompare   .Clear;
+    MemoCommentary.Clear;
+    MemoDictionary.Clear;
+    MemoNotes     .Clear;
   {$endif}
 end;
 
