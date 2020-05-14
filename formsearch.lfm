@@ -4,13 +4,14 @@ object SearchForm: TSearchForm
   Top = 300
   Width = 160
   BorderStyle = bsDialog
-  Caption = ' Bible Search'
+  Caption = 'Search'
   ClientHeight = 265
   ClientWidth = 160
   Color = clBtnFace
   DefaultMonitor = dmDesktop
   KeyPreview = True
   OnActivate = FormActivate
+  OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   ParentFont = True
   LCLVersion = '2.0.8.0'

@@ -7,12 +7,16 @@ uses
   Buttons, ExtCtrls, LCLType, UnitData;
 
 type
+
+  { TSearchForm }
+
   TSearchForm = class(TForm)
     OKButton: TButton;
     RadioGroupRange: TRadioGroup;
     GroupBoxOption: TGroupBox;
     CheckBoxCase: TCheckBox;
     CheckBoxWhole: TCheckBox;
+    procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormActivate(Sender: TObject);
   public
@@ -70,9 +74,22 @@ begin
   end;
 end;
 
+procedure TSearchForm.FormCreate(Sender: TObject);
+{$ifdef linux} const d = 7; {$endif}
+begin
+  {$ifdef linux}
+  GroupBoxOption .Top := GroupBoxOption .Top + d;
+  RadioGroupRange.Top := RadioGroupRange.Top + d;
+  CheckBoxCase   .Top := CheckBoxCase   .Top + d;
+  CheckBoxWhole  .Top := CheckBoxWhole  .Top + d;
+  OKButton       .Top := OKButton       .Top + d;
+  Height := Height + d;
+  {$endif}
+end;
+
 procedure TSearchForm.Localize;
 begin
-  Caption := ' Настройки поиска'; // + T('Options');
+  Caption := {$ifdef windows} ' ' + {$endif} T('Search');
 
   RadioGroupRange.Items[0] := T('Entire Bible'  );
   RadioGroupRange.Items[1] := T('Old Testament'     );
