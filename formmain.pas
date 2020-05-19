@@ -3,8 +3,8 @@ unit FormMain;
 interface
 
 uses
-  Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
+  Classes, SysUtils, LazFileUtils, LazUTF8, Forms, Controls, Graphics, Dialogs,
+  StdCtrls, Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
   ClipBrd, StdActns, Buttons, PrintersDlgs, Types, RichMemo, UnboundMemo,
   UnitData, UmLib, UnitLib;
 
@@ -230,6 +230,9 @@ type
     procedure GoToVerse(Verse: TVerse; select: boolean);
     procedure LangMenuInit;
     procedure LoadChapter;
+    procedure LoadSearch(s: string);
+    procedure LoadCommentary;
+    procedure LoadDictionary(s: string);
     procedure LoadStrong(s: string);
     procedure LoadFootnote(s: string);
     procedure MakeBookList;
@@ -241,7 +244,6 @@ type
     procedure RebuildRecentList;
     procedure RecentMenuInit;
     procedure SaveConfig;
-    procedure SearchText(s: string);
     procedure SelectPage(page: integer);
     procedure UpdateCaption(s: string);
     procedure UpdateStatus(s, Hint: string);
@@ -576,8 +578,8 @@ end;
 procedure TMainForm.EditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_RETURN then
-    if PageControl.ActivePageIndex = apDictionary then CmdDictionary(Sender)
-      else SearchText(Edit.Text);
+    if PageControl.ActivePageIndex = apDictionary then LoadDictionary(Edit.Text)
+      else LoadSearch(Edit.Text);
 end;
 
 procedure TMainForm.CmdCompare(Sender: TObject);
@@ -587,7 +589,7 @@ begin
     if CompareForm.ShowModal <> mrOk then Exit;
   MemoCompare.Font.Assign(DefaultFont);
   MemoCompare.LoadText(Load_Compare);
-  if Sender <> PageControl then SelectPage(apCompare);
+  SelectPage(apCompare);
 end;
 
 procedure TMainForm.CmdInterline(Sender: TObject);
@@ -640,7 +642,18 @@ end;
 procedure TMainForm.CmdSearch(Sender: TObject);
 begin
   Edit.Text := Trim(UnboundMemo.SelText);
-  if Edit.Text <> '' then SearchText(Edit.Text);
+  if Edit.Text = '' then Edit.SetFocus else LoadSearch(Edit.Text);
+end;
+
+procedure TMainForm.CmdCommentary(Sender: TObject);
+begin
+  LoadCommentary;
+end;
+
+procedure TMainForm.CmdDictionary(Sender: TObject);
+begin
+  Edit.Text := Trim(UnboundMemo.SelText);
+  LoadDictionary(Edit.Text);
 end;
 
 procedure TMainForm.CmdTrans(Sender: TObject);
@@ -650,22 +663,6 @@ begin
   TranslateForm.Memo.LoadText(Load_Translate);
   TranslateForm.Repaint;
   TranslateForm.Show;
-end;
-
-procedure TMainForm.CmdCommentary(Sender: TObject);
-begin
-  if Shelf.Count = 0 then Exit;
-  MemoCommentary.Font.Assign(DefaultFont);
-  MemoCommentary.LoadText(Load_Commentary);
-  if Sender <> PageControl then SelectPage(apCommentary);
-end;
-
-procedure TMainForm.CmdDictionary(Sender: TObject);
-begin
-  if Shelf.Count = 0 then Exit;
-  MemoDictionary.Font.Assign(DefaultFont);
-  MemoDictionary.LoadText(Load_Dictionary(Edit.Text));
-  if Sender <> PageControl then SelectPage(apDictionary);
 end;
 
 procedure TMainForm.CmdFileNew(Sender: TObject);
@@ -748,8 +745,34 @@ begin
 end;
 
 //-------------------------------------------------------------------------------------------------
-//                                        memo's events
+//                                         Events
 //-------------------------------------------------------------------------------------------------
+
+procedure TMainForm.BookBoxClick(Sender: TObject);
+var
+  Book : TBook;
+  s : string;
+begin
+  if BookBox.Count = 0 then Exit;
+  s := BookBox.Items[BookBox.ItemIndex];
+
+  Book := Bible.BookByName(s);
+  if not Assigned(Book) then Exit;
+
+  ActiveVerse := minVerse;
+  ActiveVerse.Book := Book.Number;
+
+  ChapterBox.ItemIndex := 0;
+  LoadChapter;
+end;
+
+procedure TMainForm.ChapterBoxClick(Sender: TObject);
+begin
+  ActiveVerse.Chapter := ChapterBox.ItemIndex + 1;
+  ActiveVerse.Number := 1;
+  ActiveVerse.Count := 1;
+  LoadChapter;
+end;
 
 procedure TMainForm.MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
@@ -804,34 +827,6 @@ begin
 end;
 
 //-------------------------------------------------------------------------------------------------
-//                                       Interface
-//-------------------------------------------------------------------------------------------------
-
-procedure TMainForm.BookBoxClick(Sender: TObject);
-var
-  Book : TBook;
-  s : string;
-begin
-  if BookBox.Count = 0 then Exit;
-  s := BookBox.Items[BookBox.ItemIndex];
-
-  Book := Bible.BookByName(s);
-  if not Assigned(Book) then Exit;
-
-  ActiveVerse := minVerse;
-  ActiveVerse.Book := Book.Number;
-
-  ChapterBox.ItemIndex := 0;
-  LoadChapter;
-end;
-
-procedure TMainForm.ChapterBoxClick(Sender: TObject);
-begin
-  ActiveVerse.Chapter := ChapterBox.ItemIndex + 1;
-  ActiveVerse.Number := 1;
-  ActiveVerse.Count := 1;
-  LoadChapter;
-end;
 
 procedure TMainForm.ComboBoxInit;
 var i : integer;
@@ -1008,7 +1003,6 @@ begin
 
   if B then x := 1 else x:= 0;
 
-  ActionSearch.Enabled     := UnboundMemo.SelLength > x;
   ActionDictionary.Enabled := UnboundMemo.SelLength > x;
   ActionEditCopy.Enabled   := UnboundMemo.SelLength > x;
   ActionEditCut.Enabled    := L and (UnboundMemo.SelLength > 0);
@@ -1031,6 +1025,7 @@ begin
   ActionBullets.Enabled    := L;
 
   ToolButtonSearch.Enabled := PageControl.ActivePageIndex <> apDictionary;
+  pmSearch.Enabled := UnboundMemo.SelLength > x;
 
   UpdateActionImage;
 end;
@@ -1063,6 +1058,9 @@ end;
 procedure TMainForm.UpdateActionImage;
 var i: integer;
 begin
+
+  EXIT; // testing // ************************************************************************** //
+
   with ActionList do
     for i := 0 to ActionCount - 1 do
       if TAction(Actions[i]).Tag > 0 then
@@ -1101,6 +1099,7 @@ end;
 
 procedure TMainForm.SelectPage(page: integer);
 begin
+  if page = PageControl.ActivePageIndex then Exit;
   PageControl.ActivePageIndex := page;
   PageControl.ActivePage.TabVisible := true;
   EnableActions;
@@ -1184,7 +1183,7 @@ begin
   Pos.x := Width - (SearchForm.Width div 2);
   Pos.y := PageControl.Top + 2;
   Pos := ClientToScreen(Pos);
-  if SearchForm.ShowAtPos(Pos) = mrOk then SearchText(Edit.Text);
+  if SearchForm.ShowAtPos(Pos) = mrOk then LoadSearch(Edit.Text);
 end;
 
 procedure TMainForm.MakeBookList;
@@ -1228,7 +1227,7 @@ begin
 end;
 
 //----------------------------------------------------------------------------------------
-//                                       tools
+//                                       Loads
 //----------------------------------------------------------------------------------------
 
 procedure TMainForm.LoadChapter;
@@ -1242,18 +1241,18 @@ begin
   SelectPage(apBible);
 end;
 
-procedure TMainForm.SearchText(s: string);
+procedure TMainForm.LoadSearch(s: string);
 var
   richtext : string;
   count : integer = 0;
   {$ifdef linux} const max = 2000; {$endif}
 begin
   s := Trim(s);
-  if Length(s) < 2 then Exit;
+  if Utf8Length(s) < 2 then Exit;
   if Shelf.Count = 0 then Exit;
 
   Cursor := crHourGlass;
-  richtext := Search_Text(s, count);
+  richtext := Load_Search(s, count);
   {$ifdef linux} if count > max then richtext := Show_Message(ls.Narrow); {$endif}
   MemoSearch.Font.Assign(DefaultFont);
   MemoSearch.LoadText(richtext);
@@ -1261,6 +1260,23 @@ begin
   Cursor := crArrow;
   SelectPage(apSearch);
   UpdateStatus(ToStr(count) + ' ' + ls.found,'');
+end;
+
+procedure TMainForm.LoadCommentary;
+begin
+  if Shelf.Count = 0 then Exit;
+  MemoCommentary.Font.Assign(DefaultFont);
+  MemoCommentary.LoadText(Load_Commentary);
+  SelectPage(apCommentary);
+end;
+
+procedure TMainForm.LoadDictionary(s: string);
+begin
+  if Shelf.Count = 0 then Exit;
+  if Trim(s) = '' then Exit;
+  MemoDictionary.Font.Assign(DefaultFont);
+  MemoDictionary.LoadText(Load_Dictionary(s));
+  SelectPage(apDictionary);
 end;
 
 procedure TMainForm.LoadStrong(s: string);
