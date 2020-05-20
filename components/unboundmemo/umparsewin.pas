@@ -82,7 +82,7 @@ begin
   if Tag =  '</i>' then r := '\cf1\i0_';
   if Tag =   '<a>' then r := '\cf5_';
   if Tag =  '</a>' then r := '\cf1_';
-  if Tag =   '<b>' then r := '\cf8\b_' ;
+  if Tag =   '<b>' then r := '\cf8\b0_';
   if Tag =  '</b>' then r := '\cf1\b0_';
   if Tag =   '<h>' then r := '\cf3_';
   if Tag =  '</h>' then r := '\cf1_';

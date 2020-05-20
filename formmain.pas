@@ -433,6 +433,8 @@ begin
   miBibleFolder.Caption := T('Bible Folder');
   miHelpAbout.Caption := T('About');
 
+  pmSearch.Caption := T('Search');
+  pmDictionary.Caption := T('Dictionary Lookup');
   pmCut.Caption := T('Cut');
   pmCopy.Caption := T('Copy');
   pmPaste.Caption := T('Paste');
@@ -443,6 +445,8 @@ begin
   TabSheetBible.Caption := T('Bible');
   TabSheetSearch.Caption := T('Search');
   TabSheetCompare.Caption := T('Compare');
+  TabSheetCommentary.Caption := T('Commentary');
+  TabSheetDictionary.Caption := T('Dictionary');
   TabSheetNotes.Caption := T('Notes');
 
   ToolButtonNew.Hint := T('New');
@@ -1266,7 +1270,7 @@ procedure TMainForm.LoadCommentary;
 begin
   if Shelf.Count = 0 then Exit;
   MemoCommentary.Font.Assign(DefaultFont);
-  MemoCommentary.LoadText(Load_Commentary);
+  MemoCommentary.LoadHtml(Load_Commentary);
   SelectPage(apCommentary);
 end;
 
@@ -1275,7 +1279,7 @@ begin
   if Shelf.Count = 0 then Exit;
   if Trim(s) = '' then Exit;
   MemoDictionary.Font.Assign(DefaultFont);
-  MemoDictionary.LoadText(Load_Dictionary(s));
+  MemoDictionary.LoadHtml(Load_Dictionary(s));
   SelectPage(apDictionary);
 end;
 
