@@ -197,6 +197,7 @@ object MainForm: TMainForm
       Left = 205
       Top = 0
       Action = ActionCommentary
+      Visible = False
     end
     object ToolButtonCopyright: TToolButton
       Left = 32
@@ -207,6 +208,7 @@ object MainForm: TMainForm
       Left = 233
       Top = 0
       Action = ActionDictionary
+      Visible = False
     end
     object ToolPanel: TPanel
       Left = 673
@@ -338,7 +340,6 @@ object MainForm: TMainForm
       ClientHeight = 296
       ClientWidth = 675
       ImageIndex = 1
-      TabVisible = False
       object MemoSearch: TUnboundMemo
         Cursor = crArrow
         Left = 0
@@ -397,7 +398,6 @@ object MainForm: TMainForm
       Caption = 'Commentary'
       ClientHeight = 296
       ClientWidth = 675
-      TabVisible = False
       object MemoCommentary: TUnboundMemo
         Cursor = crArrow
         Left = 0
@@ -425,7 +425,6 @@ object MainForm: TMainForm
       Caption = 'Dictionary'
       ClientHeight = 296
       ClientWidth = 675
-      TabVisible = False
       object MemoDictionary: TUnboundMemo
         Cursor = crArrow
         Left = 0
@@ -1942,14 +1941,16 @@ object MainForm: TMainForm
     top = 160
     object pmSearch: TMenuItem
       Action = ActionSearch
+      AutoCheck = True
+    end
+    object pmDictionary: TMenuItem
+      Action = ActionDictionary
+      Caption = 'Dictionary Lookup'
     end
     object pmCommentary: TMenuItem
       Action = ActionCommentary
       Caption = 'Commentary'
-    end
-    object pmDictionary: TMenuItem
-      Action = ActionDictionary
-      Caption = 'Dictionary'
+      Visible = False
     end
     object pmSeparator1: TMenuItem
       Caption = '-'
@@ -2274,7 +2275,6 @@ object MainForm: TMainForm
     end
     object ActionDictionary: TAction
       Caption = 'ActionDictionary'
-      ImageIndex = 12
       OnExecute = CmdDictionary
     end
     object ActionModules: TAction
