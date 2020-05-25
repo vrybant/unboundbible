@@ -325,9 +325,11 @@ begin
   IdleTimer.Enabled := true;
   {$endif}
 
-  UpdateActionImage;
+  TabSheetSearch    .TabVisible := false;
+  TabSheetCommentary.TabVisible := false;
+  TabSheetDictionary.TabVisible := false;
 
-//////////////////////////////////////////////////////////////  TabSheetSearch.TabVisible := false;
+  UpdateActionImage;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);

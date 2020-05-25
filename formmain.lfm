@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 388
+  Left = 152
   Height = 401
-  Top = 245
+  Top = 256
   Width = 883
   Caption = 'Unbound Bible'
   ClientHeight = 381
@@ -197,7 +197,6 @@ object MainForm: TMainForm
       Left = 205
       Top = 0
       Action = ActionCommentary
-      Visible = False
     end
     object ToolButtonCopyright: TToolButton
       Left = 32
@@ -208,7 +207,7 @@ object MainForm: TMainForm
       Left = 233
       Top = 0
       Action = ActionDictionary
-      Visible = False
+      ImageIndex = 12
     end
     object ToolPanel: TPanel
       Left = 673
@@ -365,8 +364,8 @@ object MainForm: TMainForm
     end
     object TabSheetCompare: TTabSheet
       Caption = 'Compare'
-      ClientHeight = 296
-      ClientWidth = 675
+      ClientHeight = 298
+      ClientWidth = 673
       Font.Color = clWindowText
       Font.Height = -12
       ImageIndex = 3
@@ -396,8 +395,8 @@ object MainForm: TMainForm
     end
     object TabSheetCommentary: TTabSheet
       Caption = 'Commentary'
-      ClientHeight = 296
-      ClientWidth = 675
+      ClientHeight = 298
+      ClientWidth = 673
       object MemoCommentary: TUnboundMemo
         Cursor = crArrow
         Left = 0
@@ -423,8 +422,8 @@ object MainForm: TMainForm
     end
     object TabSheetDictionary: TTabSheet
       Caption = 'Dictionary'
-      ClientHeight = 296
-      ClientWidth = 675
+      ClientHeight = 298
+      ClientWidth = 673
       object MemoDictionary: TUnboundMemo
         Cursor = crArrow
         Left = 0
@@ -450,8 +449,8 @@ object MainForm: TMainForm
     end
     object TabSheetNotes: TTabSheet
       Caption = 'Notes'
-      ClientHeight = 296
-      ClientWidth = 675
+      ClientHeight = 298
+      ClientWidth = 673
       ImageIndex = 2
       object MemoNotes: TUnboundMemo
         Cursor = crArrow
