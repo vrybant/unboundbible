@@ -62,6 +62,17 @@ type
     toverse    : string;
   end;
 
+  TXrefAlias = record
+    dictionary, word, data : string;
+
+    id         : string;
+    book       : string;
+    chapter    : string;
+    fromverse  : string;
+    toverse    : string;
+  end;
+
+
   TVerse = record
     book, chapter, number, count : integer;
   end;
@@ -167,6 +178,30 @@ const
     fromverse  : '';
     toverse    : '';
   );
+
+  unboundXrefAlias : TXrefAlias = (
+   dictionary : 'Dictionary';
+   word       : 'Word';
+   data       : 'Data';
+
+   id         : '';
+   book       : '';
+   chapter    : '';
+   fromverse  : '';
+   toverse    : '';
+   );
+
+  mybibleXrefAlias : TXrefAlias = (
+   dictionary : 'Dictionary';
+   word       : 'Word';
+   data       : 'Data';
+
+   id         : '';
+   book       : '';
+   chapter    : '';
+   fromverse  : '';
+   toverse    : '';
+   );
 
   noneVerse : TVerse = (
     book    : 0;
