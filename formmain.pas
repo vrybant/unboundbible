@@ -29,6 +29,7 @@ type
     MemoBible: TUnboundMemo;
     MemoSearch: TUnboundMemo;
     MemoCompare: TUnboundMemo;
+    MemoXref: TUnboundMemo;
     MemoCommentary: TUnboundMemo;
     MemoDictionary: TUnboundMemo;
     MemoNotes: TUnboundMemo;
@@ -79,6 +80,7 @@ type
     Images: TImageList;
 
     PageControl: TPageControl;
+    TabSheetXref: TTabSheet;
     TabSheetBible: TTabSheet;
     TabSheetSearch: TTabSheet;
     TabSheetCompare: TTabSheet;
@@ -268,9 +270,10 @@ const
   apBible      = 0; // active page
   apSearch     = 1;
   apCompare    = 2;
-  apCommentary = 3;
-  apDictionary = 4;
-  apNotes      = 5;
+  apXref       = 3;
+  apCommentary = 4;
+  apDictionary = 5;
+  apNotes      = 6;
 
 {$R *.lfm}
 
@@ -349,6 +352,7 @@ begin
     MemoBible     .Clear;
     MemoSearch    .Clear;
     MemoCompare   .Clear;
+    MemoXref      .Clear;
     MemoCommentary.Clear;
     MemoDictionary.Clear;
     MemoNotes     .Clear;
@@ -447,6 +451,7 @@ begin
   TabSheetBible.Caption := T('Bible');
   TabSheetSearch.Caption := T('Search');
   TabSheetCompare.Caption := T('Compare');
+  TabSheetXref.Caption := 'Cсылки'; // 'Параллельные места'; //
   TabSheetCommentary.Caption := T('Commentary');
   TabSheetDictionary.Caption := T('Dictionary');
   TabSheetNotes.Caption := T('Notes');
@@ -991,6 +996,7 @@ begin
     apBible      : Result := MemoBible;
     apSearch     : Result := MemoSearch;
     apCompare    : Result := MemoCompare;
+    apXref       : Result := MemoXref;
     apCommentary : Result := MemoCommentary;
     apDictionary : Result := MemoDictionary;
     apNotes      : Result := MemoNotes;

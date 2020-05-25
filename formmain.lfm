@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 152
+  Left = 594
   Height = 401
-  Top = 256
+  Top = 278
   Width = 883
   Caption = 'Unbound Bible'
   ClientHeight = 381
@@ -364,8 +364,8 @@ object MainForm: TMainForm
     end
     object TabSheetCompare: TTabSheet
       Caption = 'Compare'
-      ClientHeight = 298
-      ClientWidth = 673
+      ClientHeight = 296
+      ClientWidth = 675
       Font.Color = clWindowText
       Font.Height = -12
       ImageIndex = 3
@@ -393,10 +393,37 @@ object MainForm: TMainForm
         Linkable = True
       end
     end
+    object TabSheetXref: TTabSheet
+      Caption = 'XRefs'
+      ClientHeight = 296
+      ClientWidth = 675
+      object MemoXRef: TUnboundMemo
+        Cursor = crArrow
+        Left = 0
+        Height = 296
+        Top = 0
+        Width = 675
+        Align = alClient
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        HideSelection = False
+        OnContextPopup = MemoContextPopup
+        OnMouseLeave = MemoMouseLeave
+        OnMouseUp = MemoMouseUp
+        OnSelectionChange = MemoSelectionChange
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssBoth
+        TabOrder = 0
+        ZoomFactor = 1
+        Linkable = True
+      end
+    end
     object TabSheetCommentary: TTabSheet
       Caption = 'Commentary'
-      ClientHeight = 298
-      ClientWidth = 673
+      ClientHeight = 296
+      ClientWidth = 675
       object MemoCommentary: TUnboundMemo
         Cursor = crArrow
         Left = 0
@@ -449,8 +476,8 @@ object MainForm: TMainForm
     end
     object TabSheetNotes: TTabSheet
       Caption = 'Notes'
-      ClientHeight = 298
-      ClientWidth = 673
+      ClientHeight = 296
+      ClientWidth = 675
       ImageIndex = 2
       object MemoNotes: TUnboundMemo
         Cursor = crArrow
