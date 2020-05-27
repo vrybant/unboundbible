@@ -1969,14 +1969,18 @@ object MainForm: TMainForm
       Action = ActionSearch
       AutoCheck = True
     end
-    object pmDictionary: TMenuItem
-      Action = ActionDictionary
-      Caption = 'Dictionary Lookup'
+    object miXref: TMenuItem
+      Action = ActionXref
+      Caption = 'X-Refs'
     end
     object pmCommentary: TMenuItem
       Action = ActionCommentary
       Caption = 'Commentary'
       Visible = False
+    end
+    object pmDictionary: TMenuItem
+      Action = ActionDictionary
+      Caption = 'Dictionary'
     end
     object pmSeparator1: TMenuItem
       Caption = '-'
@@ -2053,6 +2057,7 @@ object MainForm: TMainForm
     left = 400
     top = 104
     object ActionAbout: THelpAction
+      Category = 'Tools'
       Caption = 'CmdAbout'
       ImageIndex = 31
       OnExecute = CmdAbout
@@ -2153,6 +2158,7 @@ object MainForm: TMainForm
       ShortCut = 16449
     end
     object ActionCompare: TAction
+      Category = 'Tools'
       Caption = 'CmdCompare'
       ImageIndex = 11
       OnExecute = CmdCompare
@@ -2242,10 +2248,6 @@ object MainForm: TMainForm
       ImageIndex = 29
       OnExecute = CmdStyle2
     end
-    object ActionOptions: TAction
-      Caption = 'Options'
-      OnExecute = CmdOptions
-    end
     object ActionSearch: TAction
       Category = 'Edit'
       Caption = 'Search...'
@@ -2268,19 +2270,6 @@ object MainForm: TMainForm
       OnExecute = CmdCopyVerses
       ShortCut = 16466
     end
-    object ActionInterline: TAction
-      Caption = 'CmdOnline'
-      OnExecute = CmdInterline
-    end
-    object ActionTranslate: TAction
-      Caption = 'CmdTrans'
-      OnExecute = CmdTrans
-    end
-    object ActionCommentary: TAction
-      Caption = 'ActionCommentary'
-      ImageIndex = 38
-      OnExecute = CmdCommentary
-    end
     object ActionIncrease: TAction
       Category = 'Memo'
       Caption = 'Increase'
@@ -2299,11 +2288,40 @@ object MainForm: TMainForm
       )
       ShortCut = 16493
     end
+    object ActionXref: TAction
+      Category = 'Tools'
+      Caption = 'ActionXref'
+      ImageIndex = 21
+      OnExecute = CmdXref
+    end
+    object ActionCommentary: TAction
+      Category = 'Tools'
+      Caption = 'ActionCommentary'
+      ImageIndex = 38
+      OnExecute = CmdCommentary
+    end
     object ActionDictionary: TAction
+      Category = 'Tools'
       Caption = 'ActionDictionary'
       OnExecute = CmdDictionary
     end
+    object ActionOptions: TAction
+      Category = 'Tools'
+      Caption = 'Options'
+      OnExecute = CmdOptions
+    end
+    object ActionInterline: TAction
+      Category = 'Tools'
+      Caption = 'CmdOnline'
+      OnExecute = CmdInterline
+    end
+    object ActionTranslate: TAction
+      Category = 'Tools'
+      Caption = 'CmdTrans'
+      OnExecute = CmdTrans
+    end
     object ActionModules: TAction
+      Category = 'Tools'
       Caption = 'ActionModules'
       ImageIndex = 34
       OnExecute = cmdModules

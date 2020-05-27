@@ -13,9 +13,11 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ActionXref: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
     MenuItem1: TMenuItem;
+    miXref: TMenuItem;
     pmCommentary: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
@@ -173,6 +175,7 @@ type
     ToolSeparatorBullets: TToolButton;
     ToolButtonVerses: TToolButton;
 
+    procedure CmdXref(Sender: TObject);
     procedure CmdCommentary(Sender: TObject);
     procedure CmdDictionary(Sender: TObject);
     procedure CmdAbout(Sender: TObject);
@@ -233,6 +236,7 @@ type
     procedure LangMenuInit;
     procedure LoadChapter;
     procedure LoadSearch(s: string);
+    procedure LoadXref;
     procedure LoadCommentary;
     procedure LoadDictionary(s: string);
     procedure LoadStrong(s: string);
@@ -654,6 +658,11 @@ procedure TMainForm.CmdSearch(Sender: TObject);
 begin
   Edit.Text := Trim(UnboundMemo.SelText);
   if Edit.Text = '' then Edit.SetFocus else LoadSearch(Edit.Text);
+end;
+
+procedure TMainForm.CmdXref(Sender: TObject);
+begin
+  LoadXref;
 end;
 
 procedure TMainForm.CmdCommentary(Sender: TObject);
@@ -1172,6 +1181,7 @@ begin
 //UnboundMemo.SetFocus; //*******************************************************************************************************************
   UnboundMemo.Repaint;
   if PageControl.ActivePageIndex = apCompare    then CmdCompare(PageControl);
+  if PageControl.ActivePageIndex = apXref       then CmdXref(PageControl);
   if PageControl.ActivePageIndex = apCommentary then CmdCommentary(PageControl);
 //if PageControl.ActivePageIndex = apDictionary then CmdDictionary(PageControl);
 end;
@@ -1272,6 +1282,14 @@ begin
   Cursor := crArrow;
   SelectPage(apSearch);
   UpdateStatus(ToStr(count) + ' ' + ls.found,'');
+end;
+
+procedure TMainForm.LoadXref;
+begin
+  if Shelf.Count = 0 then Exit;
+  MemoXref.Font.Assign(DefaultFont);
+  MemoXref.LoadText(Load_Xref);
+  SelectPage(apXref);
 end;
 
 procedure TMainForm.LoadCommentary;
