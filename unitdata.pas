@@ -63,19 +63,23 @@ type
   end;
 
   TXrefAlias = record
-    dictionary, word, data : string;
-
-    id         : string;
+    xrefs      : string;
     book       : string;
     chapter    : string;
     fromverse  : string;
     toverse    : string;
+    xbook      : string;
+    xchapter   : string;
+    xfromverse : string;
+    xtoverse   : string;
   end;
 
 
   TVerse = record
     book, chapter, number, count : integer;
   end;
+
+  TVerseArray = array of TVerse;
 
   TBook = class
   public
@@ -180,27 +184,27 @@ const
   );
 
   unboundXrefAlias : TXrefAlias = (
-   dictionary : 'Dictionary';
-   word       : 'Word';
-   data       : 'Data';
-
-   id         : '';
-   book       : '';
-   chapter    : '';
-   fromverse  : '';
-   toverse    : '';
+    xrefs      : 'xrefs';
+    book       : 'book';
+    chapter    : 'chapter';
+    fromverse  : 'fromverse';
+    toverse    : 'toverse';
+    xbook      : 'xbook';
+    xchapter   : 'xchapter';
+    xfromverse : 'xfromverse';
+    xtoverse   : 'xtoverse';
    );
 
   mybibleXrefAlias : TXrefAlias = (
-   dictionary : 'Dictionary';
-   word       : 'Word';
-   data       : 'Data';
-
-   id         : '';
-   book       : '';
-   chapter    : '';
-   fromverse  : '';
-   toverse    : '';
+    xrefs      : 'cross_references';
+    book       : 'book';
+    chapter    : 'chapter';
+    fromverse  : 'verse';
+    toverse    : 'verse_end';
+    xbook      : 'book_to';
+    xchapter   : 'chapter_to';
+    xfromverse : 'verse_to_start';
+    xtoverse   : 'verse_to_end';
    );
 
   noneVerse : TVerse = (

@@ -9,6 +9,7 @@ function Load_Search(st: string; var count: integer): string;
 function Load_Compare: string;
 function Load_ModulesInfo: string;
 function Load_Translate: string;
+function Load_Xref: string;
 function Load_Commentary: string;
 function Load_Dictionary(text: string = ''): string;
 function Load_Strong(number: string = ''): string;
@@ -19,7 +20,7 @@ function Show_Message(s: string): string;
 implementation
 
 uses
-  UnitData, UnitModule, UnitShelf, UnitDictionary, UnitCommentary, FormSearch;
+  UnitData, UnitModule, UnitShelf, FormSearch, UnitXref, UnitCommentary, UnitDictionary;
 
 function Load_Chapter: string;
 var
@@ -156,6 +157,41 @@ begin
         Result += '<br><l>' + Shelf[i].Name + '</l><br><br>';
 
       for item in Strings do Result += item + '<br>';
+    end;
+end;
+
+function Load_Xref: string;
+var
+  Verses : TVerseArray;
+  Strings : TStringArray;
+  item : TVerse;
+  s : string;
+  i : integer;
+begin
+  Result := '';
+
+  for i:=0 to Xrefs.Count-1 do
+    begin
+      Verses := Xrefs[i].GetData(ActiveVerse);
+      if Length(Verses) = 0 then Continue;
+
+      Result += '<b>' + Xrefs[i].Name + '</b><br><br>';
+
+      for item in Verses do
+        begin
+          Result += '<l>' + Bible.VerseToStr(item, not Options.cvAbbreviate) + '</l> ';
+          Strings := Bible.GetRange(item);
+
+          for s in Strings do Result += s + '<br>';
+        end;
+
+      Result += '<br>';
+    end;
+
+  if Xrefs.Count = 0 then
+    begin
+      Result += '<br> ' + ls.NoModules;
+      Result += '<br><br> ' + ls.MoreInfo;
     end;
 end;
 
