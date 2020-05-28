@@ -7,7 +7,7 @@ uses
 
 type
   TXrefAlias = record
-    xrefs, book, chapter, fromverse, toverse, xbook, xchapter, xfromverse, xtoverse : string;
+    xrefs, book, chapter, fromverse, toverse, xbook, xchapter, xfromverse, xtoverse, votes : string;
   end;
 
   TXref = class(TModule)
@@ -42,6 +42,7 @@ const
     xchapter   : 'xchapter';
     xfromverse : 'xfromverse';
     xtoverse   : 'xtoverse';
+    votes      : 'votes';
    );
 
   mybibleAlias : TXrefAlias = (
@@ -54,6 +55,7 @@ const
     xchapter   : 'chapter_to';
     xfromverse : 'verse_to_start';
     xtoverse   : 'verse_to_end';
+    votes      : 'votes';
    );
 
 //========================================================================================
