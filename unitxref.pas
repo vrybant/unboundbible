@@ -6,6 +6,10 @@ uses
   Classes, Fgl, SysUtils, UnitModule, UnitData, UmLib;
 
 type
+  TXrefAlias = record
+    xrefs, book, chapter, fromverse, toverse, xbook, xchapter, xfromverse, xtoverse : string;
+  end;
+
   TXref = class(TModule)
   private
     z : TXrefAlias;
@@ -27,6 +31,31 @@ var
 
 implementation
 
+const
+  unboundAlias : TXrefAlias = (
+    xrefs      : 'xrefs';
+    book       : 'book';
+    chapter    : 'chapter';
+    fromverse  : 'fromverse';
+    toverse    : 'toverse';
+    xbook      : 'xbook';
+    xchapter   : 'xchapter';
+    xfromverse : 'xfromverse';
+    xtoverse   : 'xtoverse';
+   );
+
+  mybibleAlias : TXrefAlias = (
+    xrefs      : 'cross_references';
+    book       : 'book';
+    chapter    : 'chapter';
+    fromverse  : 'verse';
+    toverse    : 'verse_end';
+    xbook      : 'book_to';
+    xchapter   : 'chapter_to';
+    xfromverse : 'verse_to_start';
+    xtoverse   : 'verse_to_end';
+   );
+
 //========================================================================================
 //                                     TXref
 //========================================================================================
@@ -37,8 +66,8 @@ begin
 
   format := mybible; // *****
 
-  z := unboundXrefAlias;
-  if format = mybible then z := mybibleXrefAlias;
+  z := unboundAlias;
+  if format = mybible then z := mybibleAlias;
   if connected and not TableExists(z.xrefs) then connected := false;
 
   output(FilePath);

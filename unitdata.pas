@@ -30,50 +30,12 @@ type
   end;
 
 type
-  TBibleAlias = record
-    bible, book, chapter, verse, text, titles, number, name, abbr : string;
-  end;
-
-type
   TTitle = record
     name, abbr : string;
     number, sorting : integer;
   end;
 
   TTitles = array of TTitle;
-
-  TCommentaryAlias = record
-    commentary : string;
-    id         : string;
-    book       : string;
-    chapter    : string;
-    fromverse  : string;
-    toverse    : string;
-    data       : string;
-  end;
-
-  TDictionaryAlias = record
-    dictionary, word, data : string;
-
-    id         : string;
-    book       : string;
-    chapter    : string;
-    fromverse  : string;
-    toverse    : string;
-  end;
-
-  TXrefAlias = record
-    xrefs      : string;
-    book       : string;
-    chapter    : string;
-    fromverse  : string;
-    toverse    : string;
-    xbook      : string;
-    xchapter   : string;
-    xfromverse : string;
-    xtoverse   : string;
-  end;
-
 
   TVerse = record
     book, chapter, number, count : integer;
@@ -113,100 +75,6 @@ type
  end;
 
 const
-  unboundStringAlias : TBibleAlias = (
-    bible   : 'Bible';
-    book    : 'Book';
-    chapter : 'Chapter';
-    verse   : 'Verse';
-    text    : 'Scripture';
-    titles  : 'Titles';
-    number  : 'Number';
-    name    : 'Name';
-    abbr    : 'Abbreviation';
-    );
-
-  mybibleStringAlias : TBibleAlias = (
-    bible   : 'verses';
-    book    : 'book_number';
-    chapter : 'chapter';
-    verse   : 'verse';
-    text    : 'text';
-    titles  : 'books_all';
-    number  : 'book_number';
-    name    : 'long_name';
-    abbr    : 'short_name';
-    );
-
-  unboundCommentaryAlias : TCommentaryAlias = (
-    commentary : 'commentary';
-    id         : 'id';
-    book       : 'book';
-    chapter    : 'chapter';
-    fromverse  : 'fromverse';
-    toverse    : 'toverse';
-    data       : 'data';
-    );
-
-  mybibleCommentaryAlias : TCommentaryAlias = (
-    commentary : 'commentaries';
-    id         : 'id';
-    book       : 'book_number';
-    chapter    : 'chapter_number_from';
-    fromverse  : 'verse_number_from';
-//  chapter    : 'chapter_number_to';
-    toverse    : 'verse_number_to';
-//  marker     : 'marker';
-    data       : 'text';
-    );
-
-  unboundDictionaryAlias : TDictionaryAlias = (
-    dictionary : 'Dictionary';
-    word       : 'Word';
-    data       : 'Data';
-
-    id         : '';
-    book       : '';
-    chapter    : '';
-    fromverse  : '';
-    toverse    : '';
-    );
-
-  mybibleDictionaryAlias : TDictionaryAlias = (
-    dictionary : 'dictionary';
-    word       : 'topic';
-    data       : 'definition';
-
-    id         : '';
-    book       : '';
-    chapter    : '';
-    fromverse  : '';
-    toverse    : '';
-  );
-
-  unboundXrefAlias : TXrefAlias = (
-    xrefs      : 'xrefs';
-    book       : 'book';
-    chapter    : 'chapter';
-    fromverse  : 'fromverse';
-    toverse    : 'toverse';
-    xbook      : 'xbook';
-    xchapter   : 'xchapter';
-    xfromverse : 'xfromverse';
-    xtoverse   : 'xtoverse';
-   );
-
-  mybibleXrefAlias : TXrefAlias = (
-    xrefs      : 'cross_references';
-    book       : 'book';
-    chapter    : 'chapter';
-    fromverse  : 'verse';
-    toverse    : 'verse_end';
-    xbook      : 'book_to';
-    xchapter   : 'chapter_to';
-    xfromverse : 'verse_to_start';
-    xtoverse   : 'verse_to_end';
-   );
-
   noneVerse : TVerse = (
     book    : 0;
     chapter : 0;

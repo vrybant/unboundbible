@@ -6,6 +6,10 @@ uses
   Classes, Fgl, SysUtils, UnitModule, UnitData, UmLib, UnitLib;
 
 type
+  TDictionaryAlias = record
+    dictionary, word, data, id, book, chapter, fromverse, toverse : string;
+  end;
+
   TDictionary = class(TModule)
   private
     z : TDictionaryAlias;
@@ -29,6 +33,29 @@ var
 
 implementation
 
+const
+  unboundAlias : TDictionaryAlias = (
+    dictionary : 'Dictionary';
+    word       : 'Word';
+    data       : 'Data';
+    id         : '';
+    book       : '';
+    chapter    : '';
+    fromverse  : '';
+    toverse    : '';
+    );
+
+  mybibleAlias : TDictionaryAlias = (
+    dictionary : 'dictionary';
+    word       : 'topic';
+    data       : 'definition';
+    id         : '';
+    book       : '';
+    chapter    : '';
+    fromverse  : '';
+    toverse    : '';
+  );
+
 //========================================================================================
 //                                     TDictionary
 //========================================================================================
@@ -36,8 +63,8 @@ implementation
 constructor TDictionary.Create(filePath: string);
 begin
   inherited Create(filePath);
-  z := unboundDictionaryAlias;
-  if format = mybible then z := mybibleDictionaryAlias;
+  z := unboundAlias;
+  if format = mybible then z := mybibleAlias;
   if connected and not TableExists(z.dictionary) then connected := false;
 end;
 

@@ -7,6 +7,10 @@ uses
   UnitModule, UnitTitles, UnitData, UnitPrepare, UmLib, UnitLib;
 
 type
+  TBibleAlias = record
+    bible, book, chapter, verse, text, titles, number, name, abbr : string;
+  end;
+
   TBible = class(TModule)
   private
     Books : TBooks;
@@ -46,15 +50,44 @@ implementation
 
 uses UnitSQLiteEx;
 
+const
+  unboundAlias : TBibleAlias = (
+    bible   : 'Bible';
+    book    : 'Book';
+    chapter : 'Chapter';
+    verse   : 'Verse';
+    text    : 'Scripture';
+    titles  : 'Titles';
+    number  : 'Number';
+    name    : 'Name';
+    abbr    : 'Abbreviation';
+    );
+
+  mybibleAlias : TBibleAlias = (
+    bible   : 'verses';
+    book    : 'book_number';
+    chapter : 'chapter';
+    verse   : 'verse';
+    text    : 'text';
+    titles  : 'books_all';
+    number  : 'book_number';
+    name    : 'long_name';
+    abbr    : 'short_name';
+    );
+
+//========================================================================================
+//                                      TBible
+//========================================================================================
+
 constructor TBible.Create(FilePath: string; new: boolean = false);
 begin
   inherited Create(filePath, new);
   Books := TBooks.Create;
 
-  z := unboundStringAlias;
+  z := unboundAlias;
   if format = mybible then
     begin
-      z := mybibleStringAlias;
+      z := mybibleAlias;
       if not TableExists(z.titles) then z.titles := 'books';
     end;
 
