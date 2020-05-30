@@ -7,7 +7,7 @@ uses
 
 type
   TXrefAlias = record
-    xrefs, book, chapter, fromverse, toverse, xbook, xchapter, xfromverse, xtoverse, votes : string;
+    xrefs, book, chapter, verse, xbook, xchapter, xfromverse, xtoverse, votes : string;
   end;
 
   TXref = class(TModule)
@@ -34,23 +34,22 @@ implementation
 const
   unboundAlias : TXrefAlias = (
     xrefs      : 'xrefs';
-    book       : 'book';
-    chapter    : 'chapter';
-    fromverse  : 'fromverse';
-    toverse    : 'toverse';
+    book       : 'Book';
+    chapter    : 'Chapter';
+    verse      : 'Verse';
     xbook      : 'xbook';
     xchapter   : 'xchapter';
     xfromverse : 'xfromverse';
     xtoverse   : 'xtoverse';
-    votes      : 'votes';
+    votes      : 'Votes';
    );
 
   mybibleAlias : TXrefAlias = (
     xrefs      : 'cross_references';
     book       : 'book';
     chapter    : 'chapter';
-    fromverse  : 'verse';
-    toverse    : 'verse_end';
+    verse      : 'verse';
+//  toverse    : 'verse_end';
     xbook      : 'book_to';
     xchapter   : 'chapter_to';
     xfromverse : 'verse_to_start';
@@ -66,21 +65,20 @@ constructor TXref.Create(filePath: string);
 begin
   inherited Create(filePath);
 
-  format := mybible; // *****
-
   z := unboundAlias;
   if format = mybible then z := mybibleAlias;
   if connected and not TableExists(z.xrefs) then connected := false;
 
   output(FilePath);
+  if format = mybible then output('mybible');
+  if format = unbound then output('unbound');
 end;
 
 function TXref.GetData(Verse: TVerse): TVerseArray;
 var
   V : TVerse;
   v_from, v_to : string;
-  i, id : integer;
-  count : integer;
+  i, id, toverse, count : integer;
 begin
   SetLength(Result,0);
 
@@ -91,10 +89,9 @@ begin
   try
     try
         Query.SQL.Text := 'SELECT * FROM ' + z.xrefs +
-          ' WHERE ' + z.book      + ' = '  + ToStr(id) +
-            ' AND ' + z.chapter   + ' = '  + ToStr(Verse.chapter) +
-            ' AND ((' + v_from      + ' BETWEEN ' + z.fromverse + ' AND ' + z.toverse + ')' +
-              ' OR (' + z.fromverse + ' BETWEEN ' + v_from      + ' AND ' + v_to      + ')) ';
+          ' WHERE '  + z.book    + ' = '  + ToStr(id) +
+            ' AND '  + z.chapter + ' = '  + ToStr(Verse.chapter) +
+            ' AND (' + z.verse + ' BETWEEN ' + v_from + ' AND ' + v_to + ') ';
 
         Query.Open;
         Query.Last;
@@ -108,9 +105,12 @@ begin
             try v.book    := Query.FieldByName(z.xbook     ).AsInteger; except end;
             try v.chapter := Query.FieldByName(z.xchapter  ).AsInteger; except end;
             try v.number  := Query.FieldByName(z.xfromverse).AsInteger; except end;
+            try toverse   := Query.FieldByName(z.xtoverse  ).AsInteger; except end;
 
             v.book := DecodeID(v.book);
-            v.count := 1;
+            if toverse = 0 then v.count := 1
+               else v.count := toverse - v.number + 1;
+
             Result[count] := v;
             count += 1;
           finally
