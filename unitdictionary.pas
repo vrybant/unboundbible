@@ -13,9 +13,9 @@ type
   TDictionary = class(TModule)
   private
     z : TDictionaryAlias;
+    function GetData(number: string): string;
   public
     constructor Create(filePath: string);
-    function GetData(number: string): string;
     function Get_Data(text: string): TStringArray;
   end;
 

@@ -166,26 +166,18 @@ var
   Strings : TStringArray;
   item : TVerse;
   s : string;
-  i : integer;
 begin
-  Result := '';
+  Result := Bible.VerseToStr(ActiveVerse, true) + '<br><br>';
 
-  for i:=0 to Xrefs.Count-1 do
+  Verses := Xrefs.GetData(ActiveVerse, Bible.language);
+  if Length(Verses) = 0 then Exit;
+
+  for item in Verses do
     begin
-      Verses := Xrefs[i].GetData(ActiveVerse);
-      if Length(Verses) = 0 then Continue;
-
-      Result += '<b>' + Xrefs[i].Name + '</b><br><br>';
-
-      for item in Verses do
-        begin
-          Result += '<l>' + Bible.VerseToStr(item, not Options.cvAbbreviate) + '</l> ';
-          Strings := Bible.GetRange(item);
-
-          for s in Strings do Result += s + '<br>';
-        end;
-
-      Result += '<br>';
+      Result += '<l>' + Bible.VerseToStr(item, not Options.cvAbbreviate) + '</l> ';
+      Strings := Bible.GetRange(item);
+      for s in Strings do Result += s + ' ';
+      Result += '<br><br>';
     end;
 
   if Xrefs.Count = 0 then

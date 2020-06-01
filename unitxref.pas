@@ -13,9 +13,9 @@ type
   TXref = class(TModule)
   private
     z : TXrefAlias;
+    function GetData(Verse: TVerse): TVerseArray;
   public
     constructor Create(filePath: string);
-    function GetData(Verse: TVerse): TVerseArray;
   end;
 
   TXrefs = class(TFPGList<TXref>)
@@ -23,6 +23,7 @@ type
     procedure Load;
   public
     constructor Create;
+    function GetData(Verse: TVerse; language: string): TVerseArray;
     destructor Destroy; override;
   end;
 
@@ -64,21 +65,16 @@ const
 constructor TXref.Create(filePath: string);
 begin
   inherited Create(filePath);
-
   z := unboundAlias;
   if format = mybible then z := mybibleAlias;
   if connected and not TableExists(z.xrefs) then connected := false;
-
-  output(FilePath);
-  if format = mybible then output('mybible');
-  if format = unbound then output('unbound');
 end;
 
 function TXref.GetData(Verse: TVerse): TVerseArray;
 var
   V : TVerse;
   v_from, v_to : string;
-  i, id, toverse, count : integer;
+  i, id, toverse, votes, count : integer;
 begin
   SetLength(Result,0);
 
@@ -106,6 +102,9 @@ begin
             try v.chapter := Query.FieldByName(z.xchapter  ).AsInteger; except end;
             try v.number  := Query.FieldByName(z.xfromverse).AsInteger; except end;
             try toverse   := Query.FieldByName(z.xtoverse  ).AsInteger; except end;
+            try votes     := Query.FieldByName(z.votes     ).AsInteger; except end;
+
+            if votes <= 1 then continue;
 
             v.book := DecodeID(v.book);
             if toverse = 0 then v.count := 1
@@ -145,10 +144,24 @@ begin
 
   for f in List do
     begin
-      if Pos('.xrefs.',f) + Pos('.crossreferences.',f) = 0 then continue;
+      if Pos('.xrefs.',f) = 0 then continue; // .crossreferences.
       Item := TXref.Create(f);
       if Item.connected then Add(Item) else Item.Free;
     end;
+end;
+
+function TXrefs.GetData(Verse: TVerse; language: string): TVerseArray;
+var
+  filename : string = 'ob.xrefs.unbound';
+  i : integer;
+begin
+  SetLength(Result,0);
+  if self.Count = 0 then Exit;
+  if Prefix('ru', language) then filename := 'obru.xrefs.unbound';
+
+  for i:=0 to Count-1 do
+    if Items[i].filename = filename then
+        Result := Items[i].GetData(Verse);
 end;
 
 destructor TXrefs.Destroy;
