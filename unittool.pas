@@ -101,8 +101,7 @@ end;
 
 function Load_Compare: string;
 var
-  Strings : TStringArray;
-  item : string;
+  str : string;
   i : integer;
 begin
   Result := Bible.VerseToStr(ActiveVerse, true) + '<br> ';
@@ -110,12 +109,9 @@ begin
   for i:=0 to Shelf.Count-1 do
     begin
       if not Shelf[i].Compare then Continue;
-      Strings := Shelf[i].GetRange(ActiveVerse);
-
-      if Length(Strings) > 0 then
-        Result += '<br><l>' + Shelf[i].Name + '</l><br>';
-
-      for item in Strings do Result += item + '<br>';
+      str := ToStr(Shelf[i].GetRange(ActiveVerse));
+      if str = '' then Continue;
+      Result += '<br><l>' + Shelf[i].Name + '</l><br>' + str + '<br>';
     end;
 end;
 
@@ -163,9 +159,8 @@ end;
 function Load_Xref: string;
 var
   Verses : TVerseArray;
-  Strings : TStringArray;
   item : TVerse;
-  s : string;
+  str : string;
 begin
   Result := Bible.VerseToStr(ActiveVerse, true) + '<br><br>';
 
@@ -175,9 +170,8 @@ begin
   for item in Verses do
     begin
       Result += '<l>' + Bible.VerseToStr(item, not Options.cvAbbreviate) + '</l> ';
-      Strings := Bible.GetRange(item);
-      for s in Strings do Result += s + ' ';
-      Result += '<br><br>';
+      str := ToStr(Bible.GetRange(item));
+      Result += str + '<br><br>';
     end;
 
   if Xrefs.Count = 0 then
@@ -226,7 +220,6 @@ begin
 
   for i:=0 to Dictionaries.Count-1 do
     begin
-//    if Dictionaries[i].footnotes then Continue;
       Strings := Dictionaries[i].Get_Data(text);
 
       if Length(Strings) > 0 then
