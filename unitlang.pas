@@ -28,8 +28,8 @@ function GetDefaultLanguage: string;
 implementation
 
 uses
-  FormMain, FormAbout, FormSearch, FormCompare, UnitShelf, FormCopy, FormTranslate,
-  FormCommentary, FormDownload, UnitData;
+  FormMain, FormAbout, FormSearch, FormCompare, UnitShelf, FormCopy, FormCommentary,
+  FormDownload, UnitData;
 
 var
   IniFile : TIniFile;
@@ -103,7 +103,6 @@ begin
   CompareForm   .Localize;
   AboutBox      .Localize;
   CopyForm      .Localize;
-  TranslateForm .Localize;
   CommentaryForm.Localize;
   DownloadForm  .Localize;
 

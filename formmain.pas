@@ -64,7 +64,6 @@ type
     ActionOptions: TAction;
     ActionRight: TAction;
     ActionSearch: TAction;
-    ActionTranslate: TAction;
     ActionUnderline: TAction;
     ActionDictionary: TAction;
     ActionDecrease: TAction;
@@ -194,7 +193,6 @@ type
     procedure CmdSearch(Sender: TObject);
     procedure CmdStyle(Sender: TObject);
     procedure CmdStyle2(Sender: TObject);
-    procedure CmdTrans(Sender: TObject);
     procedure CmdModules(Sender: TObject);
 
     procedure ComboBoxChange(Sender: TObject);
@@ -268,7 +266,7 @@ implementation
 uses
   {$ifdef windows} UmParseWin, {$endif}
   FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLang,
-  UnitShelf, FormCopy, FormTranslate, FormCommentary, FormDownload;
+  UnitShelf, FormCopy, FormCommentary, FormDownload;
 
 const
   apBible      = 0; // active page
@@ -676,15 +674,6 @@ begin
   LoadDictionary(Edit.Text);
 end;
 
-procedure TMainForm.CmdTrans(Sender: TObject);
-begin
-  if Shelf.Count = 0 then Exit;
-  TranslateForm.Memo.Font.Assign(DefaultFont);
-  TranslateForm.Memo.LoadText(Load_Translate);
-  TranslateForm.Repaint;
-  TranslateForm.Show;
-end;
-
 procedure TMainForm.CmdFileNew(Sender: TObject);
 begin
   SelectPage(apNotes);
@@ -809,7 +798,6 @@ begin
     begin
       ActiveVerse.Number := MemoBible.ParagraphStart;
       ActiveVerse.Count  := MemoBible.ParagraphCount;
-      if TranslateForm.Visible then CmdTrans(Sender);
       if CommentaryForm.Visible then CmdCommentary(Sender);
     end;
 
@@ -821,10 +809,8 @@ begin
 
       if Verse.Book > 0 then
         begin
-          if TranslateForm.Visible then CmdTrans(Sender);
           if CommentaryForm.Visible then CmdCommentary(Sender);
-          if (Memo = MemoSearch) or (not TranslateForm.Visible) or (ssCtrl in Shift) then
-            GoToVerse(Verse, True);
+          if (Memo = MemoSearch) or (ssCtrl in Shift) then GoToVerse(Verse, True);
         end;
     end;
 
@@ -1258,7 +1244,6 @@ begin
   MemoBible.Font.Assign(DefaultFont);
   MemoBible.LoadText(Load_Chapter, true);
   MakeChapterList(Bible.ChaptersCount(ActiveVerse));
-  if TranslateForm.Visible then CmdTrans(nil);
   if CommentaryForm.Visible then CmdCommentary(nil);
   SelectPage(apBible);
 end;

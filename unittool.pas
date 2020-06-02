@@ -8,7 +8,6 @@ function Load_Chapter: string;
 function Load_Search(st: string; var count: integer): string;
 function Load_Compare: string;
 function Load_ModulesInfo: string;
-function Load_Translate: string;
 function Load_Xref: string;
 function Load_Commentary: string;
 function Load_Dictionary(text: string = ''): string;
@@ -134,26 +133,6 @@ begin
   for i:=0 to        Shelf.Count-1 do Result += GetInfo(Shelf[i]);
   for i:=0 to Dictionaries.Count-1 do Result += GetInfo(Dictionaries[i]);
   for i:=0 to Commentaries.Count-1 do Result += GetInfo(Commentaries[i]);
-end;
-
-function Load_Translate: string;
-var
-  Strings : TStringArray;
-  item : string;
-  i : integer;
-begin
-  Result := Bible.VerseToStr(ActiveVerse, true) + '<br> ';
-
-  for i:=0 to Shelf.Count-1 do
-    begin
-      if not Shelf[i].Compare then Continue;
-      Strings := Shelf[i].GetRange(ActiveVerse);
-
-      if Length(Strings) > 0 then
-        Result += '<br><l>' + Shelf[i].Name + '</l><br><br>';
-
-      for item in Strings do Result += item + '<br>';
-    end;
 end;
 
 function Load_Xref: string;
