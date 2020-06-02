@@ -108,7 +108,7 @@ begin
   for i:=0 to Shelf.Count-1 do
     begin
       if not Shelf[i].Compare then Continue;
-      str := ToStr(Shelf[i].GetRange(ActiveVerse));
+      str := Join(Shelf[i].GetRange(ActiveVerse));
       if str = '' then Continue;
       Result += '<br><l>' + Shelf[i].Name + '</l><br>' + str + '<br>';
     end;
@@ -149,7 +149,7 @@ begin
   for item in Verses do
     begin
       Result += '<l>' + Bible.VerseToStr(item, not Options.cvAbbreviate) + '</l> ';
-      str := ToStr(Bible.GetRange(item));
+      str := Join(Bible.GetRange(item));
       Result += str + '<br><br>';
     end;
 

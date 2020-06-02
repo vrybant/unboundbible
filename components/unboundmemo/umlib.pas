@@ -15,8 +15,8 @@ type
 function Prefix(ps, st: string): boolean;
 function Suffix(ps, st: string): boolean;
 function ToInt(s: string): integer;
-function ToStr(value: longint): string; overload;
-function ToStr(value: TStringArray): string; overload;
+function ToStr(value: longint): string;
+function Join(value: TStringArray; separator: string = ' '): string;
 function ToBoolean(s: string): boolean;
 procedure Replace(var s: string; const oldPattern, newPattern: string);
 procedure RemoveDoubleSpace(var s: string);
@@ -59,11 +59,11 @@ begin
  System.Str(value, Result);
 end;
 
-function ToStr(value: TStringArray): string;
+function Join(value: TStringArray; separator: string = ' '): string;
 var s : string;
 begin
   Result := '';
-  for s in value do Result += s + ' ';
+  for s in value do Result += s + separator;
   Result := Trim(Result);
 end;
 
