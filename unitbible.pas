@@ -254,7 +254,7 @@ var
   Book : TBook;
   title : string;
 begin
-  Result := 'error';
+  Result := '';
   Book := BookByNum(verse.book);
   if not Assigned(Book) then Exit;
 

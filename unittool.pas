@@ -139,25 +139,21 @@ function Load_Xref: string;
 var
   Verses : TVerseArray;
   item : TVerse;
-  str : string;
+  text : string = '';
+  link : string;
 begin
   Result := Bible.VerseToStr(ActiveVerse, true) + '<br><br>';
-
   Verses := Xrefs.GetData(ActiveVerse, Bible.language);
-  if Length(Verses) = 0 then Exit;
 
   for item in Verses do
     begin
-      Result += '<l>' + Bible.VerseToStr(item, not Options.cvAbbreviate) + '</l> ';
-      str := Join(Bible.GetRange(item));
-      Result += str + '<br><br>';
+      link := Bible.VerseToStr(item, not Options.cvAbbreviate);
+      if link = '' then Continue;
+      text += '<l>' + link + '</l> ' + Join(Bible.GetRange(item)) + '<br><br>';
     end;
 
-  if Xrefs.Count = 0 then
-    begin
-      Result += '<br> ' + ls.NoModules;
-      Result += '<br><br> ' + ls.MoreInfo;
-    end;
+  Result += text;
+  if text = '' then Result += ls.NoXrefs;
 end;
 
 function Load_Commentary: string;
