@@ -6,7 +6,7 @@ uses
   Interfaces, Graphics, Forms, richmemopackage,
   UnitLang, UnitTool, UnitModule, UnitShelf, UnitCommentary, UnitDictionary, UnitXref,
   FormMain, FormAbout, FormNotify, FormSearch, FormCompare, FormCopy,
-  FormCommentary, FormDownload;
+  FormDownload;
 
 {$R *.res}
 
@@ -19,7 +19,6 @@ begin
   Application.CreateForm(TSearchForm,     SearchForm );
   Application.CreateForm(TCompareForm,    CompareForm);
   Application.CreateForm(TCopyForm,       CopyForm);
-  Application.CreateForm(TCommentaryForm, CommentaryForm);
   Application.CreateForm(TDownloadForm,   DownloadForm);
   LocalizeApplication;
   Application.Run;

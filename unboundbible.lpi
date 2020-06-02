@@ -51,7 +51,7 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="22">
+    <Units Count="21">
       <Unit0>
         <Filename Value="unboundbible.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -160,31 +160,23 @@
         <UnitName Value="FormNotify"/>
       </Unit17>
       <Unit18>
-        <Filename Value="formcommentary.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="CommentaryForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="FormCommentary"/>
-      </Unit18>
-      <Unit19>
         <Filename Value="formdownload.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DownloadForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormDownload"/>
-      </Unit19>
-      <Unit20>
+      </Unit18>
+      <Unit19>
         <Filename Value="unitbible.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitBible"/>
-      </Unit20>
-      <Unit21>
+      </Unit19>
+      <Unit20>
         <Filename Value="unitxref.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitXref"/>
-      </Unit21>
+      </Unit20>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -265,8 +265,8 @@ implementation
 
 uses
   {$ifdef windows} UmParseWin, {$endif}
-  FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLang,
-  UnitShelf, FormCopy, FormCommentary, FormDownload;
+  FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLang, UnitShelf, FormCopy,
+  FormDownload;
 
 const
   apBible      = 0; // active page
@@ -798,7 +798,6 @@ begin
     begin
       ActiveVerse.Number := MemoBible.ParagraphStart;
       ActiveVerse.Count  := MemoBible.ParagraphCount;
-      if CommentaryForm.Visible then CmdCommentary(Sender);
     end;
 
   if Memo.hyperlink = '' then Exit;
@@ -806,12 +805,7 @@ begin
   if Memo.Foreground = fgLink then
     begin
       Verse := Bible.SrtToVerse(Memo.hyperlink);
-
-      if Verse.Book > 0 then
-        begin
-          if CommentaryForm.Visible then CmdCommentary(Sender);
-          if (Memo = MemoSearch) or (ssCtrl in Shift) then GoToVerse(Verse, True);
-        end;
+      if Verse.Book > 0 then GoToVerse(Verse, True);
     end;
 
   if Memo = MemoBible then
@@ -1244,7 +1238,6 @@ begin
   MemoBible.Font.Assign(DefaultFont);
   MemoBible.LoadText(Load_Chapter, true);
   MakeChapterList(Bible.ChaptersCount(ActiveVerse));
-  if CommentaryForm.Visible then CmdCommentary(nil);
   SelectPage(apBible);
 end;
 

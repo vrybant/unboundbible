@@ -28,7 +28,7 @@ function GetDefaultLanguage: string;
 implementation
 
 uses
-  FormMain, FormAbout, FormSearch, FormCompare, UnitShelf, FormCopy, FormCommentary,
+  FormMain, FormAbout, FormSearch, FormCompare, UnitShelf, FormCopy,
   FormDownload, UnitData;
 
 var
@@ -103,7 +103,6 @@ begin
   CompareForm   .Localize;
   AboutBox      .Localize;
   CopyForm      .Localize;
-  CommentaryForm.Localize;
   DownloadForm  .Localize;
 
   LocalizeStrings;
