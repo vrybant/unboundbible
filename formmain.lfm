@@ -545,9 +545,20 @@ object MainForm: TMainForm
         Action = ActionCompare
         Caption = 'Compare...'
       end
+      object miRref: TMenuItem
+        Action = ActionXref
+        Caption = 'X-Rrefs'
+      end
       object miCommentary: TMenuItem
         Action = ActionCommentary
         Caption = 'Commentary'
+      end
+      object miDictionary: TMenuItem
+        Action = ActionDictionary
+        Caption = 'Dictionary'
+      end
+      object N7: TMenuItem
+        Caption = '-'
       end
       object miTranslate: TMenuItem
         Caption = 'Translate'
@@ -1932,9 +1943,10 @@ object MainForm: TMainForm
       Action = ActionSearch
       AutoCheck = True
     end
-    object miXref: TMenuItem
+    object pmXref: TMenuItem
       Action = ActionXref
       Caption = 'X-Refs'
+      Visible = False
     end
     object pmCommentary: TMenuItem
       Action = ActionCommentary

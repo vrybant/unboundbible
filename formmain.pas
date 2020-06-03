@@ -17,7 +17,10 @@ type
     Edit: TEdit;
     IdleTimer: TIdleTimer;
     MenuItem1: TMenuItem;
-    miXref: TMenuItem;
+    miRref: TMenuItem;
+    miDictionary: TMenuItem;
+    N7: TMenuItem;
+    pmXref: TMenuItem;
     pmCommentary: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
@@ -330,9 +333,10 @@ begin
   IdleTimer.Enabled := true;
   {$endif}
 
-  TabSheetSearch    .TabVisible := false;
-  TabSheetCommentary.TabVisible := false;
-  TabSheetDictionary.TabVisible := false;
+  TabSheetSearch    .TabVisible := False;
+  TabSheetXref      .TabVisible := False;
+  TabSheetCommentary.TabVisible := False;
+  TabSheetDictionary.TabVisible := False;
 
   UpdateActionImage;
 end;
@@ -442,7 +446,7 @@ begin
   miHelpAbout.Caption := T('About');
 
   pmSearch.Caption := T('Search');
-  pmDictionary.Caption := T('Dictionary Lookup');
+  pmDictionary.Caption := T('Lookup');
   pmCut.Caption := T('Cut');
   pmCopy.Caption := T('Copy');
   pmPaste.Caption := T('Paste');
@@ -1004,7 +1008,6 @@ begin
 
   if B then x := 1 else x:= 0;
 
-  ActionDictionary.Enabled := UnboundMemo.SelLength > x;
   ActionEditCopy.Enabled   := UnboundMemo.SelLength > x;
   ActionEditCut.Enabled    := L and (UnboundMemo.SelLength > 0);
   ActionEditDel.Enabled    := L and (UnboundMemo.SelLength > 0);
@@ -1027,6 +1030,7 @@ begin
 
   ToolButtonSearch.Enabled := PageControl.ActivePageIndex <> apDictionary;
   pmSearch.Enabled := UnboundMemo.SelLength > x;
+  pmDictionary.Enabled := UnboundMemo.SelLength > x;
 
   UpdateActionImage;
 end;
@@ -1281,9 +1285,11 @@ end;
 procedure TMainForm.LoadDictionary(s: string);
 begin
   if Shelf.Count = 0 then Exit;
-  if Trim(s) = '' then Exit;
-  MemoDictionary.Font.Assign(DefaultFont);
-  MemoDictionary.LoadHtml(Load_Dictionary(s));
+  if Trim(s) <> '' then
+    begin
+      MemoDictionary.Font.Assign(DefaultFont);
+      MemoDictionary.LoadHtml(Load_Dictionary(s));
+    end;
   SelectPage(apDictionary);
 end;
 
