@@ -26,6 +26,7 @@ function Utf8ToRTF(const s: string): string;
 function ListToString(const List: TStringArray): string;
 function ListToArray(const List: TStringList): TStringArray;
 function XmlToList(s: string): TStringArray;
+function iif(condition: boolean; trueResult, falseResult: variant): variant;
 procedure Output(s: string); overload;
 procedure Output(n: integer); overload;
 
@@ -182,6 +183,11 @@ begin
     end;
 
   SetLength(Result,i);
+end;
+
+function iif(condition: boolean; trueResult, falseResult: variant): variant;
+begin
+  if condition then Result := trueResult else Result := falseResult;
 end;
 
 procedure Output(s: string);

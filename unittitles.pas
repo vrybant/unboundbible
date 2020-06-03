@@ -7,7 +7,7 @@ unit UnitTitles;
 interface
 
 uses
-  Classes, SysUtils, Math, DB, SQLdb, UmLib, UnitLib, UnitData,
+  Classes, SysUtils, DB, SQLdb, UmLib, UnitLib, UnitData,
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite; {$else} SQLite3conn,  IBConnection; {$endif}
 
 type
@@ -118,7 +118,7 @@ begin
           try T.number := Query.FieldByName('Number').AsInteger; except end;
 
           if T.abbr = '' then T.abbr := T.name;
-          T.sorting := ifthen(not IsNewTestament(T.number), i, i+100);
+          T.sorting := iif( IsNewTestament(T.number), i+100, i);
 
           Result[i] := T;
           Query.Next;

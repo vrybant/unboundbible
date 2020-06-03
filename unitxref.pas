@@ -152,12 +152,12 @@ end;
 
 function TXrefs.GetData(Verse: TVerse; language: string): TVerseArray;
 var
-  filename : string = 'ob.xrefs.unbound';
+  filename : string;
   i : integer;
 begin
   SetLength(Result,0);
   if self.Count = 0 then Exit;
-  if Prefix('ru', language) then filename := 'obru.xrefs.unbound';
+  filename := iif( Prefix('ru', language), 'obru.xrefs.unbound', 'ob.xrefs.unbound');
 
   for i:=0 to Count-1 do
     if Items[i].filename = filename then

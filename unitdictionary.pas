@@ -166,13 +166,12 @@ end;
 
 function TDictionaries.GetStrong(Verse: TVerse; language: string; number: string): string;
 var
-  filename : string = 'strong.dct.unbound';
-  symbol : string;
+  filename, symbol : string;
   i : integer;
 begin
   Result := '';
   if self.Count = 0 then Exit;
-  if Prefix('ru', language) then filename := 'strongru.dct.unbound';
+  filename := iif( Prefix('ru', language), 'strongru.dct.unbound', 'strong.dct.unbound');
 
   if IsNewTestament(verse.book) then symbol := 'G' else symbol := 'H';
   if not Prefix(symbol,number) then number := symbol + number;
