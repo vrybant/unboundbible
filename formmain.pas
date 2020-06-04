@@ -1063,9 +1063,6 @@ end;
 procedure TMainForm.UpdateActionImage;
 var i: integer;
 begin
-
-  EXIT; // testing // ************************************************************************** //
-
   with ActionList do
     for i := 0 to ActionCount - 1 do
       if TAction(Actions[i]).Tag > 0 then
