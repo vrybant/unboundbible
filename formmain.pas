@@ -20,8 +20,6 @@ type
     miRref: TMenuItem;
     miDictionary: TMenuItem;
     N7: TMenuItem;
-    pmXref: TMenuItem;
-    pmCommentary: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
     FontDialogNotes: TFontDialog;
@@ -146,6 +144,7 @@ type
     pmSeparator2: TMenuItem;
 
     StandardToolBar: TToolBar;
+    ToolButtonXref: TToolButton;
     ToolPanel: TPanel;
     ToolButtonBold: TToolButton;
     ToolButtonBullets: TToolButton;
@@ -418,7 +417,9 @@ begin
   miHelp.Caption := T('Help');
   miSearch.Caption := T('Search');
   miCompare.Caption := T('Compare');
+  miRref.Caption := T('Сross References');
   miCommentary.Caption := T('Commentaries');
+  miDictionary.Caption := T('Dictionary');
   miTranslate.Caption := T('Translation');
   miInterlinear.Caption := T('Interlinear');
   miPrint.Caption := T('Print');
@@ -457,7 +458,7 @@ begin
   TabSheetBible.Caption := T('Bible');
   TabSheetSearch.Caption := T('Search');
   TabSheetCompare.Caption := T('Compare');
-  TabSheetXref.Caption := 'Cсылки'; // 'Параллельные места'; //
+  TabSheetXref.Caption := T('Сross References');
   TabSheetCommentary.Caption := T('Commentary');
   TabSheetDictionary.Caption := T('Dictionary');
   TabSheetNotes.Caption := T('Notes');
@@ -472,8 +473,11 @@ begin
   ToolButtonVerses.Hint := T('Copy Verses');
   ToolButtonPaste.Hint := T('Paste');
   ToolButtonUndo.Hint := T('Undo');
+
   ToolButtonCompare.Hint := T('Compare');
+  ToolButtonXref.Hint := T('Сross References');
   ToolButtonCommentary.Hint := T('Commentaries');
+  ToolButtonDictionary.Hint := T('Dictionary');
 
   ToolButtonFont.Hint := T('Font');
   ToolButtonBold.Hint := T('Bold');
@@ -675,6 +679,7 @@ end;
 procedure TMainForm.CmdDictionary(Sender: TObject);
 begin
   Edit.Text := Trim(UnboundMemo.SelText);
+  if Edit.Text = '' then Edit.SetFocus;
   LoadDictionary(Edit.Text);
 end;
 

@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 594
+  Left = 636
   Height = 401
-  Top = 278
-  Width = 883
+  Top = 299
+  Width = 937
   Caption = 'Unbound Bible'
   ClientHeight = 381
-  ClientWidth = 883
+  ClientWidth = 937
   Constraints.MinHeight = 400
   Constraints.MinWidth = 600
   Menu = MainMenu
@@ -20,7 +20,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 30
     Top = 0
-    Width = 883
+    Width = 937
     AutoSize = True
     BorderWidth = 2
     ButtonHeight = 28
@@ -42,7 +42,7 @@ object MainForm: TMainForm
       ParentShowHint = False
     end
     object ToolSeparatorEdit: TToolButton
-      Left = 261
+      Left = 289
       Height = 28
       Top = 0
       Caption = 'ToolSeparatorEdit'
@@ -71,34 +71,34 @@ object MainForm: TMainForm
       Action = ActionFilePrint
     end
     object ToolSeparatorFont: TToolButton
-      Left = 406
+      Left = 434
       Height = 28
       Top = 0
       ImageIndex = 3
       Style = tbsDivider
     end
     object ToolButtonCut: TToolButton
-      Left = 266
+      Left = 294
       Top = 0
       Action = ActionEditCut
     end
     object ToolButtonCopy: TToolButton
-      Left = 294
+      Left = 322
       Top = 0
       Action = ActionEditCopy
     end
     object ToolButtonPaste: TToolButton
-      Left = 350
+      Left = 378
       Top = 0
       Action = ActionEditPaste
     end
     object ToolButtonUndo: TToolButton
-      Left = 378
+      Left = 406
       Top = 0
       Action = ActionEditUndo
     end
     object ToolSeparatorAlign: TToolButton
-      Left = 551
+      Left = 579
       Height = 28
       Top = 0
       Caption = 'ToolSeparatorAlign'
@@ -113,7 +113,7 @@ object MainForm: TMainForm
       ShowHint = True
     end
     object ToolSeparatorBullets: TToolButton
-      Left = 640
+      Left = 668
       Height = 28
       Top = 0
       Caption = 'ToolSeparatorBullets'
@@ -122,31 +122,31 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButtonBold: TToolButton
-      Left = 439
+      Left = 467
       Top = 0
       Action = ActionBold
       Style = tbsCheck
     end
     object ToolButtonItalic: TToolButton
-      Left = 467
+      Left = 495
       Top = 0
       Action = ActionItalic
       Style = tbsCheck
     end
     object ToolButtonUnderline: TToolButton
-      Left = 495
+      Left = 523
       Top = 0
       Action = ActionUnderline
       Style = tbsCheck
     end
     object ToolButtonLink: TToolButton
-      Left = 523
+      Left = 551
       Top = 0
       Action = ActionLink
       Style = tbsCheck
     end
     object ToolButtonLeft: TToolButton
-      Left = 556
+      Left = 584
       Top = 0
       Action = ActionLeft
       Grouped = True
@@ -154,7 +154,7 @@ object MainForm: TMainForm
     end
     object ToolButtonCenter: TToolButton
       Tag = 2
-      Left = 584
+      Left = 612
       Top = 0
       Action = ActionCenter
       Grouped = True
@@ -162,25 +162,25 @@ object MainForm: TMainForm
     end
     object ToolButtonRight: TToolButton
       Tag = 1
-      Left = 612
+      Left = 640
       Top = 0
       Action = ActionRight
       Grouped = True
       Style = tbsCheck
     end
     object ToolButtonBullets: TToolButton
-      Left = 645
+      Left = 673
       Top = 0
       Action = ActionBullets
       Style = tbsCheck
     end
     object ToolButtonFont: TToolButton
-      Left = 411
+      Left = 439
       Top = 0
       Action = ActionFont
     end
     object ToolButtonVerses: TToolButton
-      Left = 322
+      Left = 350
       Top = 0
       Action = ActionCopyVerses
       ParentShowHint = False
@@ -190,11 +190,10 @@ object MainForm: TMainForm
       Left = 172
       Height = 28
       Top = 0
-      Caption = 'ToolSeparatorCompare'
       Style = tbsDivider
     end
     object ToolButtonCommentary: TToolButton
-      Left = 205
+      Left = 233
       Top = 0
       Action = ActionCommentary
     end
@@ -204,13 +203,13 @@ object MainForm: TMainForm
       Action = ActionModules
     end
     object ToolButtonDictionary: TToolButton
-      Left = 233
+      Left = 261
       Top = 0
       Action = ActionDictionary
       ImageIndex = 12
     end
     object ToolPanel: TPanel
-      Left = 673
+      Left = 701
       Height = 28
       Top = 0
       Width = 175
@@ -218,12 +217,18 @@ object MainForm: TMainForm
       TabOrder = 0
     end
     object ToolButtonSearch: TToolButton
-      Left = 848
+      Left = 876
       Hint = 'Search'
       Top = 0
       Caption = 'Search...'
       ImageIndex = 5
       OnClick = ToolButtonSearchClick
+    end
+    object ToolButtonXref: TToolButton
+      Left = 205
+      Hint = 'Сross References'
+      Top = 0
+      Action = ActionXref
     end
   end
   object PanelLeft: TPanel
@@ -285,7 +290,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 23
     Top = 358
-    Width = 883
+    Width = 937
     Panels = <>
     ParentShowHint = False
     ShowHint = True
@@ -294,7 +299,7 @@ object MainForm: TMainForm
     Left = 200
     Height = 326
     Top = 32
-    Width = 683
+    Width = 737
     ActivePage = TabSheetBible
     Align = alClient
     Font.Color = clWindowText
@@ -306,7 +311,7 @@ object MainForm: TMainForm
     object TabSheetBible: TTabSheet
       Caption = 'Bible'
       ClientHeight = 296
-      ClientWidth = 675
+      ClientWidth = 729
       Font.Color = clWindowText
       Font.Height = -12
       ParentFont = False
@@ -315,7 +320,7 @@ object MainForm: TMainForm
         Left = 0
         Height = 296
         Top = 0
-        Width = 675
+        Width = 729
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
@@ -511,7 +516,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 2
     Top = 30
-    Width = 883
+    Width = 937
     Align = alTop
     Alignment = taLeftJustify
     BevelOuter = bvNone
@@ -547,7 +552,6 @@ object MainForm: TMainForm
       end
       object miRref: TMenuItem
         Action = ActionXref
-        Caption = 'X-Rrefs'
       end
       object miCommentary: TMenuItem
         Action = ActionCommentary
@@ -1943,16 +1947,6 @@ object MainForm: TMainForm
       Action = ActionSearch
       AutoCheck = True
     end
-    object pmXref: TMenuItem
-      Action = ActionXref
-      Caption = 'X-Refs'
-      Visible = False
-    end
-    object pmCommentary: TMenuItem
-      Action = ActionCommentary
-      Caption = 'Commentary'
-      Visible = False
-    end
     object pmDictionary: TMenuItem
       Action = ActionDictionary
       Caption = 'Dictionary'
@@ -2224,7 +2218,7 @@ object MainForm: TMainForm
       OnExecute = CmdStyle2
     end
     object ActionSearch: TAction
-      Category = 'Edit'
+      Category = 'Tools'
       Caption = 'Search...'
       Hint = 'Search'
       ImageIndex = 5
@@ -2265,7 +2259,7 @@ object MainForm: TMainForm
     end
     object ActionXref: TAction
       Category = 'Tools'
-      Caption = 'ActionXref'
+      Caption = 'Сross References'
       ImageIndex = 21
       OnExecute = CmdXref
     end
