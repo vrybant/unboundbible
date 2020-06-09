@@ -523,8 +523,8 @@ object MainForm: TMainForm
   end
   object Edit: TEdit
     Left = 696
-    Height = 23
-    Top = 2
+    Height = 22
+    Top = 3
     Width = 150
     AutoSize = False
     Color = clWhite

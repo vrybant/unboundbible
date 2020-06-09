@@ -7,7 +7,7 @@ uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UmLib, UnitLib;
 function Load_Chapter: string;
 function Load_Search(st: string; var count: integer): string;
 function Load_Compare: string;
-function Load_ModulesInfo: string;
+function Load_Downloads: TStringsArray;
 function Load_Xref: string;
 function Load_Commentary: string;
 function Load_Dictionary(text: string = ''): string;
@@ -114,25 +114,27 @@ begin
     end;
 end;
 
-function Load_ModulesInfo: string;
-var i : integer;
+function Load_Downloads: TStringsArray;
+var
+  k : integer = 0;
+  i : integer;
 
-  function GetInfo(const Module: TModule): string;
+  function GetInfo(const Module: TModule): TStringArray;
   begin
-    Result := '<h>' + Module.Name;
-    if Module.Abbreviation <> '' then Result += ' - ' + Module.Abbreviation;
-    Result += '</h><br>';
-    if Module.Info <> '' then Result += Module.Info + '<br>';
-    if Module.language <> '' then Result += ls.Language + ': ' + Module.language + '<br>';
-    Result += '<n>' + ls.lsFile + ': ' + Module.Filename + '</n><br>';
-    Result += '<br>';
+    SetLength(Result, 3);
+    Result[0] := iif((Module.language     = ''), '', Module.language);
+    Result[1] := Module.Name;
+    Result[2] := Module.Filename;
+//  Result[4] := iif((Module.Abbreviation = ''), '', Module.Abbreviation);
+//  Result[5] := iif((Module.Info         = ''), '', Module.Info);
   end;
 
 begin
-  Result := '';
-  for i:=0 to        Shelf.Count-1 do Result += GetInfo(Shelf[i]);
-  for i:=0 to Dictionaries.Count-1 do Result += GetInfo(Dictionaries[i]);
-  for i:=0 to Commentaries.Count-1 do Result += GetInfo(Commentaries[i]);
+  SetLength(Result, 500);
+  for i:=0 to        Shelf.Count-1 do begin Result[k] := GetInfo(Shelf[i]       ); k +=1 end;
+  for i:=0 to Dictionaries.Count-1 do begin Result[k] := GetInfo(Dictionaries[i]); k +=1 end;
+  for i:=0 to Commentaries.Count-1 do begin Result[k] := GetInfo(Commentaries[i]); k +=1 end;
+  SetLength(Result, k);
 end;
 
 function Load_Xref: string;
@@ -189,9 +191,6 @@ var
   i : integer;
 begin
   Result := '';
-
-  text := Trim(text);
-  if text = '' then Exit;
 
   for i:=0 to Dictionaries.Count-1 do
     begin

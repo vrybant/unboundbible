@@ -9,8 +9,9 @@ uses
   LazUtf8, LCLProc, LCLVersion, ExtCtrls, ClipBrd;
 
 type
-  TStringArray  = array of string;
   TIntegerArray = array of integer;
+  TStringArray  = array of string;
+  TStringsArray = array of TStringArray;
 
 function Prefix(ps, st: string): boolean;
 function Suffix(ps, st: string): boolean;

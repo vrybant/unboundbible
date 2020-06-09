@@ -753,7 +753,7 @@ end;
 procedure TMainForm.CmdModules(Sender: TObject);
 begin
   if Shelf.Count = 0 then Exit;
-  DownloadForm.Memo.LoadText(Load_ModulesInfo);
+  DownloadForm.LoadGrid(Load_Downloads);
   DownloadForm.ShowModal;
 end;
 
@@ -1285,9 +1285,12 @@ begin
 end;
 
 procedure TMainForm.LoadDictionary(s: string);
+const
+  MaxLength = 25;
 begin
   if Shelf.Count = 0 then Exit;
-  if Trim(s) <> '' then
+  s := Trim(s);
+  if (s <> '') and (Utf8Length(s) < MaxLength) then
     begin
       MemoDictionary.Font.Assign(DefaultFont);
       MemoDictionary.LoadHtml(Load_Dictionary(s));

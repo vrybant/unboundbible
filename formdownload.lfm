@@ -1,21 +1,21 @@
 object DownloadForm: TDownloadForm
-  Left = 607
-  Height = 538
-  Top = 187
-  Width = 550
+  Left = 713
+  Height = 612
+  Top = 270
+  Width = 656
   BorderStyle = bsDialog
   Caption = ' Modules'
-  ClientHeight = 538
-  ClientWidth = 550
+  ClientHeight = 612
+  ClientWidth = 656
   Color = clBtnFace
   OnCreate = FormCreate
   ParentFont = True
   Position = poScreenCenter
-  LCLVersion = '2.0.6.0'
+  LCLVersion = '2.0.8.0'
   object ButtonOK: TButton
-    Left = 232
+    Left = 552
     Height = 25
-    Top = 504
+    Top = 544
     Width = 80
     AutoSize = True
     Caption = 'OK'
@@ -25,26 +25,54 @@ object DownloadForm: TDownloadForm
     ModalResult = 1
     TabOrder = 0
   end
-  object Memo: TUnboundMemo
-    Cursor = crArrow
+  object StringGrid: TStringGrid
     Left = 8
-    Height = 240
-    Top = 256
-    Width = 533
-    Font.Height = -13
-    Font.Name = 'Tahoma'
-    HideSelection = False
-    ParentFont = False
-    ReadOnly = True
-    ScrollBars = ssAutoVertical
-    TabOrder = 1
-    ZoomFactor = 1
-  end
-  object StringGrid1: TStringGrid
-    Left = 8
-    Height = 236
+    Height = 492
     Top = 8
-    Width = 533
-    TabOrder = 2
+    Width = 640
+    AutoFillColumns = True
+    ColCount = 3
+    Columns = <    
+      item
+        Alignment = taCenter
+        MaxSize = 40
+        SizePriority = 0
+        Title.Alignment = taCenter
+        Title.Caption = 'Lang'
+        Width = 40
+      end    
+      item
+        MaxSize = 500
+        Title.Alignment = taCenter
+        Title.Caption = 'Title'
+        Width = 396
+      end    
+      item
+        SizePriority = 0
+        Title.Alignment = taCenter
+        Title.Caption = 'File'
+        Width = 200
+      end>
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goSmoothScroll, goCellHints]
+    ParentShowHint = False
+    RowCount = 10
+    ShowHint = True
+    TabOrder = 1
+    OnGetCellHint = StringGridGetCellHint
+    ColWidths = (
+      40
+      396
+      200
+    )
+  end
+  object LabelTest: TLabel
+    Left = 56
+    Height = 15
+    Top = 512
+    Width = 49
+    Caption = 'LabelTest'
+    ParentColor = False
+    Visible = False
   end
 end
