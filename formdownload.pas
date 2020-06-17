@@ -38,8 +38,10 @@ procedure TDownloadForm.Localize;
 begin
   Caption := ' ' + T('Modules');
   ButtonOK.Caption := T('OK');
-  ButtonDownloads.Caption := T('Module Downloads');
-  ButtonFolder.Caption := T('Bible Folder');
+  ButtonDownloads.Caption := T('Downloads');
+  ButtonFolder.Caption := T('Folder');
+  StringGrid.Columns[1].Title.Caption := T('Title');
+  StringGrid.Columns[2].Title.Caption := T('File');
 end;
 
 procedure TDownloadForm.FormCreate(Sender: TObject);

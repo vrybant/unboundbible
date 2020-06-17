@@ -38,7 +38,7 @@ object DownloadForm: TDownloadForm
         MaxSize = 40
         SizePriority = 0
         Title.Alignment = taCenter
-        Title.Caption = 'Lang'
+        Title.Caption = '🌎'
         Width = 40
       end    
       item
