@@ -123,17 +123,15 @@ var
   begin
     SetLength(Result, 3);
     Result[0] := iif((Module.language     = ''), '', Module.language);
-    Result[1] := Module.Name;
-    Result[2] := Module.Filename;
-//  Result[4] := iif((Module.Abbreviation = ''), '', Module.Abbreviation);
-//  Result[5] := iif((Module.Info         = ''), '', Module.Info);
+    Result[1] := ' ' + Module.Name;
+    Result[2] := ' ' + Module.Filename;
   end;
 
 begin
   SetLength(Result, 500);
   for i:=0 to        Shelf.Count-1 do begin Result[k] := GetInfo(Shelf[i]       ); k +=1 end;
-  for i:=0 to Dictionaries.Count-1 do begin Result[k] := GetInfo(Dictionaries[i]); k +=1 end;
   for i:=0 to Commentaries.Count-1 do begin Result[k] := GetInfo(Commentaries[i]); k +=1 end;
+  for i:=0 to Dictionaries.Count-1 do begin Result[k] := GetInfo(Dictionaries[i]); k +=1 end;
   SetLength(Result, k);
 end;
 

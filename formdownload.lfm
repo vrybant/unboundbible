@@ -1,21 +1,21 @@
 object DownloadForm: TDownloadForm
-  Left = 713
-  Height = 612
-  Top = 270
-  Width = 656
+  Left = 569
+  Height = 475
+  Top = 222
+  Width = 640
   BorderStyle = bsDialog
   Caption = ' Modules'
-  ClientHeight = 612
-  ClientWidth = 656
+  ClientHeight = 475
+  ClientWidth = 640
   Color = clBtnFace
   OnCreate = FormCreate
   ParentFont = True
   Position = poScreenCenter
   LCLVersion = '2.0.8.0'
   object ButtonOK: TButton
-    Left = 552
+    Left = 280
     Height = 25
-    Top = 544
+    Top = 440
     Width = 80
     AutoSize = True
     Caption = 'OK'
@@ -27,9 +27,9 @@ object DownloadForm: TDownloadForm
   end
   object StringGrid: TStringGrid
     Left = 8
-    Height = 492
+    Height = 424
     Top = 8
-    Width = 640
+    Width = 624
     AutoFillColumns = True
     ColCount = 3
     Columns = <    
@@ -45,7 +45,7 @@ object DownloadForm: TDownloadForm
         MaxSize = 500
         Title.Alignment = taCenter
         Title.Caption = 'Title'
-        Width = 396
+        Width = 380
       end    
       item
         SizePriority = 0
@@ -53,8 +53,9 @@ object DownloadForm: TDownloadForm
         Title.Caption = 'File'
         Width = 200
       end>
+    DefaultDrawing = False
     FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goSmoothScroll, goCellHints]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goSmoothScroll, goCellHints]
     ParentShowHint = False
     RowCount = 10
     ShowHint = True
@@ -62,17 +63,35 @@ object DownloadForm: TDownloadForm
     OnGetCellHint = StringGridGetCellHint
     ColWidths = (
       40
-      396
+      380
       200
     )
   end
   object LabelTest: TLabel
-    Left = 56
+    Left = 8
     Height = 15
-    Top = 512
+    Top = 440
     Width = 49
     Caption = 'LabelTest'
     ParentColor = False
     Visible = False
+  end
+  object ButtonDownloads: TButton
+    Left = 100
+    Height = 25
+    Top = 440
+    Width = 80
+    Caption = 'Downloads'
+    OnClick = ButtonDownloadsClick
+    TabOrder = 2
+  end
+  object ButtonFolder: TButton
+    Left = 460
+    Height = 25
+    Top = 440
+    Width = 80
+    Caption = 'ButtonFolder'
+    OnClick = ButtonFolderClick
+    TabOrder = 3
   end
 end
