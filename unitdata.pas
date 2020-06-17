@@ -118,6 +118,8 @@ procedure CreateDataDirectory;
 function ConfigFile: string;
 function DataPath: string;
 function GetDatabaseList: TStringArray;
+function HomeURL: string;
+function DownloadsURL: string;
 procedure LocalizeStrings;
 
 implementation
@@ -198,6 +200,19 @@ begin
   SourcePath := SharePath + BibleDirectory;
   if not ApplicationUpdate and (Length(GetDatabaseList) > 0) then Exit;
   CopyDirTree(SourcePath, DataPath, [cffOverwriteFile]);
+end;
+
+function HomeURL: string;
+begin
+  Result := 'http://vladimirrybant.org';
+  if (InterfaceLang = 'ru') or (InterfaceLang = 'uk') then Result += '/ru';
+end;
+
+function DownloadsURL: string;
+begin
+  if (InterfaceLang = 'ru') or (InterfaceLang = 'uk')
+    then Result := 'http://vladimirrybant.org/goto/ubdownloadru.php'
+    else Result := 'http://vladimirrybant.org/goto/ubdownload.php';
 end;
 
 function ConfigFile: string;

@@ -1121,16 +1121,12 @@ end;
 
 procedure TMainForm.miHomeClick(Sender: TObject);
 begin
-  if (InterfaceLang = 'ru') or (InterfaceLang = 'uk')
-    then OpenURL('http://vladimirrybant.org/ru')
-    else OpenURL('http://vladimirrybant.org');
+  OpenURL(HomeURL);
 end;
 
 procedure TMainForm.miDownloadClick(Sender: TObject);
 begin
-  if (InterfaceLang = 'ru') or (InterfaceLang = 'uk')
-    then OpenURL('http://vladimirrybant.org/goto/ubdownloadru.php')
-    else OpenURL('http://vladimirrybant.org/goto/ubdownload.php');
+  OpenURL(DownloadsURL);
 end;
 
 procedure TMainForm.CmdOptions(Sender: TObject);
