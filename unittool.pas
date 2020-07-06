@@ -10,7 +10,7 @@ function Load_Compare: string;
 function Load_Downloads: TStringsArray;
 function Load_Xref: string;
 function Load_Commentary: string;
-function Load_Dictionary(text: string = ''): string;
+function Load_Dictionary(st: string = ''): string;
 function Load_Strong(number: string = ''): string;
 function Load_Footnote(marker: string = ''): string;
 function Load_Verses: string;
@@ -162,7 +162,13 @@ var
   item : string;
   i : integer;
 begin
-  Result := '';
+  if Commentaries.Count = 0 then
+    begin
+      Result := '<br> ' + ls.NoComm + ' ' + ls.MoreInfo;
+      Exit;
+    end;
+
+  Result := Bible.VerseToStr(ActiveVerse, true) + '<br>';
 
   for i:=0 to Commentaries.Count-1 do
     begin
@@ -174,25 +180,27 @@ begin
 
       for item in Strings  do Result += '<tab>' + item + '<br>';
     end;
-
-  if Commentaries.Count = 0 then
-    begin
-      Result += '<br> ' + ls.NoModules;
-      Result += '<br><br> ' + ls.MoreInfo;
-    end;
 end;
 
-function Load_Dictionary(text: string = ''): string;
+function Load_Dictionary(st: string = ''): string;
 var
   Strings : TStringArray;
-  item : string;
+  item, text : string;
   i : integer;
 begin
   Result := '';
 
+  if Dictionaries.Count = 0 then
+    begin
+      Result := '<br> ' + ls.NoDic + ' ' + ls.MoreInfo;
+      Exit;
+    end;
+
+  if st = '' then Exit;
+
   for i:=0 to Dictionaries.Count-1 do
     begin
-      Strings := Dictionaries[i].Get_Data(text);
+      Strings := Dictionaries[i].Get_Data(st);
 
       if Length(Strings) > 0 then
         Result += '<br><h>' + Dictionaries[i].Name + '</h><br><br>';
@@ -200,11 +208,13 @@ begin
       for item in Strings  do Result += '<tab>' + item + '<br>';
     end;
 
-  if Dictionaries.Count = 0 then
+  if Result = '' then
     begin
-      Result += '<br> ' + ls.NoModules;
-      Result += '<br><br> ' + ls.MoreInfo;
+      text := ls.NoResults;
+      Replace(text,'%',DoubleQuotedStr(st));
+      Result += text;
     end;
+
 end;
 
 function Load_Strong(number: string = ''): string;

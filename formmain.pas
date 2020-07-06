@@ -139,7 +139,7 @@ type
     pmCopyAs: TMenuItem;
     pmVerses: TMenuItem;
     pmInterlinear: TMenuItem;
-    pmDictionary: TMenuItem;
+    pmLookup: TMenuItem;
     pmSeparator1: TMenuItem;
     pmSeparator2: TMenuItem;
 
@@ -447,7 +447,7 @@ begin
   miHelpAbout.Caption := T('About');
 
   pmSearch.Caption := T('Search');
-  pmDictionary.Caption := T('Lookup');
+  pmLookup.Caption := T('Lookup');
   pmCut.Caption := T('Cut');
   pmCopy.Caption := T('Copy');
   pmPaste.Caption := T('Paste');
@@ -678,8 +678,8 @@ end;
 
 procedure TMainForm.CmdDictionary(Sender: TObject);
 begin
-  Edit.Text := Trim(UnboundMemo.SelText);
-  if Edit.Text = '' then Edit.SetFocus;
+  if Trim(UnboundMemo.SelText) = '' then Edit.SetFocus
+    else Edit.Text := Trim(UnboundMemo.SelText);
   LoadDictionary(Edit.Text);
 end;
 
@@ -1035,7 +1035,7 @@ begin
 
   ToolButtonSearch.Enabled := PageControl.ActivePageIndex <> apDictionary;
   pmSearch.Enabled := UnboundMemo.SelLength > x;
-  pmDictionary.Enabled := UnboundMemo.SelLength > x;
+  pmLookup.Enabled := UnboundMemo.SelLength > x;
 
   UpdateActionImage;
 end;
@@ -1165,7 +1165,7 @@ begin
   if PageControl.ActivePageIndex = apCompare    then CmdCompare(PageControl);
   if PageControl.ActivePageIndex = apXref       then CmdXref(PageControl);
   if PageControl.ActivePageIndex = apCommentary then CmdCommentary(PageControl);
-//if PageControl.ActivePageIndex = apDictionary then CmdDictionary(PageControl);
+  if PageControl.ActivePageIndex = apDictionary then CmdDictionary(PageControl);
 end;
 
 procedure TMainForm.RadioButtonClick(Sender: TObject);
@@ -1281,16 +1281,13 @@ begin
 end;
 
 procedure TMainForm.LoadDictionary(s: string);
-const
-  MaxLength = 25;
 begin
   if Shelf.Count = 0 then Exit;
   s := Trim(s);
-  if (s <> '') and (Utf8Length(s) < MaxLength) then
-    begin
-      MemoDictionary.Font.Assign(DefaultFont);
-      MemoDictionary.LoadHtml(Load_Dictionary(s));
-    end;
+
+  MemoDictionary.Font.Assign(DefaultFont);
+  MemoDictionary.LoadHtml(Load_Dictionary(s));
+
   SelectPage(apDictionary);
 end;
 

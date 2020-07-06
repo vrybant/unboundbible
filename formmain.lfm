@@ -2010,9 +2010,9 @@ object MainForm: TMainForm
       Action = ActionSearch
       AutoCheck = True
     end
-    object pmDictionary: TMenuItem
+    object pmLookup: TMenuItem
       Action = ActionDictionary
-      Caption = 'Dictionary'
+      Caption = 'Lookup'
     end
     object pmSeparator1: TMenuItem
       Caption = '-'
