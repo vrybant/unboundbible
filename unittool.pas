@@ -162,37 +162,39 @@ var
   item : string;
   i : integer;
 begin
+  Result := '';
+
   if Commentaries.Count = 0 then
     begin
-      Result := '<br> ' + ls.NoComm + ' ' + ls.MoreInfo;
+      Result := ls.NoComMod + ' ' + ls.MoreInfo;
       Exit;
     end;
-
-  Result := Bible.VerseToStr(ActiveVerse, true) + '<br>';
 
   for i:=0 to Commentaries.Count-1 do
     begin
       if Commentaries[i].footnotes then Continue;
       Strings := Commentaries[i].GetData(ActiveVerse);
-
-      if Length(Strings) > 0 then
-        Result += '<br><h>' + Commentaries[i].Name + '</h><br><br>';
-
+      if Length(Strings) = 0 then Continue;
+      Result += '<h>' + Commentaries[i].Name + '</h><br><br>';
       for item in Strings  do Result += '<tab>' + item + '<br>';
+      Result += '<br>';
     end;
+
+  if Result = '' then Result := ls.NoComm;
+  Result := Bible.VerseToStr(ActiveVerse, true) + '<br><br>' + Result;
 end;
 
 function Load_Dictionary(st: string = ''): string;
 var
   Strings : TStringArray;
-  item, text : string;
+  item : string;
   i : integer;
 begin
   Result := '';
 
   if Dictionaries.Count = 0 then
     begin
-      Result := '<br> ' + ls.NoDic + ' ' + ls.MoreInfo;
+      Result := ls.NoDicMod + ' ' + ls.MoreInfo;
       Exit;
     end;
 
@@ -201,20 +203,17 @@ begin
   for i:=0 to Dictionaries.Count-1 do
     begin
       Strings := Dictionaries[i].Get_Data(st);
-
-      if Length(Strings) > 0 then
-        Result += '<br><h>' + Dictionaries[i].Name + '</h><br><br>';
-
-      for item in Strings  do Result += '<tab>' + item + '<br>';
+      if Length(Strings) = 0 then Continue;
+      Result += '<h>' + Dictionaries[i].Name + '</h><br><br>';
+      for item in Strings do Result += '<tab>' + item + '<br>';
+      Result += '<br>';
     end;
 
   if Result = '' then
     begin
-      text := ls.NoResults;
-      Replace(text,'%',DoubleQuotedStr(st));
-      Result += text;
+      Result := ls.NoResults;
+      Replace(Result,'%',DoubleQuotedStr(st));
     end;
-
 end;
 
 function Load_Strong(number: string = ''): string;

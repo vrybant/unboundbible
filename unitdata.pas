@@ -71,7 +71,7 @@ type
 
   TLocalizableStrings = record
    Commentary, Confirm, lsFile, Footnote, Found, Language, MoreInfo,
-   Narrow, NoComm, NoDic, NoResults, NoXrefs, Overwrite, Save, Strong : string;
+   Narrow, NoComMod, NoDicMod, NoComm, NoResults, NoXrefs, Overwrite, Save, Strong : string;
  end;
 
 const
@@ -269,9 +269,10 @@ begin
   ls.Found := T('verses found');
   ls.Language := T('Language');
   ls.MoreInfo := T('For more information, choose Menu > Help, then click «Module downloads».');
-  ls.NoComm := T('You don''t have any commentary modules.');
-  ls.NoDic := T('You don''t have any dictionary modules.');
+  ls.NoComMod := T('You don''t have any commentary modules.');
+  ls.NoDicMod := T('You don''t have any dictionary modules.');
   ls.NoResults := T('You search for % produced no results.');
+  ls.NoComm := T('Commentaries not found.');
   ls.NoXrefs := T('Сross-references not found.');
   ls.Overwrite := T('OK to overwrite %s?');
   ls.Save := T('Save changes?');

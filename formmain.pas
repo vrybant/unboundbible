@@ -459,7 +459,7 @@ begin
   TabSheetSearch.Caption := T('Search');
   TabSheetCompare.Caption := T('Compare');
   TabSheetXref.Caption := T('Сross References');
-  TabSheetCommentary.Caption := T('Commentary');
+  TabSheetCommentary.Caption := T('Commentaries');
   TabSheetDictionary.Caption := T('Dictionary');
   TabSheetNotes.Caption := T('Notes');
 
