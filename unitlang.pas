@@ -3,8 +3,7 @@ unit UnitLang;
 interface
 
 uses
-  SysUtils, Classes, Fgl, Graphics, IniFiles, ClipBrd, LCLProc,
-  UmLib, UnitLib, UnitData;
+  SysUtils, Classes, Fgl, Graphics, IniFiles, ClipBrd, LCLProc, UnitLib, UnitData;
 
 type
   TLocal = class
@@ -13,44 +12,25 @@ type
   end;
 
   TLocalization = class(TFPGList<TLocal>)
+    LocalFile : TIniFile;
   public
     constructor Create;
     destructor Destroy; override;
+    function DefaultLangID: string;
+    procedure SetLocal(filename: string);
+    function Translate(const id : string): string;
   end;
 
 var
   Localization : TLocalization;
 
 function T(const id : string): string;
-function GetDefaultLanguage: string;
-procedure SetIniFile(filename: string);
 
 implementation
 
-var
-  IniFile : TIniFile = nil;
-
 function T(const id : string): string;
 begin
-  Result := IniFile.ReadString('Localization',id,id);
-end;
-
-function GetDefaultLanguage: string;
-var
-  List : TStringArray;
-  f : string;
-begin
-  Result := 'en';
-  List := GetFileList(SharePath + LangDirectory, '*.lng');
-
-  for f in List do
-    if ExtractOnlyName(f) = GetLanguageID then Result := GetLanguageID;
-end;
-
-procedure SetIniFile(filename: string);
-begin
-  if Assigned(IniFile) then IniFile.Free;
-  IniFile := TIniFile.Create(filename);
+  Result := Localization.Translate(id);
 end;
 
 //-------------------------------------------------------------------------------------------------
@@ -70,6 +50,7 @@ var
   f : string;
 begin
   inherited;
+  LocalFile := nil;
   List := GetFileList(SharePath + LangDirectory, '*.lng');
 
   for f in List do
@@ -85,10 +66,30 @@ begin
   Sort(Comparison);
 end;
 
+function TLocalization.DefaultLangID: string;
+var i : integer;
+begin
+  Result := 'en';
+  for i:=0 to Count-1 do
+    if Items[i].id = GetLanguageID then Result := GetLanguageID;
+end;
+
+procedure TLocalization.SetLocal(filename: string);
+begin
+  if Assigned(LocalFile) then LocalFile.Free;
+  LocalFile := TIniFile.Create(filename);
+end;
+
+function TLocalization.Translate(const id : string): string;
+begin
+  Result := LocalFile.ReadString('Localization', id, id);
+end;
+
 destructor TLocalization.Destroy;
 var i : integer;
 begin
   for i:=0 to Count-1 do Items[i].Free;
+  if Assigned(LocalFile) then LocalFile.Free;
   inherited Destroy;
 end;
 
@@ -97,7 +98,6 @@ initialization
 
 finalization
   Localization.Free;
-  if Assigned(IniFile) then IniFile.Free;
 
 end.
 

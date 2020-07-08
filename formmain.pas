@@ -496,7 +496,7 @@ var
   filename : string;
 begin
   filename := SharePath + Slash + LangDirectory + Slash + InterfaceLang + '.lng';
-  SetIniFile(filename);
+  Localization.SetLocal(filename);
 
   MainForm     .Localize;
   SearchForm   .Localize;
@@ -1422,7 +1422,7 @@ begin
   Top := IniFile.ReadInteger('Window', 'Top', 80);
 
   PanelLeft.Width := IniFile.ReadInteger('Window', 'Splitter', 270);
-  InterfaceLang := IniFile.ReadString('Application', 'Interface', GetDefaultLanguage);
+  InterfaceLang := IniFile.ReadString('Application', 'Interface', Localization.DefaultLangID);
   FBPageVisited := IniFile.ReadBool('Application', 'FBPage', False);
   Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
   Options.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);
