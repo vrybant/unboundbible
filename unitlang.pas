@@ -18,19 +18,12 @@ type
     destructor Destroy; override;
   end;
 
-  TLocalizableStrings = record
-    Commentary, Confirm, lsFile, Footnote, Found, Language, MoreInfo,
-    Narrow, NoComMod, NoDicMod, NoComm, NoResults, NoXrefs, Overwrite, Save, Strong : string;
-  end;
-
 var
   Localization : TLocalization;
-  ls : TLocalizableStrings;
 
 function T(const id : string): string;
 function GetDefaultLanguage: string;
 procedure SetIniFile(filename: string);
-procedure LocalizeStrings;
 
 implementation
 
@@ -58,29 +51,6 @@ procedure SetIniFile(filename: string);
 begin
   if Assigned(IniFile) then IniFile.Free;
   IniFile := TIniFile.Create(filename);
-end;
-
-//-------------------------------------------------------------------------------------------------
-
-procedure LocalizeStrings;
-begin
-  ls.Commentary := T('Commentaries');
-  ls.Confirm := T('Confirmation');
-  ls.lsFile := T('File');
-  ls.Footnote := T('Footnote');
-  ls.Found := T('verses found');
-  ls.Language := T('Language');
-  ls.MoreInfo := T('For more information, choose Menu > Help, then click «Module downloads».');
-  ls.NoComMod := T('You don''t have any commentary modules.');
-  ls.NoDicMod := T('You don''t have any dictionary modules.');
-  ls.NoResults := T('You search for % produced no results.');
-  ls.NoComm := T('Commentaries not found.');
-  ls.NoXrefs := T('Сross-references not found.');
-  ls.Overwrite := T('OK to overwrite %s?');
-  ls.Save := T('Save changes?');
-  ls.Strong := T('Strong''s Dictionary');
-  ls.Narrow := T('This search returned too many results.') + ' ' +
-               T('Please narrow your search.');
 end;
 
 //-------------------------------------------------------------------------------------------------

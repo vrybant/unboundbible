@@ -92,7 +92,7 @@ begin
 
   if count = 0 then
     begin
-      text := ls.NoResults;
+      text := T('You search for % produced no results.');
       Replace(text,'%',DoubleQuotedStr(st));
       Result += text;
     end;
@@ -153,7 +153,7 @@ begin
     end;
 
   Result += text;
-  if text = '' then Result += ls.NoXrefs;
+  if text = '' then Result += T('Сross-references not found.');
 end;
 
 function Load_Commentary: string;
@@ -166,7 +166,8 @@ begin
 
   if Commentaries.Count = 0 then
     begin
-      Result := ls.NoComMod + ' ' + ls.MoreInfo;
+      Result := T('You don''t have any commentary modules.') + ' ' +
+                T('For more information, choose Menu > Help, then click «Module downloads».');
       Exit;
     end;
 
@@ -180,7 +181,7 @@ begin
       Result += '<br>';
     end;
 
-  if Result = '' then Result := ls.NoComm;
+  if Result = '' then Result := T('Commentaries not found.');
   Result := Bible.VerseToStr(ActiveVerse, true) + '<br><br>' + Result;
 end;
 
@@ -194,7 +195,8 @@ begin
 
   if Dictionaries.Count = 0 then
     begin
-      Result := ls.NoDicMod + ' ' + ls.MoreInfo;
+      Result := T('You don''t have any dictionary modules.') + ' ' +
+                T('For more information, choose Menu > Help, then click «Module downloads».');
       Exit;
     end;
 
@@ -211,7 +213,7 @@ begin
 
   if Result = '' then
     begin
-      Result := ls.NoResults;
+      Result := T('You search for % produced no results.');
       Replace(Result,'%',DoubleQuotedStr(st));
     end;
 end;

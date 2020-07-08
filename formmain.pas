@@ -504,8 +504,6 @@ begin
   AboutBox     .Localize;
   CopyForm     .Localize;
   DownloadForm .Localize;
-
-  LocalizeStrings;
 end;
 
 //-------------------------------------------------------------------------------------------------
@@ -747,7 +745,7 @@ begin
       SaveDialog.FileName := SaveDialog.FileName + '.rtf';
 
     if FileExists(SaveDialog.FileName) then
-      if MessageDlg(Format(ls.Overwrite, [SaveDialog.FileName]),
+      if MessageDlg(Format(T('OK to overwrite %s?'), [SaveDialog.FileName]),
         mtConfirmation, mbYesNoCancel, 0) <> idYes then Exit;
 
     MemoNotes.SaveToFile(SaveDialog.FileName);
@@ -930,7 +928,8 @@ begin
   SelectPage(apNotes);
 
   {$ifdef windows}
-    Response := MessageBox(Handle, PChar(ls.Save), PChar(ls.Confirm), MB_YESNOCANCEL or MB_ICONQUESTION);
+    Response := MessageBox(Handle, PChar(T('Save changes?')), PChar(T('Confirmation')),
+      MB_YESNOCANCEL or MB_ICONQUESTION);
   {$else}
     Response := MessageDlg(ls.Save, mtConfirmation, mbYesNoCancel, 0);
     // этот вариант рисует кнопки с картинками
@@ -1279,7 +1278,7 @@ begin
 
   Cursor := crArrow;
   SelectPage(apSearch);
-  UpdateStatus(ToStr(count) + ' ' + ls.found,'');
+  UpdateStatus(ToStr(count) + ' ' + T('verses found'), '');
 end;
 
 procedure TMainForm.LoadXref;
@@ -1314,7 +1313,7 @@ var text : string;
 begin
   text := Load_Strong(s);
   if text = '' then Exit;
-  NotifyForm.Title.Caption := ls.Strong;
+  NotifyForm.Title.Caption := T('Strong''s Dictionary');
   NotifyForm.Compact := True;
   NotifyForm.Memo.LoadText(text);
   NotifyForm.ShowAtPos(Mouse.CursorPos);
@@ -1326,7 +1325,7 @@ var text : string;
 begin
   text := Load_Footnote(s);
   if text = '' then Exit;
-  NotifyForm.Title.Caption := ls.Footnote;
+  NotifyForm.Title.Caption := T('Footnote');
   NotifyForm.Compact := False;
   NotifyForm.Memo.LoadText(text);
   NotifyForm.ShowAtPos(Mouse.CursorPos);
