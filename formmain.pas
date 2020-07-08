@@ -256,8 +256,9 @@ type
     procedure UpdateActionImage;
     procedure VersesToClipboard;
     procedure ShowPopup;
-  public
     procedure Localize;
+  public
+    procedure LocalizeApplication;
   end;
 
 var
@@ -488,6 +489,23 @@ begin
   ToolButtonCenter.Hint := T('Center');
   ToolButtonRight.Hint := T('Align Right');
   ToolButtonBullets.Hint := T('Bullets');
+end;
+
+procedure TMainForm.LocalizeApplication;
+var
+  filename : string;
+begin
+  filename := SharePath + Slash + LangDirectory + Slash + InterfaceLang + '.lng';
+  SetIniFile(filename);
+
+  MainForm     .Localize;
+  SearchForm   .Localize;
+  CompareForm  .Localize;
+  AboutBox     .Localize;
+  CopyForm     .Localize;
+  DownloadForm .Localize;
+
+  LocalizeStrings;
 end;
 
 //-------------------------------------------------------------------------------------------------

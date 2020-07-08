@@ -3,7 +3,7 @@ unit UnitData;
 interface
 
 uses
-  Classes, Fgl, SysUtils, Graphics, FileUtil, IniFiles, UmLib, UnitLang, UnitLib;
+  Classes, Fgl, SysUtils, Graphics, FileUtil, IniFiles, UmLib, UnitLib;
 
 const
   ApplicationName = 'Unbound Bible';
@@ -17,6 +17,7 @@ const
 var
   ApplicationUpdate : boolean = false;
   DefaultFont: TFont;
+  InterfaceLang : string;
 
 type
   TFileFormat = (unbound, mysword, mybible);
@@ -69,11 +70,6 @@ type
     cvEnd         : boolean;
   end;
 
-  TLocalizableStrings = record
-   Commentary, Confirm, lsFile, Footnote, Found, Language, MoreInfo,
-   Narrow, NoComMod, NoDicMod, NoComm, NoResults, NoXrefs, Overwrite, Save, Strong : string;
- end;
-
 const
   noneVerse : TVerse = (
     book    : 0;
@@ -99,7 +95,6 @@ const
 var
   ActiveVerse : TVerse;
   Options : TCopyOptions;
-  ls : TLocalizableStrings;
 
   BibleHubArray : array [1..66] of string = (
     'genesis','exodus','leviticus','numbers','deuteronomy','joshua','judges','ruth','1_samuel','2_samuel',
@@ -120,7 +115,6 @@ function DataPath: string;
 function GetDatabaseList: TStringArray;
 function HomeURL: string;
 function DownloadsURL: string;
-procedure LocalizeStrings;
 
 implementation
 
@@ -258,27 +252,6 @@ begin
   ActiveVerse.count := IniFile.ReadInteger('Verse', 'Count', 0);
 
   IniFile.Free;
-end;
-
-procedure LocalizeStrings;
-begin
-  ls.Commentary := T('Commentaries');
-  ls.Confirm := T('Confirmation');
-  ls.lsFile := T('File');
-  ls.Footnote := T('Footnote');
-  ls.Found := T('verses found');
-  ls.Language := T('Language');
-  ls.MoreInfo := T('For more information, choose Menu > Help, then click «Module downloads».');
-  ls.NoComMod := T('You don''t have any commentary modules.');
-  ls.NoDicMod := T('You don''t have any dictionary modules.');
-  ls.NoResults := T('You search for % produced no results.');
-  ls.NoComm := T('Commentaries not found.');
-  ls.NoXrefs := T('Сross-references not found.');
-  ls.Overwrite := T('OK to overwrite %s?');
-  ls.Save := T('Save changes?');
-  ls.Strong := T('Strong''s Dictionary');
-  ls.Narrow := T('This search returned too many results.') + ' ' +
-               T('Please narrow your search.');
 end;
 
 initialization

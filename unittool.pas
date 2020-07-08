@@ -19,7 +19,7 @@ function Show_Message(s: string): string;
 implementation
 
 uses
-  UnitData, UnitModule, UnitShelf, FormSearch, UnitXref, UnitCommentary, UnitDictionary;
+  UnitData, UnitLang, UnitModule, UnitShelf, FormSearch, UnitXref, UnitCommentary, UnitDictionary;
 
 function Load_Chapter: string;
 var
