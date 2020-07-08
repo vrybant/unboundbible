@@ -18,19 +18,19 @@ type
     destructor Destroy; override;
     function DefaultLangID: string;
     procedure SetLocal(filename: string);
-    function Translate(const id : string): string;
+    function Translate(const s: string): string;
   end;
 
 var
   Localization : TLocalization;
 
-function T(const id : string): string;
+function T(const s: string): string;
 
 implementation
 
-function T(const id : string): string;
+function T(const s: string): string;
 begin
-  Result := Localization.Translate(id);
+  Result := Localization.Translate(s);
 end;
 
 //-------------------------------------------------------------------------------------------------
@@ -80,9 +80,9 @@ begin
   LocalFile := TIniFile.Create(filename);
 end;
 
-function TLocalization.Translate(const id : string): string;
+function TLocalization.Translate(const s: string): string;
 begin
-  Result := LocalFile.ReadString('Localization', id, id);
+  Result := LocalFile.ReadString('Localization',s,s);
 end;
 
 destructor TLocalization.Destroy;
