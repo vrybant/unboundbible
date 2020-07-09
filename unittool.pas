@@ -14,7 +14,6 @@ function Load_Dictionary(st: string = ''): string;
 function Load_Strong(number: string = ''): string;
 function Load_Footnote(marker: string = ''): string;
 function Load_Verses: string;
-function Show_Message(s: string): string;
 
 implementation
 
@@ -274,11 +273,6 @@ begin
   if Options.cvEnd then quote := quote + ' '+ link else quote := link + ' ' + quote;
 
   Result += quote + '<br> ';
-end;
-
-function Show_Message(s: string): string;
-begin
-  Result := '<br><i> ' + s + '</i><br> ';
 end;
 
 end.

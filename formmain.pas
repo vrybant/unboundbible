@@ -923,27 +923,20 @@ var
   Response : integer;
 begin
   Result := True;
-
   if not MemoNotes.Modified then Exit;
   SelectPage(apNotes);
 
-  {$ifdef windows}
-    Response := MessageBox(Handle, PChar(T('Save changes?')), PChar(T('Confirmation')),
-      MB_YESNOCANCEL or MB_ICONQUESTION);
-  {$else}
-    Response := MessageDlg(ls.Save, mtConfirmation, mbYesNoCancel, 0);
-    // этот вариант рисует кнопки с картинками
-  {$endif}
+  Response := MessageDlg(T('Save changes?'), mtConfirmation, mbYesNoCancel, 0);
 
   // remake!!
   case Response of
     idYes:
-    begin
-      CmdFileSave(self);
-      Result := not MemoNotes.Modified;
-    end;
-    idNo: {Nothing};
-    idCancel: Result := False; // Abort;
+      begin
+        CmdFileSave(self);
+        Result := not MemoNotes.Modified;
+      end;
+    idNo: {nothing};
+    idCancel: Result := False;
   end;
 end;
 
@@ -1262,19 +1255,23 @@ end;
 
 procedure TMainForm.LoadSearch(s: string);
 var
-  richtext : string;
+  text : string;
   count : integer = 0;
-  {$ifdef linux} const max = 2000; {$endif}
+const
+  max = {$ifdef windows}5000{$else}2000{$endif};
 begin
   s := Trim(s);
   if Utf8Length(s) < 2 then Exit;
   if Shelf.Count = 0 then Exit;
 
   Cursor := crHourGlass;
-  richtext := Load_Search(s, count);
-  {$ifdef linux} if count > max then richtext := Show_Message(ls.Narrow); {$endif}
+  text := Load_Search(s, count);
+
+  if count > max then text := T('This search returned too many results.') + ' ' +
+                              T('Please narrow your search.');
+
   MemoSearch.Font.Assign(DefaultFont);
-  MemoSearch.LoadText(richtext);
+  MemoSearch.LoadText(text);
 
   Cursor := crArrow;
   SelectPage(apSearch);
