@@ -243,7 +243,7 @@ type
     procedure LoadStrong(s: string);
     procedure LoadFootnote(s: string);
     procedure MakeBookList;
-    procedure MakeChapterList(n: integer);
+    procedure MakeChapterList;
     procedure OnRecentClick(Sender: TObject);
     procedure OnLangClick(Sender: TObject);
     procedure PerformFileOpen(const FileName: string);
@@ -1222,12 +1222,13 @@ end;
 
 //-----------------------------------------------------------------------------------------
 
-procedure TMainForm.MakeChapterList(n: integer);
+procedure TMainForm.MakeChapterList;
 var
-  i: integer;
+  n, i: integer;
 begin
-  ChapterBox.Font.Assign(DefaultFont);
+  n := Bible.ChaptersCount(ActiveVerse);
   if ChapterBox.Items.Count = n then Exit;
+  ChapterBox.Font.Assign(DefaultFont);
 
   ChapterBox.Items.BeginUpdate;
   ChapterBox.Items.Clear;
@@ -1247,7 +1248,7 @@ begin
   if Shelf.Count = 0 then Exit;
   MemoBible.Font.Assign(DefaultFont);
   MemoBible.LoadText(Get_Chapter, true);
-  MakeChapterList(Bible.ChaptersCount(ActiveVerse));
+  MakeChapterList;
   SelectPage(apBible);
 end;
 
@@ -1395,7 +1396,7 @@ begin
   MemoPreview := TUnboundMemo.Create(self);
   MemoPreview.Parent := MainForm;
   MemoPreview.Font.Assign(DefaultFont);
-  MemoPreview.LoadText(Load_Verses);
+  MemoPreview.LoadText(Get_Verses);
   MemoPreview.SelectAll;
   MemoPreview.CopyToClipboard;
   MemoPreview.Visible := false;
