@@ -4,23 +4,23 @@ interface
 
 uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UmLib, UnitLib;
 
-function Load_Chapter: string;
-function Load_Search(st: string; var count: integer): string;
-function Load_Compare: string;
-function Load_Downloads: TStringsArray;
-function Load_Xref: string;
-function Load_Commentary: string;
-function Load_Dictionary(st: string = ''): string;
-function Load_Strong(number: string = ''): string;
-function Load_Footnote(marker: string = ''): string;
-function Load_Verses: string;
+function Get_Chapter: string;
+function Get_Search(st: string; var count: integer): string;
+function Get_Compare: string;
+function Get_Downloads: TStringsArray;
+function Get_Xref: string;
+function Get_Commentary: string;
+function Get_Dictionary(st: string = ''): string;
+function Get_Strong(number: string = ''): string;
+function Get_Footnote(marker: string = ''): string;
+function Get_Verses: string;
 
 implementation
 
 uses
   UnitData, UnitLang, UnitModule, UnitShelf, FormSearch, UnitXref, UnitCommentary, UnitDictionary;
 
-function Load_Chapter: string;
+function Get_Chapter: string;
 var
   Strings : TStringArray;
   text : string;
@@ -70,7 +70,7 @@ begin
   for item in List do Highlight(s, item, Options);
 end;
 
-function Load_Search(st: string; var count: integer): string;
+function Get_Search(st: string; var count: integer): string;
 var
   ContentArray : TContentArray;
   content : TContent;
@@ -97,7 +97,7 @@ begin
     end;
 end;
 
-function Load_Compare: string;
+function Get_Compare: string;
 var
   str : string;
   i : integer;
@@ -113,7 +113,7 @@ begin
     end;
 end;
 
-function Load_Downloads: TStringsArray;
+function Get_Downloads: TStringsArray;
 var
   k : integer = 0;
   i : integer;
@@ -134,7 +134,7 @@ begin
   SetLength(Result, k);
 end;
 
-function Load_Xref: string;
+function Get_Xref: string;
 var
   Verses : TVerseArray;
   item : TVerse;
@@ -155,7 +155,7 @@ begin
   if text = '' then Result += T('Сross-references not found.');
 end;
 
-function Load_Commentary: string;
+function Get_Commentary: string;
 var
   Strings : TStringArray;
   item : string;
@@ -184,7 +184,7 @@ begin
   Result := Bible.VerseToStr(ActiveVerse, true) + '<br><br>' + Result;
 end;
 
-function Load_Dictionary(st: string = ''): string;
+function Get_Dictionary(st: string = ''): string;
 var
   Strings : TStringArray;
   item : string;
@@ -217,21 +217,21 @@ begin
     end;
 end;
 
-function Load_Strong(number: string = ''): string;
+function Get_Strong(number: string = ''): string;
 begin
   Result := '';
   if Dictionaries.Count = 0 then Exit;
   Result := Dictionaries.GetStrong(ActiveVerse, Bible.language, number);
 end;
 
-function Load_Footnote(marker: string = ''): string;
+function Get_Footnote(marker: string = ''): string;
 begin
   if Bible.format = mybible
     then Result := Commentaries.GetFootnote(Bible.fileName, ActiveVerse, marker)
     else Result := Bible.GetFootnote(ActiveVerse, marker);
 end;
 
-function Load_Verses: string;
+function Get_Verses: string;
 var
   Book : TBook;
   List : TStringArray;

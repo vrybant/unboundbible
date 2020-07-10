@@ -625,7 +625,7 @@ begin
   if Sender <> PageControl then
     if CompareForm.ShowModal <> mrOk then Exit;
   MemoCompare.Font.Assign(DefaultFont);
-  MemoCompare.LoadText(Load_Compare);
+  MemoCompare.LoadText(Get_Compare);
   SelectPage(apCompare);
 end;
 
@@ -769,7 +769,7 @@ end;
 procedure TMainForm.CmdModules(Sender: TObject);
 begin
   if Shelf.Count = 0 then Exit;
-  DownloadForm.LoadGrid(Load_Downloads);
+  DownloadForm.LoadGrid(Get_Downloads);
   DownloadForm.ShowModal;
 end;
 
@@ -1248,7 +1248,7 @@ procedure TMainForm.LoadChapter;
 begin
   if Shelf.Count = 0 then Exit;
   MemoBible.Font.Assign(DefaultFont);
-  MemoBible.LoadText(Load_Chapter, true);
+  MemoBible.LoadText(Get_Chapter, true);
   MakeChapterList(Bible.ChaptersCount(ActiveVerse));
   SelectPage(apBible);
 end;
@@ -1265,7 +1265,7 @@ begin
   if Shelf.Count = 0 then Exit;
 
   Cursor := crHourGlass;
-  text := Load_Search(s, count);
+  text := Get_Search(s, count);
 
   if count > max then text := T('This search returned too many results.') + ' ' +
                               T('Please narrow your search.');
@@ -1282,7 +1282,7 @@ procedure TMainForm.LoadXref;
 begin
   if Shelf.Count = 0 then Exit;
   MemoXref.Font.Assign(DefaultFont);
-  MemoXref.LoadText(Load_Xref);
+  MemoXref.LoadText(Get_Xref);
   SelectPage(apXref);
 end;
 
@@ -1290,7 +1290,7 @@ procedure TMainForm.LoadCommentary;
 begin
   if Shelf.Count = 0 then Exit;
   MemoCommentary.Font.Assign(DefaultFont);
-  MemoCommentary.LoadHtml(Load_Commentary);
+  MemoCommentary.LoadHtml(Get_Commentary);
   SelectPage(apCommentary);
 end;
 
@@ -1300,7 +1300,7 @@ begin
   s := Trim(s);
 
   MemoDictionary.Font.Assign(DefaultFont);
-  MemoDictionary.LoadHtml(Load_Dictionary(s));
+  MemoDictionary.LoadHtml(Get_Dictionary(s));
 
   SelectPage(apDictionary);
 end;
@@ -1308,7 +1308,7 @@ end;
 procedure TMainForm.LoadStrong(s: string);
 var text : string;
 begin
-  text := Load_Strong(s);
+  text := Get_Strong(s);
   if text = '' then Exit;
   NotifyForm.Title.Caption := T('Strong''s Dictionary');
   NotifyForm.Compact := True;
@@ -1320,7 +1320,7 @@ end;
 procedure TMainForm.LoadFootnote(s: string);
 var text : string;
 begin
-  text := Load_Footnote(s);
+  text := Get_Footnote(s);
   if text = '' then Exit;
   NotifyForm.Title.Caption := T('Footnote');
   NotifyForm.Compact := False;
@@ -1332,7 +1332,7 @@ end;
 {$ifdef windows}
 procedure TMainForm.VersesToClipboard;
 begin
-  StringToClipboard(ParseWin(Load_Verses(), DefaultFont));
+  StringToClipboard(ParseWin(Get_Verses(), DefaultFont));
 end;
 {$endif}
 
