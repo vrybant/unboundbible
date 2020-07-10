@@ -166,7 +166,7 @@ begin
   if Commentaries.Count = 0 then
     begin
       Result := T('You don''t have any commentary modules.') + ' ' +
-                T('For more information, choose Menu > Help, then click «Module downloads».');
+                T('For more information, choose Menu ➝ Help, then click «Module downloads».');
       Exit;
     end;
 
