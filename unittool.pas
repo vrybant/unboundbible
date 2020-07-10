@@ -7,13 +7,13 @@ uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UmLib, UnitLib;
 function Get_Chapter: string;
 function Get_Search(st: string; var count: integer): string;
 function Get_Compare: string;
-function Get_Downloads: TStringsArray;
 function Get_Xref: string;
 function Get_Commentary: string;
 function Get_Dictionary(st: string = ''): string;
 function Get_Strong(number: string = ''): string;
 function Get_Footnote(marker: string = ''): string;
 function Get_Verses: string;
+function Get_Downloads: TStringsArray;
 
 implementation
 
@@ -88,13 +88,6 @@ begin
       text := '<l>' + link + '</l>' + ' ' + text + '<br><br>';
       Result += text;
     end;
-
-  if count = 0 then
-    begin
-      text := T('You search for % produced no results.');
-      Replace(text,'%',DoubleQuotedStr(st));
-      Result += text;
-    end;
 end;
 
 function Get_Compare: string;
@@ -102,7 +95,7 @@ var
   str : string;
   i : integer;
 begin
-  Result := Bible.VerseToStr(ActiveVerse, true) + '<br> ';
+  Result := '';
 
   for i:=0 to Shelf.Count-1 do
     begin
@@ -113,46 +106,21 @@ begin
     end;
 end;
 
-function Get_Downloads: TStringsArray;
-var
-  k : integer = 0;
-  i : integer;
-
-  function GetInfo(const Module: TModule): TStringArray;
-  begin
-    SetLength(Result, 3);
-    Result[0] := iif((Module.language     = ''), '', Module.language);
-    Result[1] := ' ' + Module.Name;
-    Result[2] := ' ' + Module.Filename;
-  end;
-
-begin
-  SetLength(Result, 500);
-  for i:=0 to        Shelf.Count-1 do begin Result[k] := GetInfo(Shelf[i]       ); k +=1 end;
-  for i:=0 to Commentaries.Count-1 do begin Result[k] := GetInfo(Commentaries[i]); k +=1 end;
-  for i:=0 to Dictionaries.Count-1 do begin Result[k] := GetInfo(Dictionaries[i]); k +=1 end;
-  SetLength(Result, k);
-end;
-
 function Get_Xref: string;
 var
   Verses : TVerseArray;
   item : TVerse;
-  text : string = '';
   link : string;
 begin
-  Result := Bible.VerseToStr(ActiveVerse, true) + '<br><br>';
+  Result := '';
   Verses := Xrefs.GetData(ActiveVerse, Bible.language);
 
   for item in Verses do
     begin
       link := Bible.VerseToStr(item, not Options.cvAbbreviate);
       if link = '' then Continue;
-      text += '<l>' + link + '</l> ' + Join(Bible.GetRange(item)) + '<br><br>';
+      Result += '<l>' + link + '</l> ' + Join(Bible.GetRange(item)) + '<br><br>';
     end;
-
-  Result += text;
-  if text = '' then Result += T('Сross-references not found.');
 end;
 
 function Get_Commentary: string;
@@ -163,13 +131,6 @@ var
 begin
   Result := '';
 
-  if Commentaries.Count = 0 then
-    begin
-      Result := T('You don''t have any commentary modules.') + ' ' +
-                T('For more information, choose Menu ➝ Help, then click «Module downloads».');
-      Exit;
-    end;
-
   for i:=0 to Commentaries.Count-1 do
     begin
       if Commentaries[i].footnotes then Continue;
@@ -179,9 +140,6 @@ begin
       for item in Strings  do Result += '<tab>' + item + '<br>';
       Result += '<br>';
     end;
-
-  if Result = '' then Result := T('Commentaries not found.');
-  Result := Bible.VerseToStr(ActiveVerse, true) + '<br><br>' + Result;
 end;
 
 function Get_Dictionary(st: string = ''): string;
@@ -191,14 +149,6 @@ var
   i : integer;
 begin
   Result := '';
-
-  if Dictionaries.Count = 0 then
-    begin
-      Result := T('You don''t have any dictionary modules.') + ' ' +
-                T('For more information, choose Menu > Help, then click «Module downloads».');
-      Exit;
-    end;
-
   if st = '' then Exit;
 
   for i:=0 to Dictionaries.Count-1 do
@@ -208,12 +158,6 @@ begin
       Result += '<h>' + Dictionaries[i].Name + '</h><br><br>';
       for item in Strings do Result += '<tab>' + item + '<br>';
       Result += '<br>';
-    end;
-
-  if Result = '' then
-    begin
-      Result := T('You search for % produced no results.');
-      Replace(Result,'%',DoubleQuotedStr(st));
     end;
 end;
 
@@ -273,6 +217,27 @@ begin
   if Options.cvEnd then quote := quote + ' '+ link else quote := link + ' ' + quote;
 
   Result += quote + '<br> ';
+end;
+
+function Get_Downloads: TStringsArray;
+var
+  k : integer = 0;
+  i : integer;
+
+  function GetInfo(const Module: TModule): TStringArray;
+  begin
+    SetLength(Result, 3);
+    Result[0] := iif((Module.language     = ''), '', Module.language);
+    Result[1] := ' ' + Module.Name;
+    Result[2] := ' ' + Module.Filename;
+  end;
+
+begin
+  SetLength(Result, 500);
+  for i:=0 to        Shelf.Count-1 do begin Result[k] := GetInfo(Shelf[i]       ); k +=1 end;
+  for i:=0 to Commentaries.Count-1 do begin Result[k] := GetInfo(Commentaries[i]); k +=1 end;
+  for i:=0 to Dictionaries.Count-1 do begin Result[k] := GetInfo(Dictionaries[i]); k +=1 end;
+  SetLength(Result, k);
 end;
 
 end.

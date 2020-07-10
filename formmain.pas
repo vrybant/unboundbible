@@ -236,6 +236,7 @@ type
     procedure LangMenuInit;
     procedure LoadChapter;
     procedure LoadSearch(s: string);
+    procedure LoadCompare;
     procedure LoadXref;
     procedure LoadCommentary;
     procedure LoadDictionary(s: string);
@@ -269,7 +270,7 @@ implementation
 uses
   {$ifdef windows} UmParseWin, {$endif}
   FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLang, UnitShelf, FormCopy,
-  FormDownload;
+  FormDownload, UnitCommentary, UnitDictionary;
 
 const
   apBible      = 0; // active page
@@ -621,12 +622,9 @@ end;
 
 procedure TMainForm.CmdCompare(Sender: TObject);
 begin
-  if Shelf.Count = 0 then Exit;
   if Sender <> PageControl then
     if CompareForm.ShowModal <> mrOk then Exit;
-  MemoCompare.Font.Assign(DefaultFont);
-  MemoCompare.LoadText(Get_Compare);
-  SelectPage(apCompare);
+  LoadCompare;
 end;
 
 procedure TMainForm.CmdInterline(Sender: TObject);
@@ -1267,6 +1265,12 @@ begin
   Cursor := crHourGlass;
   text := Get_Search(s, count);
 
+  if count = 0 then
+    begin
+      text := T('You search for % produced no results.');
+      Replace(text,'%',DoubleQuotedStr(s));
+    end;
+
   if count > max then text := T('This search returned too many results.') + ' ' +
                               T('Please narrow your search.');
 
@@ -1278,29 +1282,76 @@ begin
   UpdateStatus(ToStr(count) + ' ' + T('verses found'), '');
 end;
 
-procedure TMainForm.LoadXref;
+procedure TMainForm.LoadCompare;
+var text : string;
 begin
   if Shelf.Count = 0 then Exit;
+  text := Bible.VerseToStr(ActiveVerse, true) + '<br> ';
+  text += Get_Compare;
+  MemoCompare.Font.Assign(DefaultFont);
+  MemoCompare.LoadText(text);
+  SelectPage(apCompare);
+end;
+
+procedure TMainForm.LoadXref;
+var
+  text, data : string;
+begin
+  if Shelf.Count = 0 then Exit;
+  text := Bible.VerseToStr(ActiveVerse, true) + '<br><br>';
+  data := Get_Xref;
+  if data = '' then text += T('Сross-references not found.') else text += data;
   MemoXref.Font.Assign(DefaultFont);
-  MemoXref.LoadText(Get_Xref);
+  MemoXref.LoadText(text);
   SelectPage(apXref);
 end;
 
 procedure TMainForm.LoadCommentary;
+var
+  text, data : string;
 begin
   if Shelf.Count = 0 then Exit;
+  text := Bible.VerseToStr(ActiveVerse, true) + '<br><br>';
+  data := Get_Commentary;
+
+  if data = '' then text += T('Commentaries not found.') + '<br><br>'
+               else text += data;
+
+  if Commentaries.Count = 0 then
+    begin
+      text += T('You don''t have any commentary modules.') + ' ' +
+              T('For more information, choose Menu ➝ Help, then click «Module downloads».');
+    end;
+
   MemoCommentary.Font.Assign(DefaultFont);
-  MemoCommentary.LoadHtml(Get_Commentary);
+  MemoCommentary.LoadHtml(text);
   SelectPage(apCommentary);
 end;
 
 procedure TMainForm.LoadDictionary(s: string);
+var
+  text, data : string;
 begin
   if Shelf.Count = 0 then Exit;
   s := Trim(s);
+  text := '';
+  data := Get_Dictionary(s);
+  if data <> '' then text += data;
+
+  if (data = '') and (s <> '') then
+    begin
+      text += T('You search for % produced no results.') + '<br><br>';
+      Replace(text,'%',DoubleQuotedStr(s));
+    end;
+
+  if Dictionaries.Count = 0 then
+    begin
+      text += T('You don''t have any dictionary modules.') + ' ' +
+              T('For more information, choose Menu ➝ Help, then click «Module downloads».');
+    end;
 
   MemoDictionary.Font.Assign(DefaultFont);
-  MemoDictionary.LoadHtml(Get_Dictionary(s));
+  MemoDictionary.LoadHtml(text);
 
   SelectPage(apDictionary);
 end;
