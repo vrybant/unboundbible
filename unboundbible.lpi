@@ -210,7 +210,7 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx5057="True" idx5024="True"/>
+        <IgnoredMessages idx5093="True" idx5057="True" idx5024="True" idx3123="True"/>
       </CompilerMessages>
     </Other>
   </CompilerOptions>
