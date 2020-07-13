@@ -406,13 +406,13 @@ end;
 
 function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
 var
-  Contents : TContentArray;
-  queryRange, from, till : string;
+  Contents : TContentArray = [];
+  queryRange : string = '';
+  from, till : string;
   nt : boolean;
   i : integer;
 begin
   SetLength(Result,0);
-  queryRange := '';
 
   SetSearchOptions(searchString, SearchOptions, format);
 

@@ -124,10 +124,10 @@ end;
 
 function StringToList(ch: Char; s: string): TStringArray;
 var
-  Point : array of integer;
-  i, len : integer;
+  Point : array of integer = [];
   index : integer = 0;
   n : integer = 0;
+  i, len : integer;
 begin
   SetLength(Result,Length(s)+2);
   SetLength(Point ,Length(s)+2);
