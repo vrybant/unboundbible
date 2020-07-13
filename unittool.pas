@@ -153,7 +153,7 @@ begin
 
   for i:=0 to Dictionaries.Count-1 do
     begin
-      Strings := Dictionaries[i].Get_Data(st);
+      Strings := Dictionaries[i].GetData(st);
       if Length(Strings) = 0 then Continue;
       Result += '<h>' + Dictionaries[i].Name + '</h><br><br>';
       for item in Strings do Result += '<tab>' + item + '<br>';

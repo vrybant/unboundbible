@@ -13,10 +13,10 @@ type
   TDictionary = class(TModule)
   private
     z : TDictionaryAlias;
-    function GetData(number: string): string;
+    function GetStrongData(number: string): string;
   public
     constructor Create(filePath: string);
-    function Get_Data(text: string): TStringArray;
+    function GetData(key: string): TStringArray;
   end;
 
   TDictionaries = class(TFPGList<TDictionary>)
@@ -68,7 +68,7 @@ begin
   if connected and not TableExists(z.dictionary) then connected := false;
 end;
 
-function TDictionary.GetData(number: string): string;
+function TDictionary.GetStrongData(number: string): string;
 begin
   Result := '';
   try
@@ -85,7 +85,7 @@ begin
   end;
 end;
 
-function TDictionary.Get_Data(text: string): TStringArray;
+function TDictionary.GetData(key: string): TStringArray;
 var
   line : string;
   i : integer;
@@ -96,7 +96,7 @@ begin
   try
     try
       Query.SQL.Text := 'SELECT * FROM ' + z.dictionary +
-                        ' WHERE ' + z.word + ' = "' + text + '"';
+                        ' WHERE ' + z.word + ' = "' + key + '"';
       Query.Open;
       Query.Last;
       SetLength(Result, Query.RecordCount);
@@ -180,7 +180,7 @@ begin
     begin
       if not self[i].strong then Continue;
       if self[i].filename <> filename then Continue;
-      Result := self[i].GetData(number);
+      Result := self[i].GetStrongData(number);
     end;
 end;
 
