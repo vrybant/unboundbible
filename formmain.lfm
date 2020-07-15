@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 636
+  Left = 296
   Height = 401
-  Top = 299
+  Top = 203
   Width = 937
   Caption = 'Unbound Bible'
   ClientHeight = 381
@@ -15,7 +15,7 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
-  LCLVersion = '2.0.8.0'
+  LCLVersion = '2.0.10.0'
   object StandardToolBar: TToolBar
     Left = 0
     Height = 30
@@ -398,15 +398,15 @@ object MainForm: TMainForm
       end
     end
     object TabSheetXref: TTabSheet
-      Caption = 'XRefs'
+      Caption = 'Сross-References'
       ClientHeight = 296
-      ClientWidth = 675
+      ClientWidth = 729
       object MemoXRef: TUnboundMemo
         Cursor = crArrow
         Left = 0
         Height = 296
         Top = 0
-        Width = 675
+        Width = 729
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
@@ -425,15 +425,15 @@ object MainForm: TMainForm
       end
     end
     object TabSheetCommentary: TTabSheet
-      Caption = 'Commentary'
+      Caption = 'Commentaries'
       ClientHeight = 296
-      ClientWidth = 675
+      ClientWidth = 729
       object MemoCommentary: TUnboundMemo
         Cursor = crArrow
         Left = 0
         Height = 296
         Top = 0
-        Width = 675
+        Width = 729
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
@@ -452,15 +452,15 @@ object MainForm: TMainForm
       end
     end
     object TabSheetDictionary: TTabSheet
-      Caption = 'Dictionary'
-      ClientHeight = 298
-      ClientWidth = 673
+      Caption = 'Dictionaries'
+      ClientHeight = 296
+      ClientWidth = 729
       object MemoDictionary: TUnboundMemo
         Cursor = crArrow
         Left = 0
         Height = 296
         Top = 0
-        Width = 675
+        Width = 729
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
@@ -537,8 +537,8 @@ object MainForm: TMainForm
   end
   object MainMenu: TMainMenu
     Images = Images
-    left = 400
-    top = 216
+    Left = 400
+    Top = 216
     object miTools: TMenuItem
       Caption = '&Tools'
       object miSearch: TMenuItem
@@ -684,8 +684,8 @@ object MainForm: TMainForm
     end
   end
   object Images: TImageList
-    left = 320
-    top = 104
+    Left = 320
+    Top = 104
     Bitmap = {
       4C69290000001000000010000000FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
@@ -2004,15 +2004,16 @@ object MainForm: TMainForm
   end
   object PopupMenu: TPopupMenu
     Images = Images
-    left = 400
-    top = 160
+    Left = 400
+    Top = 160
     object pmSearch: TMenuItem
       Action = ActionSearch
       AutoCheck = True
+      Caption = 'Search'
     end
     object pmLookup: TMenuItem
-      Action = ActionDictionary
-      Caption = 'Lookup'
+      Action = ActionLookup
+      Caption = 'Look Up'
     end
     object pmSeparator1: TMenuItem
       Caption = '-'
@@ -2086,8 +2087,8 @@ object MainForm: TMainForm
   end
   object ActionList: TActionList
     Images = Images
-    left = 400
-    top = 104
+    Left = 400
+    Top = 104
     object ActionAbout: THelpAction
       Category = 'Tools'
       Caption = 'CmdAbout'
@@ -2320,6 +2321,11 @@ object MainForm: TMainForm
       )
       ShortCut = 16493
     end
+    object ActionLookup: TAction
+      Category = 'Tools'
+      Caption = 'ActionLookup'
+      OnExecute = cmdLookup
+    end
     object ActionXref: TAction
       Category = 'Tools'
       Caption = 'Сross References'
@@ -2357,37 +2363,37 @@ object MainForm: TMainForm
   end
   object OpenDialog: TOpenDialog
     Filter = 'Rich Text Files (*.rtf)|*.rtf'
-    left = 240
-    top = 104
+    Left = 240
+    Top = 104
   end
   object FontDialog: TFontDialog
     MinFontSize = 0
     MaxFontSize = 0
-    left = 240
-    top = 160
+    Left = 240
+    Top = 160
   end
   object SaveDialog: TSaveDialog
     Filter = 'Rich Text Files (*.rtf)|*.rtf'
     Options = [ofHideReadOnly, ofEnableSizing, ofViewDetail]
-    left = 320
-    top = 216
+    Left = 320
+    Top = 216
   end
   object FontDialogNotes: TFontDialog
     MinFontSize = 0
     MaxFontSize = 0
-    left = 240
-    top = 216
+    Left = 240
+    Top = 216
   end
   object PrintDialog: TPrintDialog
     Collate = True
     Options = [poDisablePrintToFile]
-    left = 320
-    top = 160
+    Left = 320
+    Top = 160
   end
   object IdleTimer: TIdleTimer
     Enabled = False
     OnTimer = IdleTimerTimer
-    left = 472
-    top = 104
+    Left = 472
+    Top = 104
   end
 end

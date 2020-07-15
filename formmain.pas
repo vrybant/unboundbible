@@ -13,6 +13,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ActionLookup: TAction;
     ActionXref: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
@@ -193,6 +194,7 @@ type
     procedure CmdInterline(Sender: TObject);
     procedure CmdOptions(Sender: TObject);
     procedure CmdSearch(Sender: TObject);
+    procedure CmdLookup(Sender: TObject);
     procedure CmdStyle(Sender: TObject);
     procedure CmdStyle2(Sender: TObject);
     procedure CmdModules(Sender: TObject);
@@ -419,9 +421,9 @@ begin
   miHelp.Caption := T('Help');
   miSearch.Caption := T('Search');
   miCompare.Caption := T('Compare');
-  miRref.Caption := T('Сross References');
+  miRref.Caption := T('Сross-References');
   miCommentary.Caption := T('Commentaries');
-  miDictionary.Caption := T('Dictionary');
+  miDictionary.Caption := T('Dictionaries');
   miTranslate.Caption := T('Translation');
   miInterlinear.Caption := T('Interlinear');
   miPrint.Caption := T('Print');
@@ -449,7 +451,7 @@ begin
   miHelpAbout.Caption := T('About');
 
   pmSearch.Caption := T('Search');
-  pmLookup.Caption := T('Lookup');
+  pmLookup.Caption := T('Look Up');
   pmCut.Caption := T('Cut');
   pmCopy.Caption := T('Copy');
   pmPaste.Caption := T('Paste');
@@ -460,9 +462,9 @@ begin
   TabSheetBible.Caption := T('Bible');
   TabSheetSearch.Caption := T('Search');
   TabSheetCompare.Caption := T('Compare');
-  TabSheetXref.Caption := T('Сross References');
+  TabSheetXref.Caption := T('Сross-References');
   TabSheetCommentary.Caption := T('Commentaries');
-  TabSheetDictionary.Caption := T('Dictionary');
+  TabSheetDictionary.Caption := T('Dictionaries');
   TabSheetNotes.Caption := T('Notes');
 
   ToolButtonNew.Hint := T('New');
@@ -477,9 +479,9 @@ begin
   ToolButtonUndo.Hint := T('Undo');
 
   ToolButtonCompare.Hint := T('Compare');
-  ToolButtonXref.Hint := T('Сross References');
+  ToolButtonXref.Hint := T('Сross-References');
   ToolButtonCommentary.Hint := T('Commentaries');
-  ToolButtonDictionary.Hint := T('Dictionary');
+  ToolButtonDictionary.Hint := T('Dictionaries');
 
   ToolButtonFont.Hint := T('Font');
   ToolButtonBold.Hint := T('Bold');
@@ -680,6 +682,13 @@ begin
   if Edit.Text = '' then Edit.SetFocus else LoadSearch(Edit.Text);
 end;
 
+procedure TMainForm.CmdLookup(Sender: TObject);
+begin
+  if Trim(UnboundMemo.SelText) = '' then Edit.SetFocus
+    else Edit.Text := Trim(UnboundMemo.SelText);
+  LoadDictionary(Edit.Text);
+end;
+
 procedure TMainForm.CmdXref(Sender: TObject);
 begin
   LoadXref;
@@ -692,9 +701,7 @@ end;
 
 procedure TMainForm.CmdDictionary(Sender: TObject);
 begin
-  if Trim(UnboundMemo.SelText) = '' then Edit.SetFocus
-    else Edit.Text := Trim(UnboundMemo.SelText);
-  LoadDictionary(Edit.Text);
+  SelectPage(apDictionary);
 end;
 
 procedure TMainForm.CmdFileNew(Sender: TObject);
@@ -1020,6 +1027,9 @@ begin
   L := PageControl.ActivePageIndex = apNotes;
 
   if B then x := 1 else x:= 0;
+
+  ActionSearch.Enabled     := UnboundMemo.SelLength > x;
+  ActionLookup.Enabled     := UnboundMemo.SelLength > x;
 
   ActionEditCopy.Enabled   := UnboundMemo.SelLength > x;
   ActionEditCut.Enabled    := L and (UnboundMemo.SelLength > 0);
