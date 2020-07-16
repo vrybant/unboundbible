@@ -542,7 +542,7 @@ object MainForm: TMainForm
     object miTools: TMenuItem
       Caption = '&Tools'
       object miSearch: TMenuItem
-        Action = ActionSearch
+        Action = ActionSearchfor
         Visible = False
       end
       object miCompare: TMenuItem
@@ -573,7 +573,7 @@ object MainForm: TMainForm
         Caption = 'Modules'
       end
       object miInterlinear: TMenuItem
-        Action = ActionInterline
+        Action = ActionInterlinear
         Caption = 'Interlinear'
       end
       object N5: TMenuItem
@@ -2004,16 +2004,15 @@ object MainForm: TMainForm
   end
   object PopupMenu: TPopupMenu
     Images = Images
+    OnPopup = PopupMenuPopup
     Left = 400
     Top = 160
-    object pmSearch: TMenuItem
-      Action = ActionSearch
+    object pmSearchfor: TMenuItem
+      Action = ActionSearchfor
       AutoCheck = True
-      Caption = 'Search'
     end
     object pmLookup: TMenuItem
       Action = ActionLookup
-      Caption = 'Look Up'
     end
     object pmSeparator1: TMenuItem
       Caption = '-'
@@ -2077,11 +2076,11 @@ object MainForm: TMainForm
       }
       ImageIndex = 8
     end
-    object MenuItem1: TMenuItem
+    object pmSeparator3: TMenuItem
       Caption = '-'
     end
     object pmInterlinear: TMenuItem
-      Action = ActionInterline
+      Action = ActionInterlinear
       Caption = 'Interlinear (biblehub.com)'
     end
   end
@@ -2281,13 +2280,12 @@ object MainForm: TMainForm
       ImageIndex = 29
       OnExecute = CmdStyle2
     end
-    object ActionSearch: TAction
+    object ActionSearchfor: TAction
       Category = 'Tools'
-      Caption = 'Search...'
+      Caption = 'Search for'
       Hint = 'Search'
       ImageIndex = 5
       OnExecute = CmdSearch
-      ShortCut = 16454
     end
     object ActionCopyAs: TAction
       Category = 'Edit'
@@ -2323,7 +2321,8 @@ object MainForm: TMainForm
     end
     object ActionLookup: TAction
       Category = 'Tools'
-      Caption = 'ActionLookup'
+      Caption = 'Look Up'
+      ImageIndex = 40
       OnExecute = cmdLookup
     end
     object ActionXrefs: TAction
@@ -2349,7 +2348,7 @@ object MainForm: TMainForm
       Caption = 'Options'
       OnExecute = CmdOptions
     end
-    object ActionInterline: TAction
+    object ActionInterlinear: TAction
       Category = 'Tools'
       Caption = 'CmdOnline'
       OnExecute = CmdInterline

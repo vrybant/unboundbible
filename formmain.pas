@@ -17,7 +17,7 @@ type
     ActionXrefs: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
-    MenuItem1: TMenuItem;
+    pmSeparator3: TMenuItem;
     miRrefx: TMenuItem;
     miDictionaries: TMenuItem;
     N7: TMenuItem;
@@ -65,14 +65,14 @@ type
     ActionLink: TAction;
     ActionOptions: TAction;
     ActionRight: TAction;
-    ActionSearch: TAction;
+    ActionSearchfor: TAction;
     ActionUnderline: TAction;
     ActionDictionaries: TAction;
     ActionDecrease: TAction;
     ActionIncrease: TAction;
     ActionModules: TAction;
     ActionCommentaries: TAction;
-    ActionInterline: TAction;
+    ActionInterlinear: TAction;
 
     ChapterBox: TListBox;
     BookBox: TListBox;
@@ -133,7 +133,7 @@ type
     N9: TMenuItem;
 
     PopupMenu: TPopupMenu;
-    pmSearch: TMenuItem;
+    pmSearchfor: TMenuItem;
     pmCut: TMenuItem;
     pmCopy: TMenuItem;
     pmPaste: TMenuItem;
@@ -219,6 +219,7 @@ type
     procedure miDownloadClick(Sender: TObject);
     procedure miHomeClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
+    procedure PopupMenuPopup(Sender: TObject);
     procedure RadioButtonClick(Sender: TObject);
     procedure ToolButtonFBClick(Sender: TObject);
     procedure ToolButtonSearchClick(Sender: TObject);
@@ -312,7 +313,6 @@ begin
 
   if Shelf.Count = 0 then
   begin
-    ActionSearch .Enabled := False;
     ActionOptions.Enabled := False;
     ActionCompare.Enabled := False;
     ActionCopyAs .Enabled := False;
@@ -450,7 +450,7 @@ begin
   miBibleFolder.Caption := T('Bible Folder');
   miHelpAbout.Caption := T('About');
 
-  pmSearch.Caption := T('Search');
+  pmSearchfor.Caption := T('Search');
   pmLookup.Caption := T('Look Up');
   pmCut.Caption := T('Cut');
   pmCopy.Caption := T('Copy');
@@ -1020,40 +1020,39 @@ end;
 
 procedure TMainForm.EnableActions;
 var
-  B, L : boolean;
+  B, L, M : boolean;
   x : integer;
 begin
   B := PageControl.ActivePageIndex = apBible;
   L := PageControl.ActivePageIndex = apNotes;
+  M := Pos(char(#13), UnboundMemo.SelText) > 0; // multiline
 
-  if B then x := 1 else x:= 0;
+  if B then x := 1 else x := 0;
 
-  ActionSearch.Enabled     := UnboundMemo.SelLength > x;
-  ActionLookup.Enabled     := UnboundMemo.SelLength > x;
+  ActionEditCopy.Enabled    := UnboundMemo.SelLength > x;
+  ActionEditCut.Enabled     := L and (UnboundMemo.SelLength > 0);
+  ActionEditDel.Enabled     := L and (UnboundMemo.SelLength > 0);
+  ActionEditPaste.Enabled   := L and UnboundMemo.CanPaste;
+  ActionEditUndo.Enabled    := L and UnboundMemo.CanUndo;
 
-  ActionEditCopy.Enabled   := UnboundMemo.SelLength > x;
-  ActionEditCut.Enabled    := L and (UnboundMemo.SelLength > 0);
-  ActionEditDel.Enabled    := L and (UnboundMemo.SelLength > 0);
-  ActionEditPaste.Enabled  := L and UnboundMemo.CanPaste;
-  ActionEditUndo.Enabled   := L and UnboundMemo.CanUndo;
+  ActionCopyAs.Enabled      := B;
+  ActionCopyVerses.Enabled  := B;
+  ActionInterlinear.Enabled := B and (UnboundMemo.SelLength < 2) and not M;
 
-  ActionCopyAs.Enabled     := B;
-  ActionCopyVerses.Enabled := B;
-  ActionInterline.Enabled  := B;
+  ActionFont.Enabled        := L;
+  ActionBold.Enabled        := L;
+  ActionItalic.Enabled      := L;
+  ActionUnderline.Enabled   := L;
+  ActionLink.Enabled        := L;
+  ActionLeft.Enabled        := L;
+  ActionCenter.Enabled      := L;
+  ActionRight.Enabled       := L;
+  ActionBullets.Enabled     := L;
 
-  ActionFont.Enabled       := L;
-  ActionBold.Enabled       := L;
-  ActionItalic.Enabled     := L;
-  ActionUnderline.Enabled  := L;
-  ActionLink.Enabled       := L;
-  ActionLeft.Enabled       := L;
-  ActionCenter.Enabled     := L;
-  ActionRight.Enabled      := L;
-  ActionBullets.Enabled    := L;
+  ActionSearchfor.Visible   := (UnboundMemo.SelLength > x) and not M;
+  ActionLookup.Visible      := (UnboundMemo.SelLength > x) and not M;
 
-  ToolButtonSearch.Enabled := PageControl.ActivePageIndex <> apDictionaries;
-  pmSearch.Enabled := UnboundMemo.SelLength > x;
-  pmLookup.Enabled := UnboundMemo.SelLength > x;
+  ToolButtonSearch.Enabled  := PageControl.ActivePageIndex <> apDictionaries;
 
   UpdateActionImage;
 end;
@@ -1184,6 +1183,20 @@ begin
   if PageControl.ActivePageIndex = apXrefs        then CmdXrefs(PageControl);
   if PageControl.ActivePageIndex = apCommentaries then CmdCommentaries(PageControl);
   if PageControl.ActivePageIndex = apDictionaries then CmdDictionaries(PageControl);
+end;
+
+procedure TMainForm.PopupMenuPopup(Sender: TObject);
+var s : String;
+begin
+  pmSeparator1 .Visible := ActionLookup.Visible;
+  pmSeparator3 .Visible := ActionInterlinear.Enabled;
+  pmInterlinear.Visible := ActionInterlinear.Enabled;
+
+  if not ActionLookup.Visible then Exit;
+  s := DoubleQuotedStr( Trim(UnboundMemo.SelText) );
+
+  pmSearchfor.Caption := StringReplace( T('Search for %'),'%',s,[]);
+  pmLookup   .Caption := StringReplace( T('Look Up %')   ,'%',s,[]);
 end;
 
 procedure TMainForm.RadioButtonClick(Sender: TObject);
