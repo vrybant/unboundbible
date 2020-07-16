@@ -195,7 +195,7 @@ object MainForm: TMainForm
     object ToolButtonCommentary: TToolButton
       Left = 233
       Top = 0
-      Action = ActionCommentary
+      Action = ActionCommentaries
     end
     object ToolButtonCopyright: TToolButton
       Left = 32
@@ -205,7 +205,7 @@ object MainForm: TMainForm
     object ToolButtonDictionary: TToolButton
       Left = 261
       Top = 0
-      Action = ActionDictionary
+      Action = ActionDictionaries
     end
     object ToolPanel: TPanel
       Left = 701
@@ -227,7 +227,7 @@ object MainForm: TMainForm
       Left = 205
       Hint = 'Сross References'
       Top = 0
-      Action = ActionXref
+      Action = ActionXrefs
     end
   end
   object PanelLeft: TPanel
@@ -549,15 +549,15 @@ object MainForm: TMainForm
         Action = ActionCompare
         Caption = 'Compare...'
       end
-      object miRref: TMenuItem
-        Action = ActionXref
+      object miRrefx: TMenuItem
+        Action = ActionXrefs
       end
-      object miCommentary: TMenuItem
-        Action = ActionCommentary
+      object miCommentaries: TMenuItem
+        Action = ActionCommentaries
         Caption = 'Commentary'
       end
-      object miDictionary: TMenuItem
-        Action = ActionDictionary
+      object miDictionaries: TMenuItem
+        Action = ActionDictionaries
         Caption = 'Dictionary'
       end
       object N7: TMenuItem
@@ -2326,23 +2326,23 @@ object MainForm: TMainForm
       Caption = 'ActionLookup'
       OnExecute = cmdLookup
     end
-    object ActionXref: TAction
+    object ActionXrefs: TAction
       Category = 'Tools'
-      Caption = 'Сross References'
+      Caption = 'Сross-References'
       ImageIndex = 39
-      OnExecute = CmdXref
+      OnExecute = CmdXrefs
     end
-    object ActionCommentary: TAction
+    object ActionCommentaries: TAction
       Category = 'Tools'
-      Caption = 'ActionCommentary'
+      Caption = 'Commentaries'
       ImageIndex = 38
-      OnExecute = CmdCommentary
+      OnExecute = CmdCommentaries
     end
-    object ActionDictionary: TAction
+    object ActionDictionaries: TAction
       Category = 'Tools'
-      Caption = 'ActionDictionary'
+      Caption = 'Dictionaries'
       ImageIndex = 40
-      OnExecute = CmdDictionary
+      OnExecute = CmdDictionaries
     end
     object ActionOptions: TAction
       Category = 'Tools'

@@ -14,12 +14,12 @@ type
 
   TMainForm = class(TForm)
     ActionLookup: TAction;
-    ActionXref: TAction;
+    ActionXrefs: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
     MenuItem1: TMenuItem;
-    miRref: TMenuItem;
-    miDictionary: TMenuItem;
+    miRrefx: TMenuItem;
+    miDictionaries: TMenuItem;
     N7: TMenuItem;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
@@ -67,11 +67,11 @@ type
     ActionRight: TAction;
     ActionSearch: TAction;
     ActionUnderline: TAction;
-    ActionDictionary: TAction;
+    ActionDictionaries: TAction;
     ActionDecrease: TAction;
     ActionIncrease: TAction;
     ActionModules: TAction;
-    ActionCommentary: TAction;
+    ActionCommentaries: TAction;
     ActionInterline: TAction;
 
     ChapterBox: TListBox;
@@ -94,7 +94,7 @@ type
     MainMenu: TMainMenu;
     miBibleFolder: TMenuItem;
     miClear: TMenuItem;
-    miCommentary: TMenuItem;
+    miCommentaries: TMenuItem;
     miCompare: TMenuItem;
     miCopy: TMenuItem;
     miCopyAs: TMenuItem;
@@ -177,9 +177,9 @@ type
     ToolSeparatorBullets: TToolButton;
     ToolButtonVerses: TToolButton;
 
-    procedure CmdXref(Sender: TObject);
-    procedure CmdCommentary(Sender: TObject);
-    procedure CmdDictionary(Sender: TObject);
+    procedure CmdXrefs(Sender: TObject);
+    procedure CmdCommentaries(Sender: TObject);
+    procedure CmdDictionaries(Sender: TObject);
     procedure CmdAbout(Sender: TObject);
     procedure CmdCompare(Sender: TObject);
     procedure CmdCopyAs(Sender: TObject);
@@ -275,13 +275,13 @@ uses
   FormDownload, UnitCommentary, UnitDictionary;
 
 const
-  apBible      = 0; // active page
-  apSearch     = 1;
-  apCompare    = 2;
-  apXref       = 3;
-  apCommentary = 4;
-  apDictionary = 5;
-  apNotes      = 6;
+  apBible        = 0; // active page
+  apSearch       = 1;
+  apCompare      = 2;
+  apXrefs        = 3;
+  apCommentaries = 4;
+  apDictionaries = 5;
+  apNotes        = 6;
 
 {$R *.lfm}
 
@@ -421,9 +421,9 @@ begin
   miHelp.Caption := T('Help');
   miSearch.Caption := T('Search');
   miCompare.Caption := T('Compare');
-  miRref.Caption := T('Сross-References');
-  miCommentary.Caption := T('Commentaries');
-  miDictionary.Caption := T('Dictionaries');
+  miRrefx.Caption := T('Сross-References');
+  miCommentaries.Caption := T('Commentaries');
+  miDictionaries.Caption := T('Dictionaries');
   miTranslate.Caption := T('Translation');
   miInterlinear.Caption := T('Interlinear');
   miPrint.Caption := T('Print');
@@ -618,7 +618,7 @@ end;
 procedure TMainForm.EditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_RETURN then
-    if PageControl.ActivePageIndex = apDictionary then LoadDictionary(Edit.Text)
+    if PageControl.ActivePageIndex = apDictionaries then LoadDictionary(Edit.Text)
       else LoadSearch(Edit.Text);
 end;
 
@@ -689,19 +689,19 @@ begin
   LoadDictionary(Edit.Text);
 end;
 
-procedure TMainForm.CmdXref(Sender: TObject);
+procedure TMainForm.CmdXrefs(Sender: TObject);
 begin
   LoadXref;
 end;
 
-procedure TMainForm.CmdCommentary(Sender: TObject);
+procedure TMainForm.CmdCommentaries(Sender: TObject);
 begin
   LoadCommentary;
 end;
 
-procedure TMainForm.CmdDictionary(Sender: TObject);
+procedure TMainForm.CmdDictionaries(Sender: TObject);
 begin
-  SelectPage(apDictionary);
+  SelectPage(apDictionaries);
 end;
 
 procedure TMainForm.CmdFileNew(Sender: TObject);
@@ -1006,13 +1006,13 @@ end;
 function TMainForm.UnboundMemo: TUnboundMemo;
 begin
   case PageControl.ActivePageIndex of
-    apBible      : Result := MemoBible;
-    apSearch     : Result := MemoSearch;
-    apCompare    : Result := MemoCompare;
-    apXref       : Result := MemoXref;
-    apCommentary : Result := MemoCommentary;
-    apDictionary : Result := MemoDictionary;
-    apNotes      : Result := MemoNotes;
+    apBible        : Result := MemoBible;
+    apSearch       : Result := MemoSearch;
+    apCompare      : Result := MemoCompare;
+    apXrefs        : Result := MemoXref;
+    apCommentaries : Result := MemoCommentary;
+    apDictionaries : Result := MemoDictionary;
+    apNotes        : Result := MemoNotes;
     else
       Result := nil;
   end;
@@ -1051,7 +1051,7 @@ begin
   ActionRight.Enabled      := L;
   ActionBullets.Enabled    := L;
 
-  ToolButtonSearch.Enabled := PageControl.ActivePageIndex <> apDictionary;
+  ToolButtonSearch.Enabled := PageControl.ActivePageIndex <> apDictionaries;
   pmSearch.Enabled := UnboundMemo.SelLength > x;
   pmLookup.Enabled := UnboundMemo.SelLength > x;
 
@@ -1180,10 +1180,10 @@ begin
   UpdateStatus('','');
 //UnboundMemo.SetFocus; //*******************************************************************************************************************
   UnboundMemo.Repaint;
-  if PageControl.ActivePageIndex = apCompare    then CmdCompare(PageControl);
-  if PageControl.ActivePageIndex = apXref       then CmdXref(PageControl);
-  if PageControl.ActivePageIndex = apCommentary then CmdCommentary(PageControl);
-  if PageControl.ActivePageIndex = apDictionary then CmdDictionary(PageControl);
+  if PageControl.ActivePageIndex = apCompare      then CmdCompare(PageControl);
+  if PageControl.ActivePageIndex = apXrefs        then CmdXrefs(PageControl);
+  if PageControl.ActivePageIndex = apCommentaries then CmdCommentaries(PageControl);
+  if PageControl.ActivePageIndex = apDictionaries then CmdDictionaries(PageControl);
 end;
 
 procedure TMainForm.RadioButtonClick(Sender: TObject);
@@ -1314,7 +1314,7 @@ begin
   if data = '' then text += T('Сross-references not found.') else text += data;
   MemoXref.Font.Assign(DefaultFont);
   MemoXref.LoadText(text);
-  SelectPage(apXref);
+  SelectPage(apXrefs);
 end;
 
 procedure TMainForm.LoadCommentary;
@@ -1336,7 +1336,7 @@ begin
 
   MemoCommentary.Font.Assign(DefaultFont);
   MemoCommentary.LoadHtml(text);
-  SelectPage(apCommentary);
+  SelectPage(apCommentaries);
 end;
 
 procedure TMainForm.LoadDictionary(s: string);
@@ -1364,7 +1364,7 @@ begin
   MemoDictionary.Font.Assign(DefaultFont);
   MemoDictionary.LoadHtml(text);
 
-  SelectPage(apDictionary);
+  SelectPage(apDictionaries);
 end;
 
 procedure TMainForm.LoadStrong(s: string);
