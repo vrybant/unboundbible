@@ -1022,10 +1022,12 @@ procedure TMainForm.EnableActions;
 var
   B, L, M : boolean;
   x : integer;
+const
+  chr : char = {$ifdef windows} #13 {$else} #10 {$endif};
 begin
   B := PageControl.ActivePageIndex = apBible;
   L := PageControl.ActivePageIndex = apNotes;
-  M := Pos(char(#13), UnboundMemo.SelText) > 0; // multiline
+  M := Pos(chr, UnboundMemo.SelText) > 0; // multiline
 
   if B then x := 1 else x := 0;
 
