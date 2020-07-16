@@ -2280,13 +2280,6 @@ object MainForm: TMainForm
       ImageIndex = 29
       OnExecute = CmdStyle2
     end
-    object ActionSearchfor: TAction
-      Category = 'Tools'
-      Caption = 'Search for'
-      Hint = 'Search'
-      ImageIndex = 5
-      OnExecute = CmdSearch
-    end
     object ActionCopyAs: TAction
       Category = 'Edit'
       Caption = 'Copy As...'
@@ -2318,6 +2311,19 @@ object MainForm: TMainForm
         'Ctrl+-'
       )
       ShortCut = 16493
+    end
+    object ActionSearch: TAction
+      Category = 'Tools'
+      Caption = 'ActionSearch'
+      OnExecute = CmdSearch
+      ShortCut = 16454
+    end
+    object ActionSearchfor: TAction
+      Category = 'Tools'
+      Caption = 'Search for'
+      Hint = 'Search'
+      ImageIndex = 5
+      OnExecute = CmdSearchFor
     end
     object ActionLookup: TAction
       Category = 'Tools'

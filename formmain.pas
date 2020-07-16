@@ -13,6 +13,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ActionSearch: TAction;
     ActionLookup: TAction;
     ActionXrefs: TAction;
     Edit: TEdit;
@@ -194,6 +195,7 @@ type
     procedure CmdInterline(Sender: TObject);
     procedure CmdOptions(Sender: TObject);
     procedure CmdSearch(Sender: TObject);
+    procedure CmdSearchFor(Sender: TObject);
     procedure CmdLookup(Sender: TObject);
     procedure CmdStyle(Sender: TObject);
     procedure CmdStyle2(Sender: TObject);
@@ -678,8 +680,13 @@ end;
 
 procedure TMainForm.CmdSearch(Sender: TObject);
 begin
+  Edit.SetFocus;
+end;
+
+procedure TMainForm.CmdSearchFor(Sender: TObject);
+begin
   Edit.Text := Trim(UnboundMemo.SelText);
-  if Edit.Text = '' then Edit.SetFocus else LoadSearch(Edit.Text);
+  LoadSearch(Edit.Text);
 end;
 
 procedure TMainForm.CmdLookup(Sender: TObject);
