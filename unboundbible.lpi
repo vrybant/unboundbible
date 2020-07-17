@@ -173,9 +173,9 @@
         <UnitName Value="UnitBible"/>
       </Unit19>
       <Unit20>
-        <Filename Value="unitxref.pas"/>
+        <Filename Value="unitreference.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitXref"/>
+        <UnitName Value="UnitReference"/>
       </Unit20>
     </Units>
   </ProjectOptions>
