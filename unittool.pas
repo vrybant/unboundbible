@@ -7,7 +7,7 @@ uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UmLib, UnitLib;
 function Get_Chapter: string;
 function Get_Search(st: string; var count: integer): string;
 function Get_Compare: string;
-function Get_Xref: string;
+function Get_Reference: string;
 function Get_Commentary: string;
 function Get_Dictionary(st: string = ''): string;
 function Get_Strong(number: string = ''): string;
@@ -106,7 +106,7 @@ begin
     end;
 end;
 
-function Get_Xref: string;
+function Get_Reference: string;
 var
   Verses : TVerseArray;
   item : TVerse;

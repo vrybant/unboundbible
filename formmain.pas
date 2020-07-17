@@ -15,7 +15,7 @@ type
   TMainForm = class(TForm)
     ActionSearch: TAction;
     ActionLookup: TAction;
-    ActionXrefs: TAction;
+    ActionReference: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
     pmSeparator3: TMenuItem;
@@ -34,7 +34,7 @@ type
     MemoBible: TUnboundMemo;
     MemoSearch: TUnboundMemo;
     MemoCompare: TUnboundMemo;
-    MemoXref: TUnboundMemo;
+    MemoReference: TUnboundMemo;
     MemoCommentary: TUnboundMemo;
     MemoDictionary: TUnboundMemo;
     MemoNotes: TUnboundMemo;
@@ -178,7 +178,7 @@ type
     ToolSeparatorBullets: TToolButton;
     ToolButtonVerses: TToolButton;
 
-    procedure CmdXrefs(Sender: TObject);
+    procedure CmdReference(Sender: TObject);
     procedure CmdCommentaries(Sender: TObject);
     procedure CmdDictionaries(Sender: TObject);
     procedure CmdAbout(Sender: TObject);
@@ -242,7 +242,7 @@ type
     procedure LoadChapter;
     procedure LoadSearch(s: string);
     procedure LoadCompare;
-    procedure LoadXref;
+    procedure LoadReference;
     procedure LoadCommentary;
     procedure LoadDictionary(s: string);
     procedure LoadStrong(s: string);
@@ -281,7 +281,7 @@ const
   apBible        = 0; // active page
   apSearch       = 1;
   apCompare      = 2;
-  apXrefs        = 3;
+  apReferences   = 3;
   apCommentaries = 4;
   apDictionaries = 5;
   apNotes        = 6;
@@ -363,7 +363,7 @@ begin
     MemoBible     .Clear;
     MemoSearch    .Clear;
     MemoCompare   .Clear;
-    MemoXref      .Clear;
+    MemoReference .Clear;
     MemoCommentary.Clear;
     MemoDictionary.Clear;
     MemoNotes     .Clear;
@@ -696,9 +696,9 @@ begin
   LoadDictionary(Edit.Text);
 end;
 
-procedure TMainForm.CmdXrefs(Sender: TObject);
+procedure TMainForm.CmdReference(Sender: TObject);
 begin
-  LoadXref;
+  LoadReference;
 end;
 
 procedure TMainForm.CmdCommentaries(Sender: TObject);
@@ -1016,7 +1016,7 @@ begin
     apBible        : Result := MemoBible;
     apSearch       : Result := MemoSearch;
     apCompare      : Result := MemoCompare;
-    apXrefs        : Result := MemoXref;
+    apReferences   : Result := MemoReference;
     apCommentaries : Result := MemoCommentary;
     apDictionaries : Result := MemoDictionary;
     apNotes        : Result := MemoNotes;
@@ -1189,7 +1189,7 @@ begin
 //UnboundMemo.SetFocus; //*******************************************************************************************************************
   UnboundMemo.Repaint;
   if PageControl.ActivePageIndex = apCompare      then CmdCompare(PageControl);
-  if PageControl.ActivePageIndex = apXrefs        then CmdXrefs(PageControl);
+  if PageControl.ActivePageIndex = apReferences   then CmdReference(PageControl);
   if PageControl.ActivePageIndex = apCommentaries then CmdCommentaries(PageControl);
   if PageControl.ActivePageIndex = apDictionaries then CmdDictionaries(PageControl);
 end;
@@ -1326,17 +1326,17 @@ begin
   SelectPage(apCompare);
 end;
 
-procedure TMainForm.LoadXref;
+procedure TMainForm.LoadReference;
 var
   text, data : string;
 begin
   if Shelf.Count = 0 then Exit;
   text := Bible.VerseToStr(ActiveVerse, true) + '<br><br>';
-  data := Get_Xref;
+  data := Get_Reference;
   if data = '' then text += T('Сross-references not found.') else text += data;
-  MemoXref.Font.Assign(DefaultFont);
-  MemoXref.LoadText(text);
-  SelectPage(apXrefs);
+  MemoReference.Font.Assign(DefaultFont);
+  MemoReference.LoadText(text);
+  SelectPage(apReferences);
 end;
 
 procedure TMainForm.LoadCommentary;

@@ -227,7 +227,7 @@ object MainForm: TMainForm
       Left = 205
       Hint = 'Сross References'
       Top = 0
-      Action = ActionXrefs
+      Action = ActionReference
     end
   end
   object PanelLeft: TPanel
@@ -299,12 +299,12 @@ object MainForm: TMainForm
     Height = 326
     Top = 32
     Width = 737
-    ActivePage = TabSheetBible
+    ActivePage = TabSheetXref
     Align = alClient
     Font.Color = clWindowText
     Font.Height = -13
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 2
     OnChange = PageControlChange
     object TabSheetBible: TTabSheet
@@ -401,7 +401,7 @@ object MainForm: TMainForm
       Caption = 'Сross-References'
       ClientHeight = 296
       ClientWidth = 729
-      object MemoXRef: TUnboundMemo
+      object MemoReference: TUnboundMemo
         Cursor = crArrow
         Left = 0
         Height = 296
@@ -550,7 +550,7 @@ object MainForm: TMainForm
         Caption = 'Compare...'
       end
       object miRrefx: TMenuItem
-        Action = ActionXrefs
+        Action = ActionReference
       end
       object miCommentaries: TMenuItem
         Action = ActionCommentaries
@@ -2331,11 +2331,11 @@ object MainForm: TMainForm
       ImageIndex = 40
       OnExecute = cmdLookup
     end
-    object ActionXrefs: TAction
+    object ActionReference: TAction
       Category = 'Tools'
       Caption = 'Сross-References'
       ImageIndex = 39
-      OnExecute = CmdXrefs
+      OnExecute = CmdReference
     end
     object ActionCommentaries: TAction
       Category = 'Tools'
