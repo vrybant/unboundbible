@@ -84,7 +84,7 @@ type
     Images: TImageList;
 
     PageControl: TPageControl;
-    TabSheetXref: TTabSheet;
+    TabSheetReference: TTabSheet;
     TabSheetBible: TTabSheet;
     TabSheetSearch: TTabSheet;
     TabSheetCompare: TTabSheet;
@@ -146,7 +146,7 @@ type
     pmSeparator2: TMenuItem;
 
     StandardToolBar: TToolBar;
-    ToolButtonXref: TToolButton;
+    ToolButtonReference: TToolButton;
     ToolPanel: TPanel;
     ToolButtonBold: TToolButton;
     ToolButtonBullets: TToolButton;
@@ -339,7 +339,7 @@ begin
   {$endif}
 
   TabSheetSearch    .TabVisible := False;
-  TabSheetXref      .TabVisible := False;
+  TabSheetReference      .TabVisible := False;
   TabSheetCommentary.TabVisible := False;
   TabSheetDictionary.TabVisible := False;
 
@@ -464,7 +464,7 @@ begin
   TabSheetBible.Caption := T('Bible');
   TabSheetSearch.Caption := T('Search');
   TabSheetCompare.Caption := T('Compare');
-  TabSheetXref.Caption := T('Сross-References');
+  TabSheetReference.Caption := T('Сross-References');
   TabSheetCommentary.Caption := T('Commentaries');
   TabSheetDictionary.Caption := T('Dictionaries');
   TabSheetNotes.Caption := T('Notes');
@@ -481,7 +481,7 @@ begin
   ToolButtonUndo.Hint := T('Undo');
 
   ToolButtonCompare.Hint := T('Compare');
-  ToolButtonXref.Hint := T('Сross-References');
+  ToolButtonReference.Hint := T('Сross-References');
   ToolButtonCommentary.Hint := T('Commentaries');
   ToolButtonDictionary.Hint := T('Dictionaries');
 

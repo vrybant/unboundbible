@@ -6,19 +6,19 @@ uses
   Classes, Fgl, SysUtils, UnitModule, UnitData, UmLib;
 
 type
-  TXrefAlias = record
-    xrefs, book, chapter, verse, xbook, xchapter, xfromverse, xtoverse, votes : string;
+  TReferenceAlias = record
+    xreferences, book, chapter, verse, xbook, xchapter, xfromverse, xtoverse, votes : string;
   end;
 
-  TXref = class(TModule)
+  TReference = class(TModule)
   private
-    z : TXrefAlias;
+    z : TReferenceAlias;
     function GetData(Verse: TVerse): TVerseArray;
   public
     constructor Create(filePath: string);
   end;
 
-  TXrefs = class(TFPGList<TXref>)
+  TReferences = class(TFPGList<TReference>)
   private
     procedure Load;
   public
@@ -28,49 +28,49 @@ type
   end;
 
 var
-  Xrefs : TXrefs;
+  References : TReferences;
 
 implementation
 
 const
-  unboundAlias : TXrefAlias = (
-    xrefs      : 'xrefs';
-    book       : 'Book';
-    chapter    : 'Chapter';
-    verse      : 'Verse';
-    xbook      : 'xbook';
-    xchapter   : 'xchapter';
-    xfromverse : 'xfromverse';
-    xtoverse   : 'xtoverse';
-    votes      : 'Votes';
-   );
+  unboundAlias : TReferenceAlias = (
+      xreferences : 'xreferences';
+      book        : 'book';
+      chapter     : 'chapter';
+      verse       : 'verse';
+      xbook       : 'xbook';
+      xchapter    : 'xchapter';
+      xfromverse  : 'xfromverse';
+      xtoverse    : 'xtoverse';
+      votes       : 'votes';
+     );
 
-  mybibleAlias : TXrefAlias = (
-    xrefs      : 'cross_references';
-    book       : 'book';
-    chapter    : 'chapter';
-    verse      : 'verse';
-//  toverse    : 'verse_end';
-    xbook      : 'book_to';
-    xchapter   : 'chapter_to';
-    xfromverse : 'verse_to_start';
-    xtoverse   : 'verse_to_end';
-    votes      : 'votes';
-   );
+    mybibleAlias : TReferenceAlias = (
+      xreferences : 'cross_references';
+      book        : 'book';
+      chapter     : 'chapter';
+      verse       : 'verse';
+  //  toverse     : 'verse_end';
+      xbook       : 'book_to';
+      xchapter    : 'chapter_to';
+      xfromverse  : 'verse_to_start';
+      xtoverse    : 'verse_to_end';
+      votes       : 'votes';
+     );
 
 //========================================================================================
-//                                     TXref
+//                                   TReference
 //========================================================================================
 
-constructor TXref.Create(filePath: string);
+constructor TReference.Create(filePath: string);
 begin
   inherited Create(filePath);
   z := unboundAlias;
   if format = mybible then z := mybibleAlias;
-  if connected and not TableExists(z.xrefs) then connected := false;
+  if connected and not TableExists(z.xreferences ) then connected := false;
 end;
 
-function TXref.GetData(Verse: TVerse): TVerseArray;
+function TReference.GetData(Verse: TVerse): TVerseArray;
 var
   V : TVerse;
   v_from, v_to : string;
@@ -84,10 +84,12 @@ begin
 
   try
     try
-        Query.SQL.Text := 'SELECT * FROM ' + z.xrefs +
+        Query.SQL.Text := 'SELECT * FROM ' + z.xreferences +
           ' WHERE '  + z.book    + ' = '  + ToStr(id) +
             ' AND '  + z.chapter + ' = '  + ToStr(Verse.chapter) +
             ' AND (' + z.verse + ' BETWEEN ' + v_from + ' AND ' + v_to + ') ';
+
+        output(Query.SQL.Text);
 
         Query.Open;
         Query.Last;
@@ -125,18 +127,18 @@ begin
 end;
 
 //=================================================================================================
-//                                         TXrefs
+//                                       TReferences
 //=================================================================================================
 
-constructor TXrefs.Create;
+constructor TReferences.Create;
 begin
   inherited;
   Load;
 end;
 
-procedure TXrefs.Load;
+procedure TReferences.Load;
 var
-  Item : TXref;
+  Item : TReference;
   List : TStringArray;
   f : string;
 begin
@@ -145,12 +147,12 @@ begin
   for f in List do
     begin
       if Pos('.xrefs.',f) = 0 then continue; // .crossreferences.
-      Item := TXref.Create(f);
+      Item := TReference.Create(f);
       if Item.connected then Add(Item) else Item.Free;
     end;
 end;
 
-function TXrefs.GetData(Verse: TVerse; language: string): TVerseArray;
+function TReferences.GetData(Verse: TVerse; language: string): TVerseArray;
 var
   filename : string;
   i : integer;
@@ -164,7 +166,7 @@ begin
         Result := Items[i].GetData(Verse);
 end;
 
-destructor TXrefs.Destroy;
+destructor TReferences.Destroy;
 var i : integer;
 begin
   for i:=0 to Count-1 do Items[i].Free;
@@ -172,9 +174,9 @@ begin
 end;
 
 initialization
-  Xrefs := TXrefs.Create;
+  References := TReferences.Create;
 
 finalization
-  Xrefs.Free;
+  References.Free;
 
 end.

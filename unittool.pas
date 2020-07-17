@@ -113,7 +113,7 @@ var
   link : string;
 begin
   Result := '';
-  Verses := Xrefs.GetData(ActiveVerse, Bible.language);
+  Verses := References.GetData(ActiveVerse, Bible.language);
 
   for item in Verses do
     begin

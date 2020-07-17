@@ -223,7 +223,7 @@ object MainForm: TMainForm
       ImageIndex = 5
       OnClick = ToolButtonSearchClick
     end
-    object ToolButtonXref: TToolButton
+    object ToolButtonReference: TToolButton
       Left = 205
       Hint = 'Сross References'
       Top = 0
@@ -299,12 +299,12 @@ object MainForm: TMainForm
     Height = 326
     Top = 32
     Width = 737
-    ActivePage = TabSheetXref
+    ActivePage = TabSheetBible
     Align = alClient
     Font.Color = clWindowText
     Font.Height = -13
     ParentFont = False
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 2
     OnChange = PageControlChange
     object TabSheetBible: TTabSheet
@@ -397,7 +397,7 @@ object MainForm: TMainForm
         Linkable = True
       end
     end
-    object TabSheetXref: TTabSheet
+    object TabSheetReference: TTabSheet
       Caption = 'Сross-References'
       ClientHeight = 296
       ClientWidth = 729
