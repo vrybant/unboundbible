@@ -2014,7 +2014,7 @@ object MainForm: TMainForm
     object pmLookup: TMenuItem
       Action = ActionLookup
     end
-    object pmSeparator1: TMenuItem
+    object pmSeparator: TMenuItem
       Caption = '-'
     end
     object pmCut: TMenuItem
@@ -2075,13 +2075,6 @@ object MainForm: TMainForm
         FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       }
       ImageIndex = 8
-    end
-    object pmSeparator3: TMenuItem
-      Caption = '-'
-    end
-    object pmInterlinear: TMenuItem
-      Action = ActionInterlinear
-      Caption = 'Interlinear (biblehub.com)'
     end
   end
   object ActionList: TActionList

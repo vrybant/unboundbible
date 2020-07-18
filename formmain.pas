@@ -18,7 +18,6 @@ type
     ActionReference: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
-    pmSeparator3: TMenuItem;
     miRrefx: TMenuItem;
     miDictionaries: TMenuItem;
     N7: TMenuItem;
@@ -140,9 +139,8 @@ type
     pmPaste: TMenuItem;
     pmCopyAs: TMenuItem;
     pmVerses: TMenuItem;
-    pmInterlinear: TMenuItem;
     pmLookup: TMenuItem;
-    pmSeparator1: TMenuItem;
+    pmSeparator: TMenuItem;
     pmSeparator2: TMenuItem;
 
     StandardToolBar: TToolBar;
@@ -427,7 +425,7 @@ begin
   miCommentaries.Caption := T('Commentaries');
   miDictionaries.Caption := T('Dictionaries');
   miTranslate.Caption := T('Translation');
-  miInterlinear.Caption := T('Interlinear');
+  miInterlinear.Caption := T('Interlinear') + ' (biblehub.com)';
   miPrint.Caption := T('Print');
   miModules.Caption := T('Modules');
   miOptions.Caption := T('Font…');
@@ -459,7 +457,6 @@ begin
   pmPaste.Caption := T('Paste');
   pmCopyAs.Caption := T('Copy As…');
   pmVerses.Caption := T('Copy Verses');
-  pmInterlinear.Caption := T('Interlinear') + ' (biblehub.com)';
 
   TabSheetBible.Caption := T('Bible');
   TabSheetSearch.Caption := T('Search');
@@ -1186,20 +1183,18 @@ begin
   EnableActions;
   UpDownButtons;
   UpdateStatus('','');
-//UnboundMemo.SetFocus; //*******************************************************************************************************************
   UnboundMemo.Repaint;
   if PageControl.ActivePageIndex = apCompare      then CmdCompare(PageControl);
   if PageControl.ActivePageIndex = apReferences   then CmdReference(PageControl);
   if PageControl.ActivePageIndex = apCommentaries then CmdCommentaries(PageControl);
   if PageControl.ActivePageIndex = apDictionaries then CmdDictionaries(PageControl);
+  if PageControl.ActivePageIndex = apNotes        then UnboundMemo.SetFocus;
 end;
 
 procedure TMainForm.PopupMenuPopup(Sender: TObject);
 var s : String;
 begin
-  pmSeparator1 .Visible := ActionLookup.Visible;
-  pmSeparator3 .Visible := ActionInterlinear.Enabled;
-  pmInterlinear.Visible := ActionInterlinear.Enabled;
+  pmSeparator.Visible := ActionLookup.Visible;
 
   if not ActionLookup.Visible then Exit;
   s := DoubleQuotedStr( Trim(UnboundMemo.SelText) );
