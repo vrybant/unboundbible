@@ -1024,40 +1024,37 @@ end;
 
 procedure TMainForm.EnableActions;
 var
-  B, L, M : boolean;
-  x : integer;
+  B, L, M, S : boolean;
 const
   chr : char = {$ifdef windows} #13 {$else} #10 {$endif};
 begin
   B := PageControl.ActivePageIndex = apBible;
   L := PageControl.ActivePageIndex = apNotes;
+  S := UnboundMemo.SelLength > iif(B,1,0);
   M := Pos(chr, UnboundMemo.SelText) > 0; // multiline
 
-  if B then x := 1 else x := 0;
+  ActionSearchfor.Visible  := S and not M;
+  ActionLookup.Visible     := S and not M;
+  ActionCopyAs.Enabled     := B;
+  ActionCopyVerses.Enabled := B;
 
-  ActionEditCopy.Enabled    := UnboundMemo.SelLength > x;
-  ActionEditCut.Enabled     := L and (UnboundMemo.SelLength > 0);
-  ActionEditDel.Enabled     := L and (UnboundMemo.SelLength > 0);
-  ActionEditPaste.Enabled   := L and UnboundMemo.CanPaste;
-  ActionEditUndo.Enabled    := L and UnboundMemo.CanUndo;
+  ActionEditCopy.Enabled   := S;
+  ActionEditCut.Enabled    := L and S;
+  ActionEditDel.Enabled    := L and S;
+  ActionEditPaste.Enabled  := L and UnboundMemo.CanPaste;
+  ActionEditUndo.Enabled   := L and UnboundMemo.CanUndo;
 
-  ActionCopyAs.Enabled      := B;
-  ActionCopyVerses.Enabled  := B;
-  ActionInterlinear.Enabled := B and (UnboundMemo.SelLength < 2) and not M;
+  ActionFont.Enabled       := L;
+  ActionBold.Enabled       := L;
+  ActionItalic.Enabled     := L;
+  ActionUnderline.Enabled  := L;
+  ActionLink.Enabled       := L;
+  ActionLeft.Enabled       := L;
+  ActionCenter.Enabled     := L;
+  ActionRight.Enabled      := L;
+  ActionBullets.Enabled    := L;
 
-  ActionFont.Enabled        := L;
-  ActionBold.Enabled        := L;
-  ActionItalic.Enabled      := L;
-  ActionUnderline.Enabled   := L;
-  ActionLink.Enabled        := L;
-  ActionLeft.Enabled        := L;
-  ActionCenter.Enabled      := L;
-  ActionRight.Enabled       := L;
-  ActionBullets.Enabled     := L;
-
-  ActionSearchfor.Visible   := (UnboundMemo.SelLength > x) and not M;
-  ActionLookup.Visible      := (UnboundMemo.SelLength > x) and not M;
-
+  ActionInterlinear.Enabled := B and not S and not M;
   ToolButtonSearch.Enabled  := PageControl.ActivePageIndex <> apDictionaries;
 
   UpdateActionImage;
