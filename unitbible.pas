@@ -406,7 +406,7 @@ end;
 
 function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
 var
-  Contents : TContentArray = [];
+  Contents : TContentArray {$ifdef windows} = [] {$endif} ;
   queryRange : string = '';
   from, till : string;
   nt : boolean;
