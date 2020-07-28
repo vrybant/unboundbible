@@ -22,6 +22,7 @@ type
   TDictionaries = class(TFPGList<TDictionary>)
   private
     procedure Load;
+    function StrongByLanguage(language: string): integer;
   public
     constructor Create;
     function GetStrong(Verse: TVerse; language: string; number: string): string;
@@ -165,12 +166,29 @@ begin
     end;
 end;
 
+function TDictionaries.StrongByLanguage(language: string): integer;
+var
+  e : integer = -1;
+  i : integer;
+begin
+  Result := -1;
+  if self.Count = 0 then Exit;
+
+  for i:=0 to self.Count-1 do
+    begin
+      if not self[i].strong then Continue;
+      if not self[i].embedded then Continue;
+      if self[i].language = language then Result := i;
+      if self[i].language = 'en' then e := i;
+    end;
+
+  if Result < 0 then Result := e;
+end;
+
 function TDictionaries.GetStrong(Verse: TVerse; language: string; number: string): string;
 var
   symbol : string;
-  x : integer = -1;
-  e : integer = -1;
-  i : integer;
+  x : integer;
 begin
   Result := '';
   if self.Count = 0 then Exit;
@@ -178,18 +196,8 @@ begin
   if IsNewTestament(verse.book) then symbol := 'G' else symbol := 'H';
   if not Prefix(symbol,number) then number := symbol + number;
 
-  for i:=0 to self.Count-1 do
-    begin
-      if not self[i].strong then Continue;
-      if not self[i].embedded then Continue;
-      if self[i].language = language then x := i;
-      if self[i].language = 'en' then e := i;
-    end;
-
-  if x < 0 then x := e;
-  if x < 0 then Exit;
-
-  Result := self[x].GetStrongData(number);
+  x := StrongByLanguage(language);
+  if x > 0 then Result := self[x].GetStrongData(number);
 end;
 
 function TDictionaries.IsEmpty: boolean;
