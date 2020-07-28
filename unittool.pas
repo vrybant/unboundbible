@@ -153,6 +153,7 @@ begin
 
   for i:=0 to Dictionaries.Count-1 do
     begin
+      if Dictionaries[i].embedded then Continue;
       Strings := Dictionaries[i].GetData(st);
       if Length(Strings) = 0 then Continue;
       Result += '<h>' + Dictionaries[i].Name + '</h><br><br>';

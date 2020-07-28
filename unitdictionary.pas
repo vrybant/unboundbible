@@ -167,20 +167,21 @@ end;
 
 function TDictionaries.GetStrong(Verse: TVerse; language: string; number: string): string;
 var
-  filename, symbol : string;
+  symbol : string;
   i : integer;
 begin
   Result := '';
   if self.Count = 0 then Exit;
-  filename := iif( Prefix('ru', language), 'strongru.dct.unbound', 'strong.dct.unbound');
 
+  if language <> 'ru' then language := 'en';
   if IsNewTestament(verse.book) then symbol := 'G' else symbol := 'H';
   if not Prefix(symbol,number) then number := symbol + number;
 
   for i:=0 to self.Count-1 do
     begin
       if not self[i].strong then Continue;
-      if self[i].filename <> filename then Continue;
+      if not self[i].embedded then Continue;
+      if self[i].language <> language then Continue;
       Result := self[i].GetStrongData(number);
     end;
 end;
@@ -193,8 +194,7 @@ begin
 
   for i:=0 to self.Count-1 do
     begin
-      if self[i].filename = 'strongru.dct.unbound' then Continue;
-      if self[i].filename =   'strong.dct.unbound' then Continue;
+      if self[i].embedded then Continue;
       Result := False;
     end;
 end;

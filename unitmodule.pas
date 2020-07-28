@@ -40,6 +40,7 @@ type
     connected    : boolean;
     loaded       : boolean;
     strong       : boolean;
+    embedded     : boolean;
     footnotes    : boolean;
     interlinear  : boolean;
     embtitles    : boolean;
@@ -79,6 +80,7 @@ begin
   loaded       := false;
   RightToLeft  := false;
   strong       := false;
+  embedded     := false;
   footnotes    := false;
   interlinear  := false;
   embtitles    := false;
@@ -190,6 +192,7 @@ begin
         try copyright    := Query.FieldByName('Copyright'   ).AsString;  except end;
         try language     := Query.FieldByName('Language'    ).AsString;  except end;
         try strong       := Query.FieldByName('Strong'      ).AsBoolean; except end;
+        try embedded     := Query.FieldByName('Embedded'    ).AsBoolean; except end;
         try interlinear  := Query.FieldByName('Interlinear' ).AsBoolean; except end;
 
         connected := true;
