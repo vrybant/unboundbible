@@ -25,6 +25,7 @@ type
   public
     constructor Create;
     function GetStrong(Verse: TVerse; language: string; number: string): string;
+    function IsEmpty: boolean;
     destructor Destroy; override;
   end;
 
@@ -181,6 +182,20 @@ begin
       if not self[i].strong then Continue;
       if self[i].filename <> filename then Continue;
       Result := self[i].GetStrongData(number);
+    end;
+end;
+
+function TDictionaries.IsEmpty: boolean;
+var i : integer;
+begin
+  Result := True;
+  if self.Count = 0 then Exit;
+
+  for i:=0 to self.Count-1 do
+    begin
+      if self[i].filename = 'strongru.dct.unbound' then Continue;
+      if self[i].filename =   'strong.dct.unbound' then Continue;
+      Result := False;
     end;
 end;
 

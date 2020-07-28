@@ -1369,7 +1369,7 @@ begin
       Replace(text,'%',DoubleQuotedStr(s));
     end;
 
-  if Dictionaries.Count = 0 then
+  if Dictionaries.IsEmpty then
     begin
       text += T('You don''t have any dictionary modules.') + ' ' +
               T('For more information, choose Menu ➝ Help, then click «Module downloads».');
