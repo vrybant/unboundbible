@@ -168,12 +168,13 @@ end;
 function TDictionaries.GetStrong(Verse: TVerse; language: string; number: string): string;
 var
   symbol : string;
+  x : integer = -1;
+  e : integer = -1;
   i : integer;
 begin
   Result := '';
   if self.Count = 0 then Exit;
 
-  if language <> 'ru' then language := 'en';
   if IsNewTestament(verse.book) then symbol := 'G' else symbol := 'H';
   if not Prefix(symbol,number) then number := symbol + number;
 
@@ -181,9 +182,14 @@ begin
     begin
       if not self[i].strong then Continue;
       if not self[i].embedded then Continue;
-      if self[i].language <> language then Continue;
-      Result := self[i].GetStrongData(number);
+      if self[i].language = language then x := i;
+      if self[i].language = 'en' then e := i;
     end;
+
+  if x < 0 then x := e;
+  if x < 0 then Exit;
+
+  Result := self[x].GetStrongData(number);
 end;
 
 function TDictionaries.IsEmpty: boolean;
