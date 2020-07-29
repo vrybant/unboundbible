@@ -1,0 +1,176 @@
+
+****************************************************************************
+*                                                                          *
+*                Unbound Bible - International Support File                *
+*                                                                          *
+****************************************************************************
+*                                                                          *
+*   Դուք կարող եք կատարել թարգմանությունը ծրագրի լեզուն Ձեր մայրենի լեզվով.*
+*   Պարզապես օգտագործեք այս ֆայլը որպես թարգմանության ձևանմուշ.            *  
+*   Խնդրում ենք ուղարկել նոր ֆայլ ծրագրի մշակողին, որպեսզի,                *
+*   այն հասանելի դարձնել բոլորի համար․                                      *
+*                                                                          *
+****************************************************************************
+
+[Details]
+
+Language = Հայերեն
+LangID = hy
+
+[Localization]
+
+Abbreviation = Կարճ հղում
+About = Ծրագրի մասին
+Align Left = Հավասարեցնել ձախ
+Align Right = Հավասարեցնել աջ
+All = Все
+Any Word = Ցանկացած Խոսք
+Apply = Կիրառել
+Bible = Աստվածաշունչը
+Bible Folder = Աստվածաշունչի թղթապանակը
+Bible Search = Որոնում ըստ Աստվածաշնչում
+Bold = Թավ
+Bullets = Մարկերներ
+Cancel = Չեղարկել
+Case Sensitive = Ռեգիստր
+Center = Կենտրոնում
+Commentary = Մեկնաբանություն
+Commentaries = Մեկնաբանություններ
+Compare = Համեմատություն
+Confirmation = Հաստատում
+Copy = Պատճառել
+Copy As… = Պատճենել որպես…
+Copy Verses = Պատճենել Խոսքը
+Cut = Կտրել
+Delete = Մաքրել
+Developer = Մշակում 
+Edit = Խմբագրում
+Encoding = Կոդավորում
+Entire Bible =  Ամբողջ Աստվածաշունչը
+Enumerated = Խոսքի համարակալում
+Epistles = Ուղերձ
+Every Word =  Յուրաքանչյուր բառը
+Exit = Ելք
+File = Ֆայլ
+Find = Որոնել
+Font = Տառատեսակ
+Font Size = Չափ
+Font… =  Տառատեսակ…
+Footnote = Ծանոթագրություն
+Format = Ֆորմատ
+Gospels = Ավետարաններ
+Guillemets = Չակերտներ
+Help = Օգնություն
+Home Page = Ծրագրի կայք
+Hyperlink = Հիպերհղում
+Information = Տեղեկատվություն
+Interlinear = Ենթատող
+Italic = Շեղագրումն
+Language = Լեզու
+Language Editor = Լեզուների խմբագիր
+Link in the end =  Հղումը վերջում
+Loading… = Բեռնվում է…
+Localization = Ծրագրի լեզուն
+Manual = Ձեռնարկ
+Module Downloads = Բեռնել մոդուլը
+Modules = Մոդուլներ
+New = Ստեղծել
+New Testament = Նոր Կտակարան
+Notes = Նոթատետր
+NT = ՆԿ
+OK = Լավ
+OK to overwrite %s? = Վերագրանցել ֆայլը %s?
+Old Testament = Հին Կտակարան
+Open… = Բացել…
+Open Recent = Բացել վերջինը
+Opened Book =  Բաց գիրք
+Options = Կարգավորումներ
+OT = ՀԿ
+Parentheses = Կլոր փակագծերը
+Paste = Կպցնել
+Phrase = Արտահայտություն
+Please narrow your search. = Փորձեք սահմանափակել հարցումը.
+Print = Տպել
+Range = Որոնման տարածքը
+Save = Պահել
+Save… = Պահել…
+Save As… = Պահել որպես…
+Save changes? = Պահպանել փոփոխությունները?
+Search = Որոնել
+Search Type = Որոնման տեսակը
+Search… = Որոնում…
+Select All = Ընտրել բոլորը
+Set default =  Հիշել
+Strong's Dictionary = Ստրոնգի Բառարան
+Text Options = Տեքստի կարգավորումներ
+This search returned too many results. = Ձեր որոնումը տվել է չափազանց մեծ քանակությամբ արդյունքներ. 
+Tools = Գործիքներ
+Translation = Թարգմանություն
+Underline = Ընդգծում
+Undo = Չեղարկել
+verses found = գտնվել է խոսքեր
+Version = Տարբերակ
+Whole Words = Բառեր ամբողջ
+
+You don't have any commentary modules. = Դուք ոչ մի մեկնաբանության մոդուլ չեք տեղադրել:
+You search for % produced no results. = Հարցումով % ոչինչ չի գտնվել.
+For more information, choose Menu > Help, then click «Module Downloads». = Լրացուցիչ տեղեկությունների համար ընտրեք «Օգնություն» > «բեռնել մոդուլը».
+For more information, choose Menu &gt; Help, then click «Unbound Bible Help». = Լրացուցիչ տեղեկությունների համար ցանկի մեջ ընտրեք «Օգնություն» &gt; «Օգնություն Unbound Bible».
+
+[macOS]
+
+About Unbound Bible =  Unbound Bible մասին
+Align Left = Ձախ
+Align Right = Աջ
+Alignment = Հավասարեցում
+Baseline = Ելակետ
+Bigger = Մեծացնել
+Bring All to Front = Տեղափոխեք ամեն ինչ առաջին պլան
+Clear Menu = Մաքրել մենյուն
+Close = Փակել
+Colors… = Գույներ…
+Copy Style = Պատճենել ոճը
+Default = Լռելյայն
+Facebook Page = Ֆեյսբուքյան էջ
+Fonts… = Տառատեսակներ…
+Format = Ձևաչափ
+Hide Others = Թաքցնել մնացածը
+Hide Unbound Bible = Թաքցնել Unbound Bible
+Justify = Լայնությամբ
+Left to Right = Ձախից աջ
+Minimize = Свернуть
+Page Setup… = Էջի ընտրանքներ…
+Paste and Match Style = Տեղադրեք ընթացիկ ոճով
+Paste Style = Տեղադրեք ոճը 
+Preferences = Կարգավորումներ
+Preferences… = Կարգավորումներ…
+Quit Unbound Bible = Ավարտել Unbound Bible
+Redo = Կրկնել
+Right to Left = Աջից ձախ
+Search Options = Որոնման կարգավորումներ
+Services = Ծառայություններ
+Show All = Ցուցադրել բոլորը
+Smaller = Նվազեցնել
+Strikethrough = Վրագծում
+Subscript = Վարգիր
+Superscript = Վերգիր
+Unbound Bible Help = Օգնություն Unbound Bible
+Window = Պատուհան
+Writing Direction = Գրելու ուղղությունը
+Zoom = Մասշտաբ 
+
+// Localizable strings
+
+Change Font = Փոխել տառատեսակը
+Do you want to save the changes? = Ցանկանում եք պահպանել փոփոխությունները?
+Document Name = Փաստաթղթի անունը
+Don't Save = Չպահել
+Failed to save document. = Չհաջողվեց պահպանել փաստաթուղթը.
+Later = Ավելի ուշ
+Permission denied. = Մուտքը մերժվեց.
+The beta version has expired. = BETA տարբերակի ժամկետն ավարտվել է.
+The document % could not be opened. = Չի հաջողվում բացել փաստաթուղթը %.
+Update = Թարմացնել
+Update to the stable version. = Ծրագիրը թարմացրեք կայուն տարբերակով.
+verses was found = գտնվել է խոսքեր
+Your changes will be lost if you don't save them. = Ձեր փոփոխությունները կկորչեն, եթե դուք չեք պահպանում դրանք.
