@@ -89,8 +89,6 @@ begin
             ' AND '  + z.chapter + ' = '  + ToStr(Verse.chapter) +
             ' AND (' + z.verse + ' BETWEEN ' + v_from + ' AND ' + v_to + ') ';
 
-        output(Query.SQL.Text);
-
         Query.Open;
         Query.Last;
         SetLength(Result, Query.RecordCount);

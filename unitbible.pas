@@ -509,7 +509,6 @@ begin
           if not Prefix('<W', item) then
             if Pos(item, r) = 0 then r += item;
     end;
-  output(r);
 end;
 
 procedure TBible.GetTitles(var List: TStringList);
