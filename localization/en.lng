@@ -41,6 +41,7 @@ Confirmation = Confirmation
 Copy = Copy
 Copy As… = Copy As…
 Copy Verses = Copy Verses
+Cross-References = Cross-References
 Cut = Cut
 Delete = Delete 
 Developer = Developer
@@ -115,12 +116,11 @@ Underline = Underline
 Undo = Undo
 Version = Version
 Whole Words = Whole Words
-verses found = verses found
-Сross-References = Сross-References
 
 // messages
 
 Commentaries not found. = Комментариев не найдено.
+Cross-references not found. = Параллельные места не найдены.
 For more information, choose Menu ➝ Help, then click «Module Downloads». = For more information, choose Menu ➝ Help, then click «Module Downloads».
 Please enter your query in the search bar. = Please enter your query in the search bar.
 Please narrow your search. = Please narrow your search.
@@ -128,7 +128,7 @@ This search returned too many results. = This search returned too many results.
 You don't have any commentary modules. = You don't have any commentary modules.
 You don't have any dictionary modules. = You don't have any dictionary modules.
 You search for % produced no results. = You search for % produced no results. 
-Сross-references not found. = Параллельные места не найдены.
+verses found = verses found
 
 [macOS]
 

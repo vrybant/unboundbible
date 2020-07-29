@@ -41,6 +41,7 @@ Confirmation = Подтверждение
 Copy = Копировать
 Copy As… = Копировать как…
 Copy Verses = Копировать стихи
+Cross-References = Параллельные места
 Cut = Вырезать
 Delete = Очистить
 Developer = Разработка 
@@ -115,12 +116,11 @@ Underline = Подчеркнутый
 Undo = Отменить
 Version = Версия
 Whole Words = Слова целиком
-verses found = найдено стихов
-Сross-References = Параллельные места
 
 // messages
 
 Commentaries not found. = Комментариев не найдено.
+Cross-references not found. = Параллельные места не найдены.
 For more information, choose Menu ➝ Help, then click «Module Downloads». = Для дополнительной информации выберите в меню «Справка» ➝ «Скачать модуль».
 Please enter your query in the search bar. = Введите запрос в поле поиска.
 Please narrow your search. = Попробуйте сузить запрос.
@@ -128,7 +128,7 @@ This search returned too many results. = Поиск дал слишком бол
 You don't have any commentary modules. = У вас не установлено ни одного модуля комментариев.
 You don't have any dictionary modules. = У вас не установлено ни одного словаря.
 You search for % produced no results. = По запросу % ничего не найдено.
-Сross-references not found. = Параллельные места не найдены.
+verses found = найдено стихов
 
 [macOS]
 
