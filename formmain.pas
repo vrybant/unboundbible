@@ -337,7 +337,7 @@ begin
   {$endif}
 
   TabSheetSearch    .TabVisible := False;
-  TabSheetReference      .TabVisible := False;
+  TabSheetReference .TabVisible := False;
   TabSheetCommentary.TabVisible := False;
   TabSheetDictionary.TabVisible := False;
 
@@ -704,7 +704,15 @@ begin
 end;
 
 procedure TMainForm.CmdDictionaries(Sender: TObject);
+var s : string;
 begin
+  if (Sender = ActionDictionaries) and (MemoDictionary.Text = '') then
+    begin
+      s := T('Please enter your query in the search bar.');
+      MemoDictionary.Font.Assign(DefaultFont);
+      MemoDictionary.LoadHtml(s);
+    end;
+
   SelectPage(apDictionaries);
 end;
 
