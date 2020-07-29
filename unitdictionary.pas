@@ -204,10 +204,7 @@ begin
   if self.Count = 0 then Exit;
 
   for i:=0 to self.Count-1 do
-    begin
-      if self[i].embedded then Continue;
-      Result := False;
-    end;
+    if not self[i].embedded then Result := False;
 end;
 
 destructor TDictionaries.Destroy;
