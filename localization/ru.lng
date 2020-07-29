@@ -116,6 +116,7 @@ Underline = Подчеркнутый
 Undo = Отменить
 Version = Версия
 Whole Words = Слова целиком
+verses found = найдено стихов
 
 // messages
 
@@ -128,7 +129,6 @@ This search returned too many results. = Поиск дал слишком бол
 You don't have any commentary modules. = У вас не установлено ни одного модуля комментариев.
 You don't have any dictionary modules. = У вас не установлено ни одного словаря.
 You search for % produced no results. = По запросу % ничего не найдено.
-verses found = найдено стихов
 
 [macOS]
 

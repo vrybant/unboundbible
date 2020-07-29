@@ -116,6 +116,7 @@ Underline = Underline
 Undo = Undo
 Version = Version
 Whole Words = Whole Words
+verses found = verses found
 
 // messages
 
@@ -128,7 +129,6 @@ This search returned too many results. = This search returned too many results.
 You don't have any commentary modules. = You don't have any commentary modules.
 You don't have any dictionary modules. = You don't have any dictionary modules.
 You search for % produced no results. = You search for % produced no results. 
-verses found = verses found
 
 [macOS]
 
