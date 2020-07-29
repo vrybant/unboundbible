@@ -167,9 +167,7 @@ begin
 end;
 
 function TDictionaries.StrongByLanguage(language: string): integer;
-var
-  e : integer = -1;
-  i : integer;
+var i : integer;
 begin
   Result := -1;
   if self.Count = 0 then Exit;
@@ -179,10 +177,7 @@ begin
       if not self[i].strong then Continue;
       if not self[i].embedded then Continue;
       if self[i].language = language then Result := i;
-      if self[i].language = 'en' then e := i;
     end;
-
-  if Result < 0 then Result := e;
 end;
 
 function TDictionaries.GetStrong(Verse: TVerse; language: string; number: string): string;
@@ -197,7 +192,9 @@ begin
   if not Prefix(symbol,number) then number := symbol + number;
 
   x := StrongByLanguage(language);
-  if x > 0 then Result := self[x].GetStrongData(number);
+  if x < 0 then x := StrongByLanguage('en');
+
+  if x >= 0 then Result := self[x].GetStrongData(number);
 end;
 
 function TDictionaries.IsEmpty: boolean;
