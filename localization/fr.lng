@@ -1,0 +1,176 @@
+
+****************************************************************************
+*                                                                          *
+*                Unbound Bible - International Support File                *
+*                                                                          *
+****************************************************************************
+*                                                                          *
+*   You can easily translate interface to your native language.            *
+*   Just use this file as template for translation.                        *
+*   After that, please send the new file to software developer             *
+*   to make it available for everyone.                                     *
+*                                                                          *
+****************************************************************************
+
+[Details]
+
+Language = Français
+LangID = fr
+
+[Localization]
+
+Abbreviation = Abréviation
+About = À propos
+Align Left = Aligner à gauche
+Align Right = Aligner à droite
+All = Tout
+Any Word = N'importe quel mot
+Apply = Appliquer
+Bible = Bible
+Bible Folder = Dossier bibles
+Bible Search = Chercher dans la Bible
+Bold = Gras
+Bullets = Puces
+Cancel = Annuler
+Case Sensitive = Sensible à la casse
+Center = Centrer
+Commentary = Commentaire
+Commentaries = Commentaires
+Compare = Comparer
+Confirmation = Confirmation
+Copy = Copier
+Copy As… = Copier sous la forme…
+Copy Verses = Copier versets
+Cut = Couper
+Delete = Supprimer 
+Developer = Développeur
+Edit = Éditer
+Encoding = Encodage
+Entire Bible =  Bible entière
+Enumerated = Énumération
+Epistles = Epîtres
+Every Word =  Chaque mot
+Exit = Quitter
+File = Fichier
+Find = Chercher
+Font = Police
+Font Size = Taille de la police
+Font… =  Police…
+Footnote = Note de bas de page
+Format = Format
+Gospels = Évangiles
+Guillemets = Guillemets
+Help = Aide
+Home Page = Site
+Hyperlink = Lien
+Information = Information
+Interlinear = Interlinéaire
+Italic = Italique
+Language = Langage
+Language Editor = Éditeur de langage
+Link in the end =  Lien à la fin
+Loading… = Chargement…
+Localization = Localisation
+Manual = Manuel
+Module Downloads = Modules à télécharger
+Modules = Modules
+New = Nouveau
+New Testament = Nouveau Testament
+Notes = Notes
+NT = NT
+OK = D'accord
+OK to overwrite %s? = D'accord pour écraser %s ?
+Old Testament = Ancien Testament
+Open… = Ouvrir…
+Open Recent = Ouvrir récent
+Opened Book =  Livre ouvert
+Options = Options
+OT = AT
+Parentheses = Parenthèses
+Paste = Coller
+Phrase = Phrase
+Please narrow your search. = Veuillez préciser votre recherche.
+Print = Imprimer
+Range = Intervalle
+Save = Enregistrer
+Save… = Enregistrer…
+Save As… = Enregistrer sous…
+Save changes? = Enregistrer les modifications ?
+Search = Chercher
+Search Type = Type de recherche
+Search… = Chercher…
+Select All = Selectionner tout
+Set default = Réglage par défaut
+Strong's Dictionary = Strong's Dictionary
+Text Options = Options du texte
+This search returned too many results. = Cette recherche donne un trop grand nombre de résultats. 
+Tools = Outils
+Translation = Traduction
+Underline = Souligner
+Undo = Annuler
+verses found = versets trouvés
+Version = Version
+Whole Words = Mots entiers
+
+You don't have any commentary modules. = Vous n'avez aucun module de commentaire.
+You search for % produced no results. = Votre recherche (%) n'a donné aucun résultat. 
+For more information, choose Menu > Help, then click «Module Downloads». = Pour plus d'information, ouvrez le menu Aide et cliquez sur «Modules à télécharger».
+For more information, choose Menu > Help, then click «Unbound Bible Help». = Pour plus d'information, ouvrez le menu Aide et cliquez sur «Aide Unbound Bible».
+
+[macOS]
+
+About Unbound Bible = À propos d'Unbound Bible 
+Align Left = Aligner à gauche 
+Align Right = Aligner à droite 
+Alignment = Alignement 
+Baseline = Ligne de base 
+Bigger = Plus grand
+Bring All to Front = Mettre tout en avant 
+Clear Menu = Nettoyer le menu 
+Close = Fermer 
+Colors… = Couleurs… 
+Copy Style = Copier le style 
+Default = Défaut 
+Facebook Page = Page Facebook
+Fonts… = Polices… 
+Format = Format 
+Hide Others = Cacher les autres
+Hide Unbound Bible = Cacher Unbound Bible 
+Justify = Justifier 
+Left to Right = De gauche à droite 
+Minimize = Réduire 
+Page Setup… = Paramètres de la page… 
+Paste and Match Style = Coller et comparer le style 
+Paste Style = Coller le style 
+Preferences = Préférences 
+Preferences… = Préférences… 
+Quit Unbound Bible = Quitter Unbound Bible 
+Redo = Refaire 
+Right to Left = De droite à gauche 
+Search Options = Options de recherche
+Services = Services 
+Show All = Montrer tout 
+Smaller = Plus petit 
+Strikethrough = Barré 
+Subscript = Subscript 
+Superscript = Superscript 
+Unbound Bible Help = Aide Unbound Bible
+Window = Fenêtre 
+Writing Direction = Sens d'écriture 
+Zoom = Zoom 
+
+// Localizable strings
+
+Change Font = Changer la police 
+Do you want to save the changes? = Voulez-vous enregistrer les changements ? 
+Document Name = Nom du document 
+Don't Save = Ne pas enregistrer 
+Failed to save document. = Échec de l'enregistrement du document. 
+Later = Plus tard
+Permission denied. = Permission refusée. 
+The beta version has expired. = La version beta a expiré.
+The document % could not be opened. = Le document % n'a pas pu être ouvert. 
+Update = Mise à jour
+Update to the stable version. = Installer la version stable.
+verses was found = Des versets ont été trouvés 
+Your changes will be lost if you don't save them. = Vos changements seront perdus si vous ne les enregistrez pas. 
