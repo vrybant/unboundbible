@@ -1,4 +1,4 @@
-﻿
+
 ****************************************************************************
 *                                                                          *
 *                Unbound Bible - International Support File                *
@@ -75,7 +75,7 @@ Language Editor = Editor de idioma
 Link in the end =  Link in the end
 Loading… = Ejecutando…
 Localization = Interface
-Look Up % = Look Up %
+Look Up % = Consultar %
 Manual = Manual
 Module Downloads = Descargar módulo
 Modules = Módulos
@@ -94,7 +94,6 @@ Options = Opciones
 Parentheses = Paréntesis
 Paste = Pegar
 Phrase = Frase
-Please narrow your search. = Please narrow your search.
 Print = Imprimir
 Range = Parametros
 Save = Guardar
@@ -103,12 +102,13 @@ Save changes? = Save changes?
 Save… = Guardar…
 Search = Buscar
 Search Type = Tipo de busqueda
+Search for % = Buscar % en la Biblia
 Search… = Buscar…
 Select All = Seleccionar todo
 Set default =  Por defecto
 Strong's Dictionary = Diccionario
 Text Options = Opciones del texto
-This search returned too many results. = This search returned too many results. 
+Title = Title
 Tools = Herramientas
 Translation = Interpretación
 Underline = Subrayado

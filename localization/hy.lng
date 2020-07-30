@@ -89,7 +89,6 @@ OT = ՀԿ
 Parentheses = Կլոր փակագծերը
 Paste = Կպցնել
 Phrase = Արտահայտություն
-Please narrow your search. = Փորձեք սահմանափակել հարցումը.
 Print = Տպել
 Range = Որոնման տարածքը
 Save = Պահել
@@ -103,7 +102,6 @@ Select All = Ընտրել բոլորը
 Set default =  Հիշել
 Strong's Dictionary = Ստրոնգի Բառարան
 Text Options = Տեքստի կարգավորումներ
-This search returned too many results. = Ձեր որոնումը տվել է չափազանց մեծ քանակությամբ արդյունքներ. 
 Tools = Գործիքներ
 Translation = Թարգմանություն
 Underline = Ընդգծում
@@ -116,10 +114,14 @@ Dictionaries = Словари
 Downloads = Скачать
 Folder = Папка
 Look Up % = Искать % в словарях
+Title = Title
+Title = Название
 
+For more information, choose Menu ➝ Help, then click «Module Downloads». = Լրացուցիչ տեղեկությունների համար ընտրեք «Օգնություն» ➝ «բեռնել մոդուլը».
+Please narrow your search. = Փորձեք սահմանափակել հարցումը.
+This search returned too many results. = Ձեր որոնումը տվել է չափազանց մեծ քանակությամբ արդյունքներ. 
 You don't have any commentary modules. = Դուք ոչ մի մեկնաբանության մոդուլ չեք տեղադրել:
 You search for % produced no results. = Հարցումով % ոչինչ չի գտնվել.
-For more information, choose Menu ➝ Help, then click «Module Downloads». = Լրացուցիչ տեղեկությունների համար ընտրեք «Օգնություն» ➝ «բեռնել մոդուլը».
 
 [macOS]
 

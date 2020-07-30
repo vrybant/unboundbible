@@ -75,7 +75,7 @@ Language Editor = Редактор мов
 Link in the end =  Посилання в кінці
 Loading… = Завантажую…
 Localization = Локалізація
-Look Up % = Look Up %
+Look Up % = Шукати % у словниках
 Manual = Документація
 Module Downloads = Завантажити модуль
 Modules = Модулі
@@ -94,7 +94,6 @@ Options = Параметри
 Parentheses = Круглі дужки
 Paste = Вставити
 Phrase = Фраза
-Please narrow your search. = Будь ласка, звузіть пошук.
 Print = Друк
 Range = Діапазон пошуку
 Save = Зберегти
@@ -103,12 +102,13 @@ Save changes? = Зберегти зміни?
 Save… = Зберегти…
 Search = Пошук
 Search Type = Тип пошуку
+Search for % = Шукати % у Біблії
 Search… = Пошук…
 Select All = Вибрати все
 Set default =  Запам'ятати
 Strong's Dictionary = Словник Стронга
 Text Options = Налаштування тексту
-This search returned too many results. = Цей пошук дав забагато результатів. 
+Title = Title
 Tools = Інструменти
 Translation = Переклад
 Underline = Підкреслений
@@ -117,10 +117,12 @@ Version = Версiя
 Whole Words = Слова цілком
 verses found = Знайдено віршів
 
+For more information, choose Menu &gt; Help, then click «Unbound Bible Help». = Для додаткової інформації виберіть у рядку меню «Довідка» &gt; «Довiдка Unbound Bible».
+For more information, choose Menu > Help, then click «Module Downloads». = Для додаткової інформації виберіть у меню «Довідка» > «Завантажити модуль».
+Please narrow your search. = Будь ласка, звузіть пошук.
+This search returned too many results. = Цей пошук дав забагато результатів. 
 You don't have any commentary modules. = У вас не встановлено жодного модуля коментарів. 
 You search for % produced no results. = За запитом % нічого не знайдено.
-For more information, choose Menu > Help, then click «Module Downloads». = Для додаткової інформації виберіть у меню «Довідка» > «Завантажити модуль».
-For more information, choose Menu &gt; Help, then click «Unbound Bible Help». = Для додаткової інформації виберіть у рядку меню «Довідка» &gt; «Довiдка Unbound Bible».
 
 [macOS]
 
