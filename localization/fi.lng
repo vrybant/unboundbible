@@ -117,5 +117,7 @@ Version = Versio
 Whole Words = Kokonainen sana
 verses found = jakeita löytynyt
 
+// messages
+
 You search for % produced no results. = Haku ei tuottanut tuloksia. 
 

@@ -41,7 +41,7 @@ Confirmation = Підтвердження
 Copy = Копіювати
 Copy As… = Копіювати як…
 Copy Verses = Копіювати вірші
-Cross-References = Перехресні посилання
+Cross-References = Паралельні місця
 Cut = Вирізати
 Delete = Очистити
 Developer = Розробник 
@@ -117,11 +117,16 @@ Version = Версiя
 Whole Words = Слова цілком
 verses found = Знайдено віршів
 
-For more information, choose Menu &gt; Help, then click «Unbound Bible Help». = Для додаткової інформації виберіть у рядку меню «Довідка» &gt; «Довiдка Unbound Bible».
-For more information, choose Menu > Help, then click «Module Downloads». = Для додаткової інформації виберіть у меню «Довідка» > «Завантажити модуль».
+// messages
+
+Commentaries not found. = Коментарів не знайдено
+Cross-references not found. = Паралельні місця не знайдені.
+For more information, choose Menu ➝ Help, then click «Module Downloads». = Для додаткової інформації виберіть у меню «Довідка» ➝ «Завантажити модуль».
+Please enter your query in the search bar. = Введіть запит в поле пошуку.
 Please narrow your search. = Будь ласка, звузіть пошук.
 This search returned too many results. = Цей пошук дав забагато результатів. 
 You don't have any commentary modules. = У вас не встановлено жодного модуля коментарів. 
+You don't have any dictionary modules. = У вас не встановлено жодного словника.
 You search for % produced no results. = За запитом % нічого не знайдено.
 
 [macOS]

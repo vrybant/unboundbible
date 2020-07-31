@@ -75,7 +75,7 @@ Language Editor = Éditeur de langage
 Link in the end =  Lien à la fin
 Loading… = Chargement…
 Localization = Localisation
-Look Up % = Rechercher %
+Look Up % = Chercher % dans les dictionnaires
 Manual = Manuel
 Module Downloads = Modules à télécharger
 Modules = Modules
@@ -102,7 +102,7 @@ Save changes? = Enregistrer les modifications ?
 Save… = Enregistrer…
 Search = Chercher
 Search Type = Type de recherche
-Search for % = Search for %
+Search for % = Chercher % dans la Bible
 Search… = Chercher…
 Select All = Selectionner tout
 Set default = Réglage par défaut
@@ -117,11 +117,16 @@ Version = Version
 Whole Words = Mots entiers
 verses found = versets trouvés
 
+// messages
+
+Commentaries not found. = Commentaires introuvables.
+Cross-references not found. = Références croisées introuvables.
 For more information, choose Menu ➝ Help, then click «Module Downloads». = Pour plus d'information, ouvrez le menu Aide et cliquez sur «Modules à télécharger».
-For more information, choose Menu ➝ Help, then click «Unbound Bible Help». = Pour plus d'information, ouvrez le menu Aide et cliquez sur «Aide Unbound Bible».
+Please enter your query in the search bar. = Veuillez saisir votre requête dans la barre de recherche.
 Please narrow your search. = Veuillez préciser votre recherche.
 This search returned too many results. = Cette recherche donne un trop grand nombre de résultats. 
 You don't have any commentary modules. = Vous n'avez aucun module de commentaire.
+You don't have any dictionary modules. = Aucun module dictionnaire n'est installé.
 You search for % produced no results. = Votre recherche % n'a donné aucun résultat. 
 
 [macOS]

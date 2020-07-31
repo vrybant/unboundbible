@@ -5,10 +5,10 @@
 *                                                                          *
 ****************************************************************************
 *                                                                          *
-*   Դուք կարող եք կատարել թարգմանությունը ծրագրի լեզուն Ձեր մայրենի լեզվով.*
-*   Պարզապես օգտագործեք այս ֆայլը որպես թարգմանության ձևանմուշ.            *  
-*   Խնդրում ենք ուղարկել նոր ֆայլ ծրագրի մշակողին, որպեսզի,                *
-*   այն հասանելի դարձնել բոլորի համար․                                      *
+*   You can easily translate interface to your native language.            *
+*   Just use this file as template for translation.                        *
+*   After that, please send the new file to software developer             *
+*   to make it available for everyone.                                     *
 *                                                                          *
 ****************************************************************************
 
@@ -34,16 +34,19 @@ Bullets = Մարկերներ
 Cancel = Չեղարկել
 Case Sensitive = Ռեգիստր
 Center = Կենտրոնում
-Commentary = Մեկնաբանություն
 Commentaries = Մեկնաբանություններ
+Commentary = Մեկնաբանություն
 Compare = Համեմատություն
 Confirmation = Հաստատում
 Copy = Պատճառել
 Copy As… = Պատճենել որպես…
 Copy Verses = Պատճենել Խոսքը
+Cross-References = Զուգահեռ հղումներ
 Cut = Կտրել
 Delete = Մաքրել
 Developer = Մշակում 
+Dictionaries = Բառարաններ
+Downloads = Ներբեռնել
 Edit = Խմբագրում
 Encoding = Կոդավորում
 Entire Bible =  Ամբողջ Աստվածաշունչը
@@ -53,6 +56,7 @@ Every Word =  Յուրաքանչյուր բառը
 Exit = Ելք
 File = Ֆայլ
 Find = Որոնել
+Folder = Թղթապանակ
 Font = Տառատեսակ
 Font Size = Չափ
 Font… =  Տառատեսակ…
@@ -71,56 +75,58 @@ Language Editor = Լեզուների խմբագիր
 Link in the end =  Հղումը վերջում
 Loading… = Բեռնվում է…
 Localization = Ծրագրի լեզուն
+Look Up % = Որոնել % բառարաններում
 Manual = Ձեռնարկ
 Module Downloads = Բեռնել մոդուլը
 Modules = Մոդուլներ
+NT = ՆԿ
 New = Ստեղծել
 New Testament = Նոր Կտակարան
 Notes = Նոթատետր
-NT = ՆԿ
 OK = Լավ
 OK to overwrite %s? = Վերագրանցել ֆայլը %s?
+OT = ՀԿ
 Old Testament = Հին Կտակարան
-Open… = Բացել…
 Open Recent = Բացել վերջինը
 Opened Book =  Բաց գիրք
+Open… = Բացել…
 Options = Կարգավորումներ
-OT = ՀԿ
 Parentheses = Կլոր փակագծերը
 Paste = Կպցնել
 Phrase = Արտահայտություն
 Print = Տպել
 Range = Որոնման տարածքը
 Save = Պահել
-Save… = Պահել…
 Save As… = Պահել որպես…
 Save changes? = Պահպանել փոփոխությունները?
+Save… = Պահել…
 Search = Որոնել
 Search Type = Որոնման տեսակը
+Search for % = Որոնել % Աստվածաշնչում
 Search… = Որոնում…
 Select All = Ընտրել բոլորը
 Set default =  Հիշել
 Strong's Dictionary = Ստրոնգի Բառարան
 Text Options = Տեքստի կարգավորումներ
+Title = Անվանում
 Tools = Գործիքներ
 Translation = Թարգմանություն
 Underline = Ընդգծում
 Undo = Չեղարկել
-verses found = գտնվել է խոսքեր
 Version = Տարբերակ
 Whole Words = Բառեր ամբողջ
-Cross-References = Параллельные места
-Dictionaries = Словари
-Downloads = Скачать
-Folder = Папка
-Look Up % = Искать % в словарях
-Title = Title
-Title = Название
+verses found = գտնվել է խոսքեր
 
+// messages
+
+Commentaries not found. = Մեկնաբանություն չի գտնվել։
+Cross-references not found. = Զուգահեռ հղումներ չեն գտնվել:
 For more information, choose Menu ➝ Help, then click «Module Downloads». = Լրացուցիչ տեղեկությունների համար ընտրեք «Օգնություն» ➝ «բեռնել մոդուլը».
+Please enter your query in the search bar. = Մուտքագրեք հարցումը որոնման դաշտում:
 Please narrow your search. = Փորձեք սահմանափակել հարցումը.
 This search returned too many results. = Ձեր որոնումը տվել է չափազանց մեծ քանակությամբ արդյունքներ. 
 You don't have any commentary modules. = Դուք ոչ մի մեկնաբանության մոդուլ չեք տեղադրել:
+You don't have any dictionary modules. = Դուք ոչ մի բառարան չեք տեղադրել:
 You search for % produced no results. = Հարցումով % ոչինչ չի գտնվել.
 
 [macOS]
