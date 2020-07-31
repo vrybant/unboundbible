@@ -11,7 +11,7 @@ object DownloadForm: TDownloadForm
   OnCreate = FormCreate
   ParentFont = True
   Position = poScreenCenter
-  LCLVersion = '2.0.8.0'
+  LCLVersion = '2.0.10.0'
   object ButtonOK: TButton
     Left = 280
     Height = 25
@@ -71,7 +71,7 @@ object DownloadForm: TDownloadForm
     Left = 8
     Height = 15
     Top = 440
-    Width = 49
+    Width = 48
     Caption = 'LabelTest'
     ParentColor = False
     Visible = False
@@ -80,7 +80,7 @@ object DownloadForm: TDownloadForm
     Left = 100
     Height = 25
     Top = 440
-    Width = 80
+    Width = 84
     Caption = 'Downloads'
     OnClick = ButtonDownloadsClick
     TabOrder = 2
@@ -89,8 +89,8 @@ object DownloadForm: TDownloadForm
     Left = 460
     Height = 25
     Top = 440
-    Width = 80
-    Caption = 'ButtonFolder'
+    Width = 84
+    Caption = 'Folder'
     OnClick = ButtonFolderClick
     TabOrder = 3
   end

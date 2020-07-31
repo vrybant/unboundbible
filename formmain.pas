@@ -421,7 +421,7 @@ begin
   miHelp.Caption := T('Help');
   miSearch.Caption := T('Search');
   miCompare.Caption := T('Compare');
-  miRrefx.Caption := T('Сross-References');
+  miRrefx.Caption := T('Cross-References');
   miCommentaries.Caption := T('Commentaries');
   miDictionaries.Caption := T('Dictionaries');
   miTranslate.Caption := T('Translation');
@@ -461,7 +461,7 @@ begin
   TabSheetBible.Caption := T('Bible');
   TabSheetSearch.Caption := T('Search');
   TabSheetCompare.Caption := T('Compare');
-  TabSheetReference.Caption := T('Сross-References');
+  TabSheetReference.Caption := T('Cross-References');
   TabSheetCommentary.Caption := T('Commentaries');
   TabSheetDictionary.Caption := T('Dictionaries');
   TabSheetNotes.Caption := T('Notes');
@@ -478,7 +478,7 @@ begin
   ToolButtonUndo.Hint := T('Undo');
 
   ToolButtonCompare.Hint := T('Compare');
-  ToolButtonReference.Hint := T('Сross-References');
+  ToolButtonReference.Hint := T('Cross-References');
   ToolButtonCommentary.Hint := T('Commentaries');
   ToolButtonDictionary.Hint := T('Dictionaries');
 
