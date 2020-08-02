@@ -55,7 +55,7 @@ object DownloadForm: TDownloadForm
       end>
     DefaultDrawing = False
     FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goSmoothScroll, goCellHints]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRowSelect, goSmoothScroll, goCellHints]
     ParentShowHint = False
     RowCount = 10
     ShowHint = True
