@@ -13,14 +13,13 @@ object DownloadForm: TDownloadForm
   Position = poScreenCenter
   LCLVersion = '2.0.10.0'
   object ButtonOK: TButton
-    Left = 280
+    Left = 279
     Height = 25
     Top = 440
-    Width = 80
-    AutoSize = True
+    Width = 82
     Caption = 'OK'
-    Constraints.MaxWidth = 80
-    Constraints.MinWidth = 80
+    Constraints.MaxWidth = 82
+    Constraints.MinWidth = 82
     Default = True
     ModalResult = 1
     TabOrder = 0

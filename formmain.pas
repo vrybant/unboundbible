@@ -3,12 +3,13 @@ unit FormMain;
 interface
 
 uses
-  Classes, SysUtils, LazFileUtils, LazUTF8, Forms, Controls, Graphics, Dialogs,
+  Classes, Fgl, SysUtils, LazFileUtils, LazUTF8, Forms, Controls, Graphics, Dialogs,
   StdCtrls, Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
   ClipBrd, StdActns, Buttons, PrintersDlgs, Types, RichMemo, UnboundMemo,
   UnitData, UmLib, UnitLib;
 
 type
+  TStatuses = TFPGMap<integer, string>;
 
   { TMainForm }
 
@@ -227,6 +228,7 @@ type
     DefaultCurrent: string;
     NoteFileName: string;
     RecentList: TStringList;
+    Statuses: TStatuses;
     FBPageVisited: boolean;
     {$ifdef linux} IdleMessage : string; {$endif}
     function UnboundMemo: TUnboundMemo;
@@ -256,7 +258,8 @@ type
     procedure SaveConfig;
     procedure SelectPage(page: integer);
     procedure UpdateCaption(s: string);
-    procedure UpdateStatus(s, Hint: string);
+    procedure RefreshStatus;
+    procedure UpdateStatus(s: string);
     procedure UpdateActionImage;
     procedure VersesToClipboard;
     procedure ShowPopup;
@@ -295,6 +298,7 @@ begin
   Caption := ApplicationName + ' ' + ApplicationVersion;
 
   RecentList := TStringList.Create;
+  Statuses := TStatuses.Create;
   SaveDialog.InitialDir := DocumentsPath;
   NoteFileName := Untitled;
   ReadConfig;
@@ -305,7 +309,7 @@ begin
     ComboBoxInit;
     MakeBookList;
     if not Bible.GoodLink(ActiveVerse) then ActiveVerse := Bible.FirstVerse;
-    UpdateStatus(Bible.Info, Bible.fileName);
+    UpdateStatus(Bible.fileName + ' | ' + Bible.Info);
 
     // LoadChapter; // RichMemo doesn't load from Stream,
                     // so we call it from FormActivate
@@ -348,6 +352,7 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   SaveConfig;
   RecentList.Free;
+  Statuses.Free;
 end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
@@ -596,7 +601,6 @@ var
   select : boolean;
 begin
   Shelf.SetCurrent(ComboBox.ItemIndex);
-  UpdateStatus(Bible.Info, Bible.fileName);
   MakeBookList;
   select := ActiveVerse.number > 1;
   {$ifdef linux}
@@ -605,6 +609,8 @@ begin
   {$else}
     GotoVerse(ActiveVerse, select);
   {$endif}
+  SelectPage(apBible);
+  UpdateStatus(Bible.fileName + ' | ' + Bible.Info);
 end;
 
 procedure TMainForm.ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
@@ -887,10 +893,19 @@ begin
   Caption := ApplicationName + ' ' + ApplicationVersion + ' - ' + s;
 end;
 
-procedure TMainForm.UpdateStatus(s, Hint: string);
+procedure TMainForm.RefreshStatus;
 begin
-  StatusBar.SimpleText := ' ' + s;
-  StatusBar.Hint := Hint;
+  try
+    StatusBar.SimpleText := ' ' + Statuses.KeyData[PageControl.ActivePageIndex];
+  except
+    StatusBar.SimpleText := '';
+  end;
+end;
+
+procedure TMainForm.UpdateStatus(s: string);
+begin
+  Statuses.AddOrSetData(PageControl.ActivePageIndex, s);
+  RefreshStatus;
 end;
 
 procedure TMainForm.ShowPopup;
@@ -1138,6 +1153,7 @@ begin
   PageControl.ActivePageIndex := page;
   PageControl.ActivePage.TabVisible := true;
   EnableActions;
+  RefreshStatus;
   Refresh;
 end;
 
@@ -1187,7 +1203,7 @@ procedure TMainForm.PageControlChange(Sender: TObject);
 begin
   EnableActions;
   UpDownButtons;
-  UpdateStatus('','');
+  RefreshStatus;
   UnboundMemo.Repaint;
   if PageControl.ActivePageIndex = apCompare      then CmdCompare(PageControl);
   if PageControl.ActivePageIndex = apReferences   then CmdReference(PageControl);
@@ -1312,7 +1328,7 @@ begin
 
   Cursor := crArrow;
   SelectPage(apSearch);
-  UpdateStatus(ToStr(count) + ' ' + T('verses found'), '');
+  UpdateStatus(ToStr(count) + ' ' + T('verses found'));
 end;
 
 procedure TMainForm.LoadCompare;
