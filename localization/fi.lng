@@ -75,7 +75,7 @@ Language Editor = Language Editor
 Link in the end = Paikkamerkintä loppuun
 Loading… = Loading…
 Localization = Käyttöliittymän kieli
-Look Up % = Look Up %
+Look Up % = Katso % sanakirjoista
 Manual = Manuaalinen
 Module Downloads = Raamattujen lataussivu
 Modules = Vertailuvalinnat
@@ -102,7 +102,7 @@ Save changes? = Save changes?
 Save… = Tallenna…
 Search = Etsi
 Search Type = Hakutyyppi
-Search for % = Search for %
+Search for % = Etsi % Raamatusta
 Search… = Etsi…
 Select All = Valitse kaikki
 Set default =  Aseta oletus
@@ -119,5 +119,13 @@ verses found = jakeita löytynyt
 
 // messages
 
-You search for % produced no results. = Haku ei tuottanut tuloksia. 
+Commentaries not found. =  Kommentaareja ei löydy.
+Cross-references not found. = Ristiviittauksia ei löydy.
+For more information, choose Menu ➝ Help, then click «Module Downloads». = Saadaksesi lisää informaatiota, valise valikosta: Ohje, sitten klikkaa «Raamattujen lataussivu»
+Please enter your query in the search bar. = Kirjoita hakusanat etsintäpalkkiin.
+Please narrow your search. = Kirjoita haku suppeammin.
+This search returned too many results. = Tähän hakuun tulee liian paljon vastausia!
+You don't have any commentary modules. = Sinulla ei ole yhtäkään kommentaarimoduulia.
+You don't have any dictionary modules. = Sinulla ei ole yhtäkään sanakirjamoduulia.
+You search for % produced no results. = Sinun haku % ei tuottanut tuloksia.
 

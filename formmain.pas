@@ -455,8 +455,6 @@ begin
   miBibleFolder.Caption := T('Bible Folder');
   miHelpAbout.Caption := T('About');
 
-  pmSearchfor.Caption := T('Search');
-  pmLookup.Caption := T('Look Up');
   pmCut.Caption := T('Cut');
   pmCopy.Caption := T('Copy');
   pmPaste.Caption := T('Paste');
