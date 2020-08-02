@@ -5,7 +5,7 @@ interface
 uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UmLib, UnitLib;
 
 function Get_Chapter: string;
-function Get_Search(st: string; var count: integer): string;
+function Get_Search(st: string; out count: integer): string;
 function Get_Compare: string;
 function Get_Reference(out info: string): string;
 function Get_Commentary: string;
@@ -70,7 +70,7 @@ begin
   for item in List do Highlight(s, item, Options);
 end;
 
-function Get_Search(st: string; var count: integer): string;
+function Get_Search(st: string; out count: integer): string;
 var
   ContentArray : TContentArray;
   content : TContent;

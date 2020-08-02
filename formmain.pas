@@ -1303,7 +1303,7 @@ end;
 procedure TMainForm.LoadSearch(s: string);
 var
   text : string;
-  count : integer = 0;
+  count : integer;
 const
   max = {$ifdef windows}5000{$else}2000{$endif};
 begin
