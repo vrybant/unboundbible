@@ -1344,15 +1344,17 @@ end;
 
 procedure TMainForm.LoadReference;
 var
-  text, data : string;
+  text, data: string;
+  info : string = '';
 begin
   if Shelf.Count = 0 then Exit;
   text := Bible.VerseToStr(ActiveVerse, true) + '<br><br>';
-  data := Get_Reference;
+  data := Get_Reference(info);
   if data = '' then text += T('Сross-references not found.') else text += data;
   MemoReference.Font.Assign(DefaultFont);
   MemoReference.LoadText(text);
   SelectPage(apReferences);
+  UpdateStatus(info);
 end;
 
 procedure TMainForm.LoadCommentary;

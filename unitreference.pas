@@ -23,7 +23,7 @@ type
     procedure Load;
   public
     constructor Create;
-    function GetData(Verse: TVerse; language: string): TVerseArray;
+    function GetData(Verse: TVerse; language: string; out info: string): TVerseArray;
     destructor Destroy; override;
   end;
 
@@ -150,18 +150,23 @@ begin
     end;
 end;
 
-function TReferences.GetData(Verse: TVerse; language: string): TVerseArray;
+function TReferences.GetData(Verse: TVerse; language: string; out info: string): TVerseArray;
 var
   filename : string;
   i : integer;
 begin
   SetLength(Result,0);
+  info := '';
+
   if self.Count = 0 then Exit;
   filename := iif( Prefix('ru', language), 'obru.xrefs.unbound', 'ob.xrefs.unbound');
 
   for i:=0 to Count-1 do
     if Items[i].filename = filename then
-        Result := Items[i].GetData(Verse);
+        begin
+          Result := Items[i].GetData(Verse);
+          info := Items[i].info;
+        end;
 end;
 
 destructor TReferences.Destroy;

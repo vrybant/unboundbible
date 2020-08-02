@@ -7,7 +7,7 @@ uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UmLib, UnitLib;
 function Get_Chapter: string;
 function Get_Search(st: string; var count: integer): string;
 function Get_Compare: string;
-function Get_Reference: string;
+function Get_Reference(out info: string): string;
 function Get_Commentary: string;
 function Get_Dictionary(st: string = ''): string;
 function Get_Strong(number: string = ''): string;
@@ -106,14 +106,14 @@ begin
     end;
 end;
 
-function Get_Reference: string;
+function Get_Reference(out info: string): string;
 var
   Verses : TVerseArray;
   item : TVerse;
   link : string;
 begin
   Result := '';
-  Verses := References.GetData(ActiveVerse, Bible.language);
+  Verses := References.GetData(ActiveVerse, Bible.language, info);
 
   for item in Verses do
     begin
