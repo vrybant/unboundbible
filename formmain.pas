@@ -451,7 +451,7 @@ begin
   miRecent.Caption := T('Open Recent');
 
   miHome.Caption := T('Home Page');
-  miDownload.Caption := T('Module Downloads');
+  miDownload.Caption := T('Modules Downloads');
   miBibleFolder.Caption := T('Bible Folder');
   miHelpAbout.Caption := T('About');
 
@@ -1369,7 +1369,7 @@ begin
   if Commentaries.Count = 0 then
     begin
       text += T('You don''t have any commentary modules.') + ' ' +
-              T('For more information, choose Menu ➝ Help, then click «Module downloads».');
+              T('For more information, choose Menu ➝ Help, then click «Modules downloads».');
     end;
 
   MemoCommentary.Font.Assign(DefaultFont);
@@ -1396,7 +1396,7 @@ begin
   if Dictionaries.IsEmpty then
     begin
       text += T('You don''t have any dictionary modules.') + ' ' +
-              T('For more information, choose Menu ➝ Help, then click «Module downloads».');
+              T('For more information, choose Menu ➝ Help, then click «Modules downloads».');
     end;
 
   MemoDictionary.Font.Assign(DefaultFont);
