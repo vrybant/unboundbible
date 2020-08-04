@@ -106,6 +106,9 @@ var
     'james','1_peter','2_peter','1_john','2_john','3_john','jude','revelation'
     );
 
+const
+  PatronURL = 'https://www.patreon.com/vrybant';
+
 function unbound2mybible(id: integer): integer;
 function mybible2unbound(id: integer): integer;
 function IsNewTestament(n: integer): boolean;
@@ -114,7 +117,6 @@ function ConfigFile: string;
 function DataPath: string;
 function GetDatabaseList: TStringArray;
 function HomeURL: string;
-function PatronURL: string;
 function DownloadsURL: string;
 
 implementation
@@ -201,11 +203,6 @@ function HomeURL: string;
 begin
   Result := 'http://vladimirrybant.org';
   if (InterfaceLang = 'ru') or (InterfaceLang = 'uk') then Result += '/ru';
-end;
-
-function PatronURL: string;
-begin
-  Result := 'https://www.patreon.com/vrybant'
 end;
 
 function DownloadsURL: string;

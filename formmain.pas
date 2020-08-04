@@ -1173,6 +1173,7 @@ end;
 procedure TMainForm.miPatronClick(Sender: TObject);
 begin
   OpenURL(PatronURL);
+  PatreonVisited := True;
 end;
 
 procedure TMainForm.miDownloadClick(Sender: TObject);
