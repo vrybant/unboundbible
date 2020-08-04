@@ -1,10 +1,10 @@
 object MainForm: TMainForm
-  Left = 296
+  Left = 81
   Height = 401
   Top = 203
   Width = 937
   Caption = 'Unbound Bible'
-  ClientHeight = 381
+  ClientHeight = 378
   ClientWidth = 937
   Constraints.MinHeight = 400
   Constraints.MinWidth = 600
@@ -15,7 +15,7 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
-  LCLVersion = '2.0.10.0'
+  LCLVersion = '2.0.4.0'
   object StandardToolBar: TToolBar
     Left = 0
     Height = 30
@@ -201,6 +201,7 @@ object MainForm: TMainForm
       Left = 32
       Top = 0
       Action = ActionModules
+      ImageIndex = 34
       Visible = False
     end
     object ToolButtonDictionary: TToolButton
@@ -233,11 +234,11 @@ object MainForm: TMainForm
   end
   object PanelLeft: TPanel
     Left = 0
-    Height = 326
+    Height = 329
     Top = 32
     Width = 195
     Align = alLeft
-    ClientHeight = 326
+    ClientHeight = 329
     ClientWidth = 195
     Font.CharSet = GREEK_CHARSET
     Font.Color = clWindowText
@@ -256,6 +257,7 @@ object MainForm: TMainForm
       ParentFont = False
       ScrollWidth = 132
       TabOrder = 0
+      TopIndex = -1
     end
     object ChapterBox: TListBox
       Left = 144
@@ -269,16 +271,17 @@ object MainForm: TMainForm
       ParentFont = False
       ScrollWidth = 43
       TabOrder = 1
+      TopIndex = -1
     end
     object ComboBox: TComboBox
       Left = 4
-      Height = 25
+      Height = 31
       Top = 2
       Width = 185
       DropDownCount = 12
       Font.Color = clWindowText
       Font.Height = -13
-      ItemHeight = 17
+      ItemHeight = 0
       OnChange = ComboBoxChange
       OnDrawItem = ComboBoxDrawItem
       ParentFont = False
@@ -288,8 +291,8 @@ object MainForm: TMainForm
   end
   object StatusBar: TStatusBar
     Left = 0
-    Height = 23
-    Top = 358
+    Height = 17
+    Top = 361
     Width = 937
     Panels = <>
     ParentShowHint = False
@@ -297,7 +300,7 @@ object MainForm: TMainForm
   end
   object PageControl: TPageControl
     Left = 200
-    Height = 326
+    Height = 329
     Top = 32
     Width = 737
     ActivePage = TabSheetBible
@@ -310,17 +313,17 @@ object MainForm: TMainForm
     OnChange = PageControlChange
     object TabSheetBible: TTabSheet
       Caption = 'Bible'
-      ClientHeight = 296
-      ClientWidth = 729
+      ClientHeight = 298
+      ClientWidth = 727
       Font.Color = clWindowText
       Font.Height = -12
       ParentFont = False
       object MemoBible: TUnboundMemo
         Cursor = crArrow
         Left = 0
-        Height = 296
+        Height = 298
         Top = 0
-        Width = 729
+        Width = 727
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
@@ -341,8 +344,8 @@ object MainForm: TMainForm
     end
     object TabSheetSearch: TTabSheet
       Caption = 'Search'
-      ClientHeight = 296
-      ClientWidth = 675
+      ClientHeight = 298
+      ClientWidth = 727
       ImageIndex = 1
       object MemoSearch: TUnboundMemo
         Cursor = crArrow
@@ -369,8 +372,8 @@ object MainForm: TMainForm
     end
     object TabSheetCompare: TTabSheet
       Caption = 'Compare'
-      ClientHeight = 296
-      ClientWidth = 675
+      ClientHeight = 298
+      ClientWidth = 727
       Font.Color = clWindowText
       Font.Height = -12
       ImageIndex = 3
@@ -400,8 +403,8 @@ object MainForm: TMainForm
     end
     object TabSheetReference: TTabSheet
       Caption = 'Сross-References'
-      ClientHeight = 296
-      ClientWidth = 729
+      ClientHeight = 298
+      ClientWidth = 727
       object MemoReference: TUnboundMemo
         Cursor = crArrow
         Left = 0
@@ -427,8 +430,8 @@ object MainForm: TMainForm
     end
     object TabSheetCommentary: TTabSheet
       Caption = 'Commentaries'
-      ClientHeight = 296
-      ClientWidth = 729
+      ClientHeight = 298
+      ClientWidth = 727
       object MemoCommentary: TUnboundMemo
         Cursor = crArrow
         Left = 0
@@ -454,8 +457,8 @@ object MainForm: TMainForm
     end
     object TabSheetDictionary: TTabSheet
       Caption = 'Dictionaries'
-      ClientHeight = 296
-      ClientWidth = 729
+      ClientHeight = 298
+      ClientWidth = 727
       object MemoDictionary: TUnboundMemo
         Cursor = crArrow
         Left = 0
@@ -481,8 +484,8 @@ object MainForm: TMainForm
     end
     object TabSheetNotes: TTabSheet
       Caption = 'Notes'
-      ClientHeight = 296
-      ClientWidth = 675
+      ClientHeight = 298
+      ClientWidth = 727
       ImageIndex = 2
       object MemoNotes: TUnboundMemo
         Cursor = crArrow
@@ -508,7 +511,7 @@ object MainForm: TMainForm
   end
   object Splitter: TSplitter
     Left = 195
-    Height = 326
+    Height = 329
     Top = 32
     Width = 5
   end
@@ -538,8 +541,8 @@ object MainForm: TMainForm
   end
   object MainMenu: TMainMenu
     Images = Images
-    Left = 400
-    Top = 216
+    left = 400
+    top = 216
     object miTools: TMenuItem
       Caption = '&Tools'
       object miSearch: TMenuItem
@@ -664,10 +667,10 @@ object MainForm: TMainForm
         ImageIndex = 31
         OnClick = miHomeClick
       end
-      object miPatron: TMenuItem
+      object miPatreon: TMenuItem
         Caption = 'Become a Patron'
         ImageIndex = 42
-        OnClick = miPatronClick
+        OnClick = miPatreonClick
       end
       object MenuItem2: TMenuItem
         Caption = '-'
@@ -693,8 +696,8 @@ object MainForm: TMainForm
     end
   end
   object Images: TImageList
-    Left = 320
-    Top = 104
+    left = 320
+    top = 104
     Bitmap = {
       4C692B0000001000000010000000FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
@@ -2040,46 +2043,46 @@ object MainForm: TMainForm
       D0FFFF00FF00808080FFFF00FF00FF00FF00808080FFFF00FF00D0D0D0FFB3B3
       B3FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF009D9D9DFF808080FF808080FF9D9D9DFFFF00FF00FF00FF00FF00
-      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-      FF00FF00FF00FF00FF00FF00FF00FF00FF005468F9FF5468F9FF5468F9FF5468
-      F9FF5468F9FF5468F9FF5468F9FF5468F9FF5468F9FF5468F9FF5468F9FF5468
-      F9FF5468F9FF5468F9FFFF00FF00FF00FF005468F9FF5468FAFF5469FCFF5468
-      FAFF5468F9FF5367F9FF5166F9FF5266F9FF5166F9FF5367F9FF5468F9FF5468
-      F9FF5468F9FF5468F9FFFF00FF00FF00FF005468F9FF515AC1FF4E4A7CFF5260
-      D6FF5367FBFF5E71F9FF8D9BFBFFAAB4FCFF99A5FBFF687AFAFF5367F9FF5468
-      F9FF5468F9FF5468F9FFFF00FF00FF00FF005468F9FF4F4E8CFF492D06FF5057
-      B5FF6275FDFFC5CCFDFFFCFCFFFFFFFFFFFFFFFFFFFFDDE1FEFF7585FAFF5267
-      F9FF5468F9FF5468F9FFFF00FF00FF00FF005468F9FF4F4E8DFF492E09FF4F56
-      B6FFA2AEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC6CDFDFF596C
-      F9FF5468F9FF5468F9FFFF00FF00FF00FF005468F9FF4F4E8DFF492E09FF545B
-      B6FFCBD2FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE9ECFEFF687A
-      FAFF5367F9FF5367F9FFFF00FF00FF00FF005468F9FF4F4E8DFF492E09FF535A
-      B6FFC6CDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE5E8FEFF6577
-      FAFF5367F9FF5367F9FFFF00FF00FF00FF005468F9FF4F4E8DFF492E09FF4F56
-      B6FF93A0FFFFFAFBFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFB6BFFCFF5669
-      F9FF5468F9FF5468F9FFFF00FF00FF00FF005468F9FF4F4E8DFF492E09FF5157
-      B6FF5A6EFDFFA9B3FCFFEFF1FEFFFCFDFFFFF6F7FFFFC3CAFDFF6678FAFF5367
-      F9FF5468F9FF5468F9FFFF00FF00FF00FF005468F9FF4F4E8DFF492E09FF5158
-      B6FF5468FDFF5669F9FF7182FAFF8896FBFF7A89FAFF5A6EF9FF5367F9FF5468
-      F9FF5468F9FF5468F9FFFF00FF00FF00FF005468F9FF4F4E8BFF492D06FF5158
-      B5FF5469FDFF5468F9FF5266F9FF5165F9FF5266F9FF5468F9FF5468F9FF5468
-      F9FF5468F9FF5468F9FFFF00FF00FF00FF005468F9FF515ABEFF4E4876FF525F
-      D5FF5469FBFF5468F9FF5468F9FF5468F9FF5468F9FF5468F9FF5468F9FF5468
-      F9FF5468F9FF5468F9FFFF00FF00FF00FF005468F9FF5468F9FF5468FAFF5469
-      FBFF5468FAFF5468F9FF5468F9FF5468F9FF5468F9FF5468F9FF5468F9FF5468
-      F9FF5468F9FF5468F9FFFF00FF00FF00FF005468F9FF5468F9FF5468F9FF5468
-      F9FF5468F9FF5468F9FF5468F9FF5468F9FF5468F9FF5468F9FF5468F9FF5468
-      F9FF5468F9FF5468F9FFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-      FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00000000000000000000000000000000000000
+      00000A0C1812202759532E387D762E387D7721295C550B0D1B14000000000000
+      00000000000000000000000000000000000000000000000000000A0D1A133946
+      A29A5367F5F85468FAFF5468FAFF5468FAFF5468FAFF5467F7FA3B48A79F0C0E
+      1E1700000000000000000000000000000000000000001115302A4E61E4E25468
+      FAFF5468FAFF5468FAFF5468FAFF5468FAFF5468FAFF5468FAFF5468FAFF4F62
+      E7E613183630000000000000000000000000090C19144E61E3E25468FAFF5468
+      FAFF5468FAFF5468FAFF5468FAFF5468FAFF5468FAFF5468FAFF5468FAFF5468
+      FAFF5063E8E70B0E1E1900000000000000003845A09B5468FAFF5468FAFF4F4D
+      8AFF4F4E8EFF5468FAFF5B6EFAFFA1ACFCFFBDC5FDFF9CA7FCFF586CFAFF5468
+      FAFF5468FAFF3B49AAA500000000090B17135367F5F95468FAFF5468FAFF4C3D
+      48FF4C3E4EFF576BFAFFDBDFFEFFFFFFFFFFFFFFFFFFFFFFFFFFD0D6FEFF5569
+      FAFF5468FAFF5367F7FC0C0E1F1A1F2758545468FAFF5468FAFF5468FAFF4C3D
+      48FF4C3E4EFF8B99FBFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7E8D
+      FBFF5468FAFF5468FAFF232B625F2D387C785468FAFF5468FAFF5468FAFF4C3D
+      48FF4C3E4EFF9CA8FCFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF8F9C
+      FBFF5468FAFF5468FAFF313C86822D387D795468FAFF5468FAFF5468FAFF4C3D
+      48FF4C3E4EFF7081FAFFFEFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFAFBFFFF6678
+      FAFF5468FAFF5468FAFF313C878320275A585468FAFF5468FAFF5468FAFF4C3D
+      48FF4C3E4EFF5468FAFF97A3FCFFF7F8FFFFFFFFFFFFF4F6FFFF8D9AFBFF5468
+      FAFF5468FAFF5468FAFF232B6462090B19185367F6FA5468FAFF5468FAFF4C3D
+      48FF4C3E4EFF5468FAFF5468FAFF5B6EFAFF7080FAFF596DFAFF5468FAFF5468
+      FAFF5468FAFF5367F8FD0C0F211F000000003846A4A35468FAFF5468FAFF4C3D
+      48FF4C3E4EFF5468FAFF5468FAFF5468FAFF5468FAFF5468FAFF5468FAFF5468
+      FAFF5468FAFF3C4AAEAD0000000000000000090C1B1B4E60E6E85468FAFF5362
+      E3FF5362E4FF5468FAFF5468FAFF5468FAFF5468FAFF5468FAFF5468FAFF5468
+      FAFF4F62EAED0B0E2121000000000000000000000000121634354E60E6E95468
+      FAFF5468FAFF5468FAFF5468FAFF5468FAFF5468FAFF5468FAFF5468FAFF4F62
+      EAED14193A3C00000000000000000000000000000000000000000A0C1C1E3947
+      A8AA5367F7FC5468FAFF5468FAFF5468FAFF5468FAFF5367F8FD3B49ADAF0B0E
+      2022000000000000000000000000000000000000000000000000000000000000
+      00010A0D1E20212961642E3A86872F3A8788222A64670B0E2123000000010000
+      0000000000000000000000000000
     }
   end
   object PopupMenu: TPopupMenu
     Images = Images
     OnPopup = PopupMenuPopup
-    Left = 400
-    Top = 160
+    left = 400
+    top = 160
     object pmSearchfor: TMenuItem
       Action = ActionSearchfor
       AutoCheck = True
@@ -2152,8 +2155,8 @@ object MainForm: TMainForm
   end
   object ActionList: TActionList
     Images = Images
-    Left = 400
-    Top = 104
+    left = 400
+    top = 104
     object ActionAbout: THelpAction
       Category = 'Tools'
       Caption = 'CmdAbout'
@@ -2428,43 +2431,42 @@ object MainForm: TMainForm
     object ActionModules: TAction
       Category = 'Tools'
       Caption = 'ActionModules'
-      ImageIndex = 34
       OnExecute = cmdModules
     end
   end
   object OpenDialog: TOpenDialog
     Filter = 'Rich Text Files (*.rtf)|*.rtf'
-    Left = 240
-    Top = 104
+    left = 240
+    top = 104
   end
   object FontDialog: TFontDialog
     MinFontSize = 0
     MaxFontSize = 0
-    Left = 240
-    Top = 160
+    left = 240
+    top = 160
   end
   object SaveDialog: TSaveDialog
     Filter = 'Rich Text Files (*.rtf)|*.rtf'
     Options = [ofHideReadOnly, ofEnableSizing, ofViewDetail]
-    Left = 320
-    Top = 216
+    left = 320
+    top = 216
   end
   object FontDialogNotes: TFontDialog
     MinFontSize = 0
     MaxFontSize = 0
-    Left = 240
-    Top = 216
+    left = 240
+    top = 216
   end
   object PrintDialog: TPrintDialog
     Collate = True
     Options = [poDisablePrintToFile]
-    Left = 320
-    Top = 160
+    left = 320
+    top = 160
   end
   object IdleTimer: TIdleTimer
     Enabled = False
     OnTimer = IdleTimerTimer
-    Left = 472
-    Top = 104
+    left = 472
+    top = 104
   end
 end

@@ -19,7 +19,7 @@ type
     ActionReference: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
-    miPatron: TMenuItem;
+    miPatreon: TMenuItem;
     MenuItem2: TMenuItem;
     miRrefx: TMenuItem;
     miDictionaries: TMenuItem;
@@ -221,7 +221,7 @@ type
     procedure miBibleFolderClick(Sender: TObject);
     procedure miDownloadClick(Sender: TObject);
     procedure miHomeClick(Sender: TObject);
-    procedure miPatronClick(Sender: TObject);
+    procedure miPatreonClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
     procedure RadioButtonClick(Sender: TObject);
@@ -454,7 +454,7 @@ begin
   miRecent.Caption := T('Open Recent');
 
   miHome.Caption := T('Home Page');
-  miPatron.Caption := T('Become a Patron');
+  miPatreon.Caption := T('Become a Patron');
   miDownload.Caption := T('Modules Downloads');
   miBibleFolder.Caption := T('Bible Folder');
   miHelpAbout.Caption := T('About');
@@ -473,6 +473,7 @@ begin
   TabSheetDictionary.Caption := T('Dictionaries');
   TabSheetNotes.Caption := T('Notes');
 
+  ToolButtonPatreon.Hint := T('Become a Patron');
   ToolButtonNew.Hint := T('New');
   ToolButtonOpen.Hint := T('Open');
   ToolButtonSave.Hint := T('Save');
@@ -1170,9 +1171,9 @@ begin
   OpenURL(HomeURL);
 end;
 
-procedure TMainForm.miPatronClick(Sender: TObject);
+procedure TMainForm.miPatreonClick(Sender: TObject);
 begin
-  OpenURL(PatronURL);
+  OpenURL(PatreonURL);
   PatreonVisited := True;
 end;
 
@@ -1240,7 +1241,7 @@ end;
 
 procedure TMainForm.ToolButtonPatreonClick(Sender: TObject);
 begin
-  OpenURL(PatronURL);
+  OpenURL(PatreonURL);
   PatreonVisited := True;
 end;
 

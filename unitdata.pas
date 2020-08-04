@@ -107,7 +107,7 @@ var
     );
 
 const
-  PatronURL = 'https://www.patreon.com/vrybant';
+  PatreonURL = 'https://www.patreon.com/vrybant';
 
 function unbound2mybible(id: integer): integer;
 function mybible2unbound(id: integer): integer;
