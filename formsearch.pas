@@ -89,7 +89,7 @@ end;
 
 procedure TSearchForm.Localize;
 begin
-  Caption := {$ifdef windows} ' ' + {$endif} T('Search');
+  Caption := {$ifdef windows} ' ' + {$endif} T('Search Options');
 
   RadioGroupRange.Items[0] := T('Entire Bible'  );
   RadioGroupRange.Items[1] := T('Old Testament'     );

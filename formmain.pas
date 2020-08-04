@@ -473,7 +473,7 @@ begin
   ToolButtonOpen.Hint := T('Open');
   ToolButtonSave.Hint := T('Save');
   ToolButtonPrint.Hint := T('Print');
-  ToolButtonSearch.Hint := T('Search');
+  ToolButtonSearch.Hint := T('Search Options');
   ToolButtonCut.Hint := T('Cut');
   ToolButtonCopy.Hint := T('Copy');
   ToolButtonVerses.Hint := T('Copy Verses');
