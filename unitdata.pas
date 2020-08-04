@@ -114,6 +114,7 @@ function ConfigFile: string;
 function DataPath: string;
 function GetDatabaseList: TStringArray;
 function HomeURL: string;
+function PatronURL: string;
 function DownloadsURL: string;
 
 implementation
@@ -200,6 +201,11 @@ function HomeURL: string;
 begin
   Result := 'http://vladimirrybant.org';
   if (InterfaceLang = 'ru') or (InterfaceLang = 'uk') then Result += '/ru';
+end;
+
+function PatronURL: string;
+begin
+  Result := 'https://www.patreon.com/vrybant'
 end;
 
 function DownloadsURL: string;

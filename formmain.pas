@@ -19,6 +19,8 @@ type
     ActionReference: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
+    miPatron: TMenuItem;
+    MenuItem2: TMenuItem;
     miRrefx: TMenuItem;
     miDictionaries: TMenuItem;
     N7: TMenuItem;
@@ -219,6 +221,7 @@ type
     procedure miBibleFolderClick(Sender: TObject);
     procedure miDownloadClick(Sender: TObject);
     procedure miHomeClick(Sender: TObject);
+    procedure miPatronClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
     procedure RadioButtonClick(Sender: TObject);
@@ -451,6 +454,7 @@ begin
   miRecent.Caption := T('Open Recent');
 
   miHome.Caption := T('Home Page');
+  miPatron.Caption := T('Become a Patron');
   miDownload.Caption := T('Modules Downloads');
   miBibleFolder.Caption := T('Bible Folder');
   miHelpAbout.Caption := T('About');
@@ -1164,6 +1168,11 @@ end;
 procedure TMainForm.miHomeClick(Sender: TObject);
 begin
   OpenURL(HomeURL);
+end;
+
+procedure TMainForm.miPatronClick(Sender: TObject);
+begin
+  OpenURL(PatronURL);
 end;
 
 procedure TMainForm.miDownloadClick(Sender: TObject);
