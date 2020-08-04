@@ -155,7 +155,7 @@ type
     ToolButtonCompare: TToolButton;
     ToolButtonCopy: TToolButton;
     ToolButtonCut: TToolButton;
-    ToolButtonFB: TToolButton;
+    ToolButtonPatreon: TToolButton;
     ToolButtonFont: TToolButton;
     ToolButtonItalic: TToolButton;
     ToolButtonLeft: TToolButton;
@@ -225,14 +225,14 @@ type
     procedure PageControlChange(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
     procedure RadioButtonClick(Sender: TObject);
-    procedure ToolButtonFBClick(Sender: TObject);
+    procedure ToolButtonPatreonClick(Sender: TObject);
     procedure ToolButtonSearchClick(Sender: TObject);
   private
     DefaultCurrent: string;
     NoteFileName: string;
     RecentList: TStringList;
     Statuses: TStatuses;
-    FBPageVisited: boolean;
+    PatreonVisited: boolean;
     {$ifdef linux} IdleMessage : string; {$endif}
     function UnboundMemo: TUnboundMemo;
     function CheckFileSave: boolean;
@@ -331,7 +331,7 @@ begin
   NoteFileName := Untitled;
   MemoNotes.Lines.Clear;
   MemoNotes.Font.Size := DefaultFont.Size;
-  ToolButtonFB.Visible := not FBPageVisited;
+  ToolButtonPatreon.Visible := not PatreonVisited;
 
   {$ifdef linux}
   StandardToolBar.ParentColor := True;
@@ -1237,10 +1237,10 @@ begin
   LoadChapter;
 end;
 
-procedure TMainForm.ToolButtonFBClick(Sender: TObject);
+procedure TMainForm.ToolButtonPatreonClick(Sender: TObject);
 begin
-  OpenURL('http://facebook.com/unbound.bible');
-  FBPageVisited := True;
+  OpenURL(PatronURL);
+  PatreonVisited := True;
 end;
 
 procedure TMainForm.ToolButtonSearchClick(Sender: TObject);
@@ -1492,7 +1492,7 @@ begin
   IniFile.WriteInteger('Window', 'Splitter', PanelLeft.Width);
   IniFile.WriteString('Application', 'FileName', Bible.FileName);
   IniFile.WriteString('Application', 'Interface', InterfaceLang);
-  IniFile.WriteBool('Application', 'FBPage', FBPageVisited);
+  IniFile.WriteBool('Application', 'Patreon', PatreonVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
   IniFile.WriteBool('Options', 'Enumerated', Options.cvEnumerated);
   IniFile.WriteBool('Options', 'Guillemets', Options.cvGuillemets);
@@ -1529,7 +1529,7 @@ begin
 
   PanelLeft.Width := IniFile.ReadInteger('Window', 'Splitter', 270);
   InterfaceLang := IniFile.ReadString('Application', 'Interface', Localization.DefaultLangID);
-  FBPageVisited := IniFile.ReadBool('Application', 'FBPage', False);
+  PatreonVisited := IniFile.ReadBool('Application', 'Patreon', False);
   Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
   Options.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);
   Options.cvGuillemets := IniFile.ReadBool('Options', 'Guillemets', False);

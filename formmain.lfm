@@ -33,12 +33,12 @@ object MainForm: TMainForm
     ShowHint = True
     TabOrder = 3
     Wrapable = False
-    object ToolButtonFB: TToolButton
+    object ToolButtonPatreon: TToolButton
       Left = 4
       Top = 0
       Caption = 'CmdAbout'
-      ImageIndex = 36
-      OnClick = ToolButtonFBClick
+      ImageIndex = 42
+      OnClick = ToolButtonPatreonClick
       ParentShowHint = False
     end
     object ToolSeparatorEdit: TToolButton
@@ -201,6 +201,7 @@ object MainForm: TMainForm
       Left = 32
       Top = 0
       Action = ActionModules
+      Visible = False
     end
     object ToolButtonDictionary: TToolButton
       Left = 261
