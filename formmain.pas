@@ -19,6 +19,7 @@ type
     ActionReference: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
+    miIssue: TMenuItem;
     miPatreon: TMenuItem;
     MenuItem2: TMenuItem;
     miRrefx: TMenuItem;
@@ -221,6 +222,7 @@ type
     procedure miBibleFolderClick(Sender: TObject);
     procedure miDownloadClick(Sender: TObject);
     procedure miHomeClick(Sender: TObject);
+    procedure miIssueClick(Sender: TObject);
     procedure miPatreonClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
@@ -457,6 +459,7 @@ begin
   miPatreon.Caption := T('Become a Patron');
   miDownload.Caption := T('Modules Downloads');
   miBibleFolder.Caption := T('Bible Folder');
+  miIssue.Caption := T('Report an Issue');
   miHelpAbout.Caption := T('About');
 
   pmCut.Caption := T('Cut');
@@ -1180,6 +1183,11 @@ end;
 procedure TMainForm.miDownloadClick(Sender: TObject);
 begin
   OpenURL(DownloadsURL);
+end;
+
+procedure TMainForm.miIssueClick(Sender: TObject);
+begin
+  OpenURL(IssueURL);
 end;
 
 procedure TMainForm.CmdOptions(Sender: TObject);

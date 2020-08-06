@@ -97,6 +97,7 @@ Paste = Вставити
 Phrase = Фраза
 Print = Друк
 Range = Діапазон пошуку
+Report an Issue = Повiдомити про проблему
 Save = Зберегти
 Save As… = Зберегти як…
 Save changes? = Зберегти зміни?
@@ -121,7 +122,7 @@ verses found = Знайдено віршів
 
 // messages
 
-Commentaries not found. = Коментарів не знайдено
+Commentaries not found. = Коментарів не знайдено.
 Cross-references not found. = Паралельні місця не знайдені.
 For more information, choose Menu ➝ Help, then click «Module Downloads». = Для додаткової інформації виберіть у меню «Довідка» ➝ «Завантажити модуль».
 Please enter your query in the search bar. = Введіть запит в поле пошуку.

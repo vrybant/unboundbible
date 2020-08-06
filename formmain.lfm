@@ -4,7 +4,7 @@ object MainForm: TMainForm
   Top = 203
   Width = 937
   Caption = 'Unbound Bible'
-  ClientHeight = 378
+  ClientHeight = 381
   ClientWidth = 937
   Constraints.MinHeight = 400
   Constraints.MinWidth = 600
@@ -15,7 +15,7 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
-  LCLVersion = '2.0.4.0'
+  LCLVersion = '2.0.10.0'
   object StandardToolBar: TToolBar
     Left = 0
     Height = 30
@@ -234,11 +234,11 @@ object MainForm: TMainForm
   end
   object PanelLeft: TPanel
     Left = 0
-    Height = 329
+    Height = 326
     Top = 32
     Width = 195
     Align = alLeft
-    ClientHeight = 329
+    ClientHeight = 326
     ClientWidth = 195
     Font.CharSet = GREEK_CHARSET
     Font.Color = clWindowText
@@ -257,7 +257,6 @@ object MainForm: TMainForm
       ParentFont = False
       ScrollWidth = 132
       TabOrder = 0
-      TopIndex = -1
     end
     object ChapterBox: TListBox
       Left = 144
@@ -271,17 +270,16 @@ object MainForm: TMainForm
       ParentFont = False
       ScrollWidth = 43
       TabOrder = 1
-      TopIndex = -1
     end
     object ComboBox: TComboBox
       Left = 4
-      Height = 31
+      Height = 25
       Top = 2
       Width = 185
       DropDownCount = 12
       Font.Color = clWindowText
       Font.Height = -13
-      ItemHeight = 0
+      ItemHeight = 17
       OnChange = ComboBoxChange
       OnDrawItem = ComboBoxDrawItem
       ParentFont = False
@@ -291,8 +289,8 @@ object MainForm: TMainForm
   end
   object StatusBar: TStatusBar
     Left = 0
-    Height = 17
-    Top = 361
+    Height = 23
+    Top = 358
     Width = 937
     Panels = <>
     ParentShowHint = False
@@ -300,7 +298,7 @@ object MainForm: TMainForm
   end
   object PageControl: TPageControl
     Left = 200
-    Height = 329
+    Height = 326
     Top = 32
     Width = 737
     ActivePage = TabSheetBible
@@ -313,17 +311,17 @@ object MainForm: TMainForm
     OnChange = PageControlChange
     object TabSheetBible: TTabSheet
       Caption = 'Bible'
-      ClientHeight = 298
-      ClientWidth = 727
+      ClientHeight = 296
+      ClientWidth = 729
       Font.Color = clWindowText
       Font.Height = -12
       ParentFont = False
       object MemoBible: TUnboundMemo
         Cursor = crArrow
         Left = 0
-        Height = 298
+        Height = 296
         Top = 0
-        Width = 727
+        Width = 729
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
@@ -511,7 +509,7 @@ object MainForm: TMainForm
   end
   object Splitter: TSplitter
     Left = 195
-    Height = 329
+    Height = 326
     Top = 32
     Width = 5
   end
@@ -541,8 +539,8 @@ object MainForm: TMainForm
   end
   object MainMenu: TMainMenu
     Images = Images
-    left = 400
-    top = 216
+    Left = 400
+    Top = 216
     object miTools: TMenuItem
       Caption = '&Tools'
       object miSearch: TMenuItem
@@ -688,6 +686,10 @@ object MainForm: TMainForm
       object N6: TMenuItem
         Caption = '-'
       end
+      object miIssue: TMenuItem
+        Caption = 'Report an Issue'
+        OnClick = miIssueClick
+      end
       object miHelpAbout: TMenuItem
         Action = ActionAbout
         Caption = 'About'
@@ -696,8 +698,8 @@ object MainForm: TMainForm
     end
   end
   object Images: TImageList
-    left = 320
-    top = 104
+    Left = 320
+    Top = 104
     Bitmap = {
       4C692B0000001000000010000000FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
@@ -2081,8 +2083,8 @@ object MainForm: TMainForm
   object PopupMenu: TPopupMenu
     Images = Images
     OnPopup = PopupMenuPopup
-    left = 400
-    top = 160
+    Left = 400
+    Top = 160
     object pmSearchfor: TMenuItem
       Action = ActionSearchfor
       AutoCheck = True
@@ -2155,8 +2157,8 @@ object MainForm: TMainForm
   end
   object ActionList: TActionList
     Images = Images
-    left = 400
-    top = 104
+    Left = 400
+    Top = 104
     object ActionAbout: THelpAction
       Category = 'Tools'
       Caption = 'CmdAbout'
@@ -2436,37 +2438,37 @@ object MainForm: TMainForm
   end
   object OpenDialog: TOpenDialog
     Filter = 'Rich Text Files (*.rtf)|*.rtf'
-    left = 240
-    top = 104
+    Left = 240
+    Top = 104
   end
   object FontDialog: TFontDialog
     MinFontSize = 0
     MaxFontSize = 0
-    left = 240
-    top = 160
+    Left = 240
+    Top = 160
   end
   object SaveDialog: TSaveDialog
     Filter = 'Rich Text Files (*.rtf)|*.rtf'
     Options = [ofHideReadOnly, ofEnableSizing, ofViewDetail]
-    left = 320
-    top = 216
+    Left = 320
+    Top = 216
   end
   object FontDialogNotes: TFontDialog
     MinFontSize = 0
     MaxFontSize = 0
-    left = 240
-    top = 216
+    Left = 240
+    Top = 216
   end
   object PrintDialog: TPrintDialog
     Collate = True
     Options = [poDisablePrintToFile]
-    left = 320
-    top = 160
+    Left = 320
+    Top = 160
   end
   object IdleTimer: TIdleTimer
     Enabled = False
     OnTimer = IdleTimerTimer
-    left = 472
-    top = 104
+    Left = 472
+    Top = 104
   end
 end

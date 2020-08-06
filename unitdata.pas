@@ -118,6 +118,7 @@ function DataPath: string;
 function GetDatabaseList: TStringArray;
 function HomeURL: string;
 function DownloadsURL: string;
+function IssueURL: string;
 
 implementation
 
@@ -210,6 +211,13 @@ begin
   if (InterfaceLang = 'ru') or (InterfaceLang = 'uk')
     then Result := 'http://vladimirrybant.org/goto/ubdownloadru.php'
     else Result := 'http://vladimirrybant.org/goto/ubdownload.php';
+end;
+
+function IssueURL: string;
+begin
+  if (InterfaceLang = 'ru') or (InterfaceLang = 'uk')
+    then Result := 'http://vladimirrybant.org/goto/contactru.php'
+    else Result := 'http://vladimirrybant.org/goto/contact.php';
 end;
 
 function ConfigFile: string;
