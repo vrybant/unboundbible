@@ -75,31 +75,40 @@ begin
 end;
 
 procedure TSearchForm.FormCreate(Sender: TObject);
-{$ifdef linux} const d = 7; {$endif}
+{$ifdef linux}
+const
+  h = 7;
+  w = 28;
+{$endif}
 begin
-  {$ifdef linux}
-  GroupBoxOption .Top := GroupBoxOption .Top + d;
-  RadioGroupRange.Top := RadioGroupRange.Top + d;
-  CheckBoxCase   .Top := CheckBoxCase   .Top + d;
-  CheckBoxWhole  .Top := CheckBoxWhole  .Top + d;
-  OKButton       .Top := OKButton       .Top + d;
-  Height := Height + d;
-  {$endif}
+{$ifdef linux}
+  Width := Width + w;
+  RadioGroupRange.Width := RadioGroupRange.Width + w;
+  GroupBoxOption .Width := GroupBoxOption .Width + w;
+  OKButton.Left         := OKButton.Left + (w div 2);
+
+  GroupBoxOption .Top := GroupBoxOption .Top + h;
+  RadioGroupRange.Top := RadioGroupRange.Top + h;
+  CheckBoxCase   .Top := CheckBoxCase   .Top + h;
+  CheckBoxWhole  .Top := CheckBoxWhole  .Top + h;
+  OKButton       .Top := OKButton       .Top + h;
+  Height := Height + h;
+{$endif}
 end;
 
 procedure TSearchForm.Localize;
 begin
-  Caption := {$ifdef windows} ' ' + {$endif} T('Search Options');
+  Caption := ' ' {$ifdef windows} + T('Search Options') {$endif};
 
-  RadioGroupRange.Items[0] := T('Entire Bible'  );
-  RadioGroupRange.Items[1] := T('Old Testament'     );
-  RadioGroupRange.Items[2] := T('New Testament'     );
+  RadioGroupRange.Items[0] := T('Entire Bible' );
+  RadioGroupRange.Items[1] := T('Old Testament');
+  RadioGroupRange.Items[2] := T('New Testament');
   RadioGroupRange.Items[3] := T('Gospels' );
   RadioGroupRange.Items[4] := T('Epistles');
-  RadioGroupRange.Items[5] := T('Opened Book' );
+  RadioGroupRange.Items[5] := T('Opened Book');
 
-  CheckBoxWhole.Caption := T('Whole Words');
-  CheckBoxCase .Caption := T('Case Sensitive' );
+  CheckBoxWhole.Caption := T('Whole Words'   );
+  CheckBoxCase .Caption := T('Case Sensitive');
 
   OKButton     .Caption := T('Find');
 end;

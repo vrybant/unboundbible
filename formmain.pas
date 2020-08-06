@@ -336,19 +336,21 @@ begin
   ToolButtonPatreon.Visible := not PatreonVisited;
 
   {$ifdef linux}
-  StandardToolBar.ParentColor := True;
-  ActionFilePrint.Visible := False;
-  ActionEditUndo.Visible := False;
-  ActionBullets.Visible := False;
-  ToolSeparatorBullets.Visible := False;
-  IdleMessage := '';
-  IdleTimer.Enabled := true;
+    StandardToolBar.ParentColor := True;
+    ActionFilePrint.Visible := False;
+    ActionEditUndo.Visible := False;
+    ActionBullets.Visible := False;
+    ToolSeparatorBullets.Visible := False;
+    IdleMessage := '';
+    IdleTimer.Enabled := true;
   {$endif}
 
-  TabSheetSearch    .TabVisible := False;
-  TabSheetReference .TabVisible := False;
-  TabSheetCommentary.TabVisible := False;
-  TabSheetDictionary.TabVisible := False;
+  {$ifdef windows}
+    TabSheetSearch    .TabVisible := False;
+    TabSheetReference .TabVisible := False;
+    TabSheetCommentary.TabVisible := False;
+    TabSheetDictionary.TabVisible := False;
+  {$endif}
 
   UpdateActionImage;
 end;
@@ -362,7 +364,16 @@ end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
-  if ChapterBox.Items.Count = 0 then GoToVerse(ActiveVerse,(ActiveVerse.number > 1)); // first time
+  if ChapterBox.Items.Count = 0 then // first time
+    begin
+      {$ifdef linux}
+        TabSheetSearch    .TabVisible := False;
+        TabSheetReference .TabVisible := False;
+        TabSheetCommentary.TabVisible := False;
+        TabSheetDictionary.TabVisible := False;
+      {$endif}
+      GoToVerse(ActiveVerse,(ActiveVerse.number > 1));
+    end;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
