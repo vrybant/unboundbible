@@ -14,16 +14,18 @@ implementation
 
 function GetTextView(Handle: THandle): PGtkTextView;
 var
-  Widget, TextWidget: PGtkWidget;
-  List: PGList;
+  Widget : PGtkWidget;
+  TextWidget : PGtkTextView;
+  Container : PGtkContainer;
+  Children : PGList;
 begin
   Result := nil;
   Widget := {%H-}PGtkWidget(Handle);
-  List := gtk_container_get_children(PGtkContainer(Widget));
-  if not Assigned(List) then Exit;
-  TextWidget := PGtkWidget(List^.Data);
-  if not Assigned(TextWidget) then Exit;
-  Result := PGtkTextView(TextWidget);
+  Container := PGtkContainer(widget);
+  try Children := gtk_container_get_children(Container) except exit end;
+  Children := gtk_container_get_children(Container);
+  if Assigned(Children) then TextWidget := PGtkTextView(Children^.Data);
+  if Assigned(TextWidget) then Result := TextWidget;
 end;
 
 function GetTextBuffer(Handle: THandle): PGtkTextBuffer;
