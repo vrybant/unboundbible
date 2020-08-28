@@ -20,7 +20,7 @@ var
   Children : PGList;
 begin
   Result := nil;
-  Widget := {%H-}PGtkWidget(Handle);
+  Widget := PGtkWidget(PtrUInt(Handle));
   Container := PGtkContainer(widget);
   try Children := gtk_container_get_children(Container) except exit end;
   Children := gtk_container_get_children(Container);
