@@ -124,7 +124,7 @@ end;
 
 function StringToList(ch: Char; s: string): TStringArray;
 var
-  Point : array of integer {$ifdef windows} = [] {$endif} ;
+  Point : array of integer = [];
   index : integer = 0;
   n : integer = 0;
   i, len : integer;
