@@ -1427,7 +1427,7 @@ begin
   if Dictionaries.IsEmpty then
     begin
       text += T('You don''t have any dictionary modules.') + ' ' +
-              T('For more information, choose Menu ➝ Help, then click «Modules downloads».');
+              T('For more information, choose Menu ➝ Help, then click «Modules Downloads».');
     end;
 
   MemoDictionary.Font.Assign(DefaultFont);
