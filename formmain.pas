@@ -1400,7 +1400,7 @@ begin
   if Commentaries.Count = 0 then
     begin
       text += T('You don''t have any commentary modules.') + ' ' +
-              T('For more information, choose Menu ➝ Help, then click «Modules downloads».');
+              T('For more information, choose Menu ➝ Help, then click «Modules Downloads».');
     end;
 
   MemoCommentary.Font.Assign(DefaultFont);
