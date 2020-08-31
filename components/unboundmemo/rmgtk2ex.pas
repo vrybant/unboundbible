@@ -22,7 +22,13 @@ begin
   Result := nil;
   Widget := PGtkWidget(PtrUInt(Handle));
   Container := PGtkContainer(widget);
-  try Children := gtk_container_get_children(Container) except exit end;
+
+  try
+    Children := gtk_container_get_children(Container);
+  except
+    Exit; // this exception happened in Deepin Linux
+  end;
+
   Children := gtk_container_get_children(Container);
   if Assigned(Children) then TextWidget := PGtkTextView(Children^.Data);
   if Assigned(TextWidget) then Result := TextWidget;
