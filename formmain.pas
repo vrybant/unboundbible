@@ -1167,6 +1167,7 @@ end;
 procedure TMainForm.SelectPage(page: integer);
 begin
   if page = PageControl.ActivePageIndex then Exit;
+  {$ifdef linux} PageControl.ActivePageIndex := 0; {$endif}
   PageControl.ActivePageIndex := page;
   PageControl.ActivePage.TabVisible := true;
   EnableActions;
