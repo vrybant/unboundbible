@@ -214,12 +214,13 @@ begin
             try key   := Query.FieldByName('name' ).AsString; except end;
             try value := Query.FieldByName('value').AsString; except end;
 
-            if key = 'description'   then name        := value;
-            if key = 'detailed_info' then info        := value;
-            if key = 'language'      then language    := value;
-            if key = 'is_strong'     then strong      := ToBoolean(value);
-            if key = 'is_footnotes'  then footnotes   := ToBoolean(value);
-            if key = 'interlinear'   then interlinear := ToBoolean(value);
+            if key = 'description'    then name        := value;
+            if key = 'detailed_info'  then info        := value;
+            if key = 'language'       then language    := value;
+            if key = 'strong_numbers' then strong      := ToBoolean(value);
+            if key = 'is_strong'      then strong      := ToBoolean(value);
+            if key = 'is_footnotes'   then footnotes   := ToBoolean(value);
+            if key = 'interlinear'    then interlinear := ToBoolean(value);
 
             Query.Next;
           end;
