@@ -43,7 +43,6 @@ type
     embedded     : boolean;
     footnotes    : boolean;
     interlinear  : boolean;
-    embtitles    : boolean;
   public
     constructor Create(FilePath: string; new: boolean = false);
     procedure CommitTransaction;
@@ -83,7 +82,6 @@ begin
   embedded     := false;
   footnotes    := false;
   interlinear  := false;
-  embtitles    := false;
   format       := unbound;
 
   ext := ExtractFileExt(FilePath);

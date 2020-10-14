@@ -31,13 +31,6 @@ type
   end;
 
 type
-  TTitle = record
-    name, abbr : string;
-    number, sorting : integer;
-  end;
-
-  TTitles = array of TTitle;
-
   TVerse = record
     book, chapter, number, count : integer;
   end;
@@ -85,16 +78,27 @@ const
     count   : 1;
     );
 
-  noneTitle : TTitle = (
-    name    : '';
-    abbr    : '';
-    number  : 0;
-    sorting : 0;
-    );
-
 var
   ActiveVerse : TVerse;
   Options : TCopyOptions;
+
+  TitlesArray : array [1..66] of string = (
+    'Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth','1 Samuel','2 Samuel',
+    '1 Kings','2 Kings','1 Chronicles','2 Chronicles','Ezra','Nehemiah','Esther','Job','Psalms','Proverbs',
+    'Ecclesiastes','Song of Songs','Isaiah','Jeremiah','Lamentations','Ezekiel','Daniel','Hosea','Joel',
+    'Amos','Obadiah','Jonah','Micah','Nahum','Habakkuk','Zephaniah','Haggai','Zechariah','Malachi','Matthew',
+    'Mark','Luke','John','Acts','Romans','1 Corinthians','2 Corinthians','Galatians','Ephesians','Philippians',
+    'Colossians','1 Thessalonians','2 Thessalonians','1 Timothy','2 Timothy','Titus','Philemon','Hebrews',
+    'James','1 Peter','2 Peter','1 John','2 John','3 John','Jude','Revelation'
+    );
+
+  AbbrevArray : array [1..66] of string = (
+    'Gen.','Ex.','Lev.','Num.','Deut.','Josh.','Judg.','Ruth','1 Sam.','2 Sam.','1 Kin.','2 Kin.','1 Chr.',
+    '2 Chr.','Ezra','Neh.','Esth.','Job','Ps.','Prov.','Eccl.','Song','Is.','Jer.','Lam.','Ezek.','Dan.',
+    'Hos.','Joel','Amos','Obad.','Jon.','Mic.','Nah.','Hab.','Zeph.','Hag.','Zech.','Mal.','Matt.','Mark',
+    'Luke','John','Acts','Rom.','1 Cor.','2 Cor.','Gal.','Eph.','Phil.','Col.','1 Thess.','2 Thess.','1 Tim.',
+    '2 Tim.','Titus','Philem.','Heb.','James','1 Pet.','2 Pet.','1 John','2 John','3 John','Jude','Rev.'
+    );
 
   BibleHubArray : array [1..66] of string = (
     'genesis','exodus','leviticus','numbers','deuteronomy','joshua','judges','ruth','1_samuel','2_samuel',
@@ -170,7 +174,7 @@ end;
 
 function GetDatabaseList: TStringArray;
 const
-  ext : array [1..4] of string = ('.unbound','.bbli','.mybible','.SQLite3');
+  ext : array [1..4] of string = ('.bbl.unbound','.bbli','.mybible','.SQLite3');
 var
   List : TStringArray;
   s, item : string;

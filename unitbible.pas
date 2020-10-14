@@ -4,11 +4,11 @@ interface
 
 uses
   Classes, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
-  UnitModule, UnitTitles, UnitData, UnitPrepare, UmLib, UnitLib;
+  UnitModule, UnitData, UnitPrepare, UmLib, UnitLib;
 
 type
   TBibleAlias = record
-    bible, book, chapter, verse, text, titles, number, name, abbr : string;
+    bible, book, chapter, verse, text, books, number, name, abbr, ispr : string;
   end;
 
   TBible = class(TModule)
@@ -17,14 +17,13 @@ type
     z : TBibleAlias;
     function RankContents(const Contents: TContentArray): TContentArray;
     function ExtractFootnotes(s: string; marker: string): string;
-    procedure SetTitles;
+    procedure LoadCustomDatabase;
+    procedure LoadMyswordDatabase;
   public
     compare : boolean;
     constructor Create(FilePath: string; new: boolean = false);
     procedure CreateTables;
     procedure LoadDatabase;
-    function GetEmbeddedTitles: TTitles;
-    function GetExternalTitles: TTitles;
     function MinBook: integer;
     function BookByNum(n: integer): TBook;
     function BookByName(s: string): TBook;
@@ -57,10 +56,11 @@ const
     chapter : 'Chapter';
     verse   : 'Verse';
     text    : 'Scripture';
-    titles  : 'Titles';
+    books   : 'Books';
     number  : 'Number';
     name    : 'Name';
     abbr    : 'Abbreviation';
+    ispr    : '';
     );
 
   mybibleAlias : TBibleAlias = (
@@ -69,10 +69,11 @@ const
     chapter : 'chapter';
     verse   : 'verse';
     text    : 'text';
-    titles  : 'books_all';
+    books   : 'books';
     number  : 'book_number';
     name    : 'long_name';
     abbr    : 'short_name';
+    ispr    : 'is_present';
     );
 
 //========================================================================================
@@ -83,15 +84,7 @@ constructor TBible.Create(FilePath: string; new: boolean = false);
 begin
   inherited Create(filePath, new);
   Books := TBooks.Create;
-
-  z := unboundAlias;
-  if format = mybible then
-    begin
-      z := mybibleAlias;
-      if not TableExists(z.titles) then z.titles := 'books';
-    end;
-
-  embtitles := TableExists(z.titles);
+  if format = mybible then z := mybibleAlias else z := unboundAlias;
   if connected and not TableExists(z.bible) then connected := false;
 end;
 
@@ -112,24 +105,35 @@ begin
   Result := Item1.sorting - Item2.sorting;
 end;
 
-procedure TBible.LoadDatabase;
+procedure TBible.LoadCustomDatabase;
 var
   Book : TBook;
-  id : integer;
+  name, abbr : string;
+  number : integer;
+  ispr : boolean;
 begin
-  if loaded then Exit;
-
+  if (format = mybible) and not TableExists(z.books) then z.books := 'books_all';
   try
     try
-      Query.SQL.Text := 'SELECT DISTINCT ' + z.book + ' FROM ' + z.bible;
+      Query.SQL.Text := 'SELECT * FROM ' + z.books;
       Query.Open;
 
       while not Query.Eof do
         try
-          id := Query.FieldByName(z.book).AsInteger;
+          try number := Query.FieldByName(z.number).AsInteger; except end;
+          try name := Query.FieldByName(z.name).AsString; except end;
+          try abbr := Query.FieldByName(z.abbr).AsString; except end;
+          try ispr := Query.FieldByName(z.ispr).AsBoolean; except ispr := True end;
+
+          if number <= 0 then Continue;
+          if not ispr then Continue;
+
           Book := TBook.Create;
-          Book.number := DecodeID(id);
-          Book.id := id;
+          Book.number := DecodeID(number);
+          Book.id := number;
+          Book.sorting := number;
+          Book.title := name;
+          Book.abbr := abbr;
           Books.Add(Book);
         finally
           Query.Next;
@@ -141,44 +145,34 @@ begin
     end;
   finally
     Query.Close;
-    SetTitles;
-    firstVerse := minVerse;
-    firstVerse.book := MinBook;
-    Books.Sort(BookComparison);
   end;
-
-//Output(self.fileName + ' loaded');
-//ShowTags;
 end;
 
-function TBible.GetEmbeddedTitles: TTitles;
+procedure TBible.LoadMyswordDatabase;
 var
-  T : TTitle;
-  i : integer;
+  Book : TBook;
+  number : integer;
 begin
-  SetLength(Result,0);
-
   try
     try
-      Query.SQL.Text := 'SELECT * FROM ' + z.titles;
+      Query.SQL.Text := 'SELECT DISTINCT ' + z.book + ' FROM ' + z.bible;
       Query.Open;
-      Query.Last;
-      SetLength(Result, Query.RecordCount);
-      Query.First;
 
-      for i:=Low(Result) to High(Result) do
-        begin
-          T := noneTitle;
-          try T.name := Query.FieldByName(z.name).AsString; except end;
-          try T.number := Query.FieldByName(z.number).AsInteger; except end;
-          try T.abbr := Query.FieldByName(z.abbr).AsString; except end;
-
-          T.sorting := i;
-          if (format = unbound) and not IsNewTestament(T.number) then T.sorting := i+100;
-
-          Result[i] := T;
+      while not Query.Eof do
+        try
+          number := Query.FieldByName(z.book).AsInteger;
+          Book := TBook.Create;
+          if (number <= 0) and (number > 66) then Continue;
+          Book.number := number;
+          Book.id := number;
+          Book.title := TitlesArray[number];
+          Book.abbr := AbbrevArray[number];
+          Books.Add(Book);
+        finally
           Query.Next;
         end;
+
+      loaded := true;
     except
       //
     end;
@@ -187,41 +181,15 @@ begin
   end;
 end;
 
-function TBible.GetExternalTitles: TTitles;
-var
-  ExternalTitles : TExternalTitles;
+procedure TBible.LoadDatabase;
 begin
-  ExternalTitles := TExternalTitles.Create(language);
-  Result := ExternalTitles.GetData;
-  ExternalTitles.Free;
-end;
-
-procedure TBible.SetTitles;
-var
-  Titles : TTitles;
-  Title  : TTitle;
-  i, n : integer;
-begin
-  if embtitles then Titles := GetEmbeddedTitles
-               else Titles := GetExternalTitles;
-
-  for i:=0 to Books.Count-1 do
-    begin
-      Books[i].title := 'Unknown ' + ToStr(Books[i].id);
-      Books[i].abbr := '';
-      Books[i].sorting := 999;
-
-      n := Books[i].id;
-      if (format = mybible) and not embtitles then n := DecodeID(n);
-
-      for Title in Titles do
-        if Title.number = n then
-          begin
-            Books[i].title := Title.name;
-            Books[i].abbr := Title.abbr;
-            Books[i].sorting := Title.sorting;
-          end;
-    end;
+  if loaded then Exit;
+  if format = mysword then LoadMyswordDatabase else LoadCustomDatabase;
+  if not loaded then Exit;
+  firstVerse := minVerse;
+  firstVerse.book := MinBook;
+//Output(self.fileName + ' loaded');
+//ShowTags;
 end;
 
 function TBible.MinBook: integer;
