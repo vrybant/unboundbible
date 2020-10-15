@@ -1530,9 +1530,9 @@ end;
 
 function GetDefaultBible: string;
 begin
-  Result := 'kjv.unbound';
-  if GetLanguageID = 'ru' then Result := 'rstw.unbound';
-  if GetLanguageID = 'uk' then Result := 'ubio.unbound';
+  Result := 'kjv.bbl.unbound';
+  if GetLanguageID = 'ru' then Result := 'rstw.bbl.unbound';
+  if GetLanguageID = 'uk' then Result := 'ubio.bbl.unbound';
 end;
 
 procedure TMainForm.ReadConfig;
