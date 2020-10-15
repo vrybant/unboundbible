@@ -107,7 +107,7 @@ procedure TBible.LoadUnboundDatabase;
 var
   Book : TBook;
   name, abbr : string;
-  number : integer;
+  id : integer;
 begin
   try
     try
@@ -116,24 +116,22 @@ begin
 
       while not Query.Eof do
         try
-          try number := Query.FieldByName(z.number).AsInteger; except end;
+          try id := Query.FieldByName(z.number).AsInteger; except end;
           try name := Query.FieldByName(z.name).AsString; except end;
           try abbr := Query.FieldByName(z.abbr).AsString; except end;
-
-          if number <= 0 then Continue;
+          if id <= 0 then Continue;
 
           Book := TBook.Create;
-          Book.number := DecodeID(number);
-          Book.id := number;
-          Book.sorting := number;
+          Book.number := DecodeID(id);
+          Book.id := id;
+          Book.sorting := id;
           Book.title := name;
           Book.abbr := abbr;
           Books.Add(Book);
+          loaded := true;
         finally
           Query.Next;
         end;
-
-      loaded := true;
     except
       //
     end;
@@ -155,18 +153,18 @@ begin
       while not Query.Eof do
         try
           number := Query.FieldByName(z.book).AsInteger;
-          Book := TBook.Create;
           if (number <= 0) and (number > 66) then Continue;
+
+          Book := TBook.Create;
           Book.number := number;
           Book.id := number;
           Book.title := TitlesArray[number];
           Book.abbr := AbbrevArray[number];
           Books.Add(Book);
+          loaded := true;
         finally
           Query.Next;
         end;
-
-      loaded := true;
     except
       //
     end;
