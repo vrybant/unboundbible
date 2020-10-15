@@ -8,7 +8,7 @@ uses
 
 type
   TBibleAlias = record
-    bible, book, chapter, verse, text, books, number, name, abbr, ispr : string;
+    bible, book, chapter, verse, text, books, number, name, abbr : string;
   end;
 
   TBible = class(TModule)
@@ -60,7 +60,6 @@ const
     number  : 'Number';
     name    : 'Name';
     abbr    : 'Abbreviation';
-    ispr    : '';
     );
 
   mybibleAlias : TBibleAlias = (
@@ -73,7 +72,6 @@ const
     number  : 'book_number';
     name    : 'long_name';
     abbr    : 'short_name';
-    ispr    : 'is_present';
     );
 
 //========================================================================================
@@ -110,9 +108,7 @@ var
   Book : TBook;
   name, abbr : string;
   number : integer;
-  ispr : boolean;
 begin
-  if (format = mybible) and not TableExists(z.books) then z.books := 'books_all';
   try
     try
       Query.SQL.Text := 'SELECT * FROM ' + z.books;
@@ -123,10 +119,8 @@ begin
           try number := Query.FieldByName(z.number).AsInteger; except end;
           try name := Query.FieldByName(z.name).AsString; except end;
           try abbr := Query.FieldByName(z.abbr).AsString; except end;
-          try ispr := Query.FieldByName(z.ispr).AsBoolean; except ispr := True end;
 
           if number <= 0 then Continue;
-          if not ispr then Continue;
 
           Book := TBook.Create;
           Book.number := DecodeID(number);
