@@ -9,7 +9,6 @@ const
   ApplicationName = 'Unbound Bible';
   ApplicationVersion = '5.1';
   BibleDirectory = 'bibles';
-  TitleDirectory = 'titles';
   LangDirectory = 'localization';
   Untitled = 'Untitled';
   RecentMax = 10;
@@ -174,7 +173,7 @@ end;
 
 function GetDatabaseList: TStringArray;
 const
-  ext : array [1..4] of string = ('.bbl.unbound','.bbli','.mybible','.SQLite3');
+  ext : array [1..4] of string = ('.unbound','.bbli','.mybible','.SQLite3');
 var
   List : TStringArray;
   s, item : string;
