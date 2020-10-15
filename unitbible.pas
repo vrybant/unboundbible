@@ -17,7 +17,7 @@ type
     z : TBibleAlias;
     function RankContents(const Contents: TContentArray): TContentArray;
     function ExtractFootnotes(s: string; marker: string): string;
-    procedure LoadCustomDatabase;
+    procedure LoadUnboundDatabase;
     procedure LoadMyswordDatabase;
   public
     compare : boolean;
@@ -103,7 +103,7 @@ begin
   Result := Item1.sorting - Item2.sorting;
 end;
 
-procedure TBible.LoadCustomDatabase;
+procedure TBible.LoadUnboundDatabase;
 var
   Book : TBook;
   name, abbr : string;
@@ -178,7 +178,7 @@ end;
 procedure TBible.LoadDatabase;
 begin
   if loaded then Exit;
-  if format = mysword then LoadMyswordDatabase else LoadCustomDatabase;
+  if format = mysword then LoadMyswordDatabase else LoadUnboundDatabase;
   if not loaded then Exit;
   firstVerse := minVerse;
   firstVerse.book := MinBook;
