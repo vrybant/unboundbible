@@ -55,6 +55,7 @@ begin
   for f in List do
     begin
       if Pos('.bbl.',f) + Pos('.SQLite3',f) = 0 then Continue;
+      if Pos('.dictionary.',f) + Pos('.commentaries.',f) + Pos('.crossreferences.',f) > 0 then Continue;
       Item := TBible.Create(f);
       if Item.connected then Add(Item) else Item.Free;
     end;
