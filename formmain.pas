@@ -313,7 +313,7 @@ begin
     Shelf.SetCurrent(DefaultCurrent);
     ComboBoxInit;
     MakeBookList;
-    if not CurrBible.GoodLink(ActiveVerse) then ActiveVerse := CurrBible.FirstVerse;
+    if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
     UpdateStatus(CurrBible.fileName + ' | ' + CurrBible.Info);
 
     // LoadChapter; // RichMemo doesn't load from Stream,
@@ -372,7 +372,7 @@ begin
         TabSheetCommentary.TabVisible := False;
         TabSheetDictionary.TabVisible := False;
       {$endif}
-      GoToVerse(ActiveVerse,(ActiveVerse.number > 1));
+      GoToVerse(CurrVerse,(CurrVerse.number > 1));
     end;
 end;
 
@@ -619,12 +619,12 @@ var
 begin
   Shelf.SetCurrent(ComboBox.ItemIndex);
   MakeBookList;
-  select := ActiveVerse.number > 1;
+  select := CurrVerse.number > 1;
   {$ifdef linux}
-    if select then IdleMessage := 'GotoVerse(ActiveVerse,true)'
-              else IdleMessage := 'GotoVerse(ActiveVerse,false)';
+    if select then IdleMessage := 'GotoVerse(CurrVerse,true)'
+              else IdleMessage := 'GotoVerse(CurrVerse,false)';
   {$else}
-    GotoVerse(ActiveVerse, select);
+    GotoVerse(CurrVerse, select);
   {$endif}
   SelectPage(apBible);
   UpdateStatus(CurrBible.fileName + ' | ' + CurrBible.Info);
@@ -654,9 +654,9 @@ end;
 procedure TMainForm.CmdInterline(Sender: TObject);
 var s : string;
 begin
-  if not (ActiveVerse.book in [1..66]) then Exit;
-  s := BibleHubArray[ActiveVerse.book];
-  s := s + '/' +  ToStr(ActiveVerse.chapter) + '-' + ToStr(ActiveVerse.number) + '.htm';
+  if not (CurrVerse.book in [1..66]) then Exit;
+  s := BibleHubArray[CurrVerse.book];
+  s := s + '/' +  ToStr(CurrVerse.chapter) + '-' + ToStr(CurrVerse.number) + '.htm';
   OpenURL('http://biblehub.com/interlinear/' + s);
 end;
 
@@ -670,8 +670,8 @@ begin
   if Sender = ActionEditSelAll then
     begin
       UnboundMemo.SelectAll;
-      ActiveVerse.Number := MemoBible.ParagraphStart;
-      ActiveVerse.Count  := MemoBible.ParagraphCount;
+      CurrVerse.Number := MemoBible.ParagraphStart;
+      CurrVerse.Count  := MemoBible.ParagraphCount;
    end;
 
   if Sender = ActionEditCut then
@@ -833,8 +833,8 @@ begin
   Book := CurrBible.BookByName(s);
   if not Assigned(Book) then Exit;
 
-  ActiveVerse := minVerse;
-  ActiveVerse.Book := Book.Number;
+  CurrVerse := minVerse;
+  CurrVerse.Book := Book.Number;
 
   ChapterBox.ItemIndex := 0;
   LoadChapter;
@@ -842,9 +842,9 @@ end;
 
 procedure TMainForm.ChapterBoxClick(Sender: TObject);
 begin
-  ActiveVerse.Chapter := ChapterBox.ItemIndex + 1;
-  ActiveVerse.Number := 1;
-  ActiveVerse.Count := 1;
+  CurrVerse.Chapter := ChapterBox.ItemIndex + 1;
+  CurrVerse.Number := 1;
+  CurrVerse.Count := 1;
   LoadChapter;
 end;
 
@@ -861,8 +861,8 @@ begin
 
   if Memo = MemoBible then
     begin
-      ActiveVerse.Number := MemoBible.ParagraphStart;
-      ActiveVerse.Count  := MemoBible.ParagraphCount;
+      CurrVerse.Number := MemoBible.ParagraphStart;
+      CurrVerse.Count  := MemoBible.ParagraphCount;
     end;
 
   if Memo.hyperlink = '' then Exit;
@@ -957,7 +957,7 @@ begin
   Book := CurrBible.BookByNum(Verse.Book);
   if not Assigned(Book) then Exit;
 
-  ActiveVerse := Verse;
+  CurrVerse := Verse;
   LoadChapter;
 
   SelectBook(Book.title, IsNewTestament(Verse.book));
@@ -1218,11 +1218,11 @@ end;
 procedure TMainForm.IdleTimerTimer(Sender: TObject);
 begin
   {$ifdef linux}
-  if IdleMessage = 'GotoVerse(ActiveVerse,true)' then
-                    GotoVerse(ActiveVerse,true);
+  if IdleMessage = 'GotoVerse(CurrVerse,true)' then
+                    GotoVerse(CurrVerse,true);
 
-  if IdleMessage = 'GotoVerse(ActiveVerse,false)' then
-                    GotoVerse(ActiveVerse,false);
+  if IdleMessage = 'GotoVerse(CurrVerse,false)' then
+                    GotoVerse(CurrVerse,false);
 
   if IdleMessage <> '' then IdleMessage := '';
   {$endif}
@@ -1303,7 +1303,7 @@ procedure TMainForm.MakeChapterList;
 var
   n, i: integer;
 begin
-  n := CurrBible.ChaptersCount(ActiveVerse);
+  n := CurrBible.ChaptersCount(CurrVerse);
   if ChapterBox.Items.Count = n then Exit;
   ChapterBox.Font.Assign(DefaultFont);
 
@@ -1364,7 +1364,7 @@ procedure TMainForm.LoadCompare;
 var text : string;
 begin
   if Shelf.Count = 0 then Exit;
-  text := CurrBible.VerseToStr(ActiveVerse, true) + '<br> ';
+  text := CurrBible.VerseToStr(CurrVerse, true) + '<br> ';
   text += Get_Compare;
   MemoCompare.Font.Assign(DefaultFont);
   MemoCompare.LoadText(text);
@@ -1377,7 +1377,7 @@ var
   info : string = '';
 begin
   if Shelf.Count = 0 then Exit;
-  text := CurrBible.VerseToStr(ActiveVerse, true) + '<br><br>';
+  text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
   data := Get_Reference(info);
   if data = '' then text += T('Сross-references not found.') else text += data;
   MemoReference.Font.Assign(DefaultFont);
@@ -1391,7 +1391,7 @@ var
   text, data : string;
 begin
   if Shelf.Count = 0 then Exit;
-  text := CurrBible.VerseToStr(ActiveVerse, true) + '<br><br>';
+  text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
   data := Get_Commentary;
 
   if data = '' then text += T('Commentaries not found.') + '<br><br>'

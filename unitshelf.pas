@@ -65,7 +65,7 @@ procedure TShelf.SetCurrent(index: integer);
 begin
   Current := index;
   Self[Current].LoadDatabase;
-  if not Self[Current].GoodLink(ActiveVerse) then ActiveVerse := Self[Current].FirstVerse;
+  if not Self[Current].GoodLink(CurrVerse) then CurrVerse := Self[Current].FirstVerse;
 end;
 
 procedure TShelf.SetCurrent(FileName: string);

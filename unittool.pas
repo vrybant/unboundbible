@@ -28,7 +28,7 @@ var
 begin
   Result := '';
   if CurrBible.RightToLeft then Result += '<rtl>';
-  Strings := CurrBible.GetChapter(ActiveVerse);
+  Strings := CurrBible.GetChapter(CurrVerse);
 
   for i:=Low(Strings) to High(Strings) do
     begin
@@ -100,7 +100,7 @@ begin
   for i:=0 to Shelf.Count-1 do
     begin
       if not Shelf[i].Compare then Continue;
-      str := Join(Shelf[i].GetRange(ActiveVerse));
+      str := Join(Shelf[i].GetRange(CurrVerse));
       if str = '' then Continue;
       Result += '<br><l>' + Shelf[i].Name + '</l><br>' + str + '<br>';
     end;
@@ -113,7 +113,7 @@ var
   link : string;
 begin
   Result := '';
-  Verses := References.GetData(ActiveVerse, CurrBible.language, info);
+  Verses := References.GetData(CurrVerse, CurrBible.language, info);
 
   for item in Verses do
     begin
@@ -134,7 +134,7 @@ begin
   for i:=0 to Commentaries.Count-1 do
     begin
       if Commentaries[i].footnotes then Continue;
-      Strings := Commentaries[i].GetData(ActiveVerse);
+      Strings := Commentaries[i].GetData(CurrVerse);
       if Length(Strings) = 0 then Continue;
       Result += '<h>' + Commentaries[i].Name + '</h><br><br>';
       for item in Strings  do Result += '<tab>' + item + '<br>';
@@ -166,14 +166,14 @@ function Get_Strong(number: string = ''): string;
 begin
   Result := '';
   if Dictionaries.Count = 0 then Exit;
-  Result := Dictionaries.GetStrong(ActiveVerse, CurrBible.language, number);
+  Result := Dictionaries.GetStrong(CurrVerse, CurrBible.language, number);
 end;
 
 function Get_Footnote(marker: string = ''): string;
 begin
   if CurrBible.format = mybible
-    then Result := Commentaries.GetFootnote(CurrBible.fileName, ActiveVerse, marker)
-    else Result := CurrBible.GetFootnote(ActiveVerse, marker);
+    then Result := Commentaries.GetFootnote(CurrBible.fileName, CurrVerse, marker)
+    else Result := CurrBible.GetFootnote(CurrVerse, marker);
 end;
 
 function Get_Verses: string;
@@ -188,15 +188,15 @@ begin
   if CurrBible.RightToLeft then Result := '<rtl>' else Result := '';
   if Shelf.Count = 0 then Exit;
 
-  Book := CurrBible.BookByNum(ActiveVerse.Book);
+  Book := CurrBible.BookByNum(CurrVerse.Book);
   if not Assigned(Book) then Exit;
 
-  List := CurrBible.GetRange(ActiveVerse);
-  number := ActiveVerse.number;
+  List := CurrBible.GetRange(CurrVerse);
+  number := CurrVerse.number;
 
   for line in List do
     begin
-      if Options.cvEnumerated and (ActiveVerse.Count > 1) then
+      if Options.cvEnumerated and (CurrVerse.Count > 1) then
         if l or (not l and Options.cvEnd) then
           begin
             n := ToStr(number);
@@ -212,7 +212,7 @@ begin
   quote := Trim(quote);
   if Options.cvGuillemets then quote := '«' + quote + '»';
 
-  link := CurrBible.VerseToStr(ActiveVerse, not Options.cvAbbreviate);
+  link := CurrBible.VerseToStr(CurrVerse, not Options.cvAbbreviate);
   link := '<l>' + link + '</l>';
   if Options.cvParentheses then link := '(' + link + ')';
   if Options.cvEnd then quote := quote + ' '+ link else quote := link + ' ' + quote;

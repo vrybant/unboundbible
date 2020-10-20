@@ -68,8 +68,8 @@ begin
     rbEpistles     : Result := rgEpistles;
     rbOpenedBook   :
       begin
-        Result.from := ActiveVerse.book;
-        Result.till := ActiveVerse.book;
+        Result.from := CurrVerse.book;
+        Result.till := CurrVerse.book;
       end;
   end;
 end;

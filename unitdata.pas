@@ -78,7 +78,7 @@ const
     );
 
 var
-  ActiveVerse : TVerse;
+  CurrVerse : TVerse;
   Options : TCopyOptions;
 
   TitlesArray : array [1..66] of string = (
@@ -238,10 +238,10 @@ begin
   IniFile.WriteString('Application', 'Version', ApplicationVersion);
   IniFile.WriteString('Application', 'FontName', DefaultFont.Name);
   IniFile.WriteInteger('Application', 'FontSize', DefaultFont.Size);
-  IniFile.WriteInteger('Verse', 'Book', ActiveVerse.book);
-  IniFile.WriteInteger('Verse', 'Chapter', ActiveVerse.chapter);
-  IniFile.WriteInteger('Verse', 'Number', ActiveVerse.number);
-  IniFile.WriteInteger('Verse', 'Count', ActiveVerse.count);
+  IniFile.WriteInteger('Verse', 'Book', CurrVerse.book);
+  IniFile.WriteInteger('Verse', 'Chapter', CurrVerse.chapter);
+  IniFile.WriteInteger('Verse', 'Number', CurrVerse.number);
+  IniFile.WriteInteger('Verse', 'Count', CurrVerse.count);
 
   IniFile.Free;
 end;
@@ -260,10 +260,10 @@ begin
   ApplicationUpdate := ApplicationVersion <> Version;
   DefaultFont.Name := IniFile.ReadString('Application', 'FontName', DefaultFontName);
   DefaultFont.Size := IniFile.ReadInteger('Application', 'FontSize', DefaultFontSize);
-  ActiveVerse.book := IniFile.ReadInteger('Verse', 'Book', 0);
-  ActiveVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);
-  ActiveVerse.number := IniFile.ReadInteger('Verse', 'Number', 0);
-  ActiveVerse.count := IniFile.ReadInteger('Verse', 'Count', 0);
+  CurrVerse.book := IniFile.ReadInteger('Verse', 'Book', 0);
+  CurrVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);
+  CurrVerse.number := IniFile.ReadInteger('Verse', 'Number', 0);
+  CurrVerse.count := IniFile.ReadInteger('Verse', 'Count', 0);
 
   IniFile.Free;
 end;
