@@ -313,8 +313,8 @@ begin
     Shelf.SetCurrent(DefaultCurrent);
     ComboBoxInit;
     MakeBookList;
-    if not Bible.GoodLink(ActiveVerse) then ActiveVerse := Bible.FirstVerse;
-    UpdateStatus(Bible.fileName + ' | ' + Bible.Info);
+    if not CurrBible.GoodLink(ActiveVerse) then ActiveVerse := CurrBible.FirstVerse;
+    UpdateStatus(CurrBible.fileName + ' | ' + CurrBible.Info);
 
     // LoadChapter; // RichMemo doesn't load from Stream,
                     // so we call it from FormActivate
@@ -627,7 +627,7 @@ begin
     GotoVerse(ActiveVerse, select);
   {$endif}
   SelectPage(apBible);
-  UpdateStatus(Bible.fileName + ' | ' + Bible.Info);
+  UpdateStatus(CurrBible.fileName + ' | ' + CurrBible.Info);
 end;
 
 procedure TMainForm.ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
@@ -830,7 +830,7 @@ begin
   if BookBox.Count = 0 then Exit;
   s := BookBox.Items[BookBox.ItemIndex];
 
-  Book := Bible.BookByName(s);
+  Book := CurrBible.BookByName(s);
   if not Assigned(Book) then Exit;
 
   ActiveVerse := minVerse;
@@ -869,7 +869,7 @@ begin
 
   if Memo.Foreground = fgLink then
     begin
-      Verse := Bible.SrtToVerse(Memo.hyperlink);
+      Verse := CurrBible.SrtToVerse(Memo.hyperlink);
       if Verse.Book > 0 then GoToVerse(Verse, True);
     end;
 
@@ -952,9 +952,9 @@ var
   Book : TBook;
 begin
   if Shelf.Count = 0 then Exit;
-  if not Bible.GoodLink(Verse) then Exit;
+  if not CurrBible.GoodLink(Verse) then Exit;
 
-  Book := Bible.BookByNum(Verse.Book);
+  Book := CurrBible.BookByNum(Verse.Book);
   if not Assigned(Book) then Exit;
 
   ActiveVerse := Verse;
@@ -1287,9 +1287,9 @@ begin
   BookBox.Font.Assign(DefaultFont);
 
   List := TStringList.Create;
-  Bible.GetTitles(List);
+  CurrBible.GetTitles(List);
   BookBox.BiDiMode := bdLeftToRight;
-  if Bible.RightToLeft then BookBox.BiDiMode := bdRightToLeft;
+  if CurrBible.RightToLeft then BookBox.BiDiMode := bdRightToLeft;
   BookBox.Items.Assign(List);
   List.Free;
 
@@ -1303,7 +1303,7 @@ procedure TMainForm.MakeChapterList;
 var
   n, i: integer;
 begin
-  n := Bible.ChaptersCount(ActiveVerse);
+  n := CurrBible.ChaptersCount(ActiveVerse);
   if ChapterBox.Items.Count = n then Exit;
   ChapterBox.Font.Assign(DefaultFont);
 
@@ -1364,7 +1364,7 @@ procedure TMainForm.LoadCompare;
 var text : string;
 begin
   if Shelf.Count = 0 then Exit;
-  text := Bible.VerseToStr(ActiveVerse, true) + '<br> ';
+  text := CurrBible.VerseToStr(ActiveVerse, true) + '<br> ';
   text += Get_Compare;
   MemoCompare.Font.Assign(DefaultFont);
   MemoCompare.LoadText(text);
@@ -1377,7 +1377,7 @@ var
   info : string = '';
 begin
   if Shelf.Count = 0 then Exit;
-  text := Bible.VerseToStr(ActiveVerse, true) + '<br><br>';
+  text := CurrBible.VerseToStr(ActiveVerse, true) + '<br><br>';
   data := Get_Reference(info);
   if data = '' then text += T('Сross-references not found.') else text += data;
   MemoReference.Font.Assign(DefaultFont);
@@ -1391,7 +1391,7 @@ var
   text, data : string;
 begin
   if Shelf.Count = 0 then Exit;
-  text := Bible.VerseToStr(ActiveVerse, true) + '<br><br>';
+  text := CurrBible.VerseToStr(ActiveVerse, true) + '<br><br>';
   data := Get_Commentary;
 
   if data = '' then text += T('Commentaries not found.') + '<br><br>'
@@ -1512,7 +1512,7 @@ begin
                                else IniFile.WriteString('Window', 'State', 'Normal');
 
   IniFile.WriteInteger('Window', 'Splitter', PanelLeft.Width);
-  IniFile.WriteString('Application', 'FileName', Bible.FileName);
+  IniFile.WriteString('Application', 'FileName', CurrBible.FileName);
   IniFile.WriteString('Application', 'Interface', InterfaceLang);
   IniFile.WriteBool('Application', 'Patreon', PatreonVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);

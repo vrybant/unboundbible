@@ -27,8 +27,8 @@ var
   i : integer;
 begin
   Result := '';
-  if Bible.RightToLeft then Result += '<rtl>';
-  Strings := Bible.GetChapter(ActiveVerse);
+  if CurrBible.RightToLeft then Result += '<rtl>';
+  Strings := CurrBible.GetChapter(ActiveVerse);
 
   for i:=Low(Strings) to High(Strings) do
     begin
@@ -77,12 +77,12 @@ var
   link, text : string;
 begin
   Result := '';
-  ContentArray := Bible.Search(st, CurrentSearchOptions, CurrentSearchRange);
+  ContentArray := CurrBible.Search(st, CurrentSearchOptions, CurrentSearchRange);
   count := Length(ContentArray);
 
   for content in ContentArray do
     begin
-      link := Bible.VerseToStr(content.verse,true);
+      link := CurrBible.VerseToStr(content.verse,true);
       text := content.text;
       Highlights(text,st,CurrentSearchOptions);
       text := '<l>' + link + '</l>' + ' ' + text + '<br><br>';
@@ -113,13 +113,13 @@ var
   link : string;
 begin
   Result := '';
-  Verses := References.GetData(ActiveVerse, Bible.language, info);
+  Verses := References.GetData(ActiveVerse, CurrBible.language, info);
 
   for item in Verses do
     begin
-      link := Bible.VerseToStr(item, not Options.cvAbbreviate);
+      link := CurrBible.VerseToStr(item, not Options.cvAbbreviate);
       if link = '' then Continue;
-      Result += '<l>' + link + '</l> ' + Join(Bible.GetRange(item)) + '<br><br>';
+      Result += '<l>' + link + '</l> ' + Join(CurrBible.GetRange(item)) + '<br><br>';
     end;
 end;
 
@@ -166,14 +166,14 @@ function Get_Strong(number: string = ''): string;
 begin
   Result := '';
   if Dictionaries.Count = 0 then Exit;
-  Result := Dictionaries.GetStrong(ActiveVerse, Bible.language, number);
+  Result := Dictionaries.GetStrong(ActiveVerse, CurrBible.language, number);
 end;
 
 function Get_Footnote(marker: string = ''): string;
 begin
-  if Bible.format = mybible
-    then Result := Commentaries.GetFootnote(Bible.fileName, ActiveVerse, marker)
-    else Result := Bible.GetFootnote(ActiveVerse, marker);
+  if CurrBible.format = mybible
+    then Result := Commentaries.GetFootnote(CurrBible.fileName, ActiveVerse, marker)
+    else Result := CurrBible.GetFootnote(ActiveVerse, marker);
 end;
 
 function Get_Verses: string;
@@ -185,13 +185,13 @@ var
   number : integer;
   l : boolean = False;
 begin
-  if Bible.RightToLeft then Result := '<rtl>' else Result := '';
+  if CurrBible.RightToLeft then Result := '<rtl>' else Result := '';
   if Shelf.Count = 0 then Exit;
 
-  Book := Bible.BookByNum(ActiveVerse.Book);
+  Book := CurrBible.BookByNum(ActiveVerse.Book);
   if not Assigned(Book) then Exit;
 
-  List := Bible.GetRange(ActiveVerse);
+  List := CurrBible.GetRange(ActiveVerse);
   number := ActiveVerse.number;
 
   for line in List do
@@ -212,7 +212,7 @@ begin
   quote := Trim(quote);
   if Options.cvGuillemets then quote := '«' + quote + '»';
 
-  link := Bible.VerseToStr(ActiveVerse, not Options.cvAbbreviate);
+  link := CurrBible.VerseToStr(ActiveVerse, not Options.cvAbbreviate);
   link := '<l>' + link + '</l>';
   if Options.cvParentheses then link := '(' + link + ')';
   if Options.cvEnd then quote := quote + ' '+ link else quote := link + ' ' + quote;

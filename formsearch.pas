@@ -125,7 +125,7 @@ end;
 
 procedure TSearchForm.FormActivate(Sender: TObject);
 begin
-  if Bible.FileType = 'text' then
+  if CurrBible.FileType = 'text' then
     begin
       RadioGroupRange.Enabled := False;
       RadioGroupRange.ItemIndex := rbEntireBible;

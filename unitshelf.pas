@@ -22,11 +22,11 @@ type
 var
   Shelf : TShelf;
 
-function Bible: TBible;
+function CurrBible: TBible;
 
 implementation
 
-function Bible: TBible;
+function CurrBible: TBible;
 begin
   Result := Shelf[Shelf.Current];
 end;
