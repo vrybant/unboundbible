@@ -55,27 +55,8 @@ type
   TContentArray = array of TContent;
 
   TCopyOptions = record
-    cvAbbreviate  : boolean;
-    cvEnumerated  : boolean;
-    cvGuillemets  : boolean;
-    cvParentheses : boolean;
-    cvEnd         : boolean;
+    cvAbbreviate, cvEnumerated, cvGuillemets, cvParentheses, cvEnd : boolean;
   end;
-
-const
-  noneVerse : TVerse = (
-    book    : 0;
-    chapter : 0;
-    number  : 0;
-    count   : 0;
-    );
-
-  minVerse : TVerse = (
-    book    : 1;
-    chapter : 1;
-    number  : 1;
-    count   : 1;
-    );
 
 var
   CurrVerse : TVerse;
@@ -110,6 +91,7 @@ var
     );
 
 const
+  minVerse : TVerse = (book: 1; chapter : 1; number : 1; count : 1);
   PatreonURL = 'https://www.patreon.com/vrybant';
 
 function unbound2mybible(id: integer): integer;

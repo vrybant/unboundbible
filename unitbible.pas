@@ -17,15 +17,14 @@ type
     z : TBibleAlias;
     function RankContents(const Contents: TContentArray): TContentArray;
     function ExtractFootnotes(s: string; marker: string): string;
-    function MinBook: integer;
     procedure LoadUnboundDatabase;
     procedure LoadMyswordDatabase;
   public
-    FirstVerse : TVerse;
     compare : boolean;
     constructor Create(FilePath: string; new: boolean = false);
     procedure CreateTables;
     procedure LoadDatabase;
+    function FirstVerse: TVerse;
     function BookByNum(n: integer): TBook;
     function BookByName(s: string): TBook;
     function VerseToStr(Verse: TVerse; full: boolean): string;
@@ -179,19 +178,14 @@ begin
   if loaded then Exit;
   if format = mysword then LoadMyswordDatabase else LoadUnboundDatabase;
   if not loaded then Exit;
-  FirstVerse := MinVerse;
-  FirstVerse.book := MinBook;
 //Output(self.fileName + ' loaded');
 //ShowTags;
 end;
 
-function TBible.MinBook: integer;
-var i, min : integer;
+function TBible.FirstVerse: TVerse;
 begin
-  min := 0;
-  for i:=0 to Books.Count-1 do
-    if (Books[i].Number < min) or (min = 0) then min := Books[i].Number;
-  Result := min;
+  Result := minVerse;
+  if Books.Count > 0 then Result.book := Books[0].number;
 end;
 
 function TBible.BookByNum(n: integer): TBook;
@@ -266,7 +260,7 @@ var
   end;
 
 begin
-  Result := noneVerse;
+  Result := minVerse;
   if Pos(':',link) = 0 then Exit;
   link := Trim(link);
 
@@ -395,7 +389,7 @@ begin
 
       for i:=Low(Contents) to High(Contents) do
         begin
-          Contents[i].verse := noneVerse;
+          Contents[i].verse := minVerse;
           try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
           try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
@@ -433,7 +427,7 @@ begin
 
       for i:=Low(Result) to High(Result) do
         begin
-          Result[i].verse := noneVerse;
+          Result[i].verse := minVerse;
           try Result[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
           try Result[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;

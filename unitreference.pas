@@ -97,7 +97,7 @@ begin
         count := 0;
         for i:=0 to Query.RecordCount-1 do
           try
-            v := noneVerse;
+            v := minVerse;
             try v.book    := Query.FieldByName(z.xbook     ).AsInteger; except end;
             try v.chapter := Query.FieldByName(z.xchapter  ).AsInteger; except end;
             try v.number  := Query.FieldByName(z.xfromverse).AsInteger; except end;
