@@ -17,14 +17,15 @@ type
     z : TBibleAlias;
     function RankContents(const Contents: TContentArray): TContentArray;
     function ExtractFootnotes(s: string; marker: string): string;
+    function MinBook: integer;
     procedure LoadUnboundDatabase;
     procedure LoadMyswordDatabase;
   public
+    FirstVerse : TVerse;
     compare : boolean;
     constructor Create(FilePath: string; new: boolean = false);
     procedure CreateTables;
     procedure LoadDatabase;
-    function MinBook: integer;
     function BookByNum(n: integer): TBook;
     function BookByName(s: string): TBook;
     function VerseToStr(Verse: TVerse; full: boolean): string;
@@ -178,8 +179,8 @@ begin
   if loaded then Exit;
   if format = mysword then LoadMyswordDatabase else LoadUnboundDatabase;
   if not loaded then Exit;
-  firstVerse := minVerse;
-  firstVerse.book := MinBook;
+  FirstVerse := MinVerse;
+  FirstVerse.book := MinBook;
 //Output(self.fileName + ' loaded');
 //ShowTags;
 end;

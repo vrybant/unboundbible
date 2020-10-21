@@ -32,7 +32,6 @@ type
     language     : string;
     fileType     : string;
     {-}
-    FirstVerse   : TVerse;
     RightToLeft  : boolean;
     fontName     : TFontName;
     fontSize     : integer;
