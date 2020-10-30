@@ -208,15 +208,16 @@ function TBible.VerseToStr(verse: TVerse; full: boolean): string;
 var
   Book : TBook;
   title : string;
+  space : string = '';
 begin
   Result := '';
   Book := BookByNum(verse.book);
   if not Assigned(Book) then Exit;
 
   if full then title := Book.title else title := Book.abbr;
-  if Pos('.', title) = 0 then title := title + ' ';
+  if Pos('.', title) = 0 then space := ' ';
 
-  Result := title + ToStr(verse.chapter) + ':' + ToStr(verse.number);
+  Result := title + space + ToStr(verse.chapter) + ':' + ToStr(verse.number);
   if (verse.number <> 0) and (verse.count > 1) then
     Result := Result + '-' + ToStr(verse.number + verse.count - 1);
 end;
