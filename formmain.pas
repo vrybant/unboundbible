@@ -837,6 +837,7 @@ begin
   CurrVerse.Book := Book.Number;
 
   ChapterBox.ItemIndex := 0;
+  MakeChapterList;
   LoadChapter;
 end;
 
@@ -958,6 +959,7 @@ begin
   if not Assigned(Book) then Exit;
 
   CurrVerse := Verse;
+  MakeChapterList;
   LoadChapter;
 
   SelectBook(Book.title, IsNewTestament(Verse.book));
@@ -1209,6 +1211,7 @@ begin
   begin
     DefaultFont.Assign(FontDialog.Font);
     MakeBookList;
+    MakeChapterList;
     LoadChapter;
     FormPaint(self);
     Invalidate;
@@ -1256,6 +1259,7 @@ end;
 procedure TMainForm.RadioButtonClick(Sender: TObject);
 begin
   MakeBookList;
+  MakeChapterList;
   LoadChapter;
 end;
 
@@ -1325,7 +1329,6 @@ begin
   if Shelf.Count = 0 then Exit;
   MemoBible.Font.Assign(DefaultFont);
   MemoBible.LoadText(Get_Chapter, true);
-  MakeChapterList;
   SelectPage(apBible);
 end;
 
