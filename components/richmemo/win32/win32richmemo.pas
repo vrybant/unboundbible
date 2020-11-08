@@ -1644,7 +1644,11 @@ type
   end;
   PStreamText = ^TStreamText;
 
+{$IF FPC_FULLVERSION>=30301}
+function Read(dwCookie:DWORD_PTR; pbBuff:LPBYTE; cb:LONG; var pcb:LONG):DWORD; stdcall;
+{$ELSE}
 function Read(dwCookie:PDWORD; pbBuff:LPBYTE; cb:LONG; var pcb:LONG):DWORD; stdcall;
+{$ENDIF}
 var
   //p : PStreamText;
   b : string;

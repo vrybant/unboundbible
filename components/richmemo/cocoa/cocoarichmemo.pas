@@ -247,6 +247,16 @@ begin
   if not Assigned(view) then Exit;
 
   txt:=view.textStorage;
+  if (txt.length = 0) then begin
+    // there's no text! using the control information
+    Params.Name := txt.font.displayName.UTF8String;
+    Params.Size := Round(txt.font.pointSize);
+    Params.HasBkClr := false;
+    exit;
+  end;
+
+  if (TextStart >= txt.length) then
+    TextStart := txt.length;
   dict:=GetDict(txt, textStart);
   ReadNSFontParams(dict, prm);
   if Assigned(prm.font) then begin
@@ -335,6 +345,7 @@ begin
       trt:=trt and (not fallback[i]);
       fd:=fd.fontDescriptorWithSymbolicTraits(trt);
       fdd:=fd.matchingFontDescriptorWithMandatoryKeys(nil);
+      inc(i);
     end;
     Result:=fdd;
   finally

@@ -26,6 +26,7 @@
         <UnitName Value="richmemoregister"/>
       </Item3>
     </Files>
+    <CompatibilityMode Value="True"/>
     <RequiredPkgs Count="3">
       <Item1>
         <PackageName Value="richmemopackage"/>
