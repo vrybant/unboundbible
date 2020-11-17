@@ -3,7 +3,7 @@ unit UnitPrepare;
 interface
 
 uses
-  Classes, SysUtils, UnitData, UmLib, UnitLib;
+  Classes, SysUtils, UnitData, UnitLib;
 
 function Coercion(s: string; format: TFileFormat; nt: boolean): string;
 function Preparation(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
@@ -60,7 +60,7 @@ begin
       if not EnabledTag(List[i]) then List[i] := '';
 
   s := Trim(ListToString(List));
-  RemoveDoubleSpace(s);
+  RemoveDoubleSpaces(s);
 end;
 
 procedure MyswordStrongsToUnbound(var s: string);

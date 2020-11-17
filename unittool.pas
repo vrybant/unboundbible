@@ -2,7 +2,7 @@ unit UnitTool;
 
 interface
 
-uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UmLib, UnitLib;
+uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitLib;
 
 function Get_Chapter: string;
 function Get_Search(st: string; out count: integer): string;
@@ -66,7 +66,7 @@ var
   item : string;
 begin
   if not (caseSensitive in Options) then searchString := Utf8LowerCase(searchString);
-  List := StringToList(' ', searchString);
+  List := StringToList(searchString,' ');
   for item in List do Highlight(s, item, Options);
 end;
 
@@ -100,7 +100,7 @@ begin
   for i:=0 to Shelf.Count-1 do
     begin
       if not Shelf[i].Compare then Continue;
-      str := Join(Shelf[i].GetRange(CurrVerse));
+      str := ListToString(Shelf[i].GetRange(CurrVerse), ' ');
       if str = '' then Continue;
       Result += '<br><l>' + Shelf[i].Name + '</l><br>' + str + '<br>';
     end;
@@ -119,7 +119,7 @@ begin
     begin
       link := CurrBible.VerseToStr(item, not Options.cvAbbreviate);
       if link = '' then Continue;
-      Result += '<l>' + link + '</l> ' + Join(CurrBible.GetRange(item)) + '<br><br>';
+      Result += '<l>' + link + '</l> ' + ListToString(CurrBible.GetRange(item), ' ') + '<br><br>';
     end;
 end;
 

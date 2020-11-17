@@ -33,7 +33,7 @@ begin
   Options := SearchOptions;
   if not (caseSensitive in Options) then s := Utf8LowerCase(s);
 
-  SearchList := StringToList(' ',s);
+  SearchList := StringToList(s,' ');
   if not (wholeWords in Options) then Exit;
 
   if (format = mysword) and IsStrong(s) then c := '' else c := ' ';

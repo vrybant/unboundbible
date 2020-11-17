@@ -3,7 +3,7 @@ unit UnitLang;
 interface
 
 uses
-  SysUtils, Classes, Fgl, Graphics, IniFiles, ClipBrd, LCLProc, UnitLib, UnitData;
+  SysUtils, Classes, Fgl, Graphics, IniFiles, ClipBrd, LCLProc, UnitData, UnitLib;
 
 type
   TLocal = class

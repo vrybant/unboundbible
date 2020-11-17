@@ -9,7 +9,7 @@ interface
 uses
   Classes, SysUtils, Dialogs, Graphics, ClipBrd, LazUtf8, DB, SQLdb,
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
-  UnitData, UmLib, UnitLib;
+  UnitData, UnitLib;
 
 type
   TModule = class

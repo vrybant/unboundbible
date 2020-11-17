@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, Grids, SysUtils,
-  LCLIntf, UmLib;
+  LCLIntf, UnitLib;
 
 type
 
@@ -30,7 +30,7 @@ var
 
 implementation
 
-uses UnitData, UnitShelf, UnitLang, UnitLib;
+uses UnitData, UnitShelf, UnitLang;
 
 {$R *.lfm}
 

@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
-  UnitModule, UnitData, UnitPrepare, UmLib, UnitLib;
+  UnitModule, UnitData, UnitPrepare, UnitLib;
 
 type
   TBibleAlias = record
