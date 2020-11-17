@@ -9,7 +9,7 @@ interface
 uses
   {$ifdef windows} Windows, rmWinEx, {$endif}
   Forms, SysUtils, LResources, Classes, Graphics, Controls, ExtCtrls,
-  LCLProc, LCLType, LazUTF8, RichMemo, RichMemoEx, UmLib,
+  LCLProc, LCLType, LazUTF8, RichMemo, RichMemoEx, UnitLib,
   {$ifdef winmode} UmParseWin; {$else} UmParse; {$endif}
 
 type

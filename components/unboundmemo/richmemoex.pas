@@ -7,7 +7,7 @@ uses
   {$ifdef windows} Windows, Printers, OSPrinters, {$endif}
   {$ifdef windows} RichEdit, rmWinEx, {$endif}
   {$ifdef linux} rmGtk2ex, {$endif}
-  RichMemo, RichMemoUtils, LazUTF8, UmLib;
+  RichMemo, RichMemoUtils, LazUTF8, UnitLib;
 
 type
 

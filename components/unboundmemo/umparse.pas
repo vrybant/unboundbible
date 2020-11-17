@@ -3,7 +3,7 @@ unit UmParse;
 interface
 
 uses
-  Classes, SysUtils, Graphics, RichMemo, RichMemoEx, UmLib;
+  Classes, SysUtils, Graphics, RichMemo, RichMemoEx, UnitLib;
 
 procedure Parse(Memo: TRichMemoEx; Source: string; html: boolean = false);
 procedure HtmlReplacement(var s: string);
@@ -32,7 +32,7 @@ begin
   if Pos('</p>',s) = 0 then Replace(s,'<p>','<br><tab>');
   Replace(s,'</p>','<br><tab>');
 
-  RemoveDoubleSpace(s);
+  RemoveDoubleSpaces(s);
 end;
 
 procedure Replacement(var s: string);

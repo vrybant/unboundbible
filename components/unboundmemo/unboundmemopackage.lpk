@@ -14,7 +14,7 @@
       </SearchPaths>
       <Other>
         <CompilerMessages>
-          <IgnoredMessages idx5060="True" idx5058="True" idx5057="True" idx4055="True"/>
+          <IgnoredMessages idx5093="True" idx5060="True" idx5058="True" idx5057="True" idx5037="True" idx4055="True"/>
         </CompilerMessages>
       </Other>
     </CompilerOptions>
@@ -45,18 +45,18 @@
         <UnitName Value="UmParse"/>
       </Item5>
       <Item6>
-        <Filename Value="umlib.pas"/>
-        <UnitName Value="UmLib"/>
-      </Item6>
-      <Item7>
         <Filename Value="rmgtk2ex.pas"/>
         <AddToUsesPkgSection Value="False"/>
         <UnitName Value="rmGtk2ex"/>
-      </Item7>
-      <Item8>
+      </Item6>
+      <Item7>
         <Filename Value="rmwinex.pas"/>
         <AddToUsesPkgSection Value="False"/>
         <UnitName Value="rmWinEx"/>
+      </Item7>
+      <Item8>
+        <Filename Value="unitlib.pas"/>
+        <UnitName Value="UnitLib"/>
       </Item8>
     </Files>
     <RequiredPkgs Count="3">

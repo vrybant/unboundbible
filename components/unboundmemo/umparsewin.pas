@@ -3,7 +3,7 @@ unit UmParseWin;
 interface
 
 uses
-  Classes, SysUtils, Graphics, UmLib;
+  Classes, SysUtils, Graphics, UnitLib;
 
 function ParseWin(s: string; Font: TFont; html: boolean = false): string;
 
@@ -121,7 +121,7 @@ begin
       Result += p;
     end;
 
-  RemoveDoubleSpace(Result);
+  RemoveDoubleSpaces(Result);
   Replace(Result,'_',' ');
   Result := rtf_open(Font) + Trim(Result) + rtf_close;
 end;
