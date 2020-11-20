@@ -7,7 +7,7 @@ interface
 uses
   {$ifdef windows} Windows, Windirs, {$endif}
   {$ifdef linux} LazLogger, {$endif}
-  SysUtils, StrUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, StrUtils, Classes, Variants, Graphics, Controls, Forms, Dialogs,
   LazUtf8, LCLProc, LCLVersion, ExtCtrls, ClipBrd, Process, UTF8Process;
 
 type
@@ -22,7 +22,7 @@ function IsAnsiLetter(c: char): boolean;
 function Prefix(ps, st: string): boolean;
 function Suffix(ps, st: string): boolean;
 function ToInt(s: string): integer;
-function ToStr(value: longint): string;
+function ToStr(value: variant): string;
 function ToBoolean(s: string): boolean;
 function Capitalize(st: string): string;
 function DoubleQuotedStr(s: string): string;
@@ -118,9 +118,12 @@ begin
   if r=0 then Result := v else Result := 0;
 end;
 
-function ToStr(value: longint): string;
+function ToStr(value: variant): string;
+var lg : longint;
 begin
- System.Str(value, Result);
+  lg := value;
+  System.Str(lg, Result);
+  if VarIsBool(value) then Result := iif(value, 'True', 'False')
 end;
 
 function ToBoolean(s: string): boolean;
