@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -145,7 +145,7 @@ type
     function GetUTF8String(ColumnIndex: Integer): UTF8String; virtual;
     {$ENDIF}
     function GetRawByteString(ColumnIndex: Integer): RawByteString; virtual;
-    function GetBinaryString(ColumnIndex: Integer): RawByteString;
+    function GetBinaryString(ColumnIndex: Integer): RawByteString; virtual;
     function GetUnicodeString(ColumnIndex: Integer): ZWideString; virtual;
     function GetBoolean(ColumnIndex: Integer): Boolean; virtual;
     function GetByte(ColumnIndex: Integer): Byte; virtual;
@@ -903,19 +903,22 @@ begin
     BeforeClose;
     FClosed := True;
     RefCountAdded := False;
-    if (FStatement <> nil) then begin
-      if (RefCount = 1) then begin
-        _AddRef;
-        RefCountAdded := True;
+    try
+      if (FStatement <> nil) then begin
+        if (RefCount = 1) then begin
+          _AddRef;
+          RefCountAdded := True;
+        end;
+        FStatement.FreeOpenResultSetReference(IZResultSet(FWeakIntfPtrOfSelf));
+        FStatement := nil;
       end;
-      FStatement.FreeOpenResultSetReference(IZResultSet(FWeakIntfPtrOfSelf));
-      FStatement := nil;
-    end;
-    AfterClose;
-    if RefCountAdded then begin
-      if (RefCount = 1) then
-        DriverManager.AddGarbage(Self);
-       _Release;
+      AfterClose;
+    finally
+      if RefCountAdded then begin
+        if (RefCount = 1) then
+          DriverManager.AddGarbage(Self);
+        _Release;
+      end;
   end;
   end;
 end;

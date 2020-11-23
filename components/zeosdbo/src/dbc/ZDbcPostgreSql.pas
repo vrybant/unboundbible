@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -60,7 +60,7 @@ uses
   Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
   {$IF defined(DELPHI) and defined(MSWINDOWS)}Windows,{$IFEND}
   ZDbcIntfs, ZDbcConnection, ZPlainPostgreSqlDriver, ZDbcLogging, ZTokenizer,
-  ZGenericSqlAnalyser, ZURL, ZCompatibility;
+  ZGenericSqlAnalyser, ZURL, ZCompatibility, ZSysUtils;
 
 type
 
@@ -124,6 +124,28 @@ type
     function GetUndefinedVarcharAsStringLength: Integer;
     function GetTableInfo(const TblOid: Oid): PZPGTableInfo;
     function CheckFieldVisibility: Boolean;
+    function StoredProcedureIsSelectable(const ProcName: String): Boolean;
+    procedure AddDomain2BaseTypeIfNotExists(DomainOID, BaseTypeOID: OID);
+    function FindDomainBaseType(DomainOID: OID; out BaseTypeOID: OID): Boolean;
+  end;
+
+  PZPGDomain2BaseTypeMap = ^TZPGDomain2BaseTypeMap;
+  TZPGDomain2BaseTypeMap = record
+    DomainOID: OID; //the domain oid
+    BaseTypeOID: OID; //the native underlaing oid
+    Known: WordBool;
+  end;
+
+  TZOID2OIDMapList = class(TZSortedList)
+  private
+    fUnkownCount: Integer;
+    function SortCompare(Item1, Item2: Pointer): Integer;
+  public
+    procedure AddIfNotExists(DomainOID, BaseTypeOID: OID);
+    function GetOrAddBaseTypeOID(DomainOID: OID; out BaseTypeOID: OID): Boolean;
+    procedure Clear; override;
+  public
+    property UnkownCount: Integer read fUnkownCount;
   end;
 
   {** Implements PostgreSQL Database Connection. }
@@ -137,6 +159,7 @@ type
 //  Jan: Not sure wether we still need that. What was its intended use?
 //    FBeginRequired: Boolean;
     FTypeList: TStrings;
+    FDomain2BaseTypMap: TZOID2OIDMapList;
     FOidAsBlob: Boolean;
     FServerMajorVersion: Integer;
     FServerMinorVersion: Integer;
@@ -146,7 +169,8 @@ type
     //a collection of statement handles that are not used anymore. These can be
     //safely deallocated upon the next transaction start or immediately if we
     //are in autocommit mode. See SF#137:
-    FPreparedStatementTrashBin: TStringList;
+    FPreparedStatementTrashBin: TStrings;
+    FProcedureTypesCache: TStrings;
     FClientSettingsChanged: Boolean;
     FTableInfoCache: TZPGTableInfoCache;
     FIs_bytea_output_hex: Boolean;
@@ -180,8 +204,8 @@ type
       IZPreparedStatement; override;
     function CreateCallableStatement(const SQL: string; Info: TStrings):
       IZCallableStatement; override;
-
-    function CreateSequence(const Sequence: string; BlockSize: Integer): IZSequence; override;
+    function CreateSequence(const Sequence: string; BlockSize: Integer):
+      IZSequence; override;
 
     procedure SetAutoCommit(Value: Boolean); override;
 
@@ -201,6 +225,8 @@ type
     function Is_bytea_output_hex: Boolean;
     function CheckFieldVisibility: Boolean;
 
+    procedure AddDomain2BaseTypeIfNotExists(DomainOID, BaseTypeOID: OID);
+    function FindDomainBaseType(DomainOID: OID; out BaseTypeOID: OID): Boolean;
     function GetTypeNameByOid(Id: Oid): string;
     function GetPlainDriver: IZPostgreSQLPlainDriver;
     function GetConnectionHandle: PZPostgreSQLConnect;
@@ -209,6 +235,7 @@ type
     function GetServerMajorVersion: Integer;
     function GetServerMinorVersion: Integer;
     function GetServerSubVersion: Integer;
+    function StoredProcedureIsSelectable(const ProcName: String): Boolean;
 
     function PingServer: Integer; override;
 
@@ -224,17 +251,8 @@ type
     {$IFDEF ZEOS_TEST_ONLY}
     constructor Create(const ZUrl: TZURL);
     {$ENDIF}
+    function GetServerProvider: TZServerProvider; override;	
   end;
-
-  {** Implements a Postgres sequence. }
-  TZPostgreSQLSequence = class(TZAbstractSequence)
-  public
-    function GetCurrentValue: Int64; override;
-    function GetNextValue: Int64; override;
-    function GetCurrentValueSQL:String;override;
-    function GetNextValueSQL:String;override;
-  end;
-
 
 var
   {** The common driver manager object. }
@@ -245,9 +263,9 @@ implementation
 {$IFNDEF ZEOS_DISABLE_POSTGRESQL} //if set we have an empty unit
 
 uses
-  ZFastCode, ZMessages, ZSysUtils, ZDbcPostgreSqlStatement,
+  ZFastCode, ZMessages, ZDbcPostgreSqlStatement,
   ZDbcPostgreSqlUtils, ZDbcPostgreSqlMetadata, ZPostgreSqlToken,
-  ZPostgreSqlAnalyser, ZEncoding, ZDbcUtils;
+  ZPostgreSqlAnalyser, ZEncoding, ZDbcUtils, ZDbcMetadata;
 
 const
   FON = String('ON');
@@ -452,11 +470,13 @@ end;
 }
 procedure TZPostgreSQLConnection.InternalCreate;
 begin
+  FProcedureTypesCache := TStringList.Create;
   FMetaData := TZPostgreSQLDatabaseMetadata.Create(Self, Url);
   FPreparedStmts := nil;
   FPreparedStatementTrashBin := nil;
   FTableInfoCache := nil;
 
+  FDomain2BaseTypMap := TZOID2OIDMapList.Create;
   { Sets a default PostgreSQL port }
   if Self.Port = 0 then
      Self.Port := 5432;
@@ -507,12 +527,27 @@ begin
   if FTableInfoCache <> nil then FreeAndNil(FTableInfoCache);
   if FPreparedStmts <> nil then FreeAndNil(FPreparedStmts);
   if Assigned(FPreparedStatementTrashBin) then FreeAndNil(FPreparedStatementTrashBin);
+  FreeAndNil(FProcedureTypesCache);
+  FreeAndNil(FDomain2BaseTypMap);
+end;
+
+{**
+procedure TZPostgreSQLConnection.AddDomain2BaseTypeIfNotExists(DomainOID,
+  BaseTypeOID: OID);
+begin
+  FDomain2BaseTypMap.AddIfNotExists(DomainOID, BaseTypeOID);
 end;
 
 {**
   Builds a connection string for PostgreSQL.
   @return a built connection string.
 }
+procedure TZPostgreSQLConnection.AddDomain2BaseTypeIfNotExists(DomainOID,
+  BaseTypeOID: OID);
+begin
+  FDomain2BaseTypMap.AddIfNotExists(DomainOID, BaseTypeOID);
+end;
+
 function TZPostgreSQLConnection.BuildConnectStr: RawByteString;
 var
   ConnectTimeout, Cnt: Integer;
@@ -565,6 +600,11 @@ begin
   if Info.Values['sslkey'] <> '' then AddParamToResult('sslkey', Info.Values['sslkey']);
   if Info.Values['sslrootcert'] <> '' then AddParamToResult('sslrootcert', Info.Values['sslrootcert']);
   if Info.Values['sslcrl'] <> '' then AddParamToResult('sslcrl', Info.Values['sslcrl']);
+  { tcp keepalives by Luca Olivetti }
+  if Info.Values['keepalives'] <> '' then AddParamToResult('keepalives',Info.Values['keepalives']);
+  if Info.Values['keepalives_idle'] <> '' then AddParamToResult('keepalives_idle',Info.Values['keepalives_idle']);
+  if Info.Values['keepalives_interval'] <> '' then AddParamToResult('keepalives_interval',Info.Values['keepalives_interval']);
+  if Info.Values['keepalives_count'] <> '' then AddParamToResult('keepalives_count',Info.Values['keepalives_count']);
 
   { Sets a connection timeout. }
   ConnectTimeout := StrToIntDef(Info.Values['timeout'], -1);
@@ -1101,6 +1141,7 @@ begin
   end;
 end;
 
+const cROTxn: array[Boolean] of RawByteString = (' READ WRITE', ' READ ONLY');
 {**
   Sets a new transact isolation level. tiNone, tiReadUncommitted
   will be mapped to tiReadCommitted since PostgreSQL will treat
@@ -1128,7 +1169,7 @@ begin
         tiSerializable:
           SQL := SQL + RawByteString('SERIALIZABLE');
       end;
-
+      SQL := SQL + cROTxn[ReadOnly];
       QueryHandle := GetPlainDriver.ExecuteQuery(FHandle, Pointer(SQL));
       CheckPostgreSQLError(nil, GetPlainDriver, FHandle, lcExecute, SQL ,QueryHandle);
       GetPlainDriver.PQclear(QueryHandle);
@@ -1136,6 +1177,32 @@ begin
     end;
     inherited SetTransactionIsolation(Level);
   end;
+end;
+
+function TZPostgreSQLConnection.StoredProcedureIsSelectable(
+  const ProcName: String): Boolean;
+var I: Integer;
+  function AddToCache(const ProcName: String): Boolean;
+  var RS: IZResultSet;
+    //Stmt: IZStatement;
+    Catalog, Schema, ObjName: String;
+  begin
+    Result := True;
+    if GetServerMajorVersion < 11 then
+      Exit;
+    SplitQualifiedObjectName(ProcName, True, True, Catalog, Schema, ObjName);
+    if UseMetadata then with GetMetadata do begin
+      RS := GetProcedures(Catalog, AddEscapeCharToWildcards(Schema), AddEscapeCharToWildcards(ObjName));
+      if RS.Next then
+        Result := RS.GetInt(ProcedureTypeIndex) = ProcedureReturnsResult;
+    end;
+    FProcedureTypesCache.AddObject(ProcName, TObject(Ord(Result)));
+  end;
+begin
+  I := FProcedureTypesCache.IndexOf(ProcName);
+  if I = -1
+  then Result := AddToCache(ProcName)
+  else Result := FProcedureTypesCache.Objects[I] <> nil;
 end;
 
 {**
@@ -1266,6 +1333,11 @@ begin
   Result := FServerMinorVersion;
 end;
 
+function TZPostgreSQLConnection.GetServerProvider: TZServerProvider;
+begin
+  Result := spPostgreSQL;
+end;
+
 {**
   Gets a server sub version.
   @return a server sub version number.
@@ -1393,6 +1465,7 @@ function TZPostgreSQLConnection.EscapeString(const Value: RawByteString): RawByt
 begin
   Result := EscapeString(Pointer(Value), Length(Value), True)
 end;
+
 {**
   Creates a sequence generator object.
   @param Sequence a name of the sequence generator.
@@ -1403,6 +1476,12 @@ function TZPostgreSQLConnection.CreateSequence(const Sequence: string;
   BlockSize: Integer): IZSequence;
 begin
   Result := TZPostgreSQLSequence.Create(Self, Sequence, BlockSize);
+end;
+
+function TZPostgreSQLConnection.FindDomainBaseType(DomainOID: OID;
+  out BaseTypeOID: OID): Boolean;
+begin
+  Result := FDomain2BaseTypMap.GetOrAddBaseTypeOID(DomainOID, BaseTypeOID);
 end;
 
 {**
@@ -1517,58 +1596,6 @@ begin
   ( Self.GetDriver.GetTokenizer as IZPostgreSQLTokenizer ).SetStandardConformingStrings(FStandardConformingStrings);
 end;
 
-
-{ TZPostgreSQLSequence }
-{**
-  Gets the current unique key generated by this sequence.
-  @param the last generated unique key.
-}
-function TZPostgreSQLSequence.GetCurrentValue: Int64;
-var
-  Statement: IZStatement;
-  ResultSet: IZResultSet;
-begin
-  Statement := Connection.CreateStatement;
-  ResultSet := Statement.ExecuteQuery(
-    Format('SELECT %s', [GetCurrentValueSQL]));
-  if ResultSet.Next then
-    Result := ResultSet.GetLong(FirstDbcIndex)
-  else
-    Result := inherited GetCurrentValue;
-  ResultSet.Close;
-  Statement.Close;
-end;
-
-{**
-  Gets the next unique key generated by this sequence.
-  @param the next generated unique key.
-}
-function TZPostgreSQLSequence.GetCurrentValueSQL: String;
-begin
-  Result := Format(' CURRVAL(''%s'')', [Name]);
-end;
-
-function TZPostgreSQLSequence.GetNextValue: Int64;
-var
-  Statement: IZStatement;
-  ResultSet: IZResultSet;
-begin
-  Statement := Connection.CreateStatement;
-  ResultSet := Statement.ExecuteQuery(
-    Format('SELECT %s', [GetNextValueSQL]));
-  if ResultSet.Next then
-    Result := ResultSet.GetLong(FirstDbcIndex)
-  else
-    Result := inherited GetNextValue;
-  ResultSet.Close;
-  Statement.Close;
-end;
-
-function TZPostgreSQLSequence.GetNextValueSQL: String;
-begin
-  Result := Format(' NEXTVAL(''%s'')', [Name]);
-end;
-
 function TZPostgreSQLConnection.EncodeBinary(Buf: Pointer;
   Len: Integer; Quoted: Boolean): RawByteString;
 var
@@ -1615,6 +1642,57 @@ begin
     end;
   end else
     Result := ZDbcPostgreSqlUtils.PGEscapeString(FromChar, Len, ConSettings, Quoted);
+end;
+
+{ TZOID2OIDMapList }
+
+procedure TZOID2OIDMapList.AddIfNotExists(DomainOID, BaseTypeOID: OID);
+var FoundOID: OID;
+  I: Integer;
+begin
+  if not GetOrAddBaseTypeOID(DomainOID, FoundOID) then
+    for i := 0 to Count-1 do
+      if (PZPGDomain2BaseTypeMap(Items[i]).DomainOID = DomainOID) then begin
+        PZPGDomain2BaseTypeMap(Items[i]).BaseTypeOID := BaseTypeOID;
+        PZPGDomain2BaseTypeMap(Items[i]).Known := True;
+        Dec(fUnkownCount);
+      end;
+end;
+
+procedure TZOID2OIDMapList.Clear;
+var i: Integer;
+begin
+  for i := Count-1 downto 0 do
+    FreeMem(Items[i], SizeOf(TZPGDomain2BaseTypeMap));
+  inherited;
+  fUnkownCount := 0;
+end;
+
+function TZOID2OIDMapList.GetOrAddBaseTypeOID(DomainOID: OID; out BaseTypeOID: OID): Boolean;
+var i: Integer;
+  Val: PZPGDomain2BaseTypeMap;
+begin
+  Result := False;
+  BaseTypeOID := InvalidOID;
+  for i := 0 to Count-1 do
+    if (PZPGDomain2BaseTypeMap(Items[i]).DomainOID = DomainOID) and PZPGDomain2BaseTypeMap(Items[i]).Known then begin
+      Result := PZPGDomain2BaseTypeMap(Items[i]).Known;
+      BaseTypeOID := PZPGDomain2BaseTypeMap(Items[i]).BaseTypeOID;
+      Exit;
+    end;
+  GetMem(Val, SizeOf(TZPGDomain2BaseTypeMap));
+  Val.DomainOID := DomainOID;
+  Val.BaseTypeOID := InvalidOID;
+  Val.Known := False;
+  Add(Val);
+  Sort(SortCompare);
+  Inc(fUnkownCount);
+end;
+
+function TZOID2OIDMapList.SortCompare(Item1, Item2: Pointer): Integer;
+begin
+  Result := Ord(PZPGDomain2BaseTypeMap(Item1)^.DomainOID > PZPGDomain2BaseTypeMap(Item2)^.DomainOID)-
+            Ord(PZPGDomain2BaseTypeMap(Item1)^.DomainOID < PZPGDomain2BaseTypeMap(Item2)^.DomainOID);
 end;
 
 initialization

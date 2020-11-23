@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -529,7 +529,9 @@ begin
                 tagVariant(V).vt := VT_BOOL;
                 tagVariant(V).vbool := RetValue.VBoolean;
               end;
-    vtBytes: V := SoftVarManager.GetAsBytes(RetValue);
+    vtBytes: if TmpSQLType = stGUID
+             then V := GUIDToUnicode(RetValue.VBytes)
+             else V := SoftVarManager.GetAsBytes(RetValue);
     vtInteger: begin
                 tagVariant(V).vt := VT_I8;
                 {$IFDEF WITH_tagVARIANT_UINT64}
@@ -574,7 +576,7 @@ begin
       end;
   end;
 
-  if VarIsNull(V) or (SQLType = stBytes) then
+  if VarIsNull(V) or (SQLType = stBytes) or (SQLType = stGUID) then
     T := ConvertSqlTypeToAdo(TmpSQLType)
   else
     T := ConvertVariantToAdo(VarType(V));
@@ -829,9 +831,8 @@ procedure RefreshParameters(const AdoCommand: ZPlainAdo.Command;
         OLEDBCommand.QueryInterface(ICommandPrepare, CommandPrepare);
         if Assigned(CommandPrepare) then CommandPrepare.Prepare(0);
         if OLEDBParameters.GetParameterInfo(ParamCount{%H-}, PDBPARAMINFO(ParamInfo), NamesBuffer) = S_OK then
-          for I := 0 to ParamCount - 1 do
-            with ParamInfo[I] do
-            begin
+          if ParamCount > 0 then for I := 0 to ParamCount - 1 do
+            with ParamInfo[I] do begin
               { When no default name, fabricate one like ADO does }
               if pwszName = nil then
                 Name := 'Param' + ZFastCode.IntToUnicode(I+1) else { Do not localize }

@@ -106,6 +106,7 @@ type
     FBlobPrefetchSize: Integer;
     FStmtMode: ub4;
     FPlainDriver: IZOraclePlainDriver;
+    procedure InternalSetCatalog(const Catalog: RawByteString);
   protected
     procedure InternalCreate; override;
     procedure StartTransactionSupport;
@@ -128,7 +129,7 @@ type
     procedure Open; override;
     procedure InternalClose; override;
 
-    procedure SetCatalog(const Catalog: string); override;
+    procedure SetCatalog(const Value: string); override;
     function GetCatalog: string; override;
 
     procedure SetTransactionIsolation(Level: TZTransactIsolationLevel); override;
@@ -146,14 +147,7 @@ type
     function GetHostVersion: Integer; override;
     function GetBinaryEscapeString(const Value: TBytes): String; overload; override;
     function GetBinaryEscapeString(const Value: RawByteString): String; overload; override;
-  end;
-
-  TZOracleSequence = class(TZAbstractSequence)
-  public
-    function GetCurrentValue: Int64; override;
-    function GetCurrentValueSQL: String; override;
-    function GetNextValue: Int64; override;
-    function GetNextValueSQL: String; override;
+    function GetServerProvider: TZServerProvider; override;	
   end;
 
   {** Implements a specialized cached resolver for Oracle. }
@@ -275,6 +269,11 @@ begin
   FBlobPrefetchSize := FChunkSize;
 end;
 
+procedure TZOracleConnection.InternalSetCatalog(const Catalog: RawByteString);
+begin
+  CreateRegularStatement(nil).ExecuteUpdate('ALTER SESSION SET CURRENT_SCHEMA = '+Catalog)
+end;
+
 function TZOracleConnection.CreateCallableStatement(const SQL: string;
   Info: TStrings): IZCallableStatement;
 begin
@@ -309,7 +308,8 @@ var
   Status: Integer;
   LogMessage: RawByteString;
   OCI_CLIENT_CHARSET_ID,  OCI_CLIENT_NCHARSET_ID: ub2;
-
+  S: String;
+  mode: ub4;
   procedure CleanupOnFail;
   begin
     GetPlainDriver.HandleFree(FDescibeHandle, OCI_HTYPE_DESCRIBE);
@@ -334,16 +334,17 @@ begin
 
   { Sets a client codepage. }
   OCI_CLIENT_CHARSET_ID := ConSettings.ClientCodePage^.ID;
+  mode := OCI_OBJECT;
+  S := Info.Values['OCIMultiThreaded'];
+  if StrToBoolEx(S, False) Then
+    mode := mode + OCI_THREADED;
   { Connect to Oracle database. }
-  if ( FHandle = nil ) then
-    try
-      FErrorHandle := nil;
-      Status := GetPlainDriver.EnvNlsCreate(FHandle, OCI_OBJECT, nil, nil, nil, nil, 0, nil,
-        OCI_CLIENT_CHARSET_ID, OCI_CLIENT_CHARSET_ID);
-      CheckOracleError(GetPlainDriver, FErrorHandle, Status, lcOther, 'EnvNlsCreate failed.', ConSettings);
-    except
-      raise;
-    end;
+  if ( FHandle = nil ) then begin
+    FErrorHandle := nil;
+    Status := GetPlainDriver.EnvNlsCreate(FHandle, mode, nil, nil, nil, nil, 0, nil,
+      OCI_CLIENT_CHARSET_ID, OCI_CLIENT_CHARSET_ID);
+    CheckOracleError(GetPlainDriver, FErrorHandle, Status, lcOther, 'EnvNlsCreate failed.', ConSettings);
+  end;
   FErrorHandle := nil;
   GetPlainDriver.HandleAlloc(FHandle, FErrorHandle, OCI_HTYPE_ERROR, 0, nil);
   FServerHandle := nil;
@@ -389,8 +390,10 @@ begin
     Length(Password), OCI_ATTR_PASSWORD, FErrorHandle);
   GetPlainDriver.AttrSet(FSessionHandle,OCI_HTYPE_SESSION,@fBlobPrefetchSize,0,
     OCI_ATTR_DEFAULT_LOBPREFETCH_SIZE,FErrorHandle);
+  S := Info.Values['OCIAuthenticateMode'];
+  Mode := StrToIntDef(S, OCI_DEFAULT);
   Status := GetPlainDriver.SessionBegin(FContextHandle, FErrorHandle,
-    FSessionHandle, OCI_CRED_RDBMS, OCI_DEFAULT);
+    FSessionHandle, OCI_CRED_RDBMS, Mode);
   try
     CheckOracleError(GetPlainDriver, FErrorHandle, Status, lcConnect, LogMessage, ConSettings);
   except
@@ -404,6 +407,8 @@ begin
   StartTransactionSupport;
 
   inherited Open;
+  if FCatalog <> '' then
+    InternalSetCatalog(ConSettings.ConvFuncs.ZStringToRaw(FCatalog, Consettings.CTRL_CP, ConSettings.ClientCodePage.CP));
 end;
 
 {**
@@ -531,8 +536,7 @@ var
   Status: Integer;
   SQL: RawByteString;
 begin
-  if not Closed then
-  begin
+  if not Closed then begin
     SQL := 'COMMIT';
 
     Status := GetPlainDriver.TransCommit(FContextHandle, FErrorHandle,
@@ -574,9 +578,12 @@ end;
 }
 function TZOracleConnection.PingServer: Integer;
 begin
-  Result := GetPlainDriver.Ping(FContextHandle, FErrorHandle);
-  CheckOracleError(GetPlainDriver, FErrorHandle, Result, lcExecute, 'Ping Server', ConSettings);
-  Result := 0; //only possible if CheckOracleError dosn't raise an exception
+  if Closed or (FContextHandle = nil) Or (FErrorHandle = nil)
+  then Result := -1
+  else begin
+    Result := GetPlainDriver.Ping(FContextHandle, FErrorHandle, OCI_DEFAULT);
+    CheckOracleError(GetPlainDriver, FErrorHandle, Result, lcExecute, 'Ping Server', ConSettings);
+  end;
 end;
 
 {**
@@ -633,6 +640,12 @@ end;
 }
 function TZOracleConnection.GetCatalog: string;
 begin
+  if not Closed and (FCatalog = '') then
+    with CreateRegularStatement(nil).ExecuteQuery('SELECT SYS_CONTEXT (''USERENV'', ''CURRENT_SCHEMA'') FROM DUAL') do begin
+      if Next then
+        FCatalog := GetString(FirstDBCIndex);
+      Close;
+    end;
   Result := FCatalog;
 end;
 
@@ -640,9 +653,13 @@ end;
   Sets a new selected catalog name.
   @param Catalog a selected catalog name.
 }
-procedure TZOracleConnection.SetCatalog(const Catalog: string);
+procedure TZOracleConnection.SetCatalog(const Value: string);
 begin
-  FCatalog := Catalog;
+  if Value <> FCatalog then begin
+    FCatalog := Value;
+    if not Closed and (Value <> '') then
+      InternalSetCatalog(ConSettings.ConvFuncs.ZStringToRaw(Value, Consettings.CTRL_CP, ConSettings.ClientCodePage.CP));
+  end;
 end;
 
 {**
@@ -730,6 +747,11 @@ begin
   Result := FServerHandle;
 end;
 
+function TZOracleConnection.GetServerProvider: TZServerProvider;
+begin
+  Result := spOracle;
+end;
+
 {**
   Gets a reference to Oracle session handle.
   @return a reference to Oracle session handle.
@@ -805,59 +827,6 @@ begin
   Inc(p);
   ZBinToHex(PAnsiChar(Value), P, L);
   (P+L)^ := #39;
-end;
-
-{ TZOracleSequence }
-
-{**
-  Gets the current unique key generated by this sequence.
-  @param the last generated unique key.
-}
-function TZOracleSequence.GetCurrentValue: Int64;
-var
-  Statement: IZStatement;
-  ResultSet: IZResultSet;
-begin
-  Statement := Connection.CreateStatement;
-  ResultSet := Statement.ExecuteQuery(
-    GetCurrentValueSQL);
-  if ResultSet.Next then
-    Result := ResultSet.GetLong(FirstDbcIndex)
-  else
-    Result := inherited GetCurrentValue;
-  ResultSet.Close;
-  Statement.Close;
-end;
-
-function TZOracleSequence.GetCurrentValueSQL: String;
-begin
-  Result := Format('SELECT %s.CURRVAL FROM DUAL', [Name]);
-end;
-
-{**
-  Gets the next unique key generated by this sequence.
-  @param the next generated unique key.
-}
-function TZOracleSequence.GetNextValue: Int64;
-var
-  Statement: IZStatement;
-  ResultSet: IZResultSet;
-begin
-  Statement := Connection.CreateStatement;
-  ResultSet := Statement.ExecuteQuery(
-    GetNextValueSQL);
-  if ResultSet.Next then
-    Result := ResultSet.GetLong(FirstDbcIndex)
-  else
-    Result := inherited GetNextValue;
-  ResultSet.Close;
-  Statement.Close;
-end;
-
-
-function TZOracleSequence.GetNextValueSQL: String;
-begin
-  Result := Format('SELECT %s.NEXTVAL FROM DUAL', [Name]);
 end;
 
 { TZOracleCachedResolver }

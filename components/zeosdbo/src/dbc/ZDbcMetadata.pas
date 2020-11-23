@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -2078,7 +2078,7 @@ begin
   FConnection := Pointer(Connection as IZConnection);
   FUrl := Url;
   FCachedResultSets := TZHashMap.Create;
-  FDatabaseInfo := CreateDatabaseInfo;
+  FDatabaseInfo := nil;
   FDatabase := Url.Database;
   FConSettings := IZConnection(FConnection).GetConSettings;
   FillWildcards;
@@ -2224,7 +2224,8 @@ destructor TZAbstractDatabaseMetadata.Destroy;
 begin
   FIC := nil;
   FUrl := nil;
-  FCachedResultSets.Clear;
+  if Assigned(FCachedResultSets) then
+    FCachedResultSets.Clear;
   FCachedResultSets := nil;
   FDatabaseInfo := nil;
 
@@ -2532,6 +2533,8 @@ end;
 }
 function TZAbstractDatabaseMetadata.GetDatabaseInfo: IZDatabaseInfo;
 begin
+  if not Assigned(FDatabaseInfo) then
+    FDatabaseInfo := CreateDatabaseInfo;
   Result := FDatabaseInfo;
 end;
 

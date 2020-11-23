@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -213,10 +213,10 @@ begin
   if InParamCount <= ParamIndex
   then Result := 'NULL'
   else Result := PrepareSQLParameter(InParamValues[ParamIndex],
-      InParamTypes[ParamIndex], ClientVarManager, ConSettings, IsNCharIndex[ParamIndex]);
+      InParamTypes[ParamIndex], ClientVarManager, ConSettings, IsNCharIndex[ParamIndex] or (FClientCP = zCP_UTF8));
   P := Pointer(Result);
   if (P <> nil) and (PByte(P)^ = Ord(#39)) and not IsNCharIndex[ParamIndex] and
-     (FDBLibConnection.GetProvider = dpMsSQL) and FDBLibConnection.FreeTDS and
+     (FDBLibConnection.GetProvider = dpMsSQL) and (FPlainDriver.GetDBLibraryVendorType = lvtFreeTDS) and
      (PByte(P+Length(Result)-1)^ = Ord(#39)) and (FClientCP = zCP_UTF8)
   then Result := 'N' + Result;
 end;
@@ -306,6 +306,7 @@ begin
   FetchResults;
   while GetMoreResults and (LastResultSet = nil) do ;
   Result := GetResultSet;
+  FlastResultSet := nil;
 end;
 
 {**
@@ -336,11 +337,15 @@ var
   NativeResultSet: TZDBLibResultSet;
   CachedResultSet: TZCachedResultSet;
   RowsAffected: Integer;
+  ResultsRETCODE, cmdRowRETCODE: RETCODE;
 begin
-//Sybase does not seem to return dbCount at all, so a workaround is made
-  //RowsAffected := -2;
-  while FPlainDriver.dbresults(FHandle) = DBSUCCEED do begin
-    if FPlainDriver.dbcmdrow(FHandle) = DBSUCCEED then begin
+  repeat
+    ResultsRETCODE := FPlainDriver.dbresults(FHandle);
+    if ResultsRETCODE = DBFAIL then
+      FDBLibConnection.CheckDBLibError(lcOther, 'FETCHRESULTS/dbresults');
+    cmdRowRETCODE := FPlainDriver.dbcmdrow(FHandle);
+    //EH: if NO_MORE_RESULTS there might be a final update count see TestSF380(a/b)
+    if (cmdRowRETCODE = DBSUCCEED) and (ResultsRETCODE <> NO_MORE_RESULTS) then begin
       {EH: Developer notes:
        the TDS protocol does NOT support any stmt handles. All actions are
        executed sequentially so in ALL cases we need cached Results NO WAY around!!!}
@@ -358,7 +363,7 @@ begin
         FResults.Add(TZAnyValue.CreateWithInteger(RowsAffected));
     end;
     FPlainDriver.dbCanQuery(FHandle);
-  end;
+  until ResultsRETCODE = NO_MORE_RESULTS;
   FDBLibConnection.CheckDBLibError(lcOther, 'FETCHRESULTS');
 
   (*if not FDBLibConnection.FreeTDS then

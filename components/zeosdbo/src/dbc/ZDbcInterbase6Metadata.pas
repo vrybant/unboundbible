@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -234,7 +234,7 @@ type
 
   TZInterbase6DatabaseMetadata = class(TZAbstractDatabaseMetadata)
   private
-    FMetaConSettings: TZConSettings;
+    FInfo: TStrings;
   protected
     function CreateDatabaseInfo: IZDatabaseInfo; override; // technobot 2008-06-25
     function ConstructNameCondition(Pattern: string; Column: string): string; override;
@@ -278,7 +278,9 @@ type
       TableNamePattern, ColumnNamePattern: string): IZResultSet; override; //EgonHugeist
     function UncachedGetCharacterSets: IZResultSet; override; //EgonHugeist
   public
+    function CreateStatement: IZStatement;
     procedure SetUTF8CodePageInfo;
+    procedure BeforeDestruction; override;
   end;
 
 {$ENDIF ZEOS_DISABLE_INTERBASE} //if set we have an empty unit
@@ -1100,9 +1102,14 @@ end;
 }
 function TZInterbase6DatabaseInfo.GetMaxStatementLength: Integer;
 begin
-  Result := 640;
+  // Increased size for FB 3.0+
+  // See release notes. Can be used by the legacy API too, if Karol Bieniaszewski
+  // is right at http://tracker.firebirdsql.org/browse/CORE-1117?focusedCommentId=31493&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#action_31493
+  if FIsFireBird and (FHostVersion >= 3000000) {and Client Library Version >= 3000000} then
+    Result := 10*1024*1024 //Release notes say there is an hard coded limit at 10MB
+  else
+    Result := 64*1024; //64KB by default
 end;
-
 {**
   How many active statements can we have open at one time to this
   database?
@@ -1250,7 +1257,8 @@ end;
 }
 function TZInterbase6DatabaseInfo.SupportsArrayBindings: Boolean;
 begin
-  Result := True;
+  // we use the execute block syntax that is only available from Firebird 2.0 on
+  Result := FIsFireBird and (FHostVersion >= 2000000)
 end;
 
 { TZInterbase6DatabaseMetadata }
@@ -1265,18 +1273,37 @@ begin
   Result := TZInterbase6DatabaseInfo.Create(Self);
 end;
 
+function TZInterbase6DatabaseMetadata.CreateStatement: IZStatement;
+var Connection: IZConnection;
+begin
+  Connection := GetConnection;
+  Result := Connection.CreateStatementWithParams(FInfo);
+end;
+
+procedure TZInterbase6DatabaseMetadata.BeforeDestruction;
+begin
+  inherited;
+  FreeAndNil(FInfo);
+end;
+
 function TZInterbase6DatabaseMetadata.ConstructNameCondition(Pattern: string;
   Column: string): string;
 begin
-  if HasNoWildcards(Pattern)
-  then Result := Inherited ConstructnameCondition(Pattern,Column)
-  else if not (GetDatabaseInfo as IZInterbaseDatabaseInfo).SupportsTrim
-  //Old FireBird do NOT support 'trim'
-  //-> raise exception to find bugs in Software...
-  then raise EZSQLException.Create('Wildcard searches are not suported with Firebird 1.5 and 1.0. Use IZDatabaseMetadata.AddEscapeCharToWildcards to escape wildcards in table names.')
-  // add trim because otherwise the like condition will not find the table columns
-  // because they are padded with spaces in Firebird
-  else Result := Inherited ConstructnameCondition(Pattern,'trim('+Column+')');
+  if HasNoWildcards(Pattern) then begin
+    Result := Inherited ConstructnameCondition(Pattern,Column)
+  end else begin
+    if not (GetDatabaseInfo as IZInterbaseDatabaseInfo).SupportsTrim then begin
+      //Old FireBird do NOT support 'trim'
+      //-> raise exception to find bugs in Software...
+      if Pattern = '%'
+      then Result := ''
+      else raise EZSQLException.Create('Wildcard searches are not suported with Interbase and Firebird 1.5 and 1.0. Use IZDatabaseMetadata.AddEscapeCharToWildcards to escape wildcards in table names.')
+    end else begin
+      // add trim because otherwise the like condition will not find the table columns
+      // because they are padded with spaces in Firebird
+      Result := Inherited ConstructnameCondition(Pattern,'trim('+Column+')');
+    end;
+  end;
 end;
 
 {$IFDEF FPC} {$PUSH} {$WARN 5024 off : Parameter "$1" not used} {$ENDIF} // encoding unknown - parameter not used intentionally
@@ -1301,7 +1328,7 @@ begin
     + AppendCondition(LTriggerNamePattern) + AppendCondition(LTableNamePattern);
 
   Result := CopyToVirtualResultSet(
-    GetConnection.CreateStatement.ExecuteQuery(SQL),
+    CreateStatement.ExecuteQuery(SQL),
     ConstructVirtualResultSet(TriggersColumnsDynArray));
 end;
 {$IFDEF FPC} {$POP} {$ENDIF}
@@ -1353,13 +1380,13 @@ begin
     'SELECT NULL AS PROCEDURE_CAT, NULL AS PROCEDURE_SCHEM,'
     + ' RDB$PROCEDURE_NAME AS PROCEDURE_NAME, NULL AS PROCEDURE_OVERLOAD,'
     + ' NULL AS RESERVED1, NULL AS RESERVED2, RDB$DESCRIPTION AS REMARKS,'
-    + ' IIF(RDB$PROCEDURE_OUTPUTS IS NULL, %d, %d) AS PROCEDURE_TYPE'
+    + ' case when RDB$PROCEDURE_OUTPUTS IS NULL then %d else %d end AS PROCEDURE_TYPE'
     + ' FROM RDB$PROCEDURES'
     + ' WHERE 1=1' + AppendCondition(LProcedureNamePattern),
     [Ord(prtNoResult), Ord(prtReturnsResult)]);
 
   Result := CopyToVirtualResultSet(
-    GetConnection.CreateStatement.ExecuteQuery(SQL),
+    CreateStatement.ExecuteQuery(SQL),
     ConstructVirtualResultSet(ProceduresColumnsDynArray));
 end;
 {$IFDEF FPC} {$POP} {$ENDIF}
@@ -1473,7 +1500,7 @@ begin
       + ' ORDER BY  P.RDB$PROCEDURE_NAME,'
       + ' PP.RDB$PARAMETER_TYPE, PP.RDB$PARAMETER_NUMBER';
 
-  with GetConnection.CreateStatement.ExecuteQuery(SQL) do
+  with CreateStatement.ExecuteQuery(SQL) do
   begin
     while Next do
     begin
@@ -1576,7 +1603,7 @@ begin
   SQL := SQL + 'ORDER BY RDB$RELATION_NAME';
 
   Result := CopyToVirtualResultSet(
-    GetConnection.CreateStatement.ExecuteQuery(SQL),
+    CreateStatement.ExecuteQuery(SQL),
     ConstructVirtualResultSet(TableColumnsDynArray));
 end;
 
@@ -1734,7 +1761,7 @@ begin
       + ' WHERE 1=1 ' +  AppendCondition(LTableNamePattern) + AppendCondition(LColumnNamePattern)
       + ' ORDER BY a.RDB$RELATION_NAME, a.RDB$FIELD_POSITION';
 
-  with GetConnection.CreateStatement.ExecuteQuery(SQL) do begin
+  with CreateStatement.ExecuteQuery(SQL) do begin
     while Next do begin
       BLRSubType := GetInt(FIELD_TYPE_Index);
       // For text fields subtype = 0, we get codepage number instead
@@ -1802,9 +1829,7 @@ Str_Size:   Result.UpdateInt(TableColColumnCharOctetLengthIndex, FieldLength*Get
       if L = 0 then
         P := GetPAnsiChar(DEFAULT_SOURCE_DOMAIN_Index, L);
       if P <> nil then begin
-        {      if StartsWith(Trim(UpperCase(DefaultValue)), 'DEFAULT') then
-          DefaultValue := Trim(StringReplace(DefaultValue, 'DEFAULT ', '',
-            [rfIgnoreCase]));}
+        ZSysUtils.Trim(L, P);
         if (L > 8) and SameText(P, Pointer(cDefault), Length(cDefault)) then begin
           Inc(P, 8);
           Dec(L, 8);
@@ -1908,7 +1933,7 @@ begin
     + ' ORDER BY a.RDB$FIELD_NAME, a.RDB$PRIVILEGE';
 
   Result := CopyToVirtualResultSet(
-    GetConnection.CreateStatement.ExecuteQuery(SQL),
+    CreateStatement.ExecuteQuery(SQL),
      ConstructVirtualResultSet(TableColPrivColumnsDynArray));
 end;
 
@@ -1964,7 +1989,7 @@ begin
     + ' ORDER BY a.RDB$RELATION_NAME, a.RDB$PRIVILEGE';
 
   Result := CopyToVirtualResultSet(
-    GetConnection.CreateStatement.ExecuteQuery(SQL),
+    CreateStatement.ExecuteQuery(SQL),
      ConstructVirtualResultSet(TablePrivColumnsDynArray));
 end;
 
@@ -2055,7 +2080,7 @@ begin
     + ' ORDER BY a.RDB$RELATION_NAME, b.RDB$FIELD_NAME';
 
   Result := CopyToVirtualResultSet(
-    GetConnection.CreateStatement.ExecuteQuery(SQL),
+    CreateStatement.ExecuteQuery(SQL),
     ConstructVirtualResultSet(PrimaryKeyColumnsDynArray));
 end;
 
@@ -2338,7 +2363,7 @@ begin
     AppendCondition(PKTable)+ AppendCondition(FKTable)+
     ' ORDER BY RELC_FK.RDB$RELATION_NAME, IS_FK.RDB$FIELD_POSITION';
   Result := CopyToVirtualResultSet(
-    GetConnection.CreateStatement.ExecuteQuery(SQL),
+    CreateStatement.ExecuteQuery(SQL),
     ConstructVirtualResultSet(CrossRefColumnsDynArray));
 end;
 
@@ -2399,7 +2424,7 @@ begin
 
   SQL := 'SELECT RDB$TYPE, RDB$TYPE_NAME FROM RDB$TYPES' +
     ' WHERE RDB$FIELD_NAME = ''RDB$FIELD_TYPE''';
-  with GetConnection.CreateStatement.ExecuteQuery(SQL) do
+  with CreateStatement.ExecuteQuery(SQL) do
   begin
     while Next do
     begin
@@ -2506,7 +2531,7 @@ begin
     + ' ISGMT.RDB$FIELD_POSITION, ISGMT.RDB$FIELD_NAME, I.RDB$INDEX_TYPE,'
     + ' I.RDB$SEGMENT_COUNT ORDER BY 1,2,3,4';
 
-  with GetConnection.CreateStatement.ExecuteQuery(SQL) do
+  with CreateStatement.ExecuteQuery(SQL) do
   begin
     while Next do
     begin
@@ -2547,22 +2572,16 @@ begin
     + AppendCondition(LSequenceNamePattern);
 
   Result := CopyToVirtualResultSet(
-    GetConnection.CreateStatement.ExecuteQuery(SQL),
+    CreateStatement.ExecuteQuery(SQL),
     ConstructVirtualResultSet(SequenceColumnsDynArray));
 end;
 {$IFDEF FPC} {$POP} {$ENDIF}
 
 procedure TZInterbase6DatabaseMetadata.SetUTF8CodePageInfo;
 begin
-  FMetaConSettings := FConSettings^;
-  FMetaConSettings.ClientCodePage := GetConnection.GetIZPlainDriver.ValidateCharEncoding('UTF8');
-  FMetaConSettings.AutoEncode := true; //Get/Set-String related
-  FConSettings := @FMetaConSettings;
-  {$IFDEF WITH_LCONVENCODING}
-  SetConvertFunctions(FConSettings^.CTRL_CP, FConSettings^.ClientCodePage.CP,
-    FConSettings^.PlainConvertFunc, FConSettings^.DbcConvertFunc);
-  {$ENDIF}
-  ZEncoding.SetConvertFunctions(FConSettings);
+  if FInfo = nil then
+    FInfo := TStringList.Create;
+  FInfo.Values[DS_Props_IsMetadataResultSet] := 'True';
 end;
 
 {**
@@ -2615,7 +2634,7 @@ begin
       + ' where C.RDB$CHARACTER_SET_NAME <> ''NONE'' AND T.RDB$FIELD_NAME=''RDB$FIELD_TYPE'''
       + AppendCondition(LColumnNamePattern)+AppendCondition(LTableNamePattern)
       + ' order by R.RDB$FIELD_POSITION';
-    with GetConnection.CreateStatement.ExecuteQuery(SQL) do
+    with CreateStatement.ExecuteQuery(SQL) do
     begin
       if Next then
       begin
@@ -2641,7 +2660,7 @@ begin
          'FROM RDB$DATABASE D '+
          'LEFT JOIN RDB$CHARACTER_SETS CS on '+
          'D.RDB$CHARACTER_SET_NAME = CS.RDB$CHARACTER_SET_NAME';
-  with GetConnection.CreateStatement.ExecuteQuery(SQL) do
+  with CreateStatement.ExecuteQuery(SQL) do
   begin
     if Next then
     begin
@@ -2671,7 +2690,7 @@ begin
   SQL := 'SELECT RDB$CHARACTER_SET_NAME, RDB$CHARACTER_SET_ID FROM RDB$CHARACTER_SETS';
 
   Result := CopyToVirtualResultSet(
-    GetConnection.CreateStatement.ExecuteQuery(SQL),
+    CreateStatement.ExecuteQuery(SQL),
     ConstructVirtualResultSet(CharacterSetsColumnsDynArray));
 end;
 {$ENDIF ZEOS_DISABLE_INTERBASE} //if set we have an empty unit

@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -387,8 +387,8 @@ begin
     LastUpdateCount := Result;
   end;
   { Autocommit statement. }
-  if Connection.GetAutoCommit then
-    Connection.Commit;
+//  if Connection.GetAutoCommit then
+//    Connection.Commit;
   { Logging SQL Command and values }
   inherited ExecuteUpdatePrepared;
 end;

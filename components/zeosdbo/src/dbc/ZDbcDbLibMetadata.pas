@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -65,14 +65,17 @@ type
    IZDbLibDatabaseInfo = Interface(IZDataBaseInfo)
      ['{A99F9433-6A2F-40C8-9D15-96FE5632654E}']
      procedure InitIdentifierCase(const Collation: String);
+     procedure SetProductVersion(const Value: String);
    End;
   // technobot 2008-06-25 - methods moved as is from TZDbLibBaseDatabaseMetadata:
   {** Implements MsSql Database Information. }
   TZDbLibDatabaseInfo = class(TZAbstractDatabaseInfo, IZDbLibDatabaseInfo)
   private
     fCaseIdentifiers: TZIdentifierCase;
+    fProductVersion: String;
   public
     procedure InitIdentifierCase(const Collation: String);
+    procedure SetProductVersion(const Value: String);
   public
     // database/driver/server info:
     function GetDatabaseProductName: string; override;
@@ -210,14 +213,12 @@ type
   TZMsSqlDatabaseInfo = class(TZDbLibDatabaseInfo)
     // database/driver/server info:
     function GetDatabaseProductName: string; override;
-    function GetDatabaseProductVersion: string; override;
     function GetDriverName: string; override;
   end;
 
   TZSybaseDatabaseInfo = class(TZDbLibDatabaseInfo)
     // database/driver/server info:
     function GetDatabaseProductName: string; override;
-    function GetDatabaseProductVersion: string; override;
     function GetDriverName: string; override;
   end;
 
@@ -314,7 +315,7 @@ type
 implementation
 {$IFNDEF ZEOS_DISABLE_DBLIB} //if set we have an empty unit
 
-uses ZFastCode, ZDbcDbLibUtils, ZDbcDbLib;
+uses ZFastCode, ZDbcDbLibUtils;
 
 { TZDbLibDatabaseInfo }
 
@@ -337,7 +338,7 @@ end;
 }
 function TZDbLibDatabaseInfo.GetDatabaseProductVersion: string;
 begin
-  Result := '';
+  Result := fProductVersion;
 end;
 
 {**
@@ -403,6 +404,11 @@ end;
   case insensitive and store them in lower case?
   @return <code>true</code> if so; <code>false</code> otherwise
 }
+procedure TZDbLibDatabaseInfo.SetProductVersion(const Value: String);
+begin
+  fProductVersion := Value;
+end;
+
 function TZDbLibDatabaseInfo.StoresLowerCaseIdentifiers: Boolean;
 begin
   Result := false;
@@ -521,11 +527,15 @@ end;
 
 procedure TZDbLibDatabaseInfo.InitIdentifierCase(const Collation: String);
 begin
+  (*
   if ZFastCode.Pos('_CI_', Collation) > 0
   then fCaseIdentifiers := icLower
   else if (ZFastCode.Pos('_BIN', Collation) > 0){SQLServer} or (ZFastCode.Pos('bin_', Collation) > 0) {Sybase}
   then fCaseIdentifiers := icSpecial
   else fCaseIdentifiers := icMixed;
+  *)
+  // SQL Server _always_ stores mixed case identifiers. Matching is done via collations. Zeos should not tamper with Identifiers.
+  fCaseIdentifiers := icMixed;
 end;
 
 {**
@@ -1369,15 +1379,6 @@ begin
 end;
 
 {**
-  What's the version of this database product?
-  @return database version
-}
-function TZMsSqlDatabaseInfo.GetDatabaseProductVersion: string;
-begin
-  Result := '7+';
-end;
-
-{**
   What's the name of this JDBC driver?
   @return JDBC driver name
 }
@@ -1393,15 +1394,6 @@ end;
 function TZSybaseDatabaseInfo.GetDatabaseProductName: string;
 begin
   Result := 'Sybase';
-end;
-
-{**
-  What's the version of this database product?
-  @return database version
-}
-function TZSybaseDatabaseInfo.GetDatabaseProductVersion: string;
-begin
-  Result := '12+';
 end;
 
 {**
@@ -1798,14 +1790,20 @@ var
   SQLType: TZSQLType;
   tmp: String;
   ResultHasRows: Boolean;
+  Connection: IZConnection;
+  Statement: IZStatement;
 begin
   ResultHasRows := False;
   Result:=inherited UncachedGetColumns(Catalog, SchemaPattern, TableNamePattern, ColumnNamePattern);
-
-  with GetStatement.ExecuteQuery('exec '+GetSP_Prefix(Catalog, SchemaPattern)+'sp_columns '+
+  Connection := GetConnection;
+  Statement := Connection.CreateStatement;
+  if Connection.GetHostVersion < EncodeSQLVersioning(9, 0, 0) then
+    tmp := ' sp_columns '
+  else
+    tmp := ' sys.sp_columns ';
+  with Statement.ExecuteQuery('exec' + tmp +
       ComposeObjectString(TableNamePattern)+', '+ComposeObjectString(SchemaPattern)+', '+
-      ComposeObjectString(Catalog)+', '+ComposeObjectString(ColumnNamePattern)) do
-  begin
+      ComposeObjectString(Catalog)+', '+ComposeObjectString(ColumnNamePattern)) do begin
     while Next do
     begin
       ResultHasRows := True;
@@ -1855,7 +1853,7 @@ begin
       Result.UpdateInt(TableColColumnCharOctetLengthIndex, GetIntByName('CHAR_OCTET_LENGTH'));
       Result.UpdateInt(TableColColumnOrdPosIndex, GetIntByName('ORDINAL_POSITION'));
       Result.UpdateString(TableColColumnIsNullableIndex, tmp);
-      if (GetConnection as IZDBLibConnection).GetProvider = dpMsSQL then
+      if Connection.GetServerProvider = spMsSQL then
         Result.UpdateBoolean(TableColColumnSearchableIndex,
           not (GetSmallByName('SS_DATA_TYPE') in [34, 35]));
       Result.InsertRow;
@@ -1864,11 +1862,14 @@ begin
   end;
 
   if ResultHasRows then begin
-
     // hint by Jan: I am not sure wether this statement still works with SQL Server 2000 or before.
     Result.BeforeFirst;
-    with GetStatement.ExecuteQuery(
-      Format('select c.colid, c.name, c.type, c.prec, c.scale, c.colstat, c.status, c.iscomputed '
+    if Connection.GetHostVersion < EncodeSQLVersioning(9, 0, 0) then
+      Tmp :=  'select c.colid, c.name, c.type, c.prec, '+
+        'c.scale, c.colstat, c.status, c.iscomputed from syscolumns c '+
+        'inner join sysobjects o on (o.id = c.id) where o.name like '+
+      DeComposeObjectString(TableNamePattern)+' escape ''' + GetDataBaseInfo.GetSearchStringEscape + ''' and c.number=0 order by colid'
+    else Tmp := Format('select c.colid, c.name, c.type, c.prec, c.scale, c.colstat, c.status, c.iscomputed '
       + ' from syscolumns c '
       + '   inner join sys.sysobjects o on (o.id = c.id) '
       + '   inner join sys.schemas s on (o.uid = s.schema_id) '
@@ -1876,11 +1877,10 @@ begin
       + '   and (o.name like %0:s escape ''%2:s'' or (%0:s is null)) '
       + '   and (s.name like %1:s escape ''%2:s'' or (%1:s is null)) '
       + ' order by colid ',
-      [DeComposeObjectString(TableNamePattern), DeComposeObjectString(SchemaPattern), GetDataBaseInfo.GetSearchStringEscape])) do
+      [DeComposeObjectString(TableNamePattern), DeComposeObjectString(SchemaPattern), GetDataBaseInfo.GetSearchStringEscape]);
+    with Statement.ExecuteQuery(Tmp) do begin
       // hint http://blog.sqlauthority.com/2007/04/30/case-sensitive-sql-query-search/ for the collation setting to get a case sensitive behavior
-    begin
-      while Next do
-      begin
+      while Next do begin
         Result.Next;
         Result.UpdateBoolean(TableColColumnAutoIncIndex, (GetSmallByName('status') and $80) <> 0);
         Result.UpdateBoolean(TableColColumnSearchableIndex,
@@ -1893,8 +1893,7 @@ begin
           Result.GetBoolean(TableColColumnWritableIndex));
         Result.UpdateBoolean(TableColColumnReadonlyIndex,
           not Result.GetBoolean(TableColColumnWritableIndex));
-        if Result.GetBoolean(TableColColumnAutoIncIndex) then
-        begin
+        if Result.GetBoolean(TableColColumnAutoIncIndex) then begin
           Result.UpdateSmall(TableColColumnNullableIndex, 1);
           Result.UpdateString(TableColColumnIsNullableIndex, 'YES');
         end;
@@ -1936,10 +1935,16 @@ end;
 }
 function TZMsSqlDatabaseMetadata.UncachedGetColumnPrivileges(const Catalog: string;
   const Schema: string; const Table: string; const ColumnNamePattern: string): IZResultSet;
+var
+  procname: String;
 begin
     Result:=inherited UncachedGetColumnPrivileges(Catalog, Schema, Table, ColumnNamePattern);
 
-    with GetStatement.ExecuteQuery('exec '+GetSP_Prefix(Catalog, Schema)+'sp_column_privileges '+
+    if GetConnection.GetHostVersion < EncodeSQLVersioning(9, 0, 0) then
+      procname := 'sp_column_privileges'
+    else
+      procname := 'sys.sp_column_privileges';
+    with GetStatement.ExecuteQuery('exec ' + procname + ' '+
       ComposeObjectString(Table)+', '+ComposeObjectString(Schema)+', '+
       ComposeObjectString(Catalog)+', '+ComposeObjectString(ColumnNamePattern)) do
     begin
@@ -2904,7 +2909,7 @@ begin
   TempTable := RemoveQuotesFromIdentifier(TableNamePattern);
   TempColumn := RemoveQuotesFromIdentifier(ColumnNamePattern);
 
-  with GetStatement.ExecuteQuery('exec '+GetSP_Prefix(Catalog, SchemaPattern)+
+  with GetStatement.ExecuteQuery('exec dbo.' +
     'sp_jdbc_columns '+ComposeObjectString(TempTable)+', '+
     ComposeObjectString(TempSchema)+', '+ComposeObjectString(TempCatalog)+', '+
     ComposeObjectString(TempColumn)) do

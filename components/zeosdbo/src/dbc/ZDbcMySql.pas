@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -101,7 +101,7 @@ type
     FMaxLobSize: ULong;
     FDatabaseName: String;
     FIKnowMyDatabaseName, FMySQL_FieldType_Bit_1_IsBoolean,
-    FSupportsBitType: Boolean;
+    FSupportsBitType, FSupportsReadOnly: Boolean;
     FPlainDriver: IZMySQLPlainDriver;
     procedure InternalSetIsolationLevel(Level: TZTransactIsolationLevel);
   protected
@@ -128,6 +128,7 @@ type
 
     procedure SetTransactionIsolation(Level: TZTransactIsolationLevel); override;
     procedure SetAutoCommit(Value: Boolean); override;
+    procedure SetReadOnly(Value: Boolean); override;
     {ADDED by fduenas 15-06-2006}
     function GetClientVersion: Integer; override;
     function GetHostVersion: Integer; override;
@@ -137,6 +138,7 @@ type
     function GetEscapeString(const Value: ZWideString): ZWideString; override;
     function GetEscapeString(const Value: RawByteString): RawByteString; override;
     function GetDatabaseName: String;
+	  function GetServerProvider: TZServerProvider; override;
     function MySQL_FieldType_Bit_1_IsBoolean: Boolean;
     function SupportsFieldTypeBit: Boolean;
   end;
@@ -296,6 +298,10 @@ const
     'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED',
     'SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ',
     'SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE');
+  MySQLSessionTransactionReadOnly: array[Boolean] of
+    {$IFNDEF NO_ANSISTRING}AnsiString{$ELSE}RawByteString{$ENDIF} = (
+    'SET SESSION TRANSACTION READ ONLY',
+    'SET SESSION TRANSACTION READ WRITE');
 procedure TZMySQLConnection.InternalSetIsolationLevel(
   Level: TZTransactIsolationLevel);
 begin
@@ -390,9 +396,14 @@ begin
           MYSQL_OPT_CONNECT_TIMEOUT,
           MYSQL_OPT_PROTOCOL,
           MYSQL_OPT_READ_TIMEOUT,
-          MYSQL_OPT_WRITE_TIMEOUT:
-            if Info.Values[sMyOpt] <> '' then
-            begin
+          MYSQL_OPT_WRITE_TIMEOUT,
+          MYSQL_OPT_MAX_ALLOWED_PACKET,
+          MYSQL_OPT_NET_BUFFER_LENGTH,
+          MYSQL_OPT_SSL_MODE,
+          MYSQL_OPT_RETRY_COUNT,
+          MYSQL_OPT_SSL_FIPS_MODE,
+          MYSQL_OPT_ZSTD_COMPRESSION_LEVEL:
+            if Info.Values[sMyOpt] <> '' then begin
 setuint:      UIntOpt := StrToIntDef(Info.Values[sMyOpt], 0);
               GetPlainDriver.SetOptions(FHandle, myopt, @UIntOpt);
             end;
@@ -419,15 +430,18 @@ setuint:      UIntOpt := StrToIntDef(Info.Values[sMyOpt], 0);
           MYSQL_OPT_SSL_VERIFY_SERVER_CERT,
           MYSQL_ENABLE_CLEARTEXT_PLUGIN,
           MYSQL_OPT_CAN_HANDLE_EXPIRED_PASSWORDS,
-          MYSQL_OPT_SSL_ENFORCE:
-            if Info.Values[sMyOpt] <> '' then
-            begin
+          MYSQL_OPT_SSL_ENFORCE,
+          MYSQL_OPT_GET_SERVER_PUBLIC_KEY,
+          MYSQL_OPT_OPTIONAL_RESULTSET_METADATA:
+            if Info.Values[sMyOpt] <> '' then begin
               MyBoolOpt := Ord(StrToBoolEx(Info.Values[sMyOpt]));
               GetPlainDriver.SetOptions(FHandle, myopt, @MyBoolOpt);
             end;
           { unsigned char * options }
           MYSQL_OPT_SSL_KEY, MYSQL_OPT_SSL_CERT,
-          MYSQL_OPT_SSL_CA, MYSQL_OPT_SSL_CAPATH, MYSQL_OPT_SSL_CIPHER: ;//skip, processed down below
+          MYSQL_OPT_SSL_CA, MYSQL_OPT_SSL_CAPATH, MYSQL_OPT_SSL_CIPHER,
+          MYSQL_OPT_TLS_CIPHERSUITES,
+          MYSQL_OPT_COMPRESSION_ALGORITHMS: ;//skip, processed down below
           else
             if Info.Values[sMyOpt] <> '' then
               GetPlainDriver.SetOptions(FHandle, myopt, PAnsiChar(
@@ -541,10 +555,20 @@ setuint:      UIntOpt := StrToIntDef(Info.Values[sMyOpt], 0);
     FMySQL_FieldType_Bit_1_IsBoolean := StrToBoolEx(Info.Values['MySQL_FieldType_Bit_1_IsBoolean']);
     (GetMetadata as IZMySQLDatabaseMetadata).SetMySQL_FieldType_Bit_1_IsBoolean(FMySQL_FieldType_Bit_1_IsBoolean);
     FSupportsBitType := (
-      (    GetPlainDriver.IsMariaDBDriver and (ClientVersion >= 100109) ) or
-      (not GetPlainDriver.IsMariaDBDriver and (ClientVersion >=  50003) ) ) and (GetHostVersion >= EncodeSQLVersioning(5,0,3));
+      (    FPlainDriver.IsMariaDBDriver and (ClientVersion >= 100109) ) or
+      (not FPlainDriver.IsMariaDBDriver and (ClientVersion >=  50003) ) ) and (GetHostVersion >= EncodeSQLVersioning(5,0,3));
+    //if not explizit !un!set -> assume as default since Zeos 7.3
+    with (GetMetadata as IZMySQLDatabaseMetadata) do begin
+      SetMySQL_FieldType_Bit_1_IsBoolean(FMySQL_FieldType_Bit_1_IsBoolean);
+      FSupportsReadOnly := ( IsMariaDB and (GetHostVersion >= EncodeSQLVersioning(10,0,0))) or
+                           ( IsMySQL and (GetHostVersion >= EncodeSQLVersioning( 5,6,0)));
+      SetDataBaseName(GetDatabaseName);
+    end;
+    if FSupportsReadOnly and ReadOnly then begin
+      ReadOnly := False;
+      SetReadOnly(True);
+    end;
 
-    (GetMetadata as IZMySQLDatabaseMetadata).SetDataBaseName(GetDatabaseName);
   except
     GetPlainDriver.Close(FHandle);
     FHandle := nil;
@@ -764,6 +788,32 @@ begin
 end;
 
 {**
+  Puts this connection in read-only mode as a hint to enable
+  database optimizations.
+
+  <P><B>Note:</B> This method cannot be called while in the
+  middle of a transaction.
+
+  @param readOnly true enables read-only mode; false disables
+    read-only mode.
+}
+procedure TZMySQLConnection.SetReadOnly(Value: Boolean);
+begin
+  if Value <> ReadOnly then begin
+    if not Closed then begin
+      if not FSupportsReadOnly then
+        raise EZSQLException.Create(SUnsupportedOperation);
+      if GetPlainDriver.ExecRealQuery(FHandle,
+        Pointer(MySQLSessionTransactionReadOnly[Value]), Length(MySQLSessionTransactionReadOnly[Value])) <> 0 then
+          CheckMySQLError(GetPlainDriver, FHandle, lcTransaction, MySQLSessionTransactionReadOnly[Value], ConSettings);
+      if DriverManager.HasLoggingListener then
+        DriverManager.LogMessage(lcTransaction, ConSettings^.Protocol, MySQLSessionTransactionReadOnly[Value]);
+    end;
+    ReadOnly := Value;
+  end;
+end;
+
+{**
   Sets a new transact isolation level.
   @param Level a new transact isolation level.
 }
@@ -850,6 +900,11 @@ end;
 function TZMySQLConnection.GetConnectionHandle: PMySQL;
 begin
   Result := FHandle;
+end;
+
+function TZMySQLConnection.GetServerProvider: TZServerProvider;
+begin
+  Result := spMySQL;
 end;
 
 {**

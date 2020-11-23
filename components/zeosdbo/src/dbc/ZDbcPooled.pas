@@ -5,7 +5,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -186,6 +186,7 @@ type
     function GetTestMode : Byte;
     procedure SetTestMode(Mode: Byte);
     {$ENDIF}
+    function GetServerProvider: TZServerProvider;	
   end;
 
   TZDbcPooledConnectionDriver = class(TZAbstractDriver)
@@ -547,6 +548,11 @@ end;
 function TZDbcPooledConnection.GetParameters: TStrings;
 begin
   Result := GetConnection.GetParameters;
+end;
+
+function TZDbcPooledConnection.GetServerProvider: TZServerProvider;
+begin
+  Result := GetConnection.GetServerProvider;
 end;
 
 function TZDbcPooledConnection.GetTransactionIsolation: TZTransactIsolationLevel;

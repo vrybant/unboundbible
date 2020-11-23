@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -398,7 +398,7 @@ begin
         if (TokenType <> ttEOF) and (TokenValue <> FParamChar) then
         begin
           { Check for correct parameter type. }
-          if not (TokenType in [ttWord, ttQuoted, ttQuotedIdentifier, ttKeyWord]) then
+          if not (TokenType in [ttWord, ttQuoted, ttQuotedIdentifier, ttKeyWord, ttInteger]) then
             raise EZDatabaseError.Create(SIncorrectToken);
 
           SQL := SQL + '?';

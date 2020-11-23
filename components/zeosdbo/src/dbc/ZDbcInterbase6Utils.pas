@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -254,7 +254,7 @@ function GetDBSQLDialect(const PlainDriver: IZInterbasePlainDriver;
 { Interbase statement functions}
 function PrepareStatement(const PlainDriver: IZInterbasePlainDriver;
   Handle: PISC_DB_HANDLE; TrHandle: PISC_TR_HANDLE;
-  Dialect: Word; const SQL: RawByteString; ConSettings: PZConSettings;
+  Dialect: Word; const SQL: RawByteString; const Connection: IZConnection;
   var StmtHandle: TISC_STMT_HANDLE): TZIbSqlStatementType;
 procedure PrepareResultSqlData(const PlainDriver: IZInterbasePlainDriver;
   const Dialect: Word; const SQL: RawByteString;
@@ -322,7 +322,7 @@ const
     10000000,1000000,100000,10000,1000,100,10);
 
   { count database parameters }
-  MAX_DPB_PARAMS = 90;
+  MAX_DPB_PARAMS = 95;
   { prefix database parameters names it used in paramters scann procedure }
   DPBPrefix = 'isc_dpb_';
   { list database parameters and their apropriate numbers }
@@ -417,7 +417,12 @@ const
     (Name: 'isc_dpb_config';                ValueType: pvtString; Number: isc_dpb_config),
     (Name: 'isc_dpb_nolinger';              ValueType: pvtNone; Number: isc_dpb_nolinger),
     (Name: 'isc_dpb_reset_icu';             ValueType: pvtNone; Number: isc_dpb_reset_icu),
-    (Name: 'isc_dpb_map_attach';            ValueType: pvtNone; Number: isc_dpb_map_attach)
+    (Name: 'isc_dpb_map_attach';            ValueType: pvtNone; Number: isc_dpb_map_attach),
+    (Name: 'isc_dpb_session_time_zone';     ValueType: pvtString; Number: isc_dpb_session_time_zone), // this is an assumption and needs to be tested!
+    (Name: 'isc_dpb_set_db_replica';        ValueType: pvtNone; Number: isc_dpb_set_db_replica),      // I have no clue how to use that
+    (Name: 'isc_dpb_set_bind';              ValueType: pvtString; Number: isc_dpb_set_bind),
+    (Name: 'isc_dpb_decfloat_round';        ValueType: pvtString; Number: isc_dpb_decfloat_round),
+    (Name: 'isc_dpb_decfloat_traps';        ValueType: pvtString; Number: isc_dpb_decfloat_traps)
   );
 
   { count transaction parameters }
@@ -917,21 +922,36 @@ end;
 }
 function PrepareStatement(const PlainDriver: IZInterbasePlainDriver;
   Handle: PISC_DB_HANDLE; TrHandle: PISC_TR_HANDLE;
-  Dialect: Word; const SQL: RawByteString; ConSettings: PZConSettings;
+  Dialect: Word; const SQL: RawByteString; const Connection: IZConnection;
   var StmtHandle: TISC_STMT_HANDLE): TZIbSqlStatementType;
 var
   StatusVector: TARRAY_ISC_STATUS;
   iError : Integer; //Error for disconnect
+  L,MaxLen: LengthInt;
+  ConSettings: PZConSettings;
 begin
   { Allocate an sql statement }
+  ConSettings := Connection.GetConSettings;
   if StmtHandle = 0 then
   begin
     PlainDriver.isc_dsql_allocate_statement(@StatusVector, Handle, @StmtHandle);
     CheckInterbase6Error(PlainDriver, StatusVector, ConSettings, lcOther, SQL);
   end;
   { Prepare an sql statement }
+  //get overlong string running:
+  //see request https://zeoslib.sourceforge.io/viewtopic.php?f=40&p=147689#p147689
+  //http://tracker.firebirdsql.org/browse/CORE-1117?focusedCommentId=31493&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#action_31493
+  L := Length(SQL);
+  if L > High(Word) then begin//test word range overflow
+    if ZFastCode.Pos(RawByteString(#0), SQL) > 0 then
+      raise EZSQLException.Create('Statements longer than 64KB may not contain the #0 character.');
+    MaxLen := Connection.GetMetadata.GetDatabaseInfo.GetMaxStatementLength;
+    if L > MaxLen then
+      raise Exception.Create('Statements longer than ' + ZFastCode.IntToStr(MaxLen) + ' bytes are not supported by your database.');
+    L := 0; //fall back to C-String behavior
+  end;
   PlainDriver.isc_dsql_prepare(@StatusVector, TrHandle, @StmtHandle,
-    Length(SQL), Pointer(SQL), Dialect, nil);
+    Word(L), Pointer(SQL), Dialect, nil);
 
   iError := CheckInterbase6Error(PlainDriver, StatusVector, ConSettings, lcPrepStmt, SQL); //Check for disconnect AVZ
 
@@ -2908,7 +2928,7 @@ begin
       case ParamsSQLDA.GetIbSqlType(ParamIndex) and not (1) of
         SQL_VARYING:
           begin
-            CodePageInfo := PlainDriver.ValidateCharEncoding(ParamsSQLDA.GetIbSqlSubType(ParamIndex));
+            CodePageInfo := PlainDriver.ValidateCharEncoding(ParamsSQLDA.GetIbSqlSubType(ParamIndex) and 255);
             AddParam([' VARCHAR(', IntToRaw(ParamsSQLDA.GetIbSqlLen(ParamIndex) div CodePageInfo.CharWidth),
             ') CHARACTER SET ', {$IFDEF UNICODE}UnicodeStringToASCII7{$ENDIF}(CodePageInfo.Name), ' = ?' ], TypeTokens[ParamIndex]);
           end;

@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -250,17 +250,14 @@ begin
     if Assigned(FUpdateObject) then
       FUpdateObject.RemoveFreeNotification(Self);
     FUpdateObject := Value;
-    if Assigned(FUpdateObject) then
+    if Assigned(FUpdateObject) then begin
       FUpdateObject.FreeNotification(Self);
-    if Assigned(FUpdateObject) then
       FUpdateObject.DataSet := Self;
-    if Active and (CachedResultSet <> nil) then
-    begin
-      if FUpdateObject <> nil then
-        CachedResultSet.SetResolver(FUpdateObject)
-      else
-        CachedResultSet.SetResolver(CachedResolver);
     end;
+    if Active and (CachedResultSet <> nil) then
+      if FUpdateObject <> nil
+      then CachedResultSet.SetResolver(FUpdateObject)
+      else CachedResultSet.SetResolver(CachedResolver);
   end;
 end;
 
@@ -402,7 +399,7 @@ var
 begin
   if (CachedResultSet <> nil) and GetActiveBuffer(RowBuffer) then
   begin
-    RowNo := Integer(CurrentRows[CurrentRow - 1]);
+    RowNo := {%H-}Integer(CurrentRows[CurrentRow - 1]);
     CachedResultSet.MoveAbsolute(RowNo);
     RowAccessor.RowBuffer := RowBuffer;
     PostToResultSet(CachedResultSet, FieldsLookupTable, Fields, RowAccessor);
@@ -464,13 +461,13 @@ begin
     begin
       if Append then
       begin
-        CurrentRows.Add(Pointer(RowNo));
+        CurrentRows.Add({%H-}Pointer(RowNo));
         CurrentRow := CurrentRows.Count;
       end
       else
       begin
         CurrentRow := Max(CurrentRow, 1);
-        CurrentRows.Insert(CurrentRow - 1, Pointer(RowNo));
+        CurrentRows.Insert(CurrentRow - 1, {%H-}Pointer(RowNo));
       end;
     end;
   end;
@@ -575,7 +572,7 @@ begin
   begin
     Connection.ShowSqlHourGlass;
     try
-      RowNo := Integer(CurrentRows[CurrentRow - 1]);
+      RowNo := {%H-}Integer(CurrentRows[CurrentRow - 1]);
       CachedResultSet.MoveAbsolute(RowNo);
       try
         CachedResultSet.DeleteRow;
@@ -607,7 +604,7 @@ begin
   if (CachedResultSet <> nil) and GetActiveBuffer(RowBuffer)
     and (CurrentRow > 0) and (State = dsEdit) then
   begin
-    RowNo := Integer(CurrentRows[CurrentRow - 1]);
+    RowNo := {%H-}Integer(CurrentRows[CurrentRow - 1]);
     CachedResultSet.MoveAbsolute(RowNo);
     RowAccessor.RowBuffer := RowBuffer;
     FetchFromResultSet(CachedResultSet, FieldsLookupTable, Fields,

@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -1101,7 +1101,7 @@ begin
         if CaseInsensitive then begin
           if DecodedKeyValues[I].VType = vtString then begin
             DecodedKeyValues[I].VString := Uppercase(DecodedKeyValues[I].VString);
-            DecodedKeyValues[I].VUnicodeString := DecodedKeyValues[I].VString;
+            DecodedKeyValues[I].VUnicodeString := DecodedKeyValues{%H-}[I].VString;
           end else begin
             DecodedKeyValues[I].VUnicodeString :=
               {$IFDEF UNICODE}AnsiUpperCase{$ELSE}WideUpperCase{$ENDIF}(DecodedKeyValues[I].VUnicodeString);
@@ -1144,7 +1144,7 @@ begin
               if DecodedKeyValues[I].VType = vtString then
               begin
                 DecodedKeyValues[I].VString := Uppercase(DecodedKeyValues[I].VString);
-                DecodedKeyValues[I].VUnicodeString := DecodedKeyValues[I].VString;
+                DecodedKeyValues[I].VUnicodeString := DecodedKeyValues{%H-}[I].VString;
               end
               else
               begin
@@ -1373,7 +1373,7 @@ begin
       {$IF not defined(cpui386) and defined(FPC)}
       TimeStamp := MSecsToTimeStamp(System.Trunc(Int(TDateTime(Buffer^))));
       {$ELSE}
-        TimeStamp := MSecsToTimeStamp(TDateTime(Buffer^));
+        TimeStamp := MSecsToTimeStamp(TDateTime(Buffer^){%H-});
       {$IFEND}
     except
       TimeStamp.Time := 0;
@@ -1823,10 +1823,8 @@ procedure SetStatementParam(Index: Integer;
 var
   Stream: TStream;
   BlobData: TBlobData;
-  {$IFDEF WITH_WIDEMEMO}
   P: Pointer;
   UniTemp: ZWideString;
-  {$ENDIF}
 begin
   if Param.IsNull then
     Statement.SetNull(Index, ConvertDatasetToDbcType(Param.DataType))
@@ -1868,7 +1866,10 @@ begin
       ftCurrency, ftBCD:
         Statement.SetBigDecimal(Index, Param.AsCurrency);
       ftString, ftFixedChar:
-        Statement.SetString(Index, Param.AsString);
+        {$IFNDEF UNICODE}
+        if (TVarData(Param.Value).VType = varOleStr) {$IFDEF WITH_varUString} or (TVarData(Param.Value).VType = varUString){$ENDIF}
+        then Statement.SetUnicodeString(Index, Param.Value)
+        else {$ENDIF}Statement.SetString(Index, Param.AsString);
       {$IFDEF WITH_FTWIDESTRING}
       ftWideString:
         Statement.SetUnicodeString(Index, Param.AsWideString);
@@ -1887,21 +1888,31 @@ begin
         Statement.SetTime(Index, Param.AsTime);
       ftDateTime:
         Statement.SetTimestamp(Index, Param.AsDateTime);
-      ftMemo:
-        begin
-          {EgonHugeist: On reading a Param as Memo the Stream reads Byte-wise
-            on Changing to stUnicodeString/Delphi12Up a String is from
-            Type wide/unicode so we have to give him back as
-            Stream!}
-            {$IFDEF UNICODE}
-            Stream := Param.AsStream;
-            {$ELSE}
-            Stream := TStringStream.Create(Param.AsMemo);
-            {$ENDIF}
-          try
-            Statement.SetAsciiStream(Index, Stream);
-          finally
-            Stream.Free;
+      ftMemo: case TvarData(Param.Value).VType of
+          {$IFDEF WITH_varUString}varUString,{$ENDIF}
+          {$IFDEF UNICODE}varString,{$ENDIF} //otherwise we get a conversion warning
+          varOleStr: begin
+              UniTemp := Param.{$IFDEF UNICODE}AsMemo{$ELSE}Value{$ENDIF};
+              P :=  Pointer(UniTemp);
+              if P = nil then
+                P := PEmptyUnicodeString;
+              Statement.SetBlob(Index, stUnicodeStream, TZAbstractClob.CreateWithData(PWideChar(P), Length(UniTemp), Statement.GetConnection.GetConSettings));
+            end;
+          else begin
+            {EgonHugeist: On reading a Param as Memo the Stream reads Byte-wise
+              on Changing to stUnicodeString/Delphi12Up a String is from
+              Type wide/unicode so we have to give him back as
+              Stream!}
+              {$IFDEF UNICODE}
+              Stream := Param.AsStream;
+              {$ELSE}
+              Stream := TStringStream.Create(Param.AsMemo);
+              {$ENDIF}
+            try
+              Statement.SetAsciiStream(Index, Stream);
+            finally
+              Stream.Free;
+            end;
           end;
         end;
       {$IFDEF WITH_WIDEMEMO}

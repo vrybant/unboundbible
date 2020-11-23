@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -75,14 +75,15 @@ type
     FXSQLDA: PXSQLDA;
     FIZSQLDA: IZSQLDA;
     FPISC_DB_HANDLE: PISC_DB_HANDLE;
-    FBlobTemp: IZBlob;
     FPlainDriver: IZInterbasePlainDriver;
     FDialect: Word;
     FStmtType: TZIbSqlStatementType;
     FIBConnection: IZInterbase6Connection;
     FIBTransaction: IZIBTransaction;
+    FIsMetadataResultSet: Boolean;
     FClientCP: Word;
     FCodePageArray: TWordDynArray;
+    FBlobTemp: IZBlob;
     function GetIbSqlSubType(const Index: Word): Smallint; {$IF defined(WITH_INLINE) and not (defined(WITH_URW1135_ISSUE) or defined(WITH_URW1111_ISSUE))} inline; {$IFEND}
     function GetQuad(ColumnIndex: Integer): TISC_QUAD;
     procedure RegisterCursor;
@@ -188,8 +189,9 @@ uses
 {$IFNDEF FPC}
   Variants,
 {$ENDIF}
-  ZEncoding, ZFastCode, ZSysUtils, ZDbcMetadata, ZClasses,
-  ZDbcLogging;
+  ZEncoding, ZFastCode, ZSysUtils, ZClasses, ZTokenizer,
+  ZGenericSqlAnalyser,
+  ZDbcMetadata, ZDbcLogging;
 
 procedure GetPCharFromTextVar(SQLCode: SmallInt; sqldata: Pointer; sqllen: Short; out P: PAnsiChar; out Len: NativeUInt); {$IF defined(WITH_INLINE)} inline; {$IFEND}
 begin
@@ -259,6 +261,8 @@ begin
   FStmtHandleAddr := StatementHandleAddr;
   ResultSetType := rtForwardOnly;
   ResultSetConcurrency := rcReadOnly;
+  FIsMetadataResultSet := (ConSettings.ClientCodePage.ID = CS_NONE) and
+    (Statement.GetParameters.Values[DS_Props_IsMetadataResultSet] = 'True');
 
   FCodePageArray := FPlainDriver.GetCodePageArray;
   FClientCP := ConSettings^.ClientCodePage^.CP;
@@ -357,10 +361,14 @@ begin
           SQL_BLOB      :
             Begin
               FBlobTemp := GetBlob(ColumnIndex{$IFNDEF GENERIC_INDEX}+1{$ENDIF});  //localize interface to keep pointer alive
-              if FBlobTemp.IsClob then
-                Result := FBlobTemp.GetAnsiString
-              else
-                Result := FBlobTemp.GetString;
+              try
+                if FBlobTemp.IsClob then
+                  Result := FBlobTemp.GetAnsiString
+                else
+                  Result := FBlobTemp.GetString;
+              finally
+                FBlobTemp := nil;
+              end;
             End;
         else
           raise EZIBConvertError.Create(Format(SErrorConvertionField,
@@ -1456,10 +1464,14 @@ begin
           SQL_BLOB      :
             Begin
               FBlobTemp := GetBlob(ColumnIndex{$IFNDEF GENERIC_INDEX}+1{$ENDIF});  //localize interface to keep pointer alive
-              if FBlobTemp.IsClob then
-                Result := FBlobTemp.GetUTF8String
-              else
-                Result := FBlobTemp.GetString;
+              try
+                if FBlobTemp.IsClob then
+                  Result := FBlobTemp.GetUTF8String
+                else
+                  Result := FBlobTemp.GetString;
+              finally
+                FBlobTemp := nil;
+              end;
             End;
         else
           raise CreateIBConvertError(ColumnIndex, SQLCode)
@@ -1541,19 +1553,23 @@ begin
           SQL_BLOB      :
             Begin
               FBlobTemp := GetBlob(ColumnIndex{$IFNDEF GENERIC_INDEX}+1{$ENDIF});  //localize interface to keep pointer alive
-              if FBlobTemp.IsClob then
-                {$IFDEF UNICODE}
-                Result := FBlobTemp.GetUnicodeString
-                {$ELSE}
-                Result := ConSettings^.ConvFuncs.ZRawToString(FBlobTemp.GetRawByteString,
-                  ConSettings^.ClientCodePage^.CP, ConSettings^.CTRL_CP)
-                {$ENDIF}
-              else
-                {$IFDEF UNICODE}
-                Result := ASCII7ToUnicodeString(FBlobTemp.GetRawByteString);
-                {$ELSE}
-                Result := FBlobTemp.GetRawByteString;
-                {$ENDIF}
+              try
+                if FBlobTemp.IsClob then
+                  {$IFDEF UNICODE}
+                  Result := FBlobTemp.GetUnicodeString
+                  {$ELSE}
+                  Result := ConSettings^.ConvFuncs.ZRawToString(FBlobTemp.GetRawByteString,
+                    ConSettings^.ClientCodePage^.CP, ConSettings^.CTRL_CP)
+                  {$ENDIF}
+                else
+                  {$IFDEF UNICODE}
+                  Result := ASCII7ToUnicodeString(FBlobTemp.GetRawByteString);
+                  {$ELSE}
+                  Result := FBlobTemp.GetRawByteString;
+                  {$ENDIF}
+              finally
+                FBlobTemp := nil;
+              end;
             End;
         else raise CreateIBConvertError(ColumnIndex, SQLCode)
       end;
@@ -1576,6 +1592,7 @@ var
   P: PAnsiChar;
   Len: NativeUInt;
   CP: Word;
+  SQLType, SqlSubType: ISC_Short;
 begin
 {$IFNDEF DISABLE_CHECKING}
   CheckColumnConvertion(ColumnIndex, stString);
@@ -1586,15 +1603,16 @@ begin
   else begin
     P := GetPAnsiChar(ColumnIndex, Len);
     {$R-}
-    case FXSQLDA.sqlvar[ColumnIndex{$IFNDEF GENERIC_INDEX} -1{$ENDIF}].sqltype and not (1) of
+    SQLType := FXSQLDA.sqlvar[ColumnIndex{$IFNDEF GENERIC_INDEX} -1{$ENDIF}].sqltype and not (1);
+    SqlSubType := FXSQLDA.sqlvar[ColumnIndex{$IFNDEF GENERIC_INDEX} -1{$ENDIF}].sqlsubtype;
     {$IFDEF RangeCheckEnabled} {$R+} {$ENDIF}
-      SQL_TEXT, SQL_VARYING: begin
-          if ConSettings^.ClientCodePage^.ID = CS_NONE
-          then CP := FCodePageArray[GetIbSqlSubType(ColumnIndex{$IFNDEF GENERIC_INDEX} -1{$ENDIF}) and 255]
-          else CP := FClientCP;
-          Result := PRawToUnicode(P, Len, CP);
-        end;
-      else Result := Ascii7ToUnicodeString(P, Len);
+    if (SQLType = SQL_TEXT) or (SQLType = SQL_VARYING) or ((SQLType = SQL_BLOB) and (SqlSubType = 1)) then begin
+      if ConSettings^.ClientCodePage^.ID = CS_NONE
+      then CP := FCodePageArray[GetIbSqlSubType(ColumnIndex{$IFNDEF GENERIC_INDEX} -1{$ENDIF}) and 255]
+      else CP := FClientCP;
+      Result := PRawToUnicode(P, Len, CP);
+    end else begin
+      Result := Ascii7ToUnicodeString(P, Len);
     end;
   end;
 end;
@@ -1638,7 +1656,6 @@ begin
       LastRowNo := RowNo;
       Result := True;
     end else if Status = 100  then begin
-
       {no error occoured -> notify IsAfterLast and close the recordset}
       RowNo := RowNo + 1;
       if FPlainDriver.isc_dsql_free_statement(@StatusVector, @FStmtHandle, DSQL_CLOSE) <> 0 then
@@ -1702,7 +1719,8 @@ var
   FieldSqlType: TZSQLType;
   ColumnInfo: TZColumnInfo;
   ZCodePageInfo: PZCodePage;
-  CP: Word;
+  CPID: Word;
+label jmpLen;
 begin
   if FStmtHandle=0 then
     raise EZSQLException.Create(SCanNotRetrieveResultSetData);
@@ -1723,33 +1741,47 @@ begin
         ColumnType := FieldSqlType;
 
         case FieldSqlType of
-          stString, stUnicodeString:
-            begin
+          stString, stUnicodeString: begin
               //see test Bug#886194, we retrieve 565 as CP... the modula get returns the FBID of CP
-              CP := FIZSQLDA.GetIbSqlSubType(I) and 255;
+              CPID := FIZSQLDA.GetIbSqlSubType(I) and 255;
                 //see: http://sourceforge.net/p/zeoslib/tickets/97/
-              ZCodePageInfo := FPlainDriver.ValidateCharEncoding(CP); //get column CodePage info
+              ZCodePageInfo := FPlainDriver.ValidateCharEncoding(CPID); //get column CodePage info
               ColumnCodePage := ZCodePageInfo^.CP;
-              Precision := DataLen div ZCodePageInfo^.CharWidth;
+              if ConSettings^.ClientCodePage^.ID <> CS_NONE 
+              then Precision := DataLen div ZCodePageInfo^.CharWidth
+              else Precision := DataLen;
               if ColumnType = stString then begin
-                CharOctedLength := Precision * ConSettings^.ClientCodePage^.CharWidth;
+jmpLen:         CharOctedLength := DataLen;
                 ColumnDisplaySize := Precision;
               end else begin
                 CharOctedLength := Precision shl 1;
                 ColumnDisplaySize := Precision;
               end;
             end;
-          stAsciiStream, stUnicodeStream:
-            ColumnCodePage := ConSettings^.ClientCodePage^.CP;
-          else
-            begin
-              ColumnCodePage := zCP_NONE;
-              case FieldSqlType of
-                stBytes:
-                  Precision := DataLen;
-                stShort, stSmall, stInteger, stLong:
-                  Signed := True;
-                stCurrency, stBigDecimal: begin
+          stAsciiStream, stUnicodeStream: if ConSettings^.ClientCodePage^.ID = CS_NONE
+            then if FIsMetadataResultSet
+              then ColumnCodePage := zCP_UTF8
+              else begin //connected with CS_NONE no transliterions are made by FB
+                CPID := FIBConnection.GetSubTypeTextCharSetID(TableName,ColumnName);
+                if CPID = CS_NONE
+                then ZCodePageInfo := ConSettings^.ClientCodePage
+                else ZCodePageInfo := FPlainDriver.ValidateCharEncoding(CPID);
+                ColumnCodePage := ZCodePageInfo.CP;
+              end else ColumnCodePage := ConSettings^.ClientCodePage^.CP;
+          stBytes: begin
+              ColumnCodePage := 0;
+              Precision := DataLen;
+              goto jmpLen;
+            end;
+          stBinaryStream: ;
+          else begin
+            ColumnCodePage := zCP_NONE;
+            case FieldSqlType of
+              stBytes:
+                Precision := DataLen;
+              stShort, stSmall, stInteger, stLong:
+                Signed := True;
+              stCurrency, stBigDecimal: begin
                   Signed  := True;
                   Scale   := -FIZSQLDA.GetFieldScale(I);
                   //first digit does not count because of overflow (FB does not allow this)
@@ -1759,12 +1791,13 @@ begin
                     SQL_INT64:  Precision := 18;
                   end;
                 end;
-              end;
+              stTime, stTimeStamp: Scale := {-}4; //fb supports 10s of milli second fractions
             end;
+          end;
         end;
         ReadOnly := (TableName = '') or (ColumnName = '') or
           (ColumnName = 'RDB$DB_KEY') or (FieldSqlType = ZDbcIntfs.stUnknown);
-
+        Writable := not ReadOnly;
         Nullable := TZColumnNullableType(Ord(FIZSQLDA.IsNullable(I)));
         Scale := FIZSQLDA.GetFieldScale(I);
         CaseSensitive := UpperCase(ColumnName) <> ColumnName; //non quoted fiels are uppercased by default
@@ -1961,27 +1994,45 @@ var
   Current: TZColumnInfo;
   I: Integer;
   TableColumns: IZResultSet;
+  Connection: IZConnection;
+  Driver: IZDriver;
+  IdentifierConvertor: IZIdentifierConvertor;
+  Analyser: IZStatementAnalyser;
+  Tokenizer: IZTokenizer;
 {$ENDIF}
 begin
   {$IFDEF ZEOS_TEST_ONLY}
   inherited LoadColumns;
   {$ELSE}
-  if Metadata.GetConnection.GetDriver.GetStatementAnalyser.DefineSelectSchemaFromQuery(Metadata.GetConnection.GetDriver.GetTokenizer, SQL) <> nil then
-    for I := 0 to ResultSet.ColumnsInfo.Count - 1 do begin
-      Current := TZColumnInfo(ResultSet.ColumnsInfo[i]);
-      ClearColumn(Current);
-      if Current.TableName = '' then
-        continue;
-      TableColumns := Metadata.GetColumns(Current.CatalogName, Current.SchemaName, Metadata.AddEscapeCharToWildcards(Metadata.GetIdentifierConvertor.Quote(Current.TableName)),'');
-      if TableColumns <> nil then begin
-        TableColumns.BeforeFirst;
-        while TableColumns.Next do
-          if TableColumns.GetString(ColumnNameIndex) = Current.ColumnName then begin
-            FillColumInfoFromGetColumnsRS(Current, TableColumns, Current.ColumnName);
-            Break;
-          end;
+  Connection := Metadata.GetConnection;
+  Driver := Connection.GetDriver;
+  Analyser := Driver.GetStatementAnalyser;
+  Tokenizer := Driver.GetTokenizer;
+  IdentifierConvertor := Metadata.GetIdentifierConvertor;
+  try
+    if Analyser.DefineSelectSchemaFromQuery(Tokenizer, SQL) <> nil then
+      for I := 0 to ResultSet.ColumnsInfo.Count - 1 do begin
+        Current := TZColumnInfo(ResultSet.ColumnsInfo[i]);
+        ClearColumn(Current);
+        if Current.TableName = '' then
+          continue;
+        TableColumns := Metadata.GetColumns(Current.CatalogName, Current.SchemaName, Metadata.AddEscapeCharToWildcards(IdentifierConvertor.Quote(Current.TableName)),'');
+        if TableColumns <> nil then begin
+          TableColumns.BeforeFirst;
+          while TableColumns.Next do
+            if TableColumns.GetString(ColumnNameIndex) = Current.ColumnName then begin
+              FillColumInfoFromGetColumnsRS(Current, TableColumns, Current.ColumnName);
+              Break;
+            end;
+        end;
       end;
-    end;
+  finally
+    Driver := nil;
+    Connection := nil;
+    Analyser := nil;
+    Tokenizer := nil;
+    IdentifierConvertor := nil;
+  end;
   Loaded := True;
   {$ENDIF}
 end;

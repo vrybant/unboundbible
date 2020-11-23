@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -200,14 +200,14 @@ begin
   N := 0;
   Result := '';
   for I := 0 to High(CachedQueryRaw) do begin
-    SelectFound := (I = 0) and (AnsiUpperCase(CachedQueryRaw[i]) = 'SELECT');
+    SelectFound := (I = 0) and (UpperCase(CachedQueryRaw[i]) = 'SELECT');
     if IsParamIndex[i] then begin
       FServerStmtCache := True;
       Inc(N);
       Result := Result + ':P' + IntToRaw(N);
     end else begin
       if SelectFound and not FServerStmtCache then
-        SelectFound := AnsiUpperCase(CachedQueryRaw[i]) <> 'WHERE';
+        SelectFound := UpperCase(CachedQueryRaw[i]) <> 'WHERE';
       Result := Result + CachedQueryRaw[i];
     end;
   end;
@@ -488,14 +488,14 @@ begin
 end;
 
 procedure TZOracleCallableStatement.UnPrepare;
-const RELEASE_MODE: array[boolean] of integer = (OCI_DEFAULT,OCI_STMTCACHE_DELETE);
+const {%H-}RELEASE_MODE: array[boolean] of integer = (OCI_DEFAULT,OCI_STMTCACHE_DELETE);
 begin
   try
-    if False{FServerStmtCache} then
+    {if FServerStmtCache then
       CheckOracleError(FPlainDriver, FErrorHandle,
         FplainDriver.StmtRelease(FHandle, FErrorHandle, nil, 0, RELEASE_MODE[False]),
       lcExecute, ASQL, ConSettings)
-    else
+    else}
       FreeOracleStatementHandles(FPlainDriver, FHandle, FErrorHandle);
   finally
     inherited Unprepare;

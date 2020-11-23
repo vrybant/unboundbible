@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -71,7 +71,7 @@ type
     This state will either delegate to a comment-handling
     state, or return a token with just a slash in it.
   }
-  TZInterbaseCommentState = TZCCommentState;
+  TZInterbaseCommentState = TZGenericSQLCommentState;
 
   {** Implements a symbol state object. }
   TZInterbaseSymbolState = class (TZSymbolState)
@@ -156,6 +156,7 @@ begin
   SetCharacterState(#39, #39, QuoteState);
 
   SetCharacterState('/', '/', CommentState);
+  SetCharacterState('-', '-', CommentState);
 end;
 
 {$ENDIF ZEOS_DISABLE_INTERBASE}

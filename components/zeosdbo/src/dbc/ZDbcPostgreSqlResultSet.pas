@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -173,8 +173,10 @@ implementation
 
 uses
   {$IFDEF WITH_UNITANSISTRINGS}AnsiStrings,{$ENDIF} Math,
-  ZMessages, ZEncoding, ZFastCode, ZDbcPostgreSqlMetadata, ZDbcMetadata,
-  ZDbcPostgreSql, ZDbcPostgreSqlUtils, ZDbcPostgreSqlStatement, ZClasses;
+  ZMessages, ZEncoding, ZFastCode, ZVariant, ZTokenizer, ZClasses,
+  ZGenericSqlAnalyser,
+  ZDbcPostgreSql, ZDbcPostgreSqlStatement, ZDbcPostgreSqlMetadata, ZDbcMetadata,
+  ZDbcPostgreSqlUtils;
 
 
 // added for suporting Infinity, -Infinity and NaN.
@@ -302,7 +304,15 @@ begin
   Connection := Statement.GetConnection as IZPostgreSQLConnection;
 
   case TypeOid of
-    CASHOID: ColumnInfo.Currency := True; { money }
+    CASHOID: begin
+        ColumnInfo.Currency := True; { money }
+        ColumnInfo.Precision := 22;
+        ColumnInfo.Scale := 2;
+        ColumnInfo.ColumnType := stCurrency;
+        ColumnInfo.Signed := True;
+        ColumnInfo.Currency := True;
+        Exit;
+      end;
     NAMEOID: if (Connection.GetServerMajorVersion < 7) or
            ((Connection.GetServerMajorVersion = 7) and (Connection.GetServerMinorVersion < 3)) then
           ColumnInfo.Precision := 32
@@ -1235,36 +1245,46 @@ end;
   Initializes columns with additional data.
 }
 procedure TZPostgresResultSetMetadata.LoadColumns;
-{$IFNDEF ZEOS_TEST_ONLY}
 var
   Current: TZPGColumnInfo;
   I: Integer;
+  TableColumns: IZResultSet;
+  Connection: IZConnection;
+  Driver: IZDriver;
+  Analyser: IZStatementAnalyser;
+  Tokenizer: IZTokenizer;
   PGMetaData: IZPGDatabaseMetadata;
-  RS: IZResultSet;
-{$ENDIF}
 begin
-  {$IFDEF ZEOS_TEST_ONLY}
-  inherited LoadColumns;
-  {$ELSE}
-  if Metadata.GetConnection.GetDriver.GetStatementAnalyser.DefineSelectSchemaFromQuery(Metadata.GetConnection.GetDriver.GetTokenizer, SQL) <> nil then
-    for I := 0 to ResultSet.ColumnsInfo.Count - 1 do begin
-      Current := TZPGColumnInfo(ResultSet.ColumnsInfo[i]);
-      ClearColumn(Current);
-      PGMetaData := MetaData as IZPGDatabaseMetadata;
-      RS := PGMetaData.GetColumnsByTableOID(Current.TableOID);
-      if RS <> nil then begin
-        RS.BeforeFirst;
-        while RS.Next do
-          if RS.GetInt(TableColColumnOrdPosIndex) = Current.TableColNo then begin
-            FillColumInfoFromGetColumnsRS(Current, RS, RS.GetString(ColumnNameIndex));
-            Break;
-          end else
-            if RS.GetInt(TableColColumnOrdPosIndex) > Current.TableColNo then
+  Connection := Metadata.GetConnection;
+  Driver := Connection.GetDriver;
+  Analyser := Driver.GetStatementAnalyser;
+  Tokenizer := Driver.GetTokenizer;
+  PGMetaData := MetaData as IZPGDatabaseMetadata;
+  try
+    if Analyser.DefineSelectSchemaFromQuery(Tokenizer, SQL) <> nil then
+      for I := 0 to ResultSet.ColumnsInfo.Count - 1 do begin
+        Current := TZPGColumnInfo(ResultSet.ColumnsInfo[i]);
+        ClearColumn(Current);
+        TableColumns := PGMetaData.GetColumnsByTableOID(Current.TableOID);
+        if TableColumns <> nil then begin
+          TableColumns.BeforeFirst;
+          while TableColumns.Next do
+            if TableColumns.GetInt(TableColColumnOrdPosIndex) = Current.TableColNo then begin
+              FillColumInfoFromGetColumnsRS(Current, TableColumns, TableColumns.GetString(ColumnNameIndex));
               Break;
+            end else if TableColumns.GetInt(TableColColumnOrdPosIndex) > Current.TableColNo then
+              Break;
+        end;
       end;
-    end;
+  finally
+    Driver := nil;
+    Connection := nil;
+    Analyser := nil;
+    Tokenizer := nil;
+    IdentifierConvertor := nil;
+    PGMetaData := nil;
+  end;
   Loaded := True;
-  {$ENDIF}
 end;
 
 {$ENDIF ZEOS_DISABLE_POSTGRESQL} //if set we have an empty unit

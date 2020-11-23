@@ -9,7 +9,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -60,13 +60,15 @@ interface
 uses
   Types, Classes, {$IFDEF MSEgui}mclasses,{$ENDIF} SysUtils,
   ZClasses, ZSysUtils, ZDbcIntfs, ZDbcMetadata, ZCompatibility,
-  ZURL, ZDbcConnection;
+  ZURL, ZDbcConnection, ZPlainMySqlConstants;
 
 type
 
   // technobot 2008-06-26 - methods moved as is from TZMySQLDatabaseMetadata:
   {** Implements MySQL Database Information. }
   TZMySQLDatabaseInfo = class(TZAbstractDatabaseInfo)
+    fMySQLFork: TMySQLFork;
+    FServerVersion: String;
   protected
     procedure GetVersion(out MajorVersion, MinorVersion: integer);
   public
@@ -313,8 +315,24 @@ end;
   @return database product name
 }
 function TZMySQLDatabaseInfo.GetDatabaseProductName: string;
+  procedure GetFork;
+  var S, F: String;
+    Fork: TMySQLFork;
+  begin
+    S := GetDatabaseProductVersion;
+    S := LowerCase(S);
+    for Fork := fMySQL to high(TMySQLFork) do begin
+      F := LowerCase(MySQLForkName[Fork]);
+      if ZFastCode.Pos(F, S) > 0 then begin
+        fMySQLFork := Fork;
+        Break;
+      end;
+    end;
+  end;
 begin
-  Result := 'MySQL';
+  if fMySQLFork = fUnknown then
+    GetFork;
+  Result := MySQLForkName[fMySQLFork];
 end;
 
 {**
@@ -323,7 +341,23 @@ end;
 }
 function TZMySQLDatabaseInfo.GetDatabaseProductVersion: string;
 begin
-  Result := '3+';
+  if FServerVersion = '' then begin
+    with Metadata.GetConnection.CreateStatement.ExecuteQuery('show variables like ''version''') do try
+      if Next
+      then FServerVersion := GetString(FirstDBCIndex + 1)
+      else FServerVersion := 'unknown';
+    finally
+      Close;
+    end;
+    FServerVersion := FServerVersion+' ';
+    with Metadata.GetConnection.CreateStatement.ExecuteQuery('show variables like ''version_comment''') do try
+      if Next
+      then FServerVersion := FServerVersion+GetString(FirstDBCIndex + 1);
+    finally
+      Close;
+    end;
+  end;
+  Result := FServerVersion;
 end;
 
 {**
@@ -417,6 +451,11 @@ begin
     + 'UTC_TIMESTAMP,VARBINARY,VARCHARACTER,VARYING,WHEN,WHILE,WITH,'
     + 'WRITE,X509,XOR,YEAR_MONTH,ACCESSIBLE,LINEAR,'
     + 'MASTER_SSL_VERIFY_SERVER_CERT,RANGE,READ_ONLY,READ_WRITE';
+  { more reserved words, introduced after MySQL 5.1, up to version 8, thanks to abonic. }
+  Result := Result + 'CUBE,CUME_DIST,DENSE_RANK,EMPTY,EXCEPT,FIRST_VALUE,FUNCTION,'
+    + 'GENERATED,GET,GROUPING,GROUPS,IO_AFTER_GTIDS,IO_BEFORE_GTIDS,JSON_TABLE,'
+    + 'LAG,LAST_VALUE,LATERAL,LEAD,MASTER_BIND,NTH_VALUE,NTILE,OF,OPTIMIZER_COSTS,OVER,'
+    + 'PARTITION,PERCENT_RANK,RANK,RECURSIVE,ROW,ROWS,ROW_NUMBER,STORED,SYSTEM,VIRTUAL,WINDOW';
 end;
 
 {**
@@ -2721,7 +2760,16 @@ var
   procedure MysqlTypeToZeos(TypeName: String; const MysqlPrecision, MySqlScale, MysqlCharLength: integer; out ZType, ZPrecision, ZScale: Integer);
   begin
     TypeName := LowerCase(TypeName);
-    if TypeName = 'tinyint' then begin
+    if TypeName = 'bit' then begin
+      if MysqlPrecision = 1 then begin
+        ZType := Ord(stBoolean);
+        ZPrecision := -1;
+      end else begin
+        ZType := Ord(stBytes);
+        ZPrecision := MysqlPrecision;
+      end;
+      ZScale := -1;
+    end else if TypeName = 'tinyint' then begin
       ZType := Ord(stShort);
       ZPrecision := -1;
       ZScale := -1;
@@ -2773,8 +2821,14 @@ var
         ZPrecision := MysqlPrecision;
         ZScale := MySqlScale;
       end;
-    end else if TypeName = 'varchar' then begin
-      ZType := Ord(stUnicodeString);
+    end else if EndsWith(TypeName, 'char') then begin
+      if FConSettings.CPType = cCP_UTF16
+      then ZType := Ord(stUnicodeString)
+      else ZType := Ord(stString);
+      ZPrecision := MysqlCharLength;
+      ZScale := -1;
+    end else if EndsWith(TypeName, 'binary') then begin
+      ZType := Ord(stBytes);
       ZPrecision := MysqlCharLength;
       ZScale := -1;
     end else if TypeName = 'date' then begin
@@ -2797,44 +2851,29 @@ var
       ZType := Ord(stTimestamp);
       ZPrecision := -1;
       ZScale := -1;
-    end else if TypeName = 'tinyblob' then begin
-      ZType := Ord(stBinaryStream);
+    end else if EndsWith(TypeName, 'blob') then begin
+      if StartsWith(TypeName, 'tiny') then begin
+        ZType := Ord(stBytes);
+        ZPrecision := 255;
+      end else begin
+        ZType := Ord(stBinaryStream);
+        ZPrecision := -1;
+      end;
+      ZScale := -1;
+    end else if EndsWith(TypeName, 'text') then begin
+      if FConSettings.CPType = cCP_UTF16
+      then ZType := Ord(stUnicodeStream)
+      else ZType := Ord(stAsciiStream);
       ZPrecision := -1;
       ZScale := -1;
-    end else if TypeName = 'blob' then begin
-      ZType := Ord(stBinaryStream);
-      ZPrecision := -1;
-      ZScale := -1;
-    end else if TypeName = 'mediumblob' then begin
-      ZType := Ord(stBinaryStream);
-      ZPrecision := -1;
-      ZScale := -1;
-    end else if TypeName = 'longblob' then begin
-      ZType := Ord(stBinaryStream);
-      ZPrecision := -1;
-      ZScale := -1;
-    end else if TypeName = 'tinytext' then begin
-      ZType := Ord(stUnicodeStream);
-      ZPrecision := -1;
-      ZScale := -1;
-    end else if TypeName = 'text' then begin
-      ZType := Ord(stUnicodeStream);
-      ZPrecision := -1;
-      ZScale := -1;
-    end else if TypeName = 'mediumtext' then begin
-      ZType := Ord(stUnicodeStream);
-      ZPrecision := -1;
-      ZScale := -1;
-    end else if TypeName = 'longtext' then begin
-      ZType := Ord(stUnicodeStream);
-      ZPrecision := -1;
-      ZScale := -1;
-    end else if TypeName = 'varbinary' then begin
+    end else if EndsWith(TypeName, 'binary') then begin
       ZType := Ord(stBytes);
       ZPrecision := MysqlCharLength;
       ZScale := -1;
     end else if TypeName = 'set' then begin
-      ZType := Ord(stUnicodeString);
+      if FConSettings.CPType = cCP_UTF16
+      then ZType := Ord(stUnicodeString)
+      else ZType := Ord(stString);
       ZPrecision := MysqlCharLength;
       ZScale := -1;
     end;
@@ -2894,7 +2933,8 @@ begin
 
   with GetConnection.CreateStatementWithParams(FInfo).ExecuteQuery(SQL) do begin
     while Next do begin
-      MysqlTypeToZeos(GetString(myProcColTypeNameIndex), GetInt(myExtraNumericPrecisionIndex), GetInt(myProcColScaleIndex), GetInt(myExtraMaxCharLength), ZType, ZPrecision, ZScale);
+      MysqlTypeToZeos(GetString(myProcColTypeNameIndex), GetInt(myExtraNumericPrecisionIndex),
+        GetInt(myProcColScaleIndex), GetInt(myExtraMaxCharLength), ZType, ZPrecision, ZScale);
 
       Result.MoveToInsertRow;
       if not IsNull(CatalogNameIndex) then
@@ -3127,37 +3167,14 @@ end;
   queried with the methods isMariaDB and isMySQL.
 }
 procedure TZMySQLDatabaseMetadata.detectServerType;
-var
-  VersionString: String;
+var VersionString: String;
 begin
   if not FKnowServerType then begin
-    VersionString := '';
     FKnowServerType := true;
-    with GetConnection.CreateStatement.ExecuteQuery('show variables like ''version''') do begin
-      try
-        if Next
-        then VersionString := GetString(FirstDBCIndex + 1);
-      finally
-        Close;
-      end;
-    end;
+    VersionString := GetDatabaseInfo.GetDatabaseProductName;
     VersionString := LowerCase(VersionString);
     FIsMariaDB := ZFastCode.Pos('mariadb', VersionString) > 0;
     FIsMySQL := ZFastCode.Pos('mysql', VersionString) > 0;
-
-    if not FIsMariaDB and not FIsMySQL then begin
-      with GetConnection.CreateStatement.ExecuteQuery('show variables like ''version_comment''') do begin
-        try
-          if Next
-          then VersionString := GetString(FirstDBCIndex + 1);
-        finally
-          Close;
-        end;
-      end;
-      VersionString := LowerCase(VersionString);
-      FIsMariaDB := ZFastCode.Pos('mariadb', VersionString) > 0;
-      FIsMySQL := ZFastCode.Pos('mysql', VersionString) > 0;
-    end;
   end;
 end;
 

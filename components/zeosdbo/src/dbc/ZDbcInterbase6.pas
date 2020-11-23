@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -101,6 +101,7 @@ type
     function GetDialect: Word;
     function GetPlainDriver: IZInterbasePlainDriver;
     function GetXSQLDAMaxSize: LongWord;
+    function GetSubTypeTextCharSetID(const TableName, ColumnName: String): Integer;
     function GetActiveTransaction: IZIBTransaction;
     function StoredProcedureIsSelectable(const ProcName: String): Boolean;
   end;
@@ -170,7 +171,7 @@ type
     FIsInterbaseLib: Boolean; // never use this directly, always use IsInterbaseLib
     FXSQLDAMaxSize: LongWord;
     FPlainDriver: IZInterbasePlainDriver;
-    FProcedureTypesCache: TStrings;
+    FProcedureTypesCache, FSubTypeTestCharIDCache: TStrings;
     FTPBs: array[Boolean,Boolean,TZTransactIsolationLevel] of RawByteString;
     FTEBs: array[Boolean,Boolean,TZTransactIsolationLevel] of TISC_TEB;
     FTransactionManager: TZIBTransactionManager;
@@ -190,7 +191,7 @@ type
     function GetTrHandle: PISC_TR_HANDLE;
     function GetDialect: Word;
     function GetXSQLDAMaxSize: LongWord;
-    procedure CreateNewDatabase(const SQL: RawByteString);
+    function GetSubTypeTextCharSetID(const TableName, ColumnName: String): Integer;
     function GetActiveTransaction: IZIBTransaction;
     function GetPlainDriver: IZInterbasePlainDriver;
     function StoredProcedureIsSelectable(const ProcName: String): Boolean;
@@ -220,6 +221,7 @@ type
 
     function GetBinaryEscapeString(const Value: RawByteString): String; override;
     function GetBinaryEscapeString(const Value: TBytes): String; override;
+	function GetServerProvider: TZServerProvider; override;	
   end;
 
   {** Implements a specialized cached resolver for Interbase/Firebird. }
@@ -228,16 +230,17 @@ type
     function FormCalculateStatement(Columns: TObjectList): string; override;
   end;
 
-  {** Implements a Interbase 6 sequence. }
-  TZInterbase6Sequence = class(TZAbstractSequence)
+  {** Implements a Interbase6/Firebird sequence. }
+  TZInterbase6Sequence = class(TZIdentifierSequence)
   public
-    function GetCurrentValue: Int64; override;
-    function GetNextValue: Int64; override;
     function GetCurrentValueSQL: string; override;
     function GetNextValueSQL: string; override;
+    procedure SetBlockSize(const Value: Integer); override;
   end;
 
 
+const
+  DS_Props_IsMetadataResultSet = 'IsMetadataResultSet';
 var
   {** The common driver manager object. }
   Interbase6Driver: IZDriver;
@@ -345,6 +348,7 @@ end;
 destructor TZInterbase6Connection.Destroy;
 begin
   FreeAndNil(FProcedureTypesCache);
+  FreeAndNil(FSubTypeTestCharIDCache);
   inherited Destroy;
   if FTransactionManager <> nil then begin //test_library would make mem-leaks
     FTransactionManager._Release;
@@ -455,6 +459,7 @@ begin
   FXSQLDAMaxSize := 64*1024; //64KB by default
   FHandle := 0;
   FProcedureTypesCache := TStringList.Create;
+  FSubTypeTestCharIDCache := TStringList.Create;
 end;
 
 procedure TZInterbase6Connection.OnPropertiesChange(Sender: TObject);
@@ -612,6 +617,11 @@ begin
   Result := FXSQLDAMaxSize;
 end;
 
+function TZInterbase6Connection.GetServerProvider: TZServerProvider;
+begin
+  Result := spIB_FB;
+end;
+
 {**
    Return native interbase plain driver
    @return plain driver
@@ -619,6 +629,36 @@ end;
 function TZInterbase6Connection.GetPlainDriver: IZInterbasePlainDriver;
 begin
   Result := FPlainDriver;
+end;
+
+function TZInterbase6Connection.GetSubTypeTextCharSetID(const TableName,
+  ColumnName: String): Integer;
+var S: String;
+  function GetFromMetaData: Integer;
+  var Stmt: IZStatement;
+    RS: IZResultSet;
+  begin
+    Stmt := CreateStatement;
+    RS := Stmt.ExecuteQuery('SELECT F.RDB$CHARACTER_SET_ID '+LineEnding+
+      'FROM RDB$RELATION_FIELDS R'+LineEnding+
+      'INNER JOIN RDB$FIELDS F on R.RDB$FIELD_SOURCE = F.RDB$FIELD_NAME'+LineEnding+
+      'WHERE R.RDB$RELATION_NAME = '+QuotedStr(TableName)+' and R.RDB$FIELD_NAME = '+QuotedStr(ColumnName));
+    if RS.Next
+    then Result := RS.GetInt(FirstDbcIndex)
+    else Result := ConSettings.ClientCodePage.ID;
+    RS.Close;
+    RS := nil;
+    Stmt.Close;
+    Stmt := Nil;
+  end;
+begin
+  S := TableName+'/'+ColumnName;
+  Result := FSubTypeTestCharIDCache.IndexOf(S);
+  if Result < 0 then begin
+    Result := GetFromMetaData;
+    FSubTypeTestCharIDCache.AddObject(S, TObject(Result));
+  end else
+    Result := Integer(FSubTypeTestCharIDCache.Objects[Result]);
 end;
 
 {**
@@ -692,6 +732,7 @@ begin
   Result := ConnectionString;
 end;
 
+const sCS_NONE = 'NONE';
 {**
   Opens a connection to database server with specified parameters.
 }
@@ -699,8 +740,13 @@ procedure TZInterbase6Connection.Open;
 var
   DPB: RawByteString;
   DBName: array[0..512] of AnsiChar;
-  NewDB: RawByteString;
-  ConnectionString, CSNoneCP, DBCP: String;
+  ConnectionString, CSNoneCP, DBCP, CreateDB: String;
+  ti: IZIBTransaction;
+  Statement: IZStatement;
+  I: Integer;
+  P, PEnd: PChar;
+  TrHandle: TISC_TR_HANDLE;
+  DBCreated: Boolean;
   procedure PrepareDPB;
   var
     R: RawByteString;
@@ -737,30 +783,62 @@ begin
   ConnectionString := ConstructConnectionString;
   CSNoneCP := Info.Values['ResetCodePage'];
 
+  DBCreated := False;
   { Create new db if needed }
   if Info.Values['createNewDatabase'] <> '' then begin
     if (GetClientVersion >= 2005000) and IsFirebirdLib then begin
       if (Info.Values['isc_dpb_lc_ctype'] <> '') and (Info.Values['isc_dpb_set_db_charset'] = '') then
         Info.Values['isc_dpb_set_db_charset'] := Info.Values['isc_dpb_lc_ctype'];
-      if Database = '' then begin
-        DataBase := Info.Values['createNewDatabase'];
-        ConnectionString := ConstructConnectionString;
-      end;
+      DBCP := Info.Values['isc_dpb_set_db_charset'];
       PrepareDPB;
       if GetPlainDriver.isc_create_database(@FStatusVector, SmallInt(StrLen(@DBName[0])),
           @DBName[0], @FHandle, Smallint(Length(DPB)),Pointer(DPB), 0) <> 0 then
         CheckInterbase6Error(GetPlainDriver, FStatusVector, ConSettings, lcConnect);
+      if DriverManager.HasLoggingListener then
+        DriverManager.LogMessage(lcConnect, ConSettings^.Protocol,
+          'CREATE DATABASE "'+ConSettings.Database+'" AS USER "'+ ConSettings^.User+'"');
     end else begin
-      NewDB := ConSettings^.ConvFuncs.ZStringToRaw(Info.Values['createNewDatabase'],
-        ConSettings^.CTRL_CP, zOSCodePage);
-      CreateNewDatabase(NewDB);
+      {$IFDEF UNICODE}
+      DPB := ZUnicodeToRaw(CreateDB, zOSCodePage);
+      {$ELSE}
+      DPB := CreateDB;
+      {$ENDIF}
+      CreateDB := UpperCase(CreateDB);
+      I := PosEx('CHARACTER', CreateDB);
+      if I > 0 then begin
+        I := PosEx('SET', CreateDB, I);
+        P := Pointer(CreateDB);
+        Inc(I, 3); Inc(P, I); Inc(I);
+        While P^ = ' ' do begin
+          Inc(I); Inc(P);
+        end;
+        PEnd := P;
+        While ((Ord(PEnd^) >= Ord('A')) and (Ord(PEnd^) <= Ord('Z'))) or
+              ((Ord(PEnd^) >= Ord('0')) and (Ord(PEnd^) <= Ord('9'))) do
+          Inc(PEnd);
+        DBCP :=  Copy(CreateDB, I, (PEnd-P));
+      end else DBCP := sCS_NONE;
+      if FPlainDriver.isc_dsql_execute_immediate(@FStatusVector, @FHandle, @TrHandle,
+          Length(DPB), Pointer(DPB), FDialect, nil) <> 0 then
+        CheckInterbase6Error(FPlainDriver, FStatusVector, ConSettings, lcExecute, DPB);
       { Logging connection action }
-      DriverManager.LogMessage(lcConnect, ConSettings^.Protocol,
-        'CREATE DATABASE "'+NewDB+'" AS USER "'+ ConSettings^.User+'"');
-      Info.Values['createNewDatabase'] := '';
-      FHandle := 0;
+      if DriverManager.HasLoggingListener then
+        DriverManager.LogMessage(lcConnect, ConSettings^.Protocol,
+          DPB+' AS USER "'+ ConSettings^.User+'"');
+      //we did create the db and are connected now.
+      //we have no dpb so we connect with 'NONE' which is not a problem for the UTF8/NONE charsets
+      //because the metainformations are retrieved in UTF8 encoding
+      if (DBCP <> FClientCodePage) or ((DBCP = sCS_NONE) and (FClientCodePage <> '') and
+         ((FClientCodePage <> 'UTF8') and (FClientCodePage <> sCS_NONE))) then begin
+        //we need a reconnect with a valid dpb
+        if FPlainDriver.isc_detach_database(@FStatusVector, @FHandle) <> 0 then
+          CheckInterbase6Error(FPlainDriver, FStatusVector, ConSettings, lcExecute, DPB);
+        TrHandle := 0;
+        FHandle := 0;
+      end;
     end;
     Info.Values['createNewDatabase'] := '';
+    DBCreated := True;
   end;
 reconnect:
   if FHandle = 0 then begin
@@ -782,9 +860,7 @@ reconnect:
 
   FHardCommit := StrToBoolEx(Info.Values['hard_commit']);
   { Start transaction }
-  if not FHardCommit then
-    StartTransaction;
-  if DBCP <> '' then
+  if (DBCP <> '') and not DBCreated then
     Exit;
   inherited Open;
 
@@ -798,10 +874,23 @@ reconnect:
   {Check for ClientCodePage: if empty switch to database-defaults
     and/or check for charset 'NONE' which has a different byte-width
     and no convertions where done except the collumns using collations}
-  with GetMetadata.GetCollationAndCharSet('', '', '', '') do begin
-    Next;
-    DBCP := GetString(CollationAndCharSetNameIndex);
-    Close;
+  if not DBCreated then begin
+    Statement := CreateStatementWithParams(nil);
+    try
+      with Statement.ExecuteQuery('SELECT RDB$CHARACTER_SET_NAME FROM RDB$DATABASE') do begin
+        if Next then DBCP := GetString(FirstDbcIndex);
+        Close;
+      end;
+    finally
+      Statement := nil;
+    end;
+    ti := GetActiveTransaction;
+    try
+      ti.CloseTransaction;
+      FTransactionManager.RemoveTransactionFromList(TI);
+    finally
+      ti := nil;
+    end;
   end;
   if DBCP = 'NONE' then begin { SPECIAL CASE CHARCTERSET "NONE":
     EH: the server makes !NO! charset conversion if CS_NONE.
@@ -838,13 +927,23 @@ reconnect:
       InternalClose;
       goto reconnect; //build new TDB and reopen in SC_NONE mode
     end;
-{        'Deprecated database characterset "NONE" found!'+Lineending+
-        'Either dump your database and recreate it with a "stable" characterset.(recommented)'+LineEnding+
-        'Or set a codepage which represents the encoding of CS_NONE.'+LineEnding+
-        'To avoid reconnect with CS_NONE attachment characterset for the subtypes'+LineEnding+
-        'use parameter: '''+DSProps_ResetCodePage+''' in your Connection.Properties'); }
   end else if FClientCodePage = '' then
     CheckCharEncoding(DBCP);
+  if (FHostVersion >= 4000000) then with CreateStatement do begin
+    if (Info.Values['isc_dpb_session_time_zone'] = '') then
+      ExecuteUpdate('SET TIME ZONE LOCAL');
+    ExecuteUpdate('SET BIND OF TIME ZONE TO LEGACY');
+    ExecuteUpdate('SET BIND OF DECFLOAT TO LEGACY');
+    ExecuteUpdate('SET BIND OF NUMERIC(38) TO LEGACY');
+    Close;
+    ti := GetActiveTransaction;
+    try
+      ti.CloseTransaction;
+      FTransactionManager.RemoveTransactionFromList(TI);
+    finally
+      ti := nil;
+    end;
+  end;
 end;
 
 {**
@@ -974,47 +1073,32 @@ var I: Integer;
   function AddToCache(const ProcName: String): Boolean;
   var RS: IZResultSet;
     Stmt: IZStatement;
+    DbInfo: IZInterbaseDatabaseInfo;
   begin
-    Stmt := CreateRegularStatement(Info);
-    RS := Stmt.ExecuteQuery('SELECT RDB$PROCEDURE_TYPE FROM RDB$PROCEDURES WHERE RDB$PROCEDURE_NAME = '+QuotedStr(ProcName));
-    try
-      if RS.Next then begin
-        Result := RS.GetShort(FirstDbcIndex)=1; //Procedure type 2 has no suspend
-        FProcedureTypesCache.AddObject(ProcName, TObject(Ord(Result)));
-      end else begin
-        RaiseUnsupportedException;
-        Result := False;
+    Supports(GetMetadata.GetDatabaseInfo, IZInterbaseDatabaseInfo, DbInfo);
+    Result := False;
+    if Assigned(DbInfo) and DbInfo.HostIsFireBird and (DbInfo.GetHostVersion >= 1005000) then begin
+      Stmt := CreateRegularStatement(Info);
+      RS := Stmt.ExecuteQuery('SELECT RDB$PROCEDURE_TYPE FROM RDB$PROCEDURES WHERE RDB$PROCEDURE_NAME = '+QuotedStr(ProcName));
+      if RS <> nil then try
+        if RS.Next then begin
+          Result := RS.GetShort(FirstDbcIndex)=1; //Procedure type 2 has no suspend
+          FProcedureTypesCache.AddObject(ProcName, TObject(Ord(Result)));
+        end else
+          Raise EZSQLException.Create(SUnsupportedOperation);
+      finally
+        RS.Close;
+        RS := nil;
+        Stmt := nil;
       end;
-    finally
-      RS.Close;
-      RS := nil;
-      Stmt := nil;
-    end;
+    end else
+      FProcedureTypesCache.AddObject(ProcName, nil);
   end;
 begin
   I := FProcedureTypesCache.IndexOf(ProcName);
   if I = -1
   then Result := AddToCache(ProcName)
   else Result := FProcedureTypesCache.Objects[I] <> nil;
-end;
-
-{**
-  Creates new database
-  @param SQL a sql strinf for creation database
-}
-procedure TZInterbase6Connection.CreateNewDatabase(const SQL: RawByteString);
-var
-  TrHandle: TISC_TR_HANDLE;
-begin
-  TrHandle := 0;
-  if FPlainDriver.isc_dsql_execute_immediate(@FStatusVector, @FHandle, @TrHandle,
-      Length(SQL), Pointer(sql), FDialect, nil) <> 0 then
-    CheckInterbase6Error(FPlainDriver, FStatusVector, ConsEttings, lcExecute, SQL);
-  //disconnect from the newly created database because the connection character set is NONE,
-  //which usually nobody wants
-  if FPlainDriver.isc_detach_database(@FStatusVector, @FHandle) <> 0 then
-    CheckInterbase6Error(FPlainDriver, FStatusVector, ConSettings, lcExecute, SQL);
-  TrHandle := 0;
 end;
 
 function TZInterbase6Connection.GetBinaryEscapeString(const Value: RawByteString): String;
@@ -1251,67 +1335,6 @@ begin
 // <-- ms
 end;
 
-{ TZInterbase6Sequence }
-
-{**
-  Gets the current unique key generated by this sequence.
-  @param the next generated unique key.
-}
-function TZInterbase6Sequence.GetCurrentValue: Int64;
-var
-  Statement: IZStatement;
-  ResultSet: IZResultSet;
-begin
-  Statement := Connection.CreateStatement;
-  ResultSet := Statement.ExecuteQuery(Format(
-    'SELECT %s FROM RDB$DATABASE', [GetCurrentValueSQL]));
-  if ResultSet.Next then
-    Result := ResultSet.GetLong(FirstDbcIndex)
-  else
-    Result := inherited GetCurrentValue;
-  ResultSet.Close;
-  Statement.Close;
-end;
-
-{**
-  Gets the next unique key generated by this sequence.
-  @param the next generated unique key.
-}
-function TZInterbase6Sequence.GetCurrentValueSQL: string;
-var
-  QuotedName: string;
-begin
-  QuotedName := GetConnection.GetMetadata.GetIdentifierConvertor.Quote(Name);
-  Result := Format(' GEN_ID(%s, 0) ', [QuotedName]);
-end;
-
-function TZInterbase6Sequence.GetNextValue: Int64;
-var
-  Statement: IZStatement;
-  ResultSet: IZResultSet;
-begin
-  Statement := Connection.CreateStatement;
-  ResultSet := Statement.ExecuteQuery(
-    Format('SELECT %s FROM RDB$DATABASE', [GetNextValueSQL]));
-  if ResultSet.Next then
-    Result := ResultSet.GetLong(FirstDbcIndex)
-  else
-    Result := inherited GetNextValue;
-  ResultSet.Close;
-  Statement.Close;
-end;
-
-function TZInterbase6Sequence.GetNextValueSQL: string;
-var
-  QuotedName: string;
-begin
-  QuotedName := GetConnection.GetMetadata.GetIdentifierConvertor.Quote(Name);
-  if (Connection.GetMetadata.GetDatabaseInfo as IZInterbaseDatabaseInfo).SupportsNextValueFor and (BlockSize = 1) then
-    Result := Format(' NEXT VALUE FOR %s ', [QuotedName])
-  else
-    Result := Format(' GEN_ID(%s, %d) ', [QuotedName, BlockSize]);
-end;
-
 { TZIBTransactionManager }
 
 procedure TZIBTransactionManager.BeforeDestruction;
@@ -1505,6 +1528,31 @@ begin
     RowNo := IZResultSet(P).GetRow;
     IZResultSet(P).Last; //now the pointer will be removed from the open cursor list
     IZResultSet(P).MoveAbsolute(RowNo); //restore current position
+  end;
+end;
+
+{ TZInterbase6Sequence }
+
+function TZInterbase6Sequence.GetCurrentValueSQL: string;
+begin
+  Result := 'SELECT GEN_ID('+FName+', 0) FROM RDB$DATABASE';
+end;
+
+function TZInterbase6Sequence.GetNextValueSQL: string;
+begin
+  with Connection.GetMetadata do begin
+    if (GetDatabaseInfo as IZInterbaseDatabaseInfo).SupportsNextValueFor and (FBlockSize = 1)
+    then Result := ' NEXT VALUE FOR '+FName
+    else Result := ' GEN_ID('+FName+', '+ZFastcode.IntToStr(FBlockSize)+') ';
+    Result := 'SELECT '+Result+' FROM RDB$DATABASE';
+  end;
+end;
+
+procedure TZInterbase6Sequence.SetBlockSize(const Value: Integer);
+begin
+  if Value <> fBlockSize then begin
+    FlushResults;
+    inherited SetBlockSize(Value);
   end;
 end;
 

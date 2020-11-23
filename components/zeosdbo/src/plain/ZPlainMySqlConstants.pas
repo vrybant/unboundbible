@@ -14,7 +14,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -138,10 +138,49 @@ type
     MYSQL_ENABLE_CLEARTEXT_PLUGIN,
     MYSQL_OPT_CAN_HANDLE_EXPIRED_PASSWORDS,
     MYSQL_OPT_SSL_ENFORCE,
-
     MYSQL_OPT_MAX_ALLOWED_PACKET, MYSQL_OPT_NET_BUFFER_LENGTH,
     MYSQL_OPT_TLS_VERSION,
-    MYSQL_OPT_SSL_MODE
+    MYSQL_OPT_SSL_MODE,
+    {MySQL 8:}
+    MYSQL_OPT_GET_SERVER_PUBLIC_KEY,
+    MYSQL_OPT_RETRY_COUNT,
+    MYSQL_OPT_OPTIONAL_RESULTSET_METADATA,
+    MYSQL_OPT_SSL_FIPS_MODE,
+    MYSQL_OPT_TLS_CIPHERSUITES,
+    MYSQL_OPT_COMPRESSION_ALGORITHMS,
+    MYSQL_OPT_ZSTD_COMPRESSION_LEVEL
+  );
+  TMariaDBOption = (
+    { MariaDB specific }
+    MYSQL_PROGRESS_CALLBACK=5999,
+    MYSQL_OPT_NONBLOCK);
+  TMariaDBConnectorOption = (
+    { MariaDB Connector/C specific }
+    MYSQL_DATABASE_DRIVER=7000,
+    MARIADB_OPT_SSL_FP,             // deprecated, use MARIADB_OPT_TLS_PEER_FP instead
+    MARIADB_OPT_SSL_FP_LIST,        // deprecated, use MARIADB_OPT_TLS_PEER_FP_LIST instead
+    MARIADB_OPT_TLS_PASSPHRASE,     // passphrase for encrypted certificates
+    MARIADB_OPT_TLS_CIPHER_STRENGTH,
+    MARIADB_OPT_TLS_VERSION,
+    MARIADB_OPT_TLS_PEER_FP,            // single finger print for server certificate verification
+    MARIADB_OPT_TLS_PEER_FP_LIST,       // finger print white list for server certificate verification
+    MARIADB_OPT_CONNECTION_READ_ONLY,
+    MYSQL_OPT_CONNECT_ATTRS,        // for mysql_get_optionv
+    MARIADB_OPT_USERDATA,
+    MARIADB_OPT_CONNECTION_HANDLER,
+    MARIADB_OPT_PORT,
+    MARIADB_OPT_UNIXSOCKET,
+    MARIADB_OPT_PASSWORD,
+    MARIADB_OPT_HOST,
+    MARIADB_OPT_USER,
+    MARIADB_OPT_SCHEMA,
+    MARIADB_OPT_DEBUG,
+    MARIADB_OPT_FOUND_ROWS,
+    MARIADB_OPT_MULTI_RESULTS,
+    MARIADB_OPT_MULTI_STATEMENTS,
+    MARIADB_OPT_INTERACTIVE,
+    MARIADB_OPT_PROXY_HEADER,
+    MARIADB_OPT_IO_WAIT
   );
 const
   TMySqlOptionMinimumVersion: array[TMySqlOption] of Integer =
@@ -187,10 +226,19 @@ const
       {MYSQL_OPT_SSL_ENFORCE}                   50703,
       {MYSQL_OPT_MAX_ALLOWED_PACKET}            60111,
       {MYSQL_OPT_NET_BUFFER_LENGTH}             60111,
+      {MYSQL_OPT_SSL_MODE}                      60111,
       {MYSQL_OPT_TLS_VERSION}                   60111,
-      {MYSQL_OPT_SSL_MODE}                      60111
+      {MYSQL_OPT_GET_SERVER_PUBLIC_KEY}         60111,
+      {MYSQL_OPT_RETRY_COUNT}                   60111,
+      {MYSQL_OPT_OPTIONAL_RESULTSET_METADATA}   60111,
+      {MYSQL_OPT_SSL_FIPS_MODE}                 60111,
+      {MYSQL_OPT_TLS_CIPHERSUITES}              60111,
+      {MYSQL_OPT_COMPRESSION_ALGORITHMS}        60111,
+      {MYSQL_OPT_ZSTD_COMPRESSION_LEVEL}        60111
     );
 type
+  Tmysql_protocol_type = ( MYSQL_PROTOCOL_DEFAULT, MYSQL_PROTOCOL_TCP, MYSQL_PROTOCOL_SOCKET,
+    MYSQL_PROTOCOL_PIPE, MYSQL_PROTOCOL_MEMORY);
   // EgonHugeist: Use always a 4Byte unsigned Integer for Windows otherwise MySQL64 has problems on Win64!
   // don't know anything about reported issues on other OS's
   ULong                 = {$IFDEF MSWINDOWS}LongWord{$ELSE}NativeUInt{$ENDIF};
@@ -723,9 +771,15 @@ TMYSQL_CLIENT_OPTIONS =
   PPMYSQL_STMT = ^PMYSQL_STMT;
   PMYSQL_STMT = Pointer;
 
-  TMySQLForks = (fMySQL, fMariaDB, fSphinx, fPercona, fDrizzle, WebScaleSQL, OurDelta);
+  /// <summary>
+  ///   Enum for specifying a MySQL fork. Possible values:
+  ///   fUnknown, fMySQL, fMariaDB, fSphinx, fPercona, fDrizzle, WebScaleSQL, OurDelta
+  /// </summary>
+  TMySQLFork = (fUnknown, fMySQL, fMariaDB, fSphinx, fPercona, fDrizzle, WebScaleSQL, OurDelta);
 
 const
+  MySQLForkName: array[TMySQLFork] of String = ('Unknown', 'MySQL', 'MariaDB',
+    'Sphinx', 'Percona', 'Drizzle', 'WebScaleSQL', 'OurDelta');
   EMBEDDED_DEFAULT_DATA_DIR = {$IFDEF WINDOWS}'.\data\'{$ELSE}'./data/'{$ENDIF};
   SERVER_ARGUMENTS_KEY_PREFIX = 'ServerArgument';
   SERVER_GROUPS : array [0..2] of PAnsiChar = ('embedded'#0, 'server'#0, nil);

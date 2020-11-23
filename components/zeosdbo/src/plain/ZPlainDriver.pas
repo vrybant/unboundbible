@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -166,7 +166,7 @@ function TZAbstractPlainDriver.ValidateCharEncoding(const CharacterSetName: Stri
 begin
   Result := GetClientCodePageInformations(CharacterSetName);
   if (DoArrange) and (Result^.ZAlias <> '' ) then
-    ValidateCharEncoding(Result^.ZAlias); //recalls em selves
+    Result := ValidateCharEncoding(Result^.ZAlias); //recalls em selves
 end;
 
 {**

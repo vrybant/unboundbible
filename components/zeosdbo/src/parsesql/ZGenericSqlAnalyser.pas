@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -728,8 +728,10 @@ begin
     { Skips a '.' in table part. }
     else if ReadTable and (CurrentValue = '.') then
     begin
-      Catalog := Schema;
-      Schema := Table;
+      if not ((Schema <> '') and (Table = '')) then begin //hide issue master..sysobjects
+        Catalog := Schema;
+        Schema := Table;
+      end;
       Table := '';
     end
     { Reads alias. }

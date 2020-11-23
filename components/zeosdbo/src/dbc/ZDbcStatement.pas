@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -77,7 +77,6 @@ type
     FEscapeProcessing: Boolean;
     FQueryTimeout: Integer;
     FLastUpdateCount: Integer;
-    FLastResultSet: IZResultSet;
     FFetchDirection: TZFetchDirection;
     FFetchSize: Integer;
     FResultSetConcurrency: TZResultSetConcurrency;
@@ -92,6 +91,7 @@ type
     FCachedLob: Boolean;
     procedure SetLastResultSet(const ResultSet: IZResultSet);
   protected
+    FLastResultSet: IZResultSet;
     FCursorName: RawByteString;
     fWBuffer: array[Byte] of WideChar;
     fABuffer: array[Byte] of AnsiChar;
@@ -2204,12 +2204,32 @@ end;
 }
 procedure TZAbstractPreparedStatement.SetAsciiStream(
   ParameterIndex: Integer; const Value: TStream);
+var
+  CLob: IZBlob; //use a local variable for the FPC
+  MyMemoryStream: TMemoryStream;
+  CreatedMemoryStream: boolean;
 begin
-  if TMemoryStream(Value).Memory = nil
-  then SetBlob(ParameterIndex, stAsciiStream, TZAbstractClob.CreateWithData(PEmptyAnsiString, Value.Size, ConSettings^.ClientCodePage^.CP, ConSettings))
-  else if ConSettings^.AutoEncode
-    then SetBlob(ParameterIndex, stAsciiStream, TZAbstractClob.CreateWithData(TMemoryStream(Value).Memory, Value.Size, zCP_NONE, ConSettings))
-    else SetBlob(ParameterIndex, stAsciiStream, TZAbstractClob.CreateWithData(TMemoryStream(Value).Memory, Value.Size, ConSettings^.ClientCodePage^.CP, ConSettings));
+  MyMemoryStream := nil;
+  CreatedMemoryStream := false;
+  try
+    if Value is TMemoryStream then begin
+      MyMemoryStream := Value as TMemoryStream;
+    end else begin
+      MyMemoryStream := TMemoryStream.Create;
+      CreatedMemoryStream := True;
+      MyMemoryStream.CopyFrom(Value, Value.Size);
+    end;
+
+    if MyMemoryStream.Memory = nil
+    then CLob := TZAbstractClob.CreateWithData(PEmptyAnsiString, MyMemoryStream.Size, ConSettings^.ClientCodePage^.CP, ConSettings)
+    else if ConSettings^.AutoEncode
+      then CLob := TZAbstractClob.CreateWithData(MyMemoryStream.Memory, MyMemoryStream.Size, zCP_NONE, ConSettings)
+      else CLob := TZAbstractClob.CreateWithData(MyMemoryStream.Memory, MyMemoryStream.Size, ConSettings^.ClientCodePage^.CP, ConSettings);
+    SetBlob(ParameterIndex, stAsciiStream, Clob)
+  finally
+    if CreatedMemoryStream then
+      FreeAndNil(MyMemoryStream);
+  end;
 end;
 
 {**
@@ -2666,6 +2686,7 @@ var
 begin
   SetLength(FOutParamValues, NewParamCount);
   SetLength(FOutParamTypes, NewParamCount);
+  SetLength(FNCharDetected, NewParamCount);
   for I := FOutParamCount to NewParamCount - 1 do
   begin
     FOutParamValues[I] := NullVariant;

@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -63,8 +63,8 @@ uses
 const
   ZEOS_MAJOR_VERSION = 7;
   ZEOS_MINOR_VERSION = 2;
-  ZEOS_SUB_VERSION = 6;
-  ZEOS_STATUS = 'stable';
+  ZEOS_SUB_VERSION = 8;
+  ZEOS_STATUS = 'release';
   ZEOS_VERSION = Char(48+ZEOS_MAJOR_VERSION)+'.'+
                  Char(48+ZEOS_MINOR_VERSION)+'.'+
                  Char(48+ZEOS_SUB_VERSION)+'-'+ZEOS_STATUS;

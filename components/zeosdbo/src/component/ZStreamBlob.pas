@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -104,7 +104,7 @@ begin
     if Blob.IsClob then
       case Field.DataType of
         ftMemo, ftFmtMemo:
-          if FConSettings^.AutoEncode then
+          if FConSettings^.AutoEncode or (FConSettings.ClientCodePage.Encoding = ceUTF16) then
             Buffer := Blob.GetPAnsiChar(FConSettings^.CTRL_CP)
           else
             Buffer := Blob.GetPAnsiChar(FConSettings^.ClientCodePage^.CP);

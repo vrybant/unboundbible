@@ -8,7 +8,7 @@
 {*********************************************************}
 
 {@********************************************************}
-{    Copyright (c) 1999-2012 Zeos Development Group       }
+{    Copyright (c) 1999-2020 Zeos Development Group       }
 {                                                         }
 { License Agreement:                                      }
 {                                                         }
@@ -82,6 +82,8 @@ type
     function GetConnectionHandle: Psqlite;
     function GetUndefinedVarcharAsStringLength: Integer;
     function ExtendedErrorMessage: Boolean;
+    function enable_load_extension(OnOff: Boolean): Integer;
+    function load_extension(const zFile, zProc: String; out ErrMsg: String): Integer;
   end;
 
   {** Implements SQLite Database Connection. }
@@ -106,6 +108,8 @@ type
     procedure StartTransactionSupport;
     function GetUndefinedVarcharAsStringLength: Integer;
     function ExtendedErrorMessage: Boolean;
+    function enable_load_extension(OnOff: Boolean): Integer;
+    function load_extension(const zFile, zProc: String; out ErrMsg: String): Integer;
   public
     function CreateRegularStatement(Info: TStrings): IZStatement; override;
     function CreatePreparedStatement(const SQL: string; Info: TStrings):
@@ -132,6 +136,8 @@ type
 
     function ReKey(const Key: string): Integer;
     function Key(const Key: string): Integer;
+	
+    function GetServerProvider: TZServerProvider; override;	
   end;
 
 var
@@ -143,7 +149,7 @@ implementation
 {$IFNDEF ZEOS_DISABLE_SQLITE} //if set we have an empty unit
 
 uses
-  ZSysUtils, ZDbcSqLiteStatement, ZSqLiteToken, ZFastCode,
+  ZSysUtils, ZDbcSqLiteStatement, ZSqLiteToken, ZFastCode, ZEncoding,
   ZDbcSqLiteUtils, ZDbcSqLiteMetadata, ZSqLiteAnalyser, ZMessages
   {$IFDEF WITH_UNITANSISTRINGS}, AnsiStrings{$ENDIF};
 
@@ -261,6 +267,47 @@ begin
   Result := ErrorCode;
 end;
 
+{$IFDEF FPC} {$PUSH} {$WARN 5057 off : hint local variable "pzErrMsg" does not seem to be intialized} {$ENDIF}
+function TZSQLiteConnection.load_extension(const zFile, zProc: String;
+  out ErrMsg: String): Integer;
+var rFile, rProc: RawByteString;
+  pzErrMsg: PAnsiChar;
+  L: LengthInt;
+begin
+  {$IFDEF UNICODE}
+  rFile := ZUnicodeToRaw(zFile, zCP_UTF8);
+  rProc := ZUnicodeToRaw(zProc, zCP_UTF8);
+  {$ELSE !UNICODE}
+    {$IF defined(LCL) or not defined(MSWINDOWS)}
+  rFile := zFile;
+  rProc := zProc;
+    {$ELSE}
+  if ZDetectUTF8Encoding(Pointer(zFile), Length(zFile)) = etANSI
+  then rFile := ZConvertAnsiToUTF8(zFile)
+  else rFile := zFile;
+  if ZDetectUTF8Encoding(Pointer(zProc), Length(zProc)) = etANSI
+  then rProc := ZConvertAnsiToUTF8(zProc)
+  else rProc := zProc;
+    {$IFEND}
+  {$ENDIF UNICODE}
+  Result := FPlainDriver.load_extension(FHandle, Pointer(rFile), Pointer(rProc), pzErrMsg);
+  if (Result = SQLITE_ERROR) then begin
+    L := StrLen(pzErrMsg);
+    {$IFDEF UNICODE}
+    ErrMsg := PRawToUnicode(pzErrMsg, L, zCP_UTF8);
+    {$ELSE}
+      {$IF defined(LCL) or not defined(MSWINDOWS)}
+      System.SetString(ErrMsg, pzErrMsg, L);
+      {$ELSE}
+      System.SetString(ErrMsg, pzErrMsg, L);
+      ErrMsg := ZConvertUTF8ToAnsi(ErrMsg);
+      {$IFEND}
+    {$ENDIF}
+    FPlainDriver.FreeMem(pzErrMsg);
+  end else ErrMsg := '';
+end;
+{$IFDEF FPC} {$POP} {$ENDIF}
+
 {**
   Reencrypt a database with a new key. The old/current key needs to be
   set before calling this function.
@@ -285,9 +332,10 @@ end;
 procedure TZSQLiteConnection.Open;
 var
   LogMessage: RawByteString;
-  SQL: RawByteString;
-  TmpInt: Integer;
+  SQL, zVfs: RawByteString;
+  TmpInt, Flags: Integer;
   Stmt: IZStatement;
+  S: String;
 begin
   if not Closed then
     Exit;
@@ -295,14 +343,21 @@ begin
   LogMessage := 'CONNECT TO "'+ConSettings^.Database+'" AS USER "'+ConSettings^.User+'"';
 
   SQL := {$IFDEF UNICODE}UTF8String{$ENDIF}(Database);
+  S := Info.Values['SQLiteOpen_Flags'];
+  Flags := StrToIntDef(S, 0);
+  S := Info.Values['SQLiteOpen_zVfs'];
+  zVfs := {$IFDEF UNICODE}UTF8String{$ENDIF}(S);
+
   //patch by omaga software see https://sourceforge.net/p/zeoslib/tickets/312/
-  TmpInt := GetPlainDriver.open(Pointer(SQL), FHandle);
+  if (zVfs <> '') or (Flags <> 0)
+  then TmpInt := GetPlainDriver.open_V2(Pointer(SQL), FHandle, Flags, Pointer(zVfs))
+  else TmpInt := GetPlainDriver.open(Pointer(SQL), FHandle);
   if TmpInt <> SQLITE_OK then
     CheckSQLiteError(FPlainDriver, FHandle, TmpInt, lcConnect, LogMessage, ConSettings, FExtendedErrorMessage);
   DriverManager.LogMessage(lcConnect, ConSettings^.Protocol, LogMessage);
 
   { Turn on encryption if requested }
-  if StrToBoolEx(Info.Values['encrypted']) then
+  if StrToBoolEx(Info.Values['encrypted']) and (Password <> '') then
   begin
     SQL := {$IFDEF UNICODE}UTF8String{$ENDIF}(Password);
     CheckSQLiteError(FPlainDriver, FHandle,
@@ -371,6 +426,11 @@ begin
   Result := TZSQLiteStatement.Create(GetPlainDriver, Self, Info, FHandle);
 end;
 
+function TZSQLiteConnection.enable_load_extension(OnOff: Boolean): Integer;
+begin
+  Result := FPlainDriver.enable_load_extension(FHandle, Ord(OnOff));
+end;
+
 procedure TZSQLiteConnection.ExecTransactionStmt(
   Action: TSQLite3TransactionAction);
 var
@@ -379,7 +439,7 @@ begin
   with FTransactionStmts[Action] do begin
     if Stmt = nil then
       CheckSQLiteError(GetPlainDriver, FHandle,
-        GetPlainDriver.Prepare(FHandle, Pointer(SQL), nBytes, Stmt, pzTail),
+        GetPlainDriver.Prepare(FHandle, Pointer(SQL), nBytes, Stmt, pzTail{%H-}),
           lcExecute, SQL, ConSettings, FExtendedErrorMessage);
     try
       CheckSQLiteError(GetPlainDriver, FHandle, GetPlainDriver.Step(Stmt),
@@ -569,6 +629,11 @@ end;
 function TZSQLiteConnection.GetConnectionHandle: Psqlite;
 begin
   Result := FHandle;
+end;
+
+function TZSQLiteConnection.GetServerProvider: TZServerProvider;
+begin
+  Result := spSQLite;
 end;
 
 {**
