@@ -48,7 +48,7 @@ function XmlToList(s: string): TStringArray;
 
 // сlipboard
 
-{$ifdef windows} procedure StringToClipboard(Source: string); {$endif}
+{$ifdef windows} procedure RichTextToClipboard(source: string; text: string); {$endif}
 
 // file's functions
 
@@ -344,26 +344,28 @@ end;
 // сlipboard
 
 {$ifdef windows}
-procedure StreamToClipboard(Stream: TMemoryStream);
+procedure RichStreamToClipboard(Stream: TMemoryStream; text: string);
 var
-  Clipboard : TClipBoard;
+  Clipboard : TClipboard;
      CF_RTF : Word;
+  {$ifdef linux} const ClipboardFormat = 'text/richtext'; {$endif}
 begin
   Clipboard := TClipboard.Create ;
+  Clipboard.AsText:= text;
   CF_RTF := RegisterClipboardFormat('Rich Text Format');
   Clipboard.AddFormat(CF_RTF,Stream);
   Clipboard.Free ;
 end;
 
-procedure StringToClipboard(Source: string);
+procedure RichTextToClipboard(source: string; text: string);
 var
   Stream : TMemoryStream;
 begin
-  Source := Utf8ToRTF(Source) + LineEnding;
+  source := Utf8ToRTF(source) + LineEnding;
   Stream := TMemoryStream.Create;
   Stream.Seek(0,soFromBeginning);
-  Stream.WriteBuffer(Pointer(Source)^, Length(Source));
-  StreamToClipboard(Stream);
+  Stream.WriteBuffer(Pointer(source)^, Length(source));
+  RichStreamToClipboard(Stream, text);
   Stream.Free;
 end;
 {$endif}

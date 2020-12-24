@@ -1466,7 +1466,7 @@ end;
 {$ifdef windows}
 procedure TMainForm.VersesToClipboard;
 begin
-  StringToClipboard(ParseWin(Get_Verses(), DefaultFont));
+  RichTextToClipboard(ParseWin(Get_Verses, DefaultFont), RemoveTags(Get_Verses));
 end;
 {$endif}
 
