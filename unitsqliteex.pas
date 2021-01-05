@@ -52,14 +52,15 @@ end;
 function Super(s: string): boolean;
 var i : integer;
 begin;
-  Result := true;
+  Result := True;
   PurgeTags(s);
+  if Accented then Replace(s,AcuteChar,'');
 
   if not (caseSensitive in Options) then s := Utf8LowerCase(s);
   if wholeWords in Options then s := ' ' + CleanString(s) + ' ';
 
   for i:=Low(SearchList) to High(SearchList) do
-    if Pos(SearchList[i],s) = 0 then Result := false;
+    if Pos(SearchList[i],s) = 0 then Result := False;
 end;
 
 procedure xSuper(ctx: psqlite3_context; {%H-}N: cint; V: ppsqlite3_value); cdecl;

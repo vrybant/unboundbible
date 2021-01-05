@@ -348,7 +348,6 @@ procedure RichStreamToClipboard(Stream: TMemoryStream; text: string);
 var
   Clipboard : TClipboard;
      CF_RTF : Word;
-  {$ifdef linux} const ClipboardFormat = 'text/richtext'; {$endif}
 begin
   Clipboard := TClipboard.Create ;
   Clipboard.AsText:= text;

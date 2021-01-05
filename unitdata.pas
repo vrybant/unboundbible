@@ -61,6 +61,7 @@ type
 var
   CurrVerse : TVerse;
   Options : TCopyOptions;
+  Accented : boolean = False;
 
   TitlesArray : array [1..66] of string = (
     'Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth','1 Samuel','2 Samuel',
@@ -93,6 +94,7 @@ var
 const
   minVerse : TVerse = (book: 1; chapter : 1; number : 1; count : 1);
   PatreonURL = 'https://www.patreon.com/vrybant';
+  AcuteChar = #$CC#$81;
 
 function unbound2mybible(id: integer): integer;
 function mybible2unbound(id: integer): integer;
