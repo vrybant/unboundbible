@@ -61,7 +61,6 @@ type
 var
   CurrVerse : TVerse;
   Options : TCopyOptions;
-  Accented : boolean = False;
 
   TitlesArray : array [1..66] of string = (
     'Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth','1 Samuel','2 Samuel',

@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, LazUtf8, SQLite3, CTypes, UnitData, UnitLib;
 
-procedure SetSearchOptions(s: string; SearchOptions: TSearchOptions; format: TFileFormat);
+procedure SetSearchOptions(s: string; SearchOptions: TSearchOptions; format: TFileFormat; accented: boolean);
 procedure SQLite3CreateFunctions(const Handle: pointer);
 
 implementation
@@ -17,6 +17,7 @@ const
 var
   SearchList : TStringArray;
   Options : TSearchOptions;
+  AccentedOption : boolean;
 
 function IsStrong(s: string): boolean;
 var c : char;
@@ -25,12 +26,13 @@ begin
   for c in s do if IsNumeral(c) then Result := true;
 end;
 
-procedure SetSearchOptions(s: string; SearchOptions: TSearchOptions; format: TFileFormat);
+procedure SetSearchOptions(s: string; SearchOptions: TSearchOptions; format: TFileFormat; accented: boolean);
 var
   i : integer;
   c : string;
 begin
   Options := SearchOptions;
+  AccentedOption := accented;
   if not (caseSensitive in Options) then s := Utf8LowerCase(s);
 
   SearchList := StringToList(s,' ');
@@ -54,8 +56,8 @@ var i : integer;
 begin;
   Result := True;
   PurgeTags(s);
-  if Accented then Replace(s,AcuteChar,'');
 
+  if AccentedOption then Replace(s,AcuteChar,'');
   if not (caseSensitive in Options) then s := Utf8LowerCase(s);
   if wholeWords in Options then s := ' ' + CleanString(s) + ' ';
 

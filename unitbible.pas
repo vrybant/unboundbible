@@ -369,8 +369,7 @@ var
   i : integer;
 begin
   SetLength(Result,0);
-
-  SetSearchOptions(searchString, SearchOptions, format);
+  SetSearchOptions(searchString, SearchOptions, format, accented);
 
   if Range.from > 0 then
     begin

@@ -42,6 +42,7 @@ type
     embedded     : boolean;
     footnotes    : boolean;
     interlinear  : boolean;
+    accented     : boolean;
   public
     constructor Create(FilePath: string; new: boolean = false);
     procedure CommitTransaction;
@@ -81,6 +82,7 @@ begin
   embedded     := false;
   footnotes    := false;
   interlinear  := false;
+  accented     := false;
   format       := unbound;
 
   ext := ExtractFileExt(FilePath);
@@ -235,6 +237,7 @@ begin
       if name = '' then name := fileName;
       RightToLeft := IsRightToLeft(language);
       info := RemoveTags(info);
+      accented := language = 'ru';
     end;
 end;
 

@@ -84,9 +84,7 @@ begin
     begin
       link := CurrBible.VerseToStr(content.verse,true);
       text := content.text;
-
-      Accented := CurrBible.language = 'ru';
-      if Accented then Replace(text,AcuteChar,'');
+      if CurrBible.accented then Replace(text,AcuteChar,'');
 
       Highlights(text,st,CurrentSearchOptions);
       text := '<l>' + link + '</l>' + ' ' + text + '<br><br>';
