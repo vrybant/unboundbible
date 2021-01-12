@@ -72,6 +72,7 @@ function Cyrillic(language: string): boolean;
 // graphics
 
 function WidthInPixels(Font: TFont; s: string): integer;
+function IsDarkTheme: boolean;
 
 // debug
 
@@ -518,6 +519,15 @@ begin
   finally
     Bitmap.Free;
   end;
+end;
+
+function IsDarkTheme: boolean;
+  function Grayscale(C: TColor): double;
+  begin
+    Result:= Red(C)*0.3 + Green(C)*0.59 + Blue(C)*0.11;
+  end;
+begin
+  Result:= Grayscale(ColorToRGB(clWindow)) < Grayscale(ColorToRGB(clWindowText));
 end;
 
 // debug
