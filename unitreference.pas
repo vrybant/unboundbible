@@ -159,7 +159,7 @@ begin
   info := '';
 
   if self.Count = 0 then Exit;
-  filename := iif( Prefix('ru', language), 'obru.xrefs.unbound', 'ob.xrefs.unbound');
+  filename := BoolToStr(Prefix('ru', language),'obru.xrefs.unbound','ob.xrefs.unbound');
 
   for i:=0 to Count-1 do
     if Items[i].filename = filename then

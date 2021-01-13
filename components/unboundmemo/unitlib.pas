@@ -124,7 +124,7 @@ var lg : longint;
 begin
   lg := value;
   System.Str(lg, Result);
-  if VarIsBool(value) then Result := iif(value, 'True', 'False')
+  if VarIsBool(value) then Result := BoolToStr(value,True);
 end;
 
 function ToBoolean(s: string): boolean;
