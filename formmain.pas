@@ -337,6 +337,7 @@ begin
 
   {$ifdef linux}
     StandardToolBar.ParentColor := True;
+    ToolPanel.Color := clForm;
     ActionFilePrint.Visible := False;
     ActionEditUndo.Visible := False;
     ActionBullets.Visible := False;
