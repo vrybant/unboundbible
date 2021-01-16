@@ -90,11 +90,10 @@ const
   Slash = DirectorySeparator;
 
 const
-  clBlueScreen  = TColor($bb4700);
-  clGreenScreen = TColor($40b100);
+  clBlueScreen = TColor($BB4700);
+  clGreenScreen = TColor($40B100);
   clSysGray = clGray;
   clSysRed = clRed;
-
 
 implementation
 
