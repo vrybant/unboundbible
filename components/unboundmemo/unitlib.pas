@@ -77,10 +77,8 @@ function IsDarkTheme: boolean;
 // system colors
 
 function clSysBrown: TColor;
-function clSysGray: TColor;
 function clSysMaroon: TColor;
 function clSysNavy: TColor;
-function clSysRed: TColor;
 function clSysTeal: TColor;
 
 // debug
@@ -94,7 +92,9 @@ const
 const
   clBlueScreen  = TColor($bb4700);
   clGreenScreen = TColor($40b100);
-  clBrown = TColor($336699); // apple brown
+  clSysGray = clGray;
+  clSysRed = clRed;
+
 
 implementation
 
@@ -546,12 +546,7 @@ end;
 
 function clSysBrown: TColor;
 begin
-  Result := iif(DarkTheme, TColor($1F97FD), clBrown);
-end;
-
-function clSysGray: TColor;
-begin
-  Result := clGray;
+  Result := iif(DarkTheme, TColor($1F97FD), TColor($336699));
 end;
 
 function clSysMaroon: TColor;
@@ -562,11 +557,6 @@ end;
 function clSysNavy: TColor;
 begin
   Result := iif(DarkTheme, TColor($FF9900), clNavy);
-end;
-
-function clSysRed: TColor;
-begin
-  Result := clRed;
 end;
 
 function clSysTeal: TColor;

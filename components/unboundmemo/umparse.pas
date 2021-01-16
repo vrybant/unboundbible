@@ -49,15 +49,15 @@ function ApplyString(Tag: UnicodeString; var fp: TFontParams): boolean;
 begin
   Result := true;
 
-  if Tag = '<J>' then fp.Color := clMaroon else
-  if Tag = '<l>' then fp.Color := clNavy   else
-  if Tag = '<n>' then fp.Color := clGray   else
-  if Tag = '<r>' then fp.Color := clRed    else
+  if Tag = '<J>' then fp.Color := clSysMaroon else
+  if Tag = '<l>' then fp.Color := clSysNavy   else
+  if Tag = '<n>' then fp.Color := clSysGray   else
+  if Tag = '<r>' then fp.Color := clSysRed    else
 
-  if Tag = '<f>' then begin fp.Color := clTeal;  fp.VScriptPos := vpSuperScript end else
-  if Tag = '<m>' then begin fp.Color := clGray;  fp.VScriptPos := vpSuperScript end else
-  if Tag = '<S>' then begin fp.Color := clBrown; fp.VScriptPos := vpSuperScript end else
-  if Tag = '<R>' then begin fp.Color := clRed;   fp.VScriptPos := vpSuperScript end else
+  if Tag = '<f>' then begin fp.Color := clSysTeal;  fp.VScriptPos := vpSuperScript end else
+  if Tag = '<m>' then begin fp.Color := clSysGray;  fp.VScriptPos := vpSuperScript end else
+  if Tag = '<S>' then begin fp.Color := clSysBrown; fp.VScriptPos := vpSuperScript end else
+  if Tag = '<R>' then begin fp.Color := clSysRed;   fp.VScriptPos := vpSuperScript end else
 
   Result := false;
 end;
@@ -69,12 +69,12 @@ begin
 
   if Prefix('<a ', Tag{%H-}) then Tag := '<a>';
 
-  if Tag = '<a>' then fp.Color := clGray else
-  if Tag = '<h>' then fp.Color := clNavy else
-  if Tag = '<v>' then fp.Color := clGray else
+  if Tag = '<a>' then fp.Color := clSysGray else
+  if Tag = '<h>' then fp.Color := clSysNavy else
+  if Tag = '<v>' then fp.Color := clSysGray else
 
-  if Tag = '<b>' then begin fp.Color := clBrown; fp.Style += [fsBold]   end else
-  if Tag = '<i>' then begin fp.Color := clGray;  fp.Style += [fsItalic] end else
+  if Tag = '<b>' then begin fp.Color := clSysBrown; fp.Style += [fsBold]   end else
+  if Tag = '<i>' then begin fp.Color := clSysGray;  fp.Style += [fsItalic] end else
 
   if Tag = '<sup>' then fp.VScriptPos := vpSuperScript else
 
