@@ -74,6 +74,15 @@ function Cyrillic(language: string): boolean;
 function WidthInPixels(Font: TFont; s: string): integer;
 function IsDarkTheme: boolean;
 
+// system colors
+
+function clSysBrown: TColor;
+function clSysGray: TColor;
+function clSysMaroon: TColor;
+function clSysNavy: TColor;
+function clSysRed: TColor;
+function clSysTeal: TColor;
+
 // debug
 
 procedure Output(s: string); overload;
@@ -83,11 +92,13 @@ const
   Slash = DirectorySeparator;
 
 const
-  clBlueScreen  = TColor($bb4700); // #0047bb
-  clGreenScreen = TColor($40b100); // #00b140
-  clBrown = TColor($336699);       // apple brown
+  clBlueScreen  = TColor($bb4700);
+  clGreenScreen = TColor($40b100);
+  clBrown = TColor($336699); // apple brown
 
 implementation
+
+var DarkTheme : boolean = False;
 
 // string's functions
 
@@ -522,12 +533,45 @@ begin
 end;
 
 function IsDarkTheme: boolean;
-  function Grayscale(C: TColor): double;
+  function Grayscale(C: TColor): longint;
   begin
-    Result:= Red(C)*0.3 + Green(C)*0.59 + Blue(C)*0.11;
+    C := ColorToRGB(C);
+    Result := Red(C)*3 + Green(C)*6 + Blue(C);
   end;
 begin
-  Result:= Grayscale(ColorToRGB(clWindow)) < Grayscale(ColorToRGB(clWindowText));
+  Result:= Grayscale(clWindow) < Grayscale(clWindowText);
+end;
+
+// system colors
+
+function clSysBrown: TColor;
+begin
+  Result := iif(DarkTheme, TColor($1F97FD), clBrown);
+end;
+
+function clSysGray: TColor;
+begin
+  Result := clGray;
+end;
+
+function clSysMaroon: TColor;
+begin
+  Result := iif(DarkTheme, TColor($4242E5), clMaroon);
+end;
+
+function clSysNavy: TColor;
+begin
+  Result := iif(DarkTheme, TColor($FF9900), clNavy);
+end;
+
+function clSysRed: TColor;
+begin
+  Result := clRed;
+end;
+
+function clSysTeal: TColor;
+begin
+  Result := iif(DarkTheme, TColor($CCCC66), clTeal);
 end;
 
 // debug
@@ -542,6 +586,10 @@ procedure Output(n: integer);
 begin
   Output(ToStr(n));
 end;
+
+initialization
+
+DarkTheme := IsDarkTheme;
 
 end.
 
