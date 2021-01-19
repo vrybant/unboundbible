@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls, LCLIntf,
-  PopupNotifier, Menus, UnboundMemo;
+  PopupNotifier, Menus, UnboundMemo, UnitLib;
 
 type
 
@@ -58,7 +58,7 @@ begin
   PopupMenu.Images := MainForm.Images;
   miCopy.ImageIndex := 1;
 
-  {$ifdef linux} Color := InfoColor; {$endif}
+  {$ifdef linux} if not IsDarkTheme then Color := InfoColor; {$endif}
 end;
 
 procedure TNotifyForm.HandleResize;
