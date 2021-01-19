@@ -58,7 +58,7 @@ begin
   PopupMenu.Images := MainForm.Images;
   miCopy.ImageIndex := 1;
 
-  {$ifdef linux} if not IsDarkTheme then Color := InfoColor; {$endif}
+  {$ifdef linux} Color := iif(IsDarkTheme, clForm, InfoColor); {$endif}
 end;
 
 procedure TNotifyForm.HandleResize;
