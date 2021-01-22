@@ -623,8 +623,7 @@ begin
   MakeBookList;
   select := CurrVerse.number > 1;
   {$ifdef linux}
-    if select then IdleMessage := 'GotoVerse(CurrVerse,True)'
-              else IdleMessage := 'GotoVerse(CurrVerse,False)';
+    IdleMessage := 'GotoVerse(CurrVerse,' + ToStr(select) + ')';
   {$else}
     GotoVerse(CurrVerse, select);
   {$endif}
