@@ -261,7 +261,7 @@ var
   end;
 
 begin
-  Result := minVerse;
+  Result.book := -1;
   if Pos(':',link) = 0 then Exit;
   link := Trim(link);
 

@@ -238,6 +238,7 @@ type
     {$ifdef linux} IdleMessage : string; {$endif}
     function UnboundMemo: TUnboundMemo;
     function CheckFileSave: boolean;
+    function SelectBible(name: string): boolean;
     procedure ComboBoxInit;
     procedure EnableActions;
     procedure UpDownButtons;
@@ -622,8 +623,8 @@ begin
   MakeBookList;
   select := CurrVerse.number > 1;
   {$ifdef linux}
-    if select then IdleMessage := 'GotoVerse(CurrVerse,true)'
-              else IdleMessage := 'GotoVerse(CurrVerse,false)';
+    if select then IdleMessage := 'GotoVerse(CurrVerse,True)'
+              else IdleMessage := 'GotoVerse(CurrVerse,False)';
   {$else}
     GotoVerse(CurrVerse, select);
   {$endif}
@@ -870,10 +871,13 @@ begin
   if Memo.hyperlink = '' then Exit;
 
   if Memo.Foreground = fgLink then
-    begin
-      Verse := CurrBible.SrtToVerse(Memo.hyperlink);
-      if Verse.Book > 0 then GoToVerse(Verse, True);
-    end;
+    if SelectBible(Memo.hyperlink) then Exit;
+
+  if Memo.Foreground = fgLink then
+      begin
+        Verse := CurrBible.SrtToVerse(Memo.hyperlink);
+        if Verse.Book > 0 then GoToVerse(Verse, True);
+      end;
 
   if Memo = MemoBible then
     if Memo.Foreground = fgFootnote then LoadFootnote(Memo.hyperlink);
@@ -933,6 +937,20 @@ var
 begin
   GetCursorPos(CursorPos);
   PopupMenu.Popup(CursorPos.X, CursorPos.Y);
+end;
+
+function TMainForm.SelectBible(name: string): boolean;
+var i : integer;
+begin
+  Result := False;
+  if Pos(':',name) > 0 then Exit;
+  for i := 0 to ComboBox.Items.Count-1 do
+    if ComboBox.Items[i] = name then
+      begin
+        ComboBox.ItemIndex := i;
+        ComboBoxChange(nil);
+        Result := True;
+      end;
 end;
 
 procedure TMainForm.SelectBook(title: string; scroll: boolean);
@@ -1222,11 +1240,11 @@ end;
 procedure TMainForm.IdleTimerTimer(Sender: TObject);
 begin
   {$ifdef linux}
-  if IdleMessage = 'GotoVerse(CurrVerse,true)' then
-                    GotoVerse(CurrVerse,true);
+  if IdleMessage = 'GotoVerse(CurrVerse,True)' then
+                    GotoVerse(CurrVerse,True);
 
-  if IdleMessage = 'GotoVerse(CurrVerse,false)' then
-                    GotoVerse(CurrVerse,false);
+  if IdleMessage = 'GotoVerse(CurrVerse,False)' then
+                    GotoVerse(CurrVerse,False);
 
   if IdleMessage <> '' then IdleMessage := '';
   {$endif}
