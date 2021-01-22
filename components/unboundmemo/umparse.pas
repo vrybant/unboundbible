@@ -50,6 +50,7 @@ begin
   Result := true;
 
   if Tag = '<J>' then fp.Color := clSysMaroon else
+  if Tag = '<h>' then fp.Style += [fsBold]    else
   if Tag = '<l>' then fp.Color := clSysNavy   else
   if Tag = '<n>' then fp.Color := clSysGray   else
   if Tag = '<r>' then fp.Color := clSysRed    else
@@ -70,7 +71,7 @@ begin
   if Prefix('<a ', Tag{%H-}) then Tag := '<a>';
 
   if Tag = '<a>' then fp.Color := clSysGray else
-  if Tag = '<h>' then fp.Color := clSysNavy else
+  if Tag = '<h>' then fp.Style += [fsBold]  else
   if Tag = '<v>' then fp.Color := clSysGray else
 
   if Tag = '<b>' then begin fp.Color := clSysBrown; fp.Style += [fsBold]   end else
@@ -130,6 +131,7 @@ begin
 
   Memo.Clear;
   fp0 := Memo.SelAttributes;
+
   Original := UnicodeString(Source);
   Memo.Text := String(RemoveTags(Source));
 
