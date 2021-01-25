@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, Graphics, UnitLib;
 
-function ParseWin(s: string; Font: TFont; html: boolean = false): string;
+function ParseWin(Source: string; Font: TFont; html: boolean = false): string;
 
 implementation
 
@@ -51,8 +51,6 @@ begin
   if Tag =  '<J>' then begin r := '\cf7_'; jColor := true  end;
   if Tag = '</J>' then begin r := '\cf1_'; jColor := false end;
 
-  if Tag =  '<h>' then r := '\b_';
-  if Tag = '</h>' then r := '\b0_';
   if Tag =  '<l>' then r := '\cf3_';
   if Tag = '</l>' then r := '\cf1_';
   if Tag =  '<r>' then r := '\cf2_';
@@ -69,6 +67,7 @@ begin
   if Tag = '</S>' then r := color + '\nosupersub_';
   if Tag =  '<i>' then r := '\cf5\i_';
   if Tag = '</i>' then r := color + '\i0_';
+  if Tag =  '<br>' then r := '\par_';
 
   Result := r;
 end;
@@ -84,8 +83,8 @@ begin
   if Tag =  '</i>' then r := '\cf1\i0_';
   if Tag =   '<a>' then r := '\cf5_';
   if Tag =  '</a>' then r := '\cf1_';
-  if Tag =   '<b>' then r := '\cf8\b0_';
-  if Tag =  '</b>' then r := '\cf1\b0_';
+  if Tag =   '<b>' then r := '\cf8_';
+  if Tag =  '</b>' then r := '\cf1_';
   if Tag =   '<h>' then r := '\b_';
   if Tag =  '</h>' then r := '\b0_';
   if Tag =  '</p>' then r := '\par_';
@@ -101,26 +100,20 @@ begin
   Result := r;
 end;
 
-function Apply(Tag: string; html: boolean): string;
-begin
-  Result := '';
-  if not html then Result := ApplyString(Tag);
-  if Result = '' then Result := ApplyHtml(Tag);
-end;
-
-function ParseWin(s: string; Font: TFont; html: boolean = false): string;
+function ParseWin(Source: string; Font: TFont; html: boolean = false): string;
 var
   List : TStringArray;
-  item, p : string;
+  item, s : string;
 begin
   Result := '';
-  if html then HtmlReplacement(s);
-  List := XmlToList(s);
+  if html then HtmlReplacement(Source);
+  List := XmlToList(Source);
 
   for item in List do
     begin
-      if Prefix('<', item) then p := Apply(item, html) else p := item;
-      Result += p;
+      s := item;
+      if Prefix('<', s) then s := iif(html, ApplyHtml(s), ApplyString(s));
+      Result += s;
     end;
 
   RemoveDoubleSpaces(Result);

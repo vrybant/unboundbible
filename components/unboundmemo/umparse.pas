@@ -30,7 +30,7 @@ begin
   Replace(s,'</tr>','<br><tab>');
 
   if Pos('</p>',s) = 0 then Replace(s,'<p>','<br><tab>');
-  Replace(s,'</p>','<br><tab>');
+  Replace(s,'</p>','<br>');
 
   RemoveDoubleSpaces(s);
 end;
