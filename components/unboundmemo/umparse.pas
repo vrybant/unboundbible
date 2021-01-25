@@ -124,6 +124,7 @@ begin
 
   Memo.Clear;
   fp0 := Memo.SelAttributes;
+  fp0.Size := Memo.Font.Size;
 
   Original := UnicodeString(Source);
   Memo.Text := String(RemoveTags(Source));
