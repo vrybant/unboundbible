@@ -1464,7 +1464,7 @@ begin
   if text = '' then Exit;
   NotifyForm.Title.Caption := T('Strong''s Dictionary');
   NotifyForm.Compact := True;
-  NotifyForm.Memo.LoadText(text);
+  NotifyForm.Memo.LoadHtml(text);
   NotifyForm.ShowAtPos(Mouse.CursorPos);
   Self.SetFocus;
 end;
@@ -1476,7 +1476,7 @@ begin
   if text = '' then Exit;
   NotifyForm.Title.Caption := T('Footnote');
   NotifyForm.Compact := False;
-  NotifyForm.Memo.LoadText(text);
+  NotifyForm.Memo.LoadHtml(text);
   NotifyForm.ShowAtPos(Mouse.CursorPos);
   Self.SetFocus;
 end;
