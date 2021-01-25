@@ -57,8 +57,6 @@ begin
   if Tag = '</r>' then r := '\cf1_';
   if Tag =  '<n>' then r := '\cf5_';       // note
   if Tag = '</n>' then r := color + '_';
-  if Tag =  '<v>' then r := '\cf5_';
-  if Tag = '</v>' then r := color + '_';
   if Tag =  '<f>' then r := '\cf6\super_';
   if Tag = '</f>' then r := color + '\nosupersub_';
   if Tag =  '<m>' then r := '\cf5\super_';

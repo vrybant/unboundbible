@@ -50,7 +50,6 @@ begin
   Result := true;
 
   if Tag = '<J>' then fp.Color := clSysMaroon else
-  if Tag = '<h>' then fp.Style += [fsBold]    else
   if Tag = '<l>' then fp.Color := clSysNavy   else
   if Tag = '<n>' then fp.Color := clSysGray   else
   if Tag = '<r>' then fp.Color := clSysRed    else
@@ -59,6 +58,7 @@ begin
   if Tag = '<m>' then begin fp.Color := clSysGray;  fp.VScriptPos := vpSuperScript end else
   if Tag = '<S>' then begin fp.Color := clSysBrown; fp.VScriptPos := vpSuperScript end else
   if Tag = '<R>' then begin fp.Color := clSysRed;   fp.VScriptPos := vpSuperScript end else
+  if Tag = '<i>' then begin fp.Color := clSysGray;  fp.Style += [fsItalic] end else
 
   Result := false;
 end;
@@ -74,19 +74,12 @@ begin
   if Tag = '<h>' then fp.Style += [fsBold]  else
   if Tag = '<v>' then fp.Color := clSysGray else
 
-  if Tag = '<b>' then begin fp.Color := clSysBrown; fp.Style += [fsBold]   end else
-  if Tag = '<i>' then begin fp.Color := clSysGray;  fp.Style += [fsItalic] end else
+  if Tag = '<b>' then begin fp.Color := clSysBrown; end else
+  if Tag = '<i>' then begin fp.Color := clSysGray; fp.Style += [fsItalic] end else
 
   if Tag = '<sup>' then fp.VScriptPos := vpSuperScript else
 
   Result := false;
-end;
-
-function Apply(Tag: UnicodeString; var fp: TFontParams; html: boolean): boolean;
-begin
-  Result := ApplyHtml(Tag, fp);
-  if html then Exit;
-  if not Result then Result := ApplyString(Tag, fp);
 end;
 
 procedure Parse(Memo: TRichMemoEx; Source: string; html: boolean = false);
@@ -145,7 +138,8 @@ begin
       if Original[i] = '>' then
         begin
           fp := fp0;
-          if Apply(Tag, fp, html) then Memo.SetTextAttributes(idx, iLength(Tag), fp);
+          if iif(html, ApplyHtml(Tag, fp), ApplyString(Tag, fp))
+            then Memo.SetTextAttributes(idx, iLength(Tag), fp);
           IsTag := False;
           Tag := '';
         end;
