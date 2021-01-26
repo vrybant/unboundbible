@@ -65,7 +65,10 @@ begin
   if Tag = '</S>' then r := color + '\nosupersub_';
   if Tag =  '<i>' then r := '\cf5\i_';
   if Tag = '</i>' then r := color + '\i0_';
+
   if Tag =  '<br>' then r := '\par_';
+  if Tag = '<rtl>' then r := '\rtlpar\qr_';
+  if Tag = '<ltr>' then r := '\ltrpar\qr_';
 
   Result := r;
 end;
