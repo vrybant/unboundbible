@@ -7,7 +7,7 @@ uses
 
 const
   ApplicationName = 'Unbound Bible';
-  ApplicationVersion = '5.1';
+  ApplicationVersion = '5.2';
   BibleDirectory = 'bibles';
   LangDirectory = 'localization';
   Untitled = 'Untitled';
