@@ -7,6 +7,7 @@ uses
 
 type
   TLocal = class
+    filename : string;
     language : string;
     id : string;
   end;
@@ -16,8 +17,8 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function DefaultLangID: string;
-    procedure SetLocal(filename: string);
+    function DefaultLocaleID: string;
+    procedure SetLocal(lang: string);
     function Translate(const s: string): string;
   end;
 
@@ -58,7 +59,8 @@ begin
       Item := TLocal.Create;
       IniFile := TIniFile.Create(f);
       Item.language := IniFile.ReadString('Details','Language','--');
-      Item.id := IniFile.ReadString('Details','LangID','--');
+      Item.id := IniFile.ReadString('Details','LocaleID','--');
+      Item.filename := f;
       IniFile.Free;
       Add(Item);
     end;
@@ -66,16 +68,24 @@ begin
   Sort(Comparison);
 end;
 
-function TLocalization.DefaultLangID: string;
+function TLocalization.DefaultLocaleID: string;
 var i : integer;
 begin
   Result := 'en';
   for i:=0 to Count-1 do
-    if Items[i].id = GetLanguageID then Result := GetLanguageID;
+    if Items[i].id = GetLocaleID then Result := GetLocaleID;
 end;
 
-procedure TLocalization.SetLocal(filename: string);
+procedure TLocalization.SetLocal(lang: string);
+var
+  filename : string;
+  i : integer;
 begin
+  filename := SharePath + LangDirectory + Slash + 'english.lng';
+
+  for i:=0 to Count-1 do
+    if Items[i].id = lang then filename := Items[i].filename;
+
   if Assigned(LocalFile) then LocalFile.Free;
   LocalFile := TIniFile.Create(filename);
 end;

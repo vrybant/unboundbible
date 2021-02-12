@@ -1568,7 +1568,7 @@ begin
   Top := IniFile.ReadInteger('Window', 'Top', 80);
 
   PanelLeft.Width := IniFile.ReadInteger('Window', 'Splitter', 270);
-  InterfaceLang := IniFile.ReadString('Application', 'Interface', Localization.DefaultLangID);
+  InterfaceLang := IniFile.ReadString('Application', 'Interface', Localization.DefaultLocaleID);
   PatreonVisited := IniFile.ReadBool('Application', 'Patreon', False);
   Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
   Options.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);
