@@ -496,8 +496,9 @@ end;
 // language functions
 
 function GetLanguageID: string;
+var s: string;
 begin
-  LazGetShortLanguageID(Result{%H-});
+  LazGetLanguageIDs(Result{%H-}, s{%H-});
 end;
 
 function IsRightToLeft(language: string): boolean;
