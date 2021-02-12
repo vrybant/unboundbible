@@ -65,6 +65,7 @@ procedure StringsToFile(filename: string; Strings: TStringArray);
 
 // language functions
 
+function GetLanguageID: string;
 function GetLocaleID: string;
 function IsRightToLeft(language: string): boolean;
 function Cyrillic(language: string): boolean;
@@ -494,6 +495,11 @@ begin
 end;
 
 // language functions
+
+function GetLanguageID: string;
+begin
+  LazGetShortLanguageID(Result{%H-});
+end;
 
 function GetLocaleID: string;
 var s: string;
