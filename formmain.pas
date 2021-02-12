@@ -518,11 +518,8 @@ begin
 end;
 
 procedure TMainForm.LocalizeApplication;
-var
-  filename : string;
 begin
-  filename := SharePath + Slash + LangDirectory + Slash + InterfaceLang + '.lng';
-  Localization.SetLocal(filename);
+  Localization.SetLocal(InterfaceLang);
 
   MainForm     .Localize;
   SearchForm   .Localize;
@@ -1552,8 +1549,8 @@ end;
 function GetDefaultBible: string;
 begin
   Result := 'kjv.bbl.unbound';
-  if GetLanguageID = 'ru' then Result := 'rstw.bbl.unbound';
-  if GetLanguageID = 'uk' then Result := 'ubio.bbl.unbound';
+  if GetLocaleID = 'ru_RU' then Result := 'rstw.bbl.unbound';
+  if GetLocaleID = 'uk_UA' then Result := 'ubio.bbl.unbound';
 end;
 
 procedure TMainForm.ReadConfig;

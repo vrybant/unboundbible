@@ -148,7 +148,7 @@ var
   s1 : string = '';
   s2 : string = '';
 begin
-  if Cyrillic(GetLanguageID) then
+  if Cyrillic(GetLocaleID) then
     begin
       if Cyrillic(Item1.language) then s1 := ' ';
       if Cyrillic(Item2.language) then s2 := ' ';
