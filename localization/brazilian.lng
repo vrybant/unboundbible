@@ -1,0 +1,191 @@
+
+****************************************************************************
+*                                                                          *
+*                Unbound Bible - International Support File                *
+*                                                                          *
+****************************************************************************
+*                                                                          *
+*   You can easily translate interface to your native language.            *
+*   Just use this file as template for translation.                        *
+*   After that, please send the new file to software developer             *
+*   to make it available for everyone.                                     *
+*                                                                          *
+****************************************************************************
+
+[Details]
+
+Language = Português Brasil
+LangID = pt_BR
+
+[Localization]
+
+Abbreviation = Abreviação
+About = Sobre
+Align Left = Alinhaar à esquerda
+Align Right = Alinhas à direita
+All = Tudo
+Any Word = Qualquer palavra
+Apply = Aplicar
+Become a Patron = Torne-se um Patron
+Bible = Bíblia
+Bible Folder = Pasta da Bíblia
+Bible Search = Pesquisar na Bíblia
+Bold = Negrito
+Bullets = Tópicos
+Cancel = Cancelar
+Case Sensitive = Considerar maísculas e minúsculas
+Center = Centro
+Commentaries = Commentários
+Commentary = Commentário 
+Compare = Comparar
+Confirmation = Confirmação
+Copy = Copiar
+Copy As… = Copiar como…
+Copy Verses = Copiar versos
+Cross-References = Referências cruzadas
+Cut = Recortar
+Delete = Apagar 
+Developer = Desevonvedor
+Dictionaries = Dicionários
+Downloads = Downloads
+Edit = Editar
+Encoding = Codificando
+Entire Bible =  Bíblia completa
+Enumerated = Enumerado
+Epistles = Epístolas
+Every Word =  Cada palavra
+Exit = Sair
+File = Arquivo
+Find = Procurar
+Folder = Pasta
+Font = Fonte
+Font Size = Tamanho da fonte
+Font… =  Fonte…
+Footnote = Nota de rodapé
+Format = Formato
+Gospels = Evangelhos
+Guillemets = Chevrons
+Help = Ajuda
+Home Page = Home Page
+Hyperlink = Hiperlink
+Information = Informação
+Interlinear = Interlinear
+Italic = Itálico
+Language = Linguagem
+Language Editor = Editor de linguagem
+Link in the end =  Link no final
+Loading… = Carregando…
+Localization = Localização
+Look Up % = Procurar %
+Manual = Manual
+Modules Downloads = Baixar módulos
+Modules = Módulos
+NT = NT
+New = Novo
+New Testament = Novo Testamento
+Notes = Notas
+OK = OK
+OK to overwrite %s? = OK para sobrescrever %s?
+OT = OT
+Old Testament = Antigo Testamento
+Open Recent = Abrir 
+Opened Book =  Livro aberto
+Open… = Abrir…
+Options = Opções
+Parentheses = Parentesis
+Paste = Colar
+Phrase = Frase
+Print = Imprimir
+Range = Alcance
+Report an Issue = Relatar um problema
+Save = Salvar
+Save As… = Salvar como…
+Save changes? = Salvar mudanças?
+Save… = Salvar…
+Search = Pesquisar
+Search Options = Opções de pesquisa
+Search Type = Tipo de pesquisa
+Search for % = Pesquisar por %
+Search… = Pesquisar…
+Select All = Selecionar tudo
+Set default =  Definir padrão
+Strong's Dictionary = Dicionário de Strong
+Text Options = Opções de texto
+Title = Título
+Tools = Ferramentas
+Translation = Tradução
+Underline = Sublinhado
+Undo = Desfazer
+Version = Versão
+Whole Words = Palavras completas
+verses found = versículos encontrados
+
+// messages
+
+Commentaries not found. = Comentários não encontrados.
+Cross-references not found. = Referências cruzadas não encontradas.
+For more information, choose Menu ➝ Help, then click «Modules Downloads». = Para obter mais informação, selecione Menu ➝ Ajuda e clique em «Baixar módulos».
+Please enter your query in the search bar. = Por favor insira sua consulta na barra de pesquisa.
+Please narrow your search. = Por favor, restrinja sua pesquisa.
+This search returned too many results. = Esta pesquisa retornou muitos resultados.
+You don't have any commentary modules. = Você não tem nenhum módulo de comentário.
+You don't have any dictionary modules. = Você não tem módulos de dicionário.
+You search for % produced no results. = Sua pesquisa por % não produziu resultados.
+
+[macOS]
+
+About Unbound Bible = Sobre a Unbound Bible
+Align Left = Alinhar à esquerda
+Align Right = Alinhar à direita
+Alignment = Alinhamento
+Baseline = LInha de base
+Bigger = Maior
+Bring All to Front = Trazer tudo para a frente
+Clear Menu = Limpar o menu
+Close = Fechar
+Colors… = Cores… 
+Copy Style = Copiar estilo
+Default = Padrão
+Facebook Page = Página do Facebook
+Fonts… = Fontes… 
+Format = Formato
+Hide Others = Esconder outros
+Hide Unbound Bible = Esconder Unbound Bible 
+Justify = Justificar
+Left to Right = Esquerda para a direita
+Minimize = Minimizar 
+Page Setup… = Configurações da página… 
+Paste and Match Style = Colar e combinar estilo
+Paste Style = Colar Estilo
+Preferences = Preferências
+Preferences… = Preferencias… 
+Quit Unbound Bible = Sair da Unbound Bible 
+Redo = Refazer 
+Right to Left = Direita para esquerda
+Search Options = Procurar opções
+Services = Serviços
+Show All = Mostrar tudo
+Smaller = Menor 
+Strikethrough = Tachado
+Subscript = Subscrito 
+Superscript = Sobrescrito
+Unbound Bible Help = Ajuda do Unbound Bible 
+Window = Janela
+Writing Direction = Direção de Escrita
+Zoom = Zoom 
+
+// Localizable strings
+
+Change Font = Mudar fonte
+Do you want to save the changes? = Você quer salvar as alterações?
+Document Name = Nome do documento 
+Don't Save = Não salvar
+Failed to save document. = Falha ao salvar o documento.
+Later = Mais tarde.
+Permission denied. = Permissão negada.
+The beta version has expired. = A versão beta expirou.
+The document % could not be opened. = O documento % não pôde ser aberto.
+Update = Atualizar
+Update to the stable version. = Atualize para a versão estável.
+verses was found = versos foram encontrados
+Your changes will be lost if you don't save them. = Suas alterações serão perdidas se você não salvá-las.
