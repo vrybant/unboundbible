@@ -505,6 +505,7 @@ function GetLocaleID: string;
 var s: string;
 begin
   LazGetLanguageIDs(Result{%H-}, s{%H-});
+  {$ifdef linux} Replace(Result,'.UTF-8',''); {$endif}
 end;
 
 function IsRightToLeft(language: string): boolean;
