@@ -189,26 +189,26 @@ end;
 function HomeURL: string;
 begin
   Result := 'http://vladimirrybant.org';
-  if (InterfaceLang = 'ru') or (InterfaceLang = 'uk') then Result += '/ru';
+  if (InterfaceLang = 'ru_RU') or (InterfaceLang = 'uk_UA') then Result += '/ru';
 end;
 
 function DownloadsURL: string;
 begin
-  if (InterfaceLang = 'ru') or (InterfaceLang = 'uk')
+  if (InterfaceLang = 'ru_RU') or (InterfaceLang = 'uk_UA')
     then Result := 'http://vladimirrybant.org/goto/ubdownloadru.php'
     else Result := 'http://vladimirrybant.org/goto/ubdownload.php';
 end;
 
 function IssueURL: string;
 begin
-  if (InterfaceLang = 'ru') or (InterfaceLang = 'uk')
+  if (InterfaceLang = 'ru_RU') or (InterfaceLang = 'uk_UA')
     then Result := 'http://vladimirrybant.org/goto/contactru.php'
     else Result := 'http://vladimirrybant.org/goto/contact.php';
 end;
 
 function DonateURL: string;
 begin
-  if (InterfaceLang = 'ru') or (InterfaceLang = 'uk')
+  if (InterfaceLang = 'ru_RU') or (InterfaceLang = 'uk_UA')
     then Result := 'http://vladimirrybant.org/goto/donateru.php'
     else Result := 'http://vladimirrybant.org/goto/donate.php';
 end;

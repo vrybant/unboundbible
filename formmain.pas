@@ -469,7 +469,7 @@ begin
   miRecent.Caption := T('Open Recent');
 
   miHome.Caption := T('Home Page');
-  miDonate.Caption := T('Become a Patron');
+  miDonate.Caption := T('Donate');
   miDownload.Caption := T('Modules Downloads');
   miBibleFolder.Caption := T('Bible Folder');
   miIssue.Caption := T('Report an Issue');
