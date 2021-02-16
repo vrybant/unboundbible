@@ -92,7 +92,6 @@ var
 
 const
   minVerse : TVerse = (book: 1; chapter : 1; number : 1; count : 1);
-  PatreonURL = 'https://www.patreon.com/vrybant';
   AcuteChar = #$CC#$81;
 
 function unbound2mybible(id: integer): integer;
@@ -105,6 +104,7 @@ function GetDatabaseList: TStringArray;
 function HomeURL: string;
 function DownloadsURL: string;
 function IssueURL: string;
+function DonateURL: string;
 
 implementation
 
@@ -204,6 +204,13 @@ begin
   if (InterfaceLang = 'ru') or (InterfaceLang = 'uk')
     then Result := 'http://vladimirrybant.org/goto/contactru.php'
     else Result := 'http://vladimirrybant.org/goto/contact.php';
+end;
+
+function DonateURL: string;
+begin
+  if (InterfaceLang = 'ru') or (InterfaceLang = 'uk')
+    then Result := 'http://vladimirrybant.org/goto/donateru.php'
+    else Result := 'http://vladimirrybant.org/goto/donate.php';
 end;
 
 function ConfigFile: string;

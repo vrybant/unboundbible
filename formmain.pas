@@ -20,7 +20,7 @@ type
     Edit: TEdit;
     IdleTimer: TIdleTimer;
     miIssue: TMenuItem;
-    miPatreon: TMenuItem;
+    miDonate: TMenuItem;
     MenuItem2: TMenuItem;
     miRrefx: TMenuItem;
     miDictionaries: TMenuItem;
@@ -156,7 +156,7 @@ type
     ToolButtonCompare: TToolButton;
     ToolButtonCopy: TToolButton;
     ToolButtonCut: TToolButton;
-    ToolButtonPatreon: TToolButton;
+    ToolButtonDonate: TToolButton;
     ToolButtonFont: TToolButton;
     ToolButtonItalic: TToolButton;
     ToolButtonLeft: TToolButton;
@@ -223,18 +223,18 @@ type
     procedure miDownloadClick(Sender: TObject);
     procedure miHomeClick(Sender: TObject);
     procedure miIssueClick(Sender: TObject);
-    procedure miPatreonClick(Sender: TObject);
+    procedure miDonateClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
     procedure RadioButtonClick(Sender: TObject);
-    procedure ToolButtonPatreonClick(Sender: TObject);
+    procedure ToolButtonDonateClick(Sender: TObject);
     procedure ToolButtonSearchClick(Sender: TObject);
   private
     DefaultCurrent: string;
     NoteFileName: string;
     RecentList: TStringList;
     Statuses: TStatuses;
-    PatreonVisited: boolean;
+//  DonateVisited: boolean;
     {$ifdef linux} IdleMessage : string; {$endif}
     function UnboundMemo: TUnboundMemo;
     function CheckFileSave: boolean;
@@ -334,7 +334,7 @@ begin
   NoteFileName := Untitled;
   MemoNotes.Lines.Clear;
   MemoNotes.Font.Size := DefaultFont.Size;
-  ToolButtonPatreon.Visible := not PatreonVisited;
+//ToolButtonDonate.Visible := not DonateVisited;
 
   {$ifdef linux}
     StandardToolBar.ParentColor := True;
@@ -469,7 +469,7 @@ begin
   miRecent.Caption := T('Open Recent');
 
   miHome.Caption := T('Home Page');
-  miPatreon.Caption := T('Become a Patron');
+  miDonate.Caption := T('Become a Patron');
   miDownload.Caption := T('Modules Downloads');
   miBibleFolder.Caption := T('Bible Folder');
   miIssue.Caption := T('Report an Issue');
@@ -489,7 +489,7 @@ begin
   TabSheetDictionary.Caption := T('Dictionaries');
   TabSheetNotes.Caption := T('Notes');
 
-  ToolButtonPatreon.Hint := T('Become a Patron');
+  ToolButtonDonate.Hint := T('Become a Patron');
   ToolButtonNew.Hint := T('New');
   ToolButtonOpen.Hint := T('Open');
   ToolButtonSave.Hint := T('Save');
@@ -1203,10 +1203,10 @@ begin
   OpenURL(HomeURL);
 end;
 
-procedure TMainForm.miPatreonClick(Sender: TObject);
+procedure TMainForm.miDonateClick(Sender: TObject);
 begin
-  OpenURL(PatreonURL);
-  PatreonVisited := True;
+  OpenURL(DonateURL);
+//DonateVisited := True;
 end;
 
 procedure TMainForm.miDownloadClick(Sender: TObject);
@@ -1278,10 +1278,10 @@ begin
   LoadChapter;
 end;
 
-procedure TMainForm.ToolButtonPatreonClick(Sender: TObject);
+procedure TMainForm.ToolButtonDonateClick(Sender: TObject);
 begin
-  OpenURL(PatreonURL);
-  PatreonVisited := True;
+  OpenURL(DonateURL);
+//DonateVisited := True;
 end;
 
 procedure TMainForm.ToolButtonSearchClick(Sender: TObject);
@@ -1532,7 +1532,7 @@ begin
   IniFile.WriteInteger('Window', 'Splitter', PanelLeft.Width);
   IniFile.WriteString('Application', 'FileName', CurrBible.FileName);
   IniFile.WriteString('Application', 'Interface', InterfaceLang);
-  IniFile.WriteBool('Application', 'Patreon', PatreonVisited);
+//IniFile.WriteBool('Application', 'Donate', DonateVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
   IniFile.WriteBool('Options', 'Enumerated', Options.cvEnumerated);
   IniFile.WriteBool('Options', 'Guillemets', Options.cvGuillemets);
@@ -1569,7 +1569,7 @@ begin
 
   PanelLeft.Width := IniFile.ReadInteger('Window', 'Splitter', 270);
   InterfaceLang := IniFile.ReadString('Application', 'Interface', Localization.DefaultLocaleID);
-  PatreonVisited := IniFile.ReadBool('Application', 'Patreon', False);
+//DonateVisited := IniFile.ReadBool('Application', 'Donate', False);
   Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
   Options.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);
   Options.cvGuillemets := IniFile.ReadBool('Options', 'Guillemets', False);
