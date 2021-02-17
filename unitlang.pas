@@ -56,6 +56,7 @@ begin
 
   for f in List do
     begin
+      if Length(ExtractOnlyName(f)) = 2 then Continue; // remove old files
       Item := TLocal.Create;
       IniFile := TIniFile.Create(f);
       Item.language := IniFile.ReadString('Details','Language','--');
