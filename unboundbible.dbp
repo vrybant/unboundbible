@@ -1,7 +1,7 @@
 [DEBREATE-0.7.13]
 <<CTRL>>
 Package: unboundbible
-Version: 5.1
+Version: 5.2
 Maintainer: Vladimir Rybant <vrybant@gmail.com>
 Section: text
 Homepage: http://vladimirrybant.org
@@ -14,11 +14,11 @@ Description: Open Source Bible Application
 <</CTRL>>
 <<FILES>>
 1
-/home/vladimir/Dropbox/Unbound-Bible/localization -> localization -> /usr/share/unboundbible
-/home/vladimir/Dropbox/Unbound-Bible/titles -> titles -> /usr/share/unboundbible
-/home/vladimir/Dropbox/Unbound-Bible/bibles -> bibles -> /usr/share/unboundbible
-/home/vladimir/Dropbox/Unbound-Bible/unboundbible.png -> unboundbible.png -> /usr/share/pixmaps
-/home/vladimir/Dropbox/Unbound-Bible/unboundbible* -> unboundbible -> /usr/bin
+/home/vladimir/Dropbox/unboundbible/localization -> localization -> /usr/share/unboundbible
+/home/vladimir/Dropbox/unboundbible/titles -> titles -> /usr/share/unboundbible
+/home/vladimir/Dropbox/unboundbible/bibles -> bibles -> /usr/share/unboundbible
+/home/vladimir/Dropbox/unboundbible/unboundbible.png -> unboundbible.png -> /usr/share/pixmaps
+/home/vladimir/Dropbox/unboundbible/unboundbible* -> unboundbible -> /usr/bin
 <</FILES>>
 <<SCRIPTS>>
 <<PREINST>>
@@ -36,6 +36,13 @@ Description: Open Source Bible Application
 <</SCRIPTS>>
 <<CHANGELOG>>
 <<DEST>>DEFAULT<</DEST>>
+unboundbible (5.2) ; urgency=medium
+
+  * Added black theme support.
+  * Fixed some bugs.
+
+ -- February 2021
+
 unboundbible (5.1) ; urgency=medium
 
   * Fixed some bugs.
@@ -81,13 +88,11 @@ unboundbible (3.4) ; urgency=medium
 
  -- September 2019 
 
-
 unboundbible (3.3) ; urgency=high
 
   * Subscripted strong's nimbers.
 
  -- May 2019 
-
 
 unboundbible (3.2) ; urgency=high
 
@@ -115,7 +120,7 @@ unboundbible (2.01) ; urgency=medium
 
 <</CHANGELOG>>
 <<COPYRIGHT>>
-Copyright © 2020 Vladimir Rybant <vrybant@gmail.com>
+Copyright © 2021 Vladimir Rybant <vrybant@gmail.com>
 
 /usr/share/common-licenses/GPL-3
 <</COPYRIGHT>>
