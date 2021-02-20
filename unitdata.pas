@@ -186,31 +186,30 @@ begin
   CopyDirTree(SourcePath, DataPath, [cffOverwriteFile]);
 end;
 
+function ru: string;
+begin
+  Result := '';
+  if (InterfaceLang = 'ru_RU') or (InterfaceLang = 'uk_UA') then Result := 'ru';
+end;
+
 function HomeURL: string;
 begin
-  Result := 'http://vladimirrybant.org';
-  if (InterfaceLang = 'ru_RU') or (InterfaceLang = 'uk_UA') then Result += '/ru';
+  Result := 'http://vladimirrybant.org/' + ru;
 end;
 
 function DownloadsURL: string;
 begin
-  if (InterfaceLang = 'ru_RU') or (InterfaceLang = 'uk_UA')
-    then Result := 'http://vladimirrybant.org/goto/ubdownloadru.php'
-    else Result := 'http://vladimirrybant.org/goto/ubdownload.php';
+  Result := 'http://vladimirrybant.org/goto/ubdownload' + ru + '.php';
 end;
 
 function IssueURL: string;
 begin
-  if (InterfaceLang = 'ru_RU') or (InterfaceLang = 'uk_UA')
-    then Result := 'http://vladimirrybant.org/goto/contactru.php'
-    else Result := 'http://vladimirrybant.org/goto/contact.php';
+  Result := 'http://vladimirrybant.org/goto/contact' + ru + '.php'
 end;
 
 function DonateURL: string;
 begin
-  if (InterfaceLang = 'ru_RU') or (InterfaceLang = 'uk_UA')
-    then Result := 'http://vladimirrybant.org/goto/donateru.php'
-    else Result := 'http://vladimirrybant.org/goto/donate.php';
+  Result := 'http://vladimirrybant.org/goto/donate' + ru + '.php'
 end;
 
 function ConfigFile: string;
