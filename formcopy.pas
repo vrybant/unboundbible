@@ -35,7 +35,7 @@ var
 
 implementation
 
-uses UnitTool, UnitLang;
+uses UnitTool, UnitLocal;
 
 const
   cgAbbreviate  = 0;

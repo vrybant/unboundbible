@@ -18,7 +18,7 @@ function Get_Downloads: TStringsArray;
 implementation
 
 uses
-  UnitData, UnitLang, UnitModule, UnitShelf, FormSearch, UnitReference, UnitCommentary, UnitDictionary;
+  UnitData, UnitLocal, UnitModule, UnitShelf, FormSearch, UnitReference, UnitCommentary, UnitDictionary;
 
 function Get_Chapter: string;
 var

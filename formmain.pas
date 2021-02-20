@@ -281,7 +281,7 @@ implementation
 
 uses
   {$ifdef windows} UmParseWin, {$endif}
-  FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLang, UnitShelf, FormCopy,
+  FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLocal, UnitShelf, FormCopy,
   FormDownload, UnitCommentary, UnitDictionary;
 
 const

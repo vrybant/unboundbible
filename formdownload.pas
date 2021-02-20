@@ -30,7 +30,7 @@ var
 
 implementation
 
-uses UnitData, UnitShelf, UnitLang;
+uses UnitData, UnitShelf, UnitLocal;
 
 {$R *.lfm}
 
