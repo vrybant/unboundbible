@@ -16,7 +16,7 @@ const
 var
   ApplicationUpdate : boolean = false;
   DefaultFont: TFont;
-  InterfaceLang : string;
+  Local : string;
 
 type
   TFileFormat = (unbound, mysword, mybible);
@@ -189,7 +189,7 @@ end;
 function ru: string;
 begin
   Result := '';
-  if (InterfaceLang = 'ru_RU') or (InterfaceLang = 'uk_UA') then Result := 'ru';
+  if (Local = 'ru_RU') or (Local = 'uk_UA') then Result := 'ru';
 end;
 
 function HomeURL: string;

@@ -6,18 +6,18 @@ uses
   SysUtils, Classes, Fgl, Graphics, IniFiles, ClipBrd, LCLProc, UnitData, UnitLib;
 
 type
-  TLocal = class
+  TLocalized = class
     filename : string;
     language : string;
     id : string;
   end;
 
-  TLocalization = class(TFPGList<TLocal>)
+  TLocalization = class(TFPGList<TLocalized>)
     LocalFile : TIniFile;
   public
     constructor Create;
     destructor Destroy; override;
-    function DefaultLocaleID: string;
+    function DefaultLocal: string;
     procedure SetLocal(lang: string);
     function Translate(const s: string): string;
   end;
@@ -38,7 +38,7 @@ end;
 //                                       TLocalization
 //-------------------------------------------------------------------------------------------------
 
-function Comparison(const Item1: TLocal; const Item2: TLocal): integer;
+function Comparison(const Item1: TLocalized; const Item2: TLocalized): integer;
 begin
   Result := CompareText(Item1.language, Item2.language);
 end;
@@ -46,7 +46,7 @@ end;
 constructor TLocalization.Create;
 var
   IniFile: TIniFile;
-  Item : TLocal;
+  Item : TLocalized;
   List : TStringArray;
   f : string;
 begin
@@ -57,7 +57,7 @@ begin
   for f in List do
     begin
       if Length(ExtractOnlyName(f)) = 2 then Continue; // remove old files
-      Item := TLocal.Create;
+      Item := TLocalized.Create;
       IniFile := TIniFile.Create(f);
       Item.language := IniFile.ReadString('Details','Language','--');
       Item.id := IniFile.ReadString('Details','LocaleID','--');
@@ -69,7 +69,7 @@ begin
   Sort(Comparison);
 end;
 
-function TLocalization.DefaultLocaleID: string;
+function TLocalization.DefaultLocal: string;
 var i : integer;
 begin
   Result := 'en';

@@ -519,7 +519,7 @@ end;
 
 procedure TMainForm.LocalizeApplication;
 begin
-  Localization.SetLocal(InterfaceLang);
+  Localization.SetLocal(Local);
 
   MainForm     .Localize;
   SearchForm   .Localize;
@@ -1019,7 +1019,7 @@ procedure TMainForm.OnLangClick(Sender: TObject);
 var
   i: integer;
 begin
-  InterfaceLang := (Sender as TMenuItem).Hint;
+  Local := (Sender as TMenuItem).Hint;
 
   for i := 0 to miLocalization.Count - 1 do
     miLocalization.Items[i].Checked := False;
@@ -1030,16 +1030,16 @@ end;
 
 procedure TMainForm.LangMenuInit;
 var
-  Local : TLocal;
   MenuItem : TMenuItem;
+  Localized : TLocalized;
 begin
-  for Local in Localization do
+  for Localized in Localization do
   begin
     MenuItem := TMenuItem.Create(MainMenu);
 
-    MenuItem.Caption := Local.language;
-    MenuItem.Hint := Local.id;
-    MenuItem.Checked := Local.id = InterfaceLang;
+    MenuItem.Caption := Localized.language;
+    MenuItem.Hint := Localized.id;
+    MenuItem.Checked := Localized.id = Local;
     MenuItem.OnClick := OnLangClick;
 
     miLocalization.Add(MenuItem);
@@ -1531,7 +1531,7 @@ begin
 
   IniFile.WriteInteger('Window', 'Splitter', PanelLeft.Width);
   IniFile.WriteString('Application', 'FileName', CurrBible.FileName);
-  IniFile.WriteString('Application', 'Interface', InterfaceLang);
+  IniFile.WriteString('Application', 'Interface', Local);
 //IniFile.WriteBool('Application', 'Donate', DonateVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
   IniFile.WriteBool('Options', 'Enumerated', Options.cvEnumerated);
@@ -1568,7 +1568,7 @@ begin
   Top := IniFile.ReadInteger('Window', 'Top', 80);
 
   PanelLeft.Width := IniFile.ReadInteger('Window', 'Splitter', 270);
-  InterfaceLang := IniFile.ReadString('Application', 'Interface', Localization.DefaultLocaleID);
+  Local := IniFile.ReadString('Application', 'Interface', Localization.DefaultLocal);
 //DonateVisited := IniFile.ReadBool('Application', 'Donate', False);
   Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
   Options.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);
