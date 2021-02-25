@@ -14,9 +14,6 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
-    ActionSearch: TAction;
-    ActionLookup: TAction;
-    ActionReference: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
     miIssue: TMenuItem;
@@ -42,14 +39,16 @@ type
     MemoDictionary: TUnboundMemo;
     MemoNotes: TUnboundMemo;
 
-    ActionList: TActionList;
     ActionAbout: THelpAction;
     ActionBold: TAction;
     ActionBullets: TAction;
     ActionCenter: TAction;
+    ActionCommentaries: TAction;
     ActionCompare: TAction;
     ActionCopyAs: TAction;
     ActionCopyVerses: TAction;
+    ActionDecrease: TAction;
+    ActionDictionaries: TAction;
     ActionEditCopy: TAction;
     ActionEditCut: TAction;
     ActionEditDel: TAction;
@@ -64,19 +63,20 @@ type
     ActionFileSave: TAction;
     ActionFileSaveAs: TAction;
     ActionFont: TAction;
+    ActionIncrease: TAction;
+    ActionInterlinear: TAction;
     ActionItalic: TAction;
     ActionLeft: TAction;
     ActionLink: TAction;
+    ActionList: TActionList;
+    ActionLookup: TAction;
+    ActionModules: TAction;
     ActionOptions: TAction;
+    ActionReference: TAction;
     ActionRight: TAction;
+    ActionSearch: TAction;
     ActionSearchfor: TAction;
     ActionUnderline: TAction;
-    ActionDictionaries: TAction;
-    ActionDecrease: TAction;
-    ActionIncrease: TAction;
-    ActionModules: TAction;
-    ActionCommentaries: TAction;
-    ActionInterlinear: TAction;
 
     ChapterBox: TListBox;
     BookBox: TListBox;
@@ -148,15 +148,16 @@ type
     pmSeparator2: TMenuItem;
 
     StandardToolBar: TToolBar;
-    ToolButtonReference: TToolButton;
     ToolPanel: TPanel;
     ToolButtonBold: TToolButton;
     ToolButtonBullets: TToolButton;
     ToolButtonCenter: TToolButton;
+    ToolButtonCommentary: TToolButton;
     ToolButtonCompare: TToolButton;
     ToolButtonCopy: TToolButton;
+    ToolButtonCopyright: TToolButton;
     ToolButtonCut: TToolButton;
-    ToolButtonDonate: TToolButton;
+    ToolButtonDictionary: TToolButton;
     ToolButtonFont: TToolButton;
     ToolButtonItalic: TToolButton;
     ToolButtonLeft: TToolButton;
@@ -165,20 +166,19 @@ type
     ToolButtonOpen: TToolButton;
     ToolButtonPaste: TToolButton;
     ToolButtonPrint: TToolButton;
+    ToolButtonReference: TToolButton;
     ToolButtonRight: TToolButton;
     ToolButtonSave: TToolButton;
     ToolButtonSearch: TToolButton;
     ToolButtonUnderline: TToolButton;
     ToolButtonUndo: TToolButton;
-    ToolButtonCopyright: TToolButton;
-    ToolButtonDictionary: TToolButton;
-    ToolButtonCommentary: TToolButton;
-    ToolSeparatorCompare: TToolButton;
-    ToolSeparatorEdit: TToolButton;
-    ToolSeparatorFont: TToolButton;
-    ToolSeparatorAlign: TToolButton;
-    ToolSeparatorBullets: TToolButton;
     ToolButtonVerses: TToolButton;
+    ToolSeparator1: TToolButton;
+    ToolSeparator2: TToolButton;
+    ToolSeparator3: TToolButton;
+    ToolSeparator4: TToolButton;
+    ToolSeparator5: TToolButton;
+    ToolSeparator6: TToolButton;
 
     procedure CmdReference(Sender: TObject);
     procedure CmdCommentaries(Sender: TObject);
@@ -342,7 +342,7 @@ begin
     ActionFilePrint.Visible := False;
     ActionEditUndo.Visible := False;
     ActionBullets.Visible := False;
-    ToolSeparatorBullets.Visible := False;
+    ToolSeparator6.Visible := False;
     IdleMessage := '';
     IdleTimer.Enabled := true;
   {$endif}
@@ -489,7 +489,6 @@ begin
   TabSheetDictionary.Caption := T('Dictionaries');
   TabSheetNotes.Caption := T('Notes');
 
-  ToolButtonDonate.Hint := T('Become a Patron');
   ToolButtonNew.Hint := T('New');
   ToolButtonOpen.Hint := T('Open');
   ToolButtonSave.Hint := T('Save');
@@ -1100,6 +1099,11 @@ begin
   ActionEditDel.Enabled    := L and S;
   ActionEditPaste.Enabled  := L and UnboundMemo.CanPaste;
   ActionEditUndo.Enabled   := L and UnboundMemo.CanUndo;
+
+  ToolButtonNew.Enabled    := L;
+  ToolButtonOpen.Enabled   := L;
+  ToolButtonPrint.Enabled  := L;
+  ToolButtonSave.Enabled   := L;
 
   ActionFont.Enabled       := L;
   ActionBold.Enabled       := L;
