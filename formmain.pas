@@ -16,18 +16,6 @@ type
   TMainForm = class(TForm)
     Edit: TEdit;
     IdleTimer: TIdleTimer;
-    MenuItem1: TMenuItem;
-    MenuItem3: TMenuItem;
-    miBullets: TMenuItem;
-    miRight: TMenuItem;
-    miCenter: TMenuItem;
-    miLeft: TMenuItem;
-    miLink: TMenuItem;
-    miUnderline: TMenuItem;
-    miItalic: TMenuItem;
-    miBold: TMenuItem;
-    miFont: TMenuItem;
-    miFormat: TMenuItem;
     miIssue: TMenuItem;
     miDonate: TMenuItem;
     MenuItem2: TMenuItem;
@@ -614,7 +602,7 @@ begin
       if Sender = ActionBullets then
         begin
           pn := SelParaNumbering;
-          if pn.Style = pnNone then pn.Style := pnBullet else pn.Style := pnNone;
+          if ToolButtonBullets.Down then pn.Style := pnBullet else pn.Style := pnNone;
           SetParaNumbering(SelStart, SelLength, pn);
         end;
       {$endif}
@@ -1114,8 +1102,8 @@ begin
 
   ToolButtonNew.Enabled    := L;
   ToolButtonOpen.Enabled   := L;
-  ToolButtonSave.Enabled   := L;
   ToolButtonPrint.Enabled  := L;
+  ToolButtonSave.Enabled   := L;
 
   ActionFont.Enabled       := L;
   ActionBold.Enabled       := L;
