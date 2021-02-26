@@ -660,6 +660,49 @@ object MainForm: TMainForm
         Caption = 'Open Recent'
       end
     end
+    object miFormat: TMenuItem
+      Caption = 'F&ormat'
+      object miFont: TMenuItem
+        Action = ActionFont
+      end
+      object miBold: TMenuItem
+        Action = ActionBold
+        Caption = '&Bold'
+      end
+      object miItalic: TMenuItem
+        Action = ActionItalic
+        Caption = '&Italic'
+      end
+      object miUnderline: TMenuItem
+        Action = ActionUnderline
+        Caption = '&Underline'
+      end
+      object miLink: TMenuItem
+        Action = ActionLink
+        Caption = 'Hyperlink'
+      end
+      object MenuItem1: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem3: TMenuItem
+        Caption = 'Align'
+        object miLeft: TMenuItem
+          Action = ActionLeft
+          Caption = 'Left'
+        end
+        object miCenter: TMenuItem
+          Action = ActionCenter
+          Caption = 'Center'
+        end
+        object miRight: TMenuItem
+          Action = ActionRight
+          Caption = 'Right'
+        end
+      end
+      object miBullets: TMenuItem
+        Action = ActionBullets
+      end
+    end
     object miHelp: TMenuItem
       Caption = '&Help'
       object N9: TMenuItem
