@@ -64,14 +64,14 @@ procedure TCompareForm.ShelfToListBox;
 var i: integer;
 begin
   for i:= 0 to Shelf.Count-1 do
-    CheckListBox.Checked[i] := Shelf[i].Compare;
+    CheckListBox.Checked[i] := Shelf[i].Enabled;
 end;
 
 procedure TCompareForm.ListBoxToShelf;
 var i: integer;
 begin
   for i:= 0 to Shelf.Count-1 do
-    Shelf[i].Compare := CheckListBox.Checked[i];
+    Shelf[i].Enabled := CheckListBox.Checked[i];
 end;
 
 procedure TCompareForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);

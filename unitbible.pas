@@ -20,7 +20,7 @@ type
     procedure LoadUnboundDatabase;
     procedure LoadMyswordDatabase;
   public
-    compare : boolean;
+    Enabled : boolean;
     constructor Create(FilePath: string; new: boolean = false);
     procedure CreateTables;
     procedure LoadDatabase;
@@ -533,12 +533,12 @@ end;
 
 procedure TBible.SavePrivate(const IniFile : TIniFile);
 begin
-  IniFile.WriteBool(FileName, 'Compare', Compare);
+  IniFile.WriteBool(FileName, 'Enabled', Enabled);
 end;
 
 procedure TBible.ReadPrivate(const IniFile : TIniFile);
 begin
-  Compare := IniFile.ReadBool(FileName, 'Compare', True);
+  Enabled := IniFile.ReadBool(FileName, 'Enabled', True);
 end;
 
 procedure TBible.InsertContent(Content : TContentArray);
