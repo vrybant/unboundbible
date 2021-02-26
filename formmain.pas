@@ -602,7 +602,7 @@ begin
       if Sender = ActionBullets then
         begin
           pn := SelParaNumbering;
-          if ToolButtonBullets.Down then pn.Style := pnBullet else pn.Style := pnNone;
+          if pn.Style = pnNone then pn.Style := pnBullet else pn.Style := pnNone;
           SetParaNumbering(SelStart, SelLength, pn);
         end;
       {$endif}
