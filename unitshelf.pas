@@ -38,6 +38,7 @@ end;
 constructor TShelf.Create;
 begin
   inherited;
+  Current := 0;
   Load;
   Sort(Comparison);
   ReadPrivates;
