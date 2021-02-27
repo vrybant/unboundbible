@@ -899,10 +899,9 @@ var i : integer;
 begin
   ComboBox.Items.Clear;
   for i := 0 to Shelf.Count - 1 do
-    begin
-      if Shelf[i].Enabled then ComboBox.Items.Add(Shelf[i].Name);
-      if Shelf[i].Name = CurrBible.Name then ComboBox.ItemIndex := i;
-    end;
+    if Shelf[i].Enabled then ComboBox.Items.Add(Shelf[i].Name);
+  for i := 0 to ComboBox.Items.Count - 1 do
+      if ComboBox.Items[i] = CurrBible.Name then ComboBox.ItemIndex := i;
 end;
 
 procedure TMainForm.UpdateCaption(s: string);
@@ -1533,7 +1532,7 @@ begin
                                else IniFile.WriteString('Window', 'State', 'Normal');
 
   IniFile.WriteInteger('Window', 'Splitter', PanelLeft.Width);
-  IniFile.WriteString('Application', 'FileName', CurrBible.FileName);
+  IniFile.WriteString('Application', 'DefaultBible', CurrBible.name);
   IniFile.WriteString('Application', 'Interface', Local);
 //IniFile.WriteBool('Application', 'Donate', DonateVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
@@ -1563,7 +1562,7 @@ var
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
-  DefaultCurrent := IniFile.ReadString('Application', 'FileName', GetDefaultBible);
+  DefaultCurrent := IniFile.ReadString('Application', 'DefaultBible', GetDefaultBible);
 
   Height := IniFile.ReadInteger('Window', 'Height', Screen.Height - 220);
   Width := IniFile.ReadInteger('Window', 'Width', Screen.Width - 450);
