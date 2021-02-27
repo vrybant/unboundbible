@@ -7,15 +7,14 @@ uses
 
 type
   TShelf = class(TFPGList<TBible>)
-    Current : integer;
   private
+    Current : integer;
     procedure Load;
     procedure SavePrivates;
     procedure ReadPrivates;
   public
     constructor Create;
-    procedure SetCurrent(FileName: string); overload;
-    procedure SetCurrent(index: integer); overload;
+    procedure SetCurrent(Name: string);
     destructor Destroy; override;
   end;
 
@@ -61,21 +60,16 @@ begin
     end;
 end;
 
-procedure TShelf.SetCurrent(index: integer);
-begin
-  Current := index;
-  Self[Current].LoadDatabase;
-  if not Self[Current].GoodLink(CurrVerse) then CurrVerse := Self[Current].FirstVerse;
-end;
-
-procedure TShelf.SetCurrent(FileName: string);
+procedure TShelf.SetCurrent(Name: string);
 var i : integer;
 begin
-  Current := 0;
   if Count = 0 then Exit;
+
   for i:= Count-1 downto 0 do
-    if Items[i].FileName = FileName then Current := i;
-  SetCurrent(Current);
+    if Items[i].Name = Name then Current := i;
+
+  Self[Current].LoadDatabase;
+  if not Self[Current].GoodLink(CurrVerse) then CurrVerse := Self[Current].FirstVerse;
 end;
 
 procedure TShelf.SavePrivates;
