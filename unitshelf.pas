@@ -3,7 +3,7 @@ unit UnitShelf;
 interface
 
 uses
-  Classes, Fgl, SysUtils, IniFiles, UnitData, UnitBible;
+  Classes, Fgl, SysUtils, IniFiles, UnitLib, UnitData, UnitBible;
 
 type
   TShelf = class(TFPGList<TBible>)
@@ -15,6 +15,7 @@ type
   public
     constructor Create;
     procedure SetCurrent(Name: string);
+    function GetDefaultBible: string;
     destructor Destroy; override;
   end;
 
@@ -71,6 +72,13 @@ begin
 
   Self[Current].LoadDatabase;
   if not Self[Current].GoodLink(CurrVerse) then CurrVerse := Self[Current].FirstVerse;
+end;
+
+function TShelf.GetDefaultBible: string;
+begin
+  Result := 'King James Version';
+  if GetLanguageID = 'ru' then Result := 'Русская Синодальная Библия';
+  if GetLanguageID = 'uk' then Result := 'Українська Біблія в пер. Івана Огієнка';
 end;
 
 procedure TShelf.SavePrivates;

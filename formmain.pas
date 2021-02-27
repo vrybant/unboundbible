@@ -1548,13 +1548,6 @@ begin
   IniFile.Free;
 end;
 
-function GetDefaultBible: string;
-begin
-  Result := 'kjv.bbl.unbound';
-  if GetLanguageID = 'ru' then Result := 'rstw.bbl.unbound';
-  if GetLanguageID = 'uk' then Result := 'ubio.bbl.unbound';
-end;
-
 procedure TMainForm.ReadConfig;
 var
   IniFile: TIniFile;
@@ -1562,7 +1555,7 @@ var
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
-  DefaultCurrent := IniFile.ReadString('Application', 'DefaultBible', GetDefaultBible);
+  DefaultCurrent := IniFile.ReadString('Application', 'DefaultBible', Shelf.GetDefaultBible);
 
   Height := IniFile.ReadInteger('Window', 'Height', Screen.Height - 220);
   Width := IniFile.ReadInteger('Window', 'Width', Screen.Width - 450);
