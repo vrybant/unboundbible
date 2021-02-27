@@ -615,7 +615,7 @@ procedure TMainForm.ComboBoxChange(Sender: TObject);
 var
   select : boolean;
 begin
-  Shelf.SetCurrent(ComboBox.ItemIndex);
+  Shelf.SetCurrent(ComboBox.Items[ComboBox.ItemIndex]);
   MakeBookList;
   select := CurrVerse.number > 1;
   {$ifdef linux}
@@ -898,11 +898,10 @@ procedure TMainForm.ComboBoxInit;
 var i : integer;
 begin
   ComboBox.Items.Clear;
-
   for i := 0 to Shelf.Count - 1 do
     begin
-      ComboBox.Items.Add(Shelf[i].Name);
-      if i = Shelf.Current then ComboBox.ItemIndex := i;
+      if Shelf[i].Enabled then ComboBox.Items.Add(Shelf[i].Name);
+      if Shelf[i].Name = CurrBible.Name then ComboBox.ItemIndex := i;
     end;
 end;
 
