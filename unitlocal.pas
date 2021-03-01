@@ -60,7 +60,7 @@ begin
       Item := TLocalized.Create;
       IniFile := TIniFile.Create(f);
       Item.language := IniFile.ReadString('Details','Language','--');
-      Item.id := IniFile.ReadString('Details','LocaleID','--');
+      Item.id := IniFile.ReadString('Details','LangID','--');
       Item.filename := f;
       IniFile.Free;
       Add(Item);
@@ -74,7 +74,7 @@ var i : integer;
 begin
   Result := 'en';
   for i:=0 to Count-1 do
-    if Items[i].id = GetLocaleID then Result := GetLocaleID;
+    if Prefix(Items[i].id, GetLanguageIDs) then Result := Items[i].id;
 end;
 
 procedure TLocalization.SetLocal(lang: string);
