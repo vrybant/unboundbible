@@ -42,6 +42,7 @@ type
     embedded     : boolean;
     footnotes    : boolean;
     interlinear  : boolean;
+    default_     : boolean;
     accented     : boolean;
   public
     constructor Create(FilePath: string; new: boolean = false);
@@ -82,6 +83,7 @@ begin
   embedded     := false;
   footnotes    := false;
   interlinear  := false;
+  default_     := false;
   accented     := false;
   format       := unbound;
 
@@ -193,6 +195,7 @@ begin
         try strong       := Query.FieldByName('Strong'      ).AsBoolean; except end;
         try embedded     := Query.FieldByName('Embedded'    ).AsBoolean; except end;
         try interlinear  := Query.FieldByName('Interlinear' ).AsBoolean; except end;
+        try default_     := Query.FieldByName('Default'     ).AsBoolean; except end;
 
         connected := true;
       except
