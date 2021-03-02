@@ -75,10 +75,12 @@ begin
 end;
 
 function TShelf.GetDefaultBible: string;
+var i : integer;
 begin
   Result := 'King James Version';
-  if GetLanguageID = 'ru' then Result := 'Русская Синодальная Библия';
-  if GetLanguageID = 'uk' then Result := 'Українська Біблія в пер. Івана Огієнка';
+  for i:=0 to Count-1 do
+    if Items[i].default_ then
+      if Items[i].language = GetLanguageID then Result := Items[i].name;
 end;
 
 procedure TShelf.SavePrivates;
