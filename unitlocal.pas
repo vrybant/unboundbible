@@ -73,9 +73,12 @@ function TLocalization.DefaultLocal: string;
 var i : integer;
 begin
   Result := 'en';
+
   for i:=0 to Count-1 do
-    if (Items[i].id = GetLanguageID) or (Items[i].id = GetLanguageIDs) then
-      Result := Items[i].id;
+    if Items[i].id = GetLanguageID then Result := Items[i].id;
+
+  for i:=0 to Count-1 do
+    if Items[i].id = GetLanguageIDs then Result := Items[i].id;
 end;
 
 procedure TLocalization.SetLocal(lang: string);
