@@ -14,6 +14,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ActionModules2: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
     miIssue: TMenuItem;
@@ -153,7 +154,7 @@ type
     ToolButtonBullets: TToolButton;
     ToolButtonCenter: TToolButton;
     ToolButtonCommentary: TToolButton;
-    ToolButtonCompare: TToolButton;
+    ToolButtonModules: TToolButton;
     ToolButtonCopy: TToolButton;
     ToolButtonCopyright: TToolButton;
     ToolButtonCut: TToolButton;
@@ -202,6 +203,7 @@ type
     procedure CmdStyle(Sender: TObject);
     procedure CmdStyle2(Sender: TObject);
     procedure CmdModules(Sender: TObject);
+    procedure CmdModules2(Sender: TObject);
 
     procedure ComboBoxChange(Sender: TObject);
     procedure ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
@@ -239,7 +241,7 @@ type
     function UnboundMemo: TUnboundMemo;
     function CheckFileSave: boolean;
     function SelectBible(name: string): boolean;
-    procedure ComboBoxInit;
+    procedure LoadComboBox;
     procedure EnableActions;
     procedure UpDownButtons;
     procedure SelectBook(title: string; scroll: boolean);
@@ -312,7 +314,7 @@ begin
   if Shelf.Count > 0 then
   begin
     Shelf.SetCurrent(DefaultCurrent);
-    ComboBoxInit;
+    LoadComboBox;
     MakeBookList;
     if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
     UpdateStatus(CurrBible.fileName + ' | ' + CurrBible.Info);
@@ -500,7 +502,7 @@ begin
   ToolButtonPaste.Hint := T('Paste');
   ToolButtonUndo.Hint := T('Undo');
 
-  ToolButtonCompare.Hint := T('Compare');
+  ToolButtonModules.Hint := T('Modules');
   ToolButtonReference.Hint := T('Cross-References');
   ToolButtonCommentary.Hint := T('Commentaries');
   ToolButtonDictionary.Hint := T('Dictionaries');
@@ -643,8 +645,6 @@ end;
 
 procedure TMainForm.CmdCompare(Sender: TObject);
 begin
-  if Sender <> PageControl then
-    if CompareForm.ShowModal <> mrOk then Exit;
   LoadCompare;
 end;
 
@@ -810,6 +810,12 @@ begin
   DownloadForm.ShowModal;
 end;
 
+procedure TMainForm.CmdModules2(Sender: TObject);
+begin
+  if CompareForm.ShowModal <> mrOk then ;
+  LoadComboBox;
+end;
+
 procedure TMainForm.CmdExit(Sender: TObject);
 begin
   Close
@@ -894,7 +900,7 @@ end;
 
 //-------------------------------------------------------------------------------------------------
 
-procedure TMainForm.ComboBoxInit;
+procedure TMainForm.LoadComboBox;
 var i : integer;
 begin
   ComboBox.Items.Clear;

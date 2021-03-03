@@ -102,10 +102,10 @@ object MainForm: TMainForm
       ImageIndex = 15
       Style = tbsDivider
     end
-    object ToolButtonCompare: TToolButton
+    object ToolButtonModules: TToolButton
       Left = 4
       Top = 0
-      Action = ActionCompare
+      Action = ActionModules2
       ParentShowHint = False
       ShowHint = True
     end
@@ -199,7 +199,6 @@ object MainForm: TMainForm
       Top = 0
       Action = ActionModules
       ImageIndex = 34
-      Visible = False
     end
     object ToolButtonDictionary: TToolButton
       Left = 121
@@ -280,7 +279,7 @@ object MainForm: TMainForm
     object ComboBox: TComboBox
       Left = 4
       Height = 25
-      Top = 2
+      Top = 0
       Width = 185
       DropDownCount = 12
       Font.Color = clWindowText
@@ -2504,6 +2503,12 @@ object MainForm: TMainForm
       Category = 'Tools'
       Caption = 'ActionModules'
       OnExecute = cmdModules
+    end
+    object ActionModules2: TAction
+      Category = 'Tools'
+      Caption = 'ActionModules2'
+      ImageIndex = 11
+      OnExecute = CmdModules2
     end
   end
   object OpenDialog: TOpenDialog

@@ -34,7 +34,7 @@ uses UnitShelf, UnitLocal;
 
 procedure TCompareForm.Localize;
 begin
-  Caption := ' ' + T('Compare');
+  Caption := ' ' + T('Modules');
   ButtonOK.Caption := T('OK');
 end;
 
@@ -71,7 +71,8 @@ procedure TCompareForm.ListBoxToShelf;
 var i: integer;
 begin
   for i:= 0 to Shelf.Count-1 do
-    Shelf[i].Enabled := CheckListBox.Checked[i];
+    if CheckListBox.Items[i] <> currBible.name then
+      Shelf[i].Enabled := CheckListBox.Checked[i];
 end;
 
 procedure TCompareForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);

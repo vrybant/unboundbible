@@ -13,7 +13,7 @@ object CompareForm: TCompareForm
   OnShow = FormShow
   ParentFont = True
   Position = poScreenCenter
-  LCLVersion = '1.6.4.0'
+  LCLVersion = '2.0.10.0'
   object CheckListBox: TCheckListBox
     Left = 8
     Height = 242
