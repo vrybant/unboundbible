@@ -9,7 +9,7 @@ interface
 uses
   CocoaAll, Classes, SysUtils,
   LCLType, Graphics, Controls, StdCtrls,
-  CocoaPrivate, CocoaTextEdits, CocoaUtils, CocoaWSCommon,
+  CocoaPrivate, CocoaTextEdits, CocoaUtils, CocoaWSCommon, CocoaWSStdCtrls,
   {$ifndef RMLCL18} // it can be defined in the package's CustomOptions -dRMLCL18
   CocoaScrollers, // this unit was introduced in summer-fall 2018 with Lazarus 2.0 release
   {$endif}
@@ -228,6 +228,11 @@ begin
 
   scr.callback := txt.callback;
   Result := TLCLIntfHandle(scr);
+
+  TextViewSetWordWrap(txt, scr, TCustomMemo(AWinControl).WordWrap);
+  TextViewSetAllignment(txt, TCustomMemo(AWinControl).Alignment);
+  txt.wantReturns := TCustomMemo(AWinControl).WantReturns;
+  txt.callback.SetTabSuppress(not TCustomMemo(AWinControl).WantTabs);
 end;
 
 class function TCocoaWSCustomRichMemo.GetTextAttributes(

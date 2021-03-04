@@ -180,7 +180,7 @@ type
 
     class procedure SetHideSelection(RichEditWnd: Handle; AValue: Boolean); virtual;
     class function LoadRichText(RichEditWnd: Handle; ASrc: TStream): Boolean; virtual;
-    class function SaveRichText(RichEditWnd: Handle; ADst: TStream): Boolean; virtual;
+    class function SaveRichText(RichEditWnd: Handle; ADst: TStream; extraflags: Integer = 0): Boolean; virtual;
 
     class procedure SetText(RichEditWnd: Handle; const Text: WideString; TextStart, ReplaceLength: Integer); virtual;
     class function GetTextW(RichEditWnd: Handle; inSelection: Boolean): WideString; virtual;
@@ -803,14 +803,14 @@ begin
   end;
 end;
 
-class function TRichEditManager.SaveRichText(RichEditWnd: Handle; ADst: TStream): Boolean; 
+class function TRichEditManager.SaveRichText(RichEditWnd: Handle; ADst: TStream; extraflags: Integer): Boolean; 
 var
   cbs : TEditStream_;
 begin
   cbs.dwCookie := PDWORD(ADst);
   cbs.dwError := 0;
   cbs.pfnCallback := @RTFSaveCallback;
-  SendMessage(RichEditWnd, EM_STREAMOUT, SF_RTF, LPARAM(@cbs) );
+  SendMessage(RichEditWnd, EM_STREAMOUT, SF_RTF or extraFlags, LPARAM(@cbs) );
   Result := cbs.dwError = 0;
 end;
 
@@ -1046,8 +1046,51 @@ end;
 
 class function TRichEditManager.LinkNotifyToInfo(RichEditWnd: Handle;
   const LinkNotify: TENLINK; var LinkInfo: TLinkMouseInfo): Boolean;
+var
+  gt : GETTEXTEX;
+  l  : integer;
+  olds, oldl : integer;
+  st : TStringStream;
+  evmsk : Integer;
+  hp : string;
+  hpi : integer;
+  hps : integer;
 begin
-  Result := false;
+  evmsk := SetEventMask(RichEditWnd, 0);
+  try
+    GetSelection(RichEditWnd, olds, oldl);
+    try
+      l := LinkNotify.chrg.cpMax - LinkNotify.chrg.cpMin;
+      SetSelection(RichEditWnd, LinkNotify.chrg.cpMin, l);
+      st := TStringStream.Create('');
+      hp := '';
+      try
+        SaveRichText(RichEditWnd, st, SFF_SELECTION);
+        hp := st.DataString;
+      finally
+        st.Free;
+      end;
+      hpi := Pos('HYPERLINK', hp);
+      if (hpi>0) then begin
+        inc(hpi, length('HYPERLINK'));
+        while (hpi <= length(hp)) and not (hp[hpi] in ['"','}']) do inc(hpi);
+        if (hpi <= length(hp)) and (hp[hpi]='"') then begin
+          inc(hpi);
+          hps:=hpi;
+          while (hpi <= length(hp)) and (hp[hpi] <> '"') do
+            inc(hpi);
+          //todo: convert RTF chars into UTF8
+          LinkInfo.LinkRef := Copy(hp, hps, hpi-hps);
+        end;
+        Result := true;
+      end else
+        Result :=TRichEditManagerWinXP.LinkNotifyToInfo(RichEditWnd, LinkNotify, LinkInfo);
+    finally
+      SetSelection(RichEditWnd, olds, oldl);
+    end;
+  finally
+    SetEventMask(RichEditWnd, evmsk);
+  end;
 end;
 
 function WinInsertImageFromFile (const ARichMemo: TCustomRichMemo; APos: Integer;
