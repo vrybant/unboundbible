@@ -32,7 +32,8 @@ type
     function  SelAttributes: TFontParams;
     function SelParaAlignment: TParaAlignment;
     {$ifdef windows} function SelParaNumbering: TParaNumbering; {$endif}
-    {$ifdef windows} function FindRightWordBreak(Pos: integer): integer; {$endif}
+    function FindRightWordBreak(Pos: integer): integer;
+    function GetTextRange(Pos, Length: integer): string;
     {$ifdef windows} property Modified: boolean read GetModified write SetModified; {$endif}
     procedure CopyToClipboard; override;
     procedure CutToClipboard; override;
@@ -42,6 +43,9 @@ type
     procedure LoadFromFile(const FileName : string);
     procedure SaveToFile(const FileName : string);
   end;
+
+const
+  LineBreaker = {$ifdef windows}#13{$else}#10{$endif};
 
 implementation
 
@@ -84,11 +88,26 @@ begin
 end;
 
 function TRichMemoEx.FindRightWordBreak(Pos: integer): integer;
+var
+  s : string;
 begin
+  {$ifdef windows}
   Result := SendMessage(Handle, EM_FINDWORDBREAK, WB_MOVEWORDRIGHT, Pos);
+  {$else}
+  s := GetText(Pos.start, 50);
+  {$endif}
 end;
 
 {$endif}
+
+function TRichMemoEx.GetTextRange(Pos, Length: integer): string;
+begin
+   {$ifdef windows}
+   Result := Win32GetTextRange(Handle, Pos, Length);
+   {$else}
+   Result := GetText(Pos, Length);
+   {$endif}
+end;
 
 procedure TRichMemoEx.HideCursor;
 begin
