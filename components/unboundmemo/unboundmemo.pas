@@ -155,7 +155,6 @@ begin
   {$endif}
 end;
 
-{$ifdef winmode}
 function TUnboundMemo.GetParagraphNumber(Pos: integer; select: boolean): integer;
 var
   p : TParaRange;
@@ -166,72 +165,25 @@ begin
   Result := GetNumber(s);
   if select then SetSel(p.start,p.start+1);
 end;
-{$endif}
 
-{$ifndef winmode}
-function TUnboundMemo.GetParagraphNumber(Pos: integer; select: boolean): integer;
-var
-  p : TParaRange;
-  x : integer;
-  s : string;
-begin
-  GetParaRange(Pos, p);
-  s := Self.GetText(p.start, p.length);           output(s);
-
-  x := p.start;
-  repeat
-    inc(x);
-    SetSel(x, x);
-  until not Colored;
-
-  SetSel(p.start, x); Result := ToInt(SelText);
-  if select then SetSel(p.start,p.start+1);
-end;
-{$endif}
-
-{$ifdef winmode}
-procedure TUnboundMemo.GetParagraphRange;
-var
-  ParagraphEnd : integer;
-  x1, x2 : integer;
-begin
-  GetSel(x1,x2);
-
-  ParagraphStart := GetParagraphNumber(x1, x1=x2);
-  ParagraphCount := 1;
-
-  if x1 <> x2 then
-    begin
-      ParagraphEnd := GetParagraphNumber(x2, false);
-      ParagraphCount := ParagraphEnd - ParagraphStart + 1;
-      {$ifdef unix} SetSel(x1,x2); {$endif}
-    end;
-end;
-{$endif}
-
-{$ifndef winmode}
 procedure TUnboundMemo.GetParagraphRange;
 var
   List : TStringArray;
 begin
-  if SelLength = 0 then
+  if Pos(LineBreaker, SelText) = 0 then
     begin
-      ParagraphStart := GetParagraphNumber(SelStart, True);
+      ParagraphStart := GetParagraphNumber(SelStart, SelLength = 0);
       ParagraphCount := 1;
       Exit;
     end;
 
-  List := StringToList(Self.SelText, LineBreaker);
+  List := StringToList(SelText, LineBreaker);
 
-  ParagraphStart := GetNumber(Self.SelText);
-  ParagraphCount := Length(List);
-
-  if ParagraphStart > 0 then Exit;
-
-  if Length(List) <= 1 then
+  if GetNumber(SelText) > 0 then
     begin
-      ParagraphStart := 1;
-      ParagraphCount := 1;
+      ParagraphStart := GetNumber(SelText);
+      ParagraphCount := Length(List);
+      Exit;
     end;
 
   if Length(List) > 1 then
@@ -240,8 +192,6 @@ begin
       ParagraphCount := Length(List);
     end;
 end;
-
-{$endif}
 
 {$ifdef winmode}
 procedure TUnboundMemo.SelectParagraph(n : integer);
