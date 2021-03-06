@@ -72,6 +72,7 @@ end;
 
 function TUnboundMemo.GetNumber(s: string): integer;
 begin
+  if not Prefix(' ',s) then s := '';
   s := Trim(s);
   s := Copy(s,1,Pos(' ',s));
   Result := ToInt(s);
