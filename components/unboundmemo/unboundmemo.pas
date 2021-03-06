@@ -1,7 +1,7 @@
 unit UnboundMemo;
 
 {$ifdef windows}
-  {$define winmode}
+  { $define winmode}
 {$endif}
 
 interface
@@ -36,7 +36,7 @@ type
     ParagraphCount : integer;
     constructor Create(AOwner: TComponent); override;
     function Foreground: integer;
-    procedure SelectParagraph(n : integer);
+    procedure SelectParagraph(n: integer);
     procedure SelectWord;
     procedure SelectAll;
     procedure SaveSelection;
@@ -77,6 +77,7 @@ begin
   s := Copy(s,1,Pos(' ',s));
   Result := ToInt(s);
 end;
+
 function TUnboundMemo.Foreground: integer;
 begin
   Result := fgText;
@@ -151,7 +152,7 @@ end;
 procedure TUnboundMemo.KeyUp(var Key: Word; Shift: TShiftState);
 begin
   inherited;
-  {$ifdef winmode}
+  {$ifdef windows}
     if Linkable and not ReadOnly and (Key = VK_CONTROL) then ShowCaret(Handle);
   {$endif}
 end;
@@ -164,7 +165,7 @@ begin
   GetParaRange(Pos, p);
   s := Self.GetTextRange(p.start, p.length);
   Result := GetNumber(s);
-  if select then SetSel(p.start,p.start+1);
+  if select then SetSel(p.start, p.start+1);
 end;
 
 procedure TUnboundMemo.GetParagraphRange;
@@ -194,70 +195,17 @@ begin
     end;
 end;
 
-{$ifdef winmode}
-procedure TUnboundMemo.SelectParagraph(n : integer);
+procedure TUnboundMemo.SelectParagraph(n: integer);
 var
-  w, line : string;
-  i, len, x : integer;
+  ps : string;
+  x : integer;
 begin
-  HideSelection := False; // important
-
-  w := ' ' + IntToStr(n) + ' ';
-  len := length(w);
-
-  for i:=0 to LineCount - 1 do
-    begin
-      line := Lines[i];
-
-      if copy(line,1,len) = w then
-         begin
-           x := LineIndex(i);
-           SetSel(x,x+1);
-           HideCursor;
-         end;
-    end;
-
-  ParagraphStart := n;
-  ParagraphCount := 1;
+  ps := LineBreaker + ' ' + ToStr(n) + ' ';
+  x := UTF8Pos(ps, Text);
+  if (x = 0) and (n <> 1) then Exit;
+  SelStart := x;
+  SelLength := 1;
 end;
-{$endif}
-
-{$ifndef winmode}
-procedure TUnboundMemo.SelectParagraph(n : integer);
-var
-  i, x : integer;
-  L : boolean;
-begin
-  L := False;
-  x := 0;
-
-  i := 0;
-  while True do
-    begin
-      SetSel(i,i);
-      if SelStart <> i then break;
-
-      if Colored then
-        begin
-          if not L then
-            begin
-              inc(x);
-              if x = n then
-                begin
-                  SetSel(i,i+1);
-                  break;
-                end;
-            end;
-          L := True;
-        end;
-
-      if not Colored then L := False;
-      inc(i);
-    end;
-
-  SetFocus;
-end;
-{$endif}
 
 function TUnboundMemo.GetStartSelection: integer;
 var
