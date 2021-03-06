@@ -155,24 +155,20 @@ begin
   {$endif}
 end;
 
+{$ifdef winmode}
 function TUnboundMemo.GetParagraphNumber(Pos: integer; select: boolean): integer;
 var
   p : TParaRange;
-  x : integer;
   s : string;
 begin
   GetParaRange(Pos, p);
-  s := Self.GetText(p.start, p.length); output(s);
+  s := Self.GetTextRange(p.start, p.length);
   Result := GetNumber(s);
-  output(Result);
-
-//  x := FindRightWordBreak(p.start +1);
-//  Result := ToInt(GetTextRange(p.start, x-p.start));
   if select then SetSel(p.start,p.start+1);
 end;
+{$endif}
 
 {$ifndef winmode}
-{
 function TUnboundMemo.GetParagraphNumber(Pos: integer; select: boolean): integer;
 var
   p : TParaRange;
@@ -191,7 +187,6 @@ begin
   SetSel(p.start, x); Result := ToInt(SelText);
   if select then SetSel(p.start,p.start+1);
 end;
-}
 {$endif}
 
 {$ifdef winmode}
