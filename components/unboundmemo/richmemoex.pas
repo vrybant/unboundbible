@@ -62,7 +62,7 @@ end;
 
 procedure TRichMemoEx.SetSel(x1,x2: integer);
 begin
-  {$ifdef winmode}
+  {$ifdef windows}
   SendMessage(Handle, EM_SETSEL, x1, x2);
   // использование обычных процедур производит дерганье текста
   {$else}
@@ -73,7 +73,7 @@ end;
 
 procedure TRichMemoEx.GetSel(var x1,x2: integer);
 begin
-  {$ifdef winmode}
+  {$ifdef windows}
   SendMessage(Handle, EM_GETSEL, integer(@x1), integer(@x2));
   {$else}
   x1 := SelStart;
