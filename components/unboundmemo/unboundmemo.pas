@@ -1,16 +1,12 @@
 unit UnboundMemo;
 
-{$ifdef windows}
-  { $define winmode}
-{$endif}
-
 interface
 
 uses
   {$ifdef windows} Windows, rmWinEx, {$endif}
   Forms, SysUtils, LResources, Classes, Graphics, Controls, ExtCtrls,
   LCLProc, LCLType, LazUTF8, RichMemo, RichMemoEx, UnitLib,
-  {$ifdef winmode} UmParseWin; {$else} UmParse; {$endif}
+  {$ifdef windows} UmParseWin; {$else} UmParse; {$endif}
 
 type
   TUnboundMemo = class(TRichMemoEx)
@@ -22,7 +18,6 @@ type
     FParagraphic : boolean;
     SelStartTemp : integer;
     SelLengthTemp : integer;
-    {$ifndef winmode} function  Colored: boolean; {$endif}
     function GetNumber(s: string): integer;
     function  GetColorLink: string;
     function  GetLink: string;
@@ -85,13 +80,6 @@ begin
   if SelAttributes.Color = clSysBrown then Result := fgStrong else
   if SelAttributes.Color = clSysTeal  then Result := fgFootnote;
 end;
-
-{$ifndef winmode}
-function TUnboundMemo.Colored: boolean;
-begin
-  Result := Foreground = fgLink;
-end;
-{$endif}
 
 function TUnboundMemo.GetColorLink: string;
 var
@@ -276,7 +264,7 @@ begin
       Replace(Source, '<J>','');
       Replace(Source,'</J>','');
     end;
-  {$ifdef winmode}
+  {$ifdef windows}
     LoadRichText(ParseWin(Source, Font));
   {$else}
     Parse(Self, Source);
@@ -286,7 +274,7 @@ end;
 
 procedure TUnboundMemo.LoadHtml(Source: string);
 begin
-  {$ifdef winmode}
+  {$ifdef windows}
     LoadRichText(ParseWin(Source, Font, true));
   {$else}
     Parse(Self, Source, true);
