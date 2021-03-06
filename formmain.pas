@@ -237,7 +237,7 @@ type
     RecentList: TStringList;
     Statuses: TStatuses;
 //  DonateVisited: boolean;
-    {$ifdef linux} IdleMessage : string; {$endif}
+    IdleMessage : string;
     function UnboundMemo: TUnboundMemo;
     function CheckFileSave: boolean;
     function SelectBible(name: string): boolean;
@@ -337,6 +337,7 @@ begin
   MemoNotes.Lines.Clear;
   MemoNotes.Font.Size := DefaultFont.Size;
 //ToolButtonDonate.Visible := not DonateVisited;
+  IdleMessage := '';
 
   {$ifdef linux}
     StandardToolBar.ParentColor := True;
@@ -345,8 +346,6 @@ begin
     ActionEditUndo.Visible := False;
     ActionBullets.Visible := False;
     ToolSeparator6.Visible := False;
-    IdleMessage := '';
-    IdleTimer.Enabled := true;
   {$endif}
 
   {$ifdef windows}
@@ -378,6 +377,8 @@ begin
       {$endif}
       GoToVerse(CurrVerse,(CurrVerse.number > 1));
     end;
+
+  IdleMessage := 'MemoBible.HideCursor';
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -1243,15 +1244,18 @@ end;
 
 procedure TMainForm.IdleTimerTimer(Sender: TObject);
 begin
+  {$ifdef windows}
+  if IdleMessage = 'MemoBible.HideCursor' then
+                    MemoBible.HideCursor;
+  {$endif}
   {$ifdef linux}
   if IdleMessage = 'GotoVerse(CurrVerse,True)' then
                     GotoVerse(CurrVerse,True);
 
   if IdleMessage = 'GotoVerse(CurrVerse,False)' then
                     GotoVerse(CurrVerse,False);
-
-  if IdleMessage <> '' then IdleMessage := '';
   {$endif}
+  if IdleMessage <> '' then IdleMessage := '';
 end;
 
 procedure TMainForm.PageControlChange(Sender: TObject);

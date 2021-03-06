@@ -2541,7 +2541,6 @@ object MainForm: TMainForm
     Top = 160
   end
   object IdleTimer: TIdleTimer
-    Enabled = False
     OnTimer = IdleTimerTimer
     Left = 472
     Top = 104
