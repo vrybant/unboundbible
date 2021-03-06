@@ -22,9 +22,8 @@ type
     FParagraphic : boolean;
     SelStartTemp : integer;
     SelLengthTemp : integer;
-    procedure SetSel(x1,x2: integer);
-    procedure GetSel(var x1,x2: integer);
     {$ifndef winmode} function  Colored: boolean; {$endif}
+    function GetNumber(s: string): integer;
     function  GetColorLink: string;
     function  GetLink: string;
     function  GetParagraphNumber(Pos: integer; select: boolean): integer;
@@ -71,27 +70,12 @@ begin
   {$ifdef windows} if Font.Name = 'default' then Font.Name := 'Tahoma'; {$endif}
 end;
 
-procedure TUnboundMemo.SetSel(x1,x2: integer);
+function TUnboundMemo.GetNumber(s: string): integer;
 begin
-  {$ifdef winmode}
-  SendMessage(Handle, EM_SETSEL, x1, x2);
-  // использование обычных процедур производит дерганье текста
-  {$else}
-  SelStart  := x1;
-  SelLength := x2-x1;
-  {$endif}
+  s := Trim(s);
+  s := Copy(s,1,Pos(' ',s));
+  Result := ToInt(s);
 end;
-
-procedure TUnboundMemo.GetSel(var x1,x2: integer);
-begin
-  {$ifdef winmode}
-  SendMessage(Handle, EM_GETSEL, integer(@x1), integer(@x2));
-  {$else}
-  x1 := SelStart;
-  x2 := SelStart + SelLength;
-  {$endif}
-end;
-
 function TUnboundMemo.Foreground: integer;
 begin
   Result := fgText;
@@ -171,7 +155,6 @@ begin
   {$endif}
 end;
 
-{$ifdef winmode}
 function TUnboundMemo.GetParagraphNumber(Pos: integer; select: boolean): integer;
 var
   p : TParaRange;
@@ -179,15 +162,17 @@ var
   s : string;
 begin
   GetParaRange(Pos, p);
-  s := Self.GetText(p.start, p.length);           output(s);
+  s := Self.GetText(p.start, p.length); output(s);
+  Result := GetNumber(s);
+  output(Result);
 
-  x := FindRightWordBreak(p.start +1);
-  Result := ToInt(GetTextRange(p.start, x-p.start));
+//  x := FindRightWordBreak(p.start +1);
+//  Result := ToInt(GetTextRange(p.start, x-p.start));
   if select then SetSel(p.start,p.start+1);
 end;
-{$endif}
 
 {$ifndef winmode}
+{
 function TUnboundMemo.GetParagraphNumber(Pos: integer; select: boolean): integer;
 var
   p : TParaRange;
@@ -206,6 +191,7 @@ begin
   SetSel(p.start, x); Result := ToInt(SelText);
   if select then SetSel(p.start,p.start+1);
 end;
+}
 {$endif}
 
 {$ifdef winmode}
@@ -229,22 +215,6 @@ end;
 {$endif}
 
 {$ifndef winmode}
-function GetNum(s: string): integer;
-var
-  c : char;
-  r : string = '';
-begin
-  s := Trim(s);
-
-  for c in s do
-    begin
-      if not IsNumeral(c) then Break;
-      r += c;
-    end;
-
-  Result := ToInt(r);
-end;
-
 procedure TUnboundMemo.GetParagraphRange;
 var
   List : TStringArray;
@@ -258,7 +228,7 @@ begin
 
   List := StringToList(Self.SelText, LineBreaker);
 
-  ParagraphStart := GetNum(Self.SelText);
+  ParagraphStart := GetNumber(Self.SelText);
   ParagraphCount := Length(List);
 
   if ParagraphStart > 0 then Exit;
@@ -271,10 +241,11 @@ begin
 
   if Length(List) > 1 then
     begin
-      ParagraphStart := GetNum(List[1]) - 1;
+      ParagraphStart := GetNumber(List[1]) - 1;
       ParagraphCount := Length(List);
     end;
 end;
+
 {$endif}
 
 {$ifdef winmode}

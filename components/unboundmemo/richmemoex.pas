@@ -24,6 +24,8 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    procedure SetSel(x1,x2: integer);
+    procedure GetSel(var x1,x2: integer);
     function CanUndo: boolean;
     procedure HideCursor;
     procedure Hide_Selection;
@@ -32,7 +34,7 @@ type
     function  SelAttributes: TFontParams;
     function SelParaAlignment: TParaAlignment;
     {$ifdef windows} function SelParaNumbering: TParaNumbering; {$endif}
-    function FindRightWordBreak(Pos: integer): integer;
+//    function FindRightWordBreak(Pos: integer): integer;
     function GetTextRange(Pos, Length: integer): string;
     {$ifdef windows} property Modified: boolean read GetModified write SetModified; {$endif}
     procedure CopyToClipboard; override;
@@ -49,11 +51,6 @@ const
 
 implementation
 
-function ToStr(value: longint): string;
-begin
- System.Str(value, Result);
-end;
-
 constructor TRichMemoEx.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -63,6 +60,27 @@ end;
 destructor TRichMemoEx.Destroy;
 begin
   inherited Destroy;
+end;
+
+procedure TRichMemoEx.SetSel(x1,x2: integer);
+begin
+  {$ifdef winmode}
+  SendMessage(Handle, EM_SETSEL, x1, x2);
+  // использование обычных процедур производит дерганье текста
+  {$else}
+  SelStart  := x1;
+  SelLength := x2-x1;
+  {$endif}
+end;
+
+procedure TRichMemoEx.GetSel(var x1,x2: integer);
+begin
+  {$ifdef winmode}
+  SendMessage(Handle, EM_GETSEL, integer(@x1), integer(@x2));
+  {$else}
+  x1 := SelStart;
+  x2 := SelStart + SelLength;
+  {$endif}
 end;
 
 {$ifdef windows}
@@ -87,6 +105,7 @@ begin
   SendMessage(Handle, EM_SETMODIFY, Byte(value), 0);
 end;
 
+{
 function TRichMemoEx.FindRightWordBreak(Pos: integer): integer;
 var
   s : string;
@@ -97,7 +116,7 @@ begin
   s := GetText(Pos.start, 50);
   {$endif}
 end;
-
+}
 {$endif}
 
 function TRichMemoEx.GetTextRange(Pos, Length: integer): string;
@@ -186,7 +205,6 @@ begin
   inherited MouseUp(Button, Shift, X, Y);
   if ReadOnly then HideCursor;
 end;
-
 
 procedure TRichMemoEx.CopyToClipboard;
 begin
