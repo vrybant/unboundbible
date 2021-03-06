@@ -151,7 +151,7 @@ var
   s : string;
 begin
   GetParaRange(Pos, p);
-  s := Self.GetTextRange(p.start, p.length);
+  s := GetText(p.start, p.length);
   Result := GetNumber(s);
   if select then SetSel(p.start, p.start+1);
 end;

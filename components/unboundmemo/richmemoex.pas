@@ -34,7 +34,6 @@ type
     function  SelAttributes: TFontParams;
     function SelParaAlignment: TParaAlignment;
     {$ifdef windows} function SelParaNumbering: TParaNumbering; {$endif}
-    function GetTextRange(Pos, Length: integer): string;
     {$ifdef windows} property Modified: boolean read GetModified write SetModified; {$endif}
     procedure CopyToClipboard; override;
     procedure CutToClipboard; override;
@@ -103,15 +102,6 @@ begin
   SendMessage(Handle, EM_SETMODIFY, Byte(value), 0);
 end;
 {$endif}
-
-function TRichMemoEx.GetTextRange(Pos, Length: integer): string;
-begin
-   {$ifdef windows}
-   Result := Win32GetTextRange(Handle, Pos, Length);
-   {$else}
-   Result := GetText(Pos, Length);
-   {$endif}
-end;
 
 procedure TRichMemoEx.HideCursor;
 begin
