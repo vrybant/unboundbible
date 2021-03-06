@@ -119,7 +119,7 @@ end;
 
 function Suffix(ps, st: string): boolean;
 begin
-  Result := Pos(ps, st) = Length(st) - Length(ps) + 1;
+  Result := ps = Copy(st, Length(st) - Length(ps) + 1);
 end;
 
 function ToInt(s: string): integer;
