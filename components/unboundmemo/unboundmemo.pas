@@ -191,8 +191,7 @@ begin
   ps := LineBreaker + ' ' + ToStr(n) + ' ';
   x := UTF8Pos(ps, Text);
   if (x = 0) and (n <> 1) then Exit;
-  SelStart := x;
-  SelLength := 1;
+  SetSel(x, x+1);
 end;
 
 function TUnboundMemo.GetStartSelection: integer;
