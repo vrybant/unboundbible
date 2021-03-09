@@ -307,12 +307,12 @@ object MainForm: TMainForm
     Height = 327
     Top = 32
     Width = 737
-    ActivePage = TabSheetSearch
+    ActivePage = TabSheetBible
     Align = alClient
     Font.Color = clWindowText
     Font.Height = -13
     ParentFont = False
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 2
     OnChange = PageControlChange
     object TabSheetBible: TTabSheet

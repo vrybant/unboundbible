@@ -730,6 +730,12 @@ begin
   LoadCommentary;
 end;
 
+procedure TMainForm.CmdLookup(Sender: TObject);
+begin
+  Edit.Text := Trim(UnboundMemo.SelText);
+  CmdDictionaries(Sender);
+end;
+
 procedure TMainForm.CmdDictionaries(Sender: TObject);
 var
   Response : integer;
@@ -745,21 +751,14 @@ begin
       Exit;
     end;
 
+  LoadDictionary(Edit.Text);
+
   if (Sender = ActionDictionaries) and (MemoDictionary.Text = '') then
     begin
       s := T('Please enter your query in the search bar.');
       MemoDictionary.Font.Assign(DefaultFont);
       MemoDictionary.LoadHtml(s);
     end;
-
-  SelectPage(apDictionaries);
-end;
-
-procedure TMainForm.CmdLookup(Sender: TObject);
-begin
-  if Trim(UnboundMemo.SelText) = '' then Edit.SetFocus
-    else Edit.Text := Trim(UnboundMemo.SelText);
-  LoadDictionary(Edit.Text);
 end;
 
 procedure TMainForm.CmdFileNew(Sender: TObject);
