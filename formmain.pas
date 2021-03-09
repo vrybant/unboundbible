@@ -1422,20 +1422,26 @@ end;
 
 procedure TMainForm.LoadCommentary;
 var
+  Response : integer;
   text, data : string;
 begin
   if Shelf.Count = 0 then Exit;
-  text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
-  data := Get_Commentary;
-
-  if data = '' then text += T('Commentaries not found.') + '<br><br>'
-               else text += data;
 
   if Commentaries.Count = 0 then
     begin
-      text += T('You don''t have any commentary modules.') + ' ' +
-              T('For more information, choose Menu ➝ Help, then click «Modules Downloads».');
+      Response := QuestionDlg(T('Commentaries'),
+        T('You don''t have any commentary modules.'), mtCustom,
+          [mrYes, T('Download'), mrNo, T('Cancel')], '');
+
+      if Response = idYes then OpenURL(DownloadsURL);
+      Exit;
     end;
+
+  text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
+  data := Get_Commentary;
+  text += data;
+
+  if data = '' then text += T('Commentaries not found.') + '<br><br>';
 
   MemoCommentary.Font.Assign(DefaultFont);
   MemoCommentary.LoadHtml(text);
