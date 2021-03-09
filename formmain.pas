@@ -722,7 +722,18 @@ begin
 end;
 
 procedure TMainForm.CmdCommentaries(Sender: TObject);
+var
+  Response : integer;
 begin
+  if Commentaries.Count = 0 then
+    begin
+      Response := QuestionDlg(T('Commentaries'),
+        T('You don''t have any commentary modules.'), mtCustom,
+          [mrYes, T('Download'), mrNo, T('Cancel')], '');
+      if Response = idYes then OpenURL(DownloadsURL);
+      Exit;
+    end;
+
   LoadCommentary;
 end;
 
@@ -1422,21 +1433,8 @@ end;
 
 procedure TMainForm.LoadCommentary;
 var
-  Response : integer;
   text, data : string;
 begin
-  if Shelf.Count = 0 then Exit;
-
-  if Commentaries.Count = 0 then
-    begin
-      Response := QuestionDlg(T('Commentaries'),
-        T('You don''t have any commentary modules.'), mtCustom,
-          [mrYes, T('Download'), mrNo, T('Cancel')], '');
-
-      if Response = idYes then OpenURL(DownloadsURL);
-      Exit;
-    end;
-
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
   data := Get_Commentary;
   text += data;
@@ -1450,11 +1448,23 @@ end;
 
 procedure TMainForm.LoadDictionary(s: string);
 var
-  text, data : string;
+  Response : integer;
+  text : string = '';
+  data : string;
 begin
   if Shelf.Count = 0 then Exit;
+
+  if Dictionaries.IsEmpty then
+    begin
+      Response := QuestionDlg(T('Dictionaries'),
+        T('You don''t have any dictionary modules.'), mtCustom,
+          [mrYes, T('Download'), mrNo, T('Cancel')], '');
+
+      if Response = idYes then OpenURL(DownloadsURL);
+      Exit;
+    end;
+
   s := Trim(s);
-  text := '';
   data := Get_Dictionary(s);
   if data <> '' then text += data;
 
@@ -1464,15 +1474,8 @@ begin
       Replace(text,'%',DoubleQuotedStr(s));
     end;
 
-  if Dictionaries.IsEmpty then
-    begin
-      text += T('You don''t have any dictionary modules.') + ' ' +
-              T('For more information, choose Menu ➝ Help, then click «Modules Downloads».');
-    end;
-
   MemoDictionary.Font.Assign(DefaultFont);
   MemoDictionary.LoadHtml(text);
-
   SelectPage(apDictionaries);
 end;
 
