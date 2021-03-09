@@ -354,6 +354,7 @@ begin
     TabSheetReference .TabVisible := False;
     TabSheetCommentary.TabVisible := False;
     TabSheetDictionary.TabVisible := False;
+    IdleTimer.Interval := 10;
   {$endif}
 
   UpdateActionImage;
@@ -379,7 +380,7 @@ begin
       GoToVerse(CurrVerse,(CurrVerse.number > 1));
     end;
 
-  IdleMessage := 'HideCursor';
+  {$ifdef windows} IdleMessage := 'HideCursor'; {$endif}
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -426,8 +427,6 @@ begin
 
   Edit.Left := StandardToolBar.Width - ToolButtonSearch.Width - Edit.Width - 4;
   Edit.Visible := ToolPanel.Width > Edit.Width;
-
-  IdleMessage := 'HideCursor';
 end;
 
 procedure TMainForm.MemoMouseLeave(Sender: TObject);
@@ -506,7 +505,7 @@ begin
   ToolButtonPaste.Hint := T('Paste');
   ToolButtonUndo.Hint := T('Undo');
 
-  ToolButtonModules.Hint := T('Bibles');
+  ToolButtonModules.Hint := T('Bible');
   ToolButtonReference.Hint := T('Cross-References');
   ToolButtonCommentary.Hint := T('Commentaries');
   ToolButtonDictionary.Hint := T('Dictionaries');
@@ -1248,8 +1247,6 @@ end;
 
 procedure TMainForm.IdleTimerTimer(Sender: TObject);
 begin
-  if IdleMessage <> '' then output(IdleMessage);
-
   {$ifdef windows}
   if IdleMessage = 'HideCursor' then HideCursor;
   {$endif}
@@ -1275,7 +1272,7 @@ begin
     apNotes        : UnboundMemo.SetFocus;
   end;
 
-  IdleMessage := 'HideCursor';
+  {$ifdef windows} IdleMessage := 'HideCursor'; {$endif}
 end;
 
 procedure TMainForm.PopupMenuPopup(Sender: TObject);

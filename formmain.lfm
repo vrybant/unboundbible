@@ -199,6 +199,7 @@ object MainForm: TMainForm
       Top = 0
       Action = ActionModules
       ImageIndex = 34
+      Visible = False
     end
     object ToolButtonDictionary: TToolButton
       Left = 121
@@ -306,12 +307,12 @@ object MainForm: TMainForm
     Height = 327
     Top = 32
     Width = 737
-    ActivePage = TabSheetBible
+    ActivePage = TabSheetSearch
     Align = alClient
     Font.Color = clWindowText
     Font.Height = -13
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 2
     OnChange = PageControlChange
     object TabSheetBible: TTabSheet
@@ -2541,7 +2542,6 @@ object MainForm: TMainForm
     Top = 160
   end
   object IdleTimer: TIdleTimer
-    Interval = 500
     OnTimer = IdleTimerTimer
     Left = 472
     Top = 104

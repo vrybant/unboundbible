@@ -4,7 +4,7 @@ object CompareForm: TCompareForm
   Top = 255
   Width = 450
   BorderStyle = bsDialog
-  Caption = ' Bibles'
+  Caption = ' Bible'
   ClientHeight = 298
   ClientWidth = 450
   Color = clBtnFace

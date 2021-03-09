@@ -34,7 +34,7 @@ uses UnitShelf, UnitLocal;
 
 procedure TCompareForm.Localize;
 begin
-  Caption := ' ' + T('Bibles');
+  Caption := ' ' + T('Bible');
   ButtonOK.Caption := T('OK');
 end;
 
