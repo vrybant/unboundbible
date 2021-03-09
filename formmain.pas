@@ -709,13 +709,6 @@ begin
   LoadSearch(Edit.Text);
 end;
 
-procedure TMainForm.CmdLookup(Sender: TObject);
-begin
-  if Trim(UnboundMemo.SelText) = '' then Edit.SetFocus
-    else Edit.Text := Trim(UnboundMemo.SelText);
-  LoadDictionary(Edit.Text);
-end;
-
 procedure TMainForm.CmdReference(Sender: TObject);
 begin
   LoadReference;
@@ -760,6 +753,13 @@ begin
     end;
 
   SelectPage(apDictionaries);
+end;
+
+procedure TMainForm.CmdLookup(Sender: TObject);
+begin
+  if Trim(UnboundMemo.SelText) = '' then Edit.SetFocus
+    else Edit.Text := Trim(UnboundMemo.SelText);
+  LoadDictionary(Edit.Text);
 end;
 
 procedure TMainForm.CmdFileNew(Sender: TObject);
