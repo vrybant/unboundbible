@@ -738,8 +738,20 @@ begin
 end;
 
 procedure TMainForm.CmdDictionaries(Sender: TObject);
-var s : string;
+var
+  Response : integer;
+  s : string;
 begin
+  if Dictionaries.IsEmpty then
+    begin
+      Response := QuestionDlg(T('Dictionaries'),
+        T('You don''t have any dictionary modules.'), mtCustom,
+          [mrYes, T('Download'), mrNo, T('Cancel')], '');
+
+      if Response = idYes then OpenURL(DownloadsURL);
+      Exit;
+    end;
+
   if (Sender = ActionDictionaries) and (MemoDictionary.Text = '') then
     begin
       s := T('Please enter your query in the search bar.');
@@ -1448,25 +1460,12 @@ end;
 
 procedure TMainForm.LoadDictionary(s: string);
 var
-  Response : integer;
   text : string = '';
   data : string;
 begin
-  if Shelf.Count = 0 then Exit;
-
-  if Dictionaries.IsEmpty then
-    begin
-      Response := QuestionDlg(T('Dictionaries'),
-        T('You don''t have any dictionary modules.'), mtCustom,
-          [mrYes, T('Download'), mrNo, T('Cancel')], '');
-
-      if Response = idYes then OpenURL(DownloadsURL);
-      Exit;
-    end;
-
   s := Trim(s);
   data := Get_Dictionary(s);
-  if data <> '' then text += data;
+  text += data;
 
   if (data = '') and (s <> '') then
     begin
