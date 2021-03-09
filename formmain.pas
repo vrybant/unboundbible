@@ -718,7 +718,7 @@ procedure TMainForm.CmdCommentaries(Sender: TObject);
 var
   Response : integer;
 begin
-  if Commentaries.Count = 0 then
+  if Commentaries.IsEmpty then
     begin
       Response := QuestionDlg(T('Commentaries'),
         T('You don''t have any commentary modules.'), mtCustom,

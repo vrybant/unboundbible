@@ -25,6 +25,7 @@ type
   public
     constructor Create;
     function GetFootnote(module: string; Verse: TVerse; marker: string): string;
+    function IsEmpty: boolean;
     destructor Destroy; override;
   end;
 
@@ -196,6 +197,16 @@ begin
       if not Prefix(name,self[i].filename) then Continue;
       Result := self[i].GetFootnote(Verse, marker);
     end;
+end;
+
+function TCommentaries.IsEmpty: boolean;
+var i : integer;
+begin
+  Result := True;
+  if self.Count = 0 then Exit;
+
+  for i:=0 to self.Count-1 do
+    if not self[i].footnotes then Result := False;
 end;
 
 destructor TCommentaries.Destroy;
