@@ -347,15 +347,15 @@ object MainForm: TMainForm
     end
     object TabSheetSearch: TTabSheet
       Caption = 'Search'
-      ClientHeight = 298
-      ClientWidth = 727
+      ClientHeight = 297
+      ClientWidth = 729
       ImageIndex = 1
       object MemoSearch: TUnboundMemo
         Cursor = crArrow
         Left = 0
-        Height = 296
+        Height = 297
         Top = 0
-        Width = 675
+        Width = 729
         Align = alClient
         Font.Color = clWindowText
         Font.Height = -16
@@ -2541,6 +2541,7 @@ object MainForm: TMainForm
     Top = 160
   end
   object IdleTimer: TIdleTimer
+    Interval = 500
     OnTimer = IdleTimerTimer
     Left = 472
     Top = 104

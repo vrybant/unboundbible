@@ -263,6 +263,7 @@ type
     procedure ReadConfig;
     procedure RebuildRecentList;
     procedure RecentMenuInit;
+    procedure HideCursor;
     procedure SaveConfig;
     procedure SelectPage(page: integer);
     procedure UpdateCaption(s: string);
@@ -378,7 +379,7 @@ begin
       GoToVerse(CurrVerse,(CurrVerse.number > 1));
     end;
 
-  IdleMessage := 'MemoBible.HideCursor';
+  IdleMessage := 'HideCursor';
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -425,6 +426,8 @@ begin
 
   Edit.Left := StandardToolBar.Width - ToolButtonSearch.Width - Edit.Width - 4;
   Edit.Visible := ToolPanel.Width > Edit.Width;
+
+  IdleMessage := 'HideCursor';
 end;
 
 procedure TMainForm.MemoMouseLeave(Sender: TObject);
@@ -503,7 +506,7 @@ begin
   ToolButtonPaste.Hint := T('Paste');
   ToolButtonUndo.Hint := T('Undo');
 
-  ToolButtonModules.Hint := T('Modules');
+  ToolButtonModules.Hint := T('Bibles');
   ToolButtonReference.Hint := T('Cross-References');
   ToolButtonCommentary.Hint := T('Commentaries');
   ToolButtonDictionary.Hint := T('Dictionaries');
@@ -813,8 +816,9 @@ end;
 
 procedure TMainForm.CmdModules2(Sender: TObject);
 begin
-  if CompareForm.ShowModal <> mrOk then ;
+  if CompareForm.ShowModal <> mrOk then Exit;
   LoadComboBox;
+  if PageControl.ActivePageIndex = apCompare then CmdCompare(Self);
 end;
 
 procedure TMainForm.CmdExit(Sender: TObject);
@@ -1244,18 +1248,16 @@ end;
 
 procedure TMainForm.IdleTimerTimer(Sender: TObject);
 begin
+  if IdleMessage <> '' then output(IdleMessage);
+
   {$ifdef windows}
-  if IdleMessage = 'MemoBible.HideCursor' then
-                    MemoBible.HideCursor;
+  if IdleMessage = 'HideCursor' then HideCursor;
   {$endif}
   {$ifdef linux}
-  if IdleMessage = 'GotoVerse(CurrVerse,True)' then
-                    GotoVerse(CurrVerse,True);
-
-  if IdleMessage = 'GotoVerse(CurrVerse,False)' then
-                    GotoVerse(CurrVerse,False);
+  if IdleMessage = 'GotoVerse(CurrVerse,True)'  then GotoVerse(CurrVerse,True);
+  if IdleMessage = 'GotoVerse(CurrVerse,False)' then GotoVerse(CurrVerse,False);
   {$endif}
-  if IdleMessage <> '' then IdleMessage := '';
+  IdleMessage := '';
 end;
 
 procedure TMainForm.PageControlChange(Sender: TObject);
@@ -1264,11 +1266,16 @@ begin
   UpDownButtons;
   RefreshStatus;
   UnboundMemo.Repaint;
-  if PageControl.ActivePageIndex = apCompare      then CmdCompare(PageControl);
-  if PageControl.ActivePageIndex = apReferences   then CmdReference(PageControl);
-  if PageControl.ActivePageIndex = apCommentaries then CmdCommentaries(PageControl);
-  if PageControl.ActivePageIndex = apDictionaries then CmdDictionaries(PageControl);
-  if PageControl.ActivePageIndex = apNotes        then UnboundMemo.SetFocus;
+
+  case PageControl.ActivePageIndex of
+    apCompare      : CmdCompare(Sender);
+    apReferences   : CmdReference(Sender);
+    apCommentaries : CmdCommentaries(Sender);
+    apDictionaries : CmdDictionaries(Sender);
+    apNotes        : UnboundMemo.SetFocus;
+  end;
+
+  IdleMessage := 'HideCursor';
 end;
 
 procedure TMainForm.PopupMenuPopup(Sender: TObject);
@@ -1513,12 +1520,10 @@ begin
 end;
 {$endif}
 
-{$ifdef darwin}
-procedure TMainForm.VersesToClipboard;
+procedure TMainForm.HideCursor;
 begin
-  //
+  if PageControl.ActivePageIndex <> apNotes then UnboundMemo.HideCursor;
 end;
-{$endif}
 
 //-------------------------------------------------------------------------------------------------
 
