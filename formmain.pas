@@ -737,16 +737,13 @@ begin
 end;
 
 procedure TMainForm.CmdDictionaries(Sender: TObject);
-var
-  Response : integer;
 begin
   if Dictionaries.IsEmpty then
     begin
-      Response := QuestionDlg(T('Dictionaries'),
+      if QuestionDlg(T('Dictionaries'),
         T('You don''t have any dictionary modules.'), mtCustom,
-          [mrYes, T('Download'), mrNo, T('Cancel')], '');
-
-      if Response = idYes then OpenURL(DownloadsURL);
+          [mrYes, T('Download'), mrNo, T('Cancel')], '') = idYes then
+            OpenURL(DownloadsURL);
       Exit;
     end;
 
