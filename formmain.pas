@@ -739,7 +739,6 @@ end;
 procedure TMainForm.CmdDictionaries(Sender: TObject);
 var
   Response : integer;
-  s : string;
 begin
   if Dictionaries.IsEmpty then
     begin
@@ -752,13 +751,6 @@ begin
     end;
 
   LoadDictionary(Edit.Text);
-
-  if (Sender = ActionDictionaries) and (MemoDictionary.Text = '') then
-    begin
-      s := T('Please enter your query in the search bar.');
-      MemoDictionary.Font.Assign(DefaultFont);
-      MemoDictionary.LoadHtml(s);
-    end;
 end;
 
 procedure TMainForm.CmdFileNew(Sender: TObject);
@@ -1471,6 +1463,8 @@ begin
       text += T('You search for % produced no results.') + '<br><br>';
       Replace(text,'%',DoubleQuotedStr(s));
     end;
+
+  if s = '' then text := T('Please enter your query in the search bar.');
 
   MemoDictionary.Font.Assign(DefaultFont);
   MemoDictionary.LoadHtml(text);
