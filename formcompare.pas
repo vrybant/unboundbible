@@ -12,7 +12,7 @@ type
   TCompareForm = class(TForm)
     ButtonOK: TButton;
     CheckListBox: TCheckListBox;
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure ButtonOKClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
@@ -34,7 +34,7 @@ uses UnitShelf, UnitLocal;
 
 procedure TCompareForm.Localize;
 begin
-  Caption := ' ' + T('Modules');
+  Caption := ' ' + T('Bibles');
   ButtonOK.Caption := T('OK');
 end;
 
@@ -75,7 +75,7 @@ begin
       Shelf[i].Enabled := CheckListBox.Checked[i];
 end;
 
-procedure TCompareForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+procedure TCompareForm.ButtonOKClick(Sender: TObject);
 begin
   ListBoxToShelf;
 end;

@@ -4,11 +4,10 @@ object CompareForm: TCompareForm
   Top = 255
   Width = 450
   BorderStyle = bsDialog
-  Caption = ' Compare Options'
+  Caption = ' Bibles'
   ClientHeight = 298
   ClientWidth = 450
   Color = clBtnFace
-  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   ParentFont = True
@@ -36,6 +35,7 @@ object CompareForm: TCompareForm
     Constraints.MinWidth = 80
     Default = True
     ModalResult = 1
+    OnClick = ButtonOKClick
     TabOrder = 0
   end
 end
