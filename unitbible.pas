@@ -570,7 +570,7 @@ var
   Module : TBible;
   path : string;
 begin
-  path := {$ifdef windows} 'D:\test.unbound'; {$else} DataPath + '/test.unbound'; {$endif}
+  path := DataPath + Slash + 'output.unbound';
 
   if FileExists(path) then DeleteFile(path);
   if FileExists(path) then Exit;
