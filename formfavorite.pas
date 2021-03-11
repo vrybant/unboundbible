@@ -1,4 +1,4 @@
-unit FormCompare;
+unit FormFavorite;
 
 interface
 
