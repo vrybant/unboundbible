@@ -1,4 +1,4 @@
-object CompareForm: TCompareForm
+object FavoriteForm: TFavoriteForm
   Left = 520
   Height = 298
   Top = 255

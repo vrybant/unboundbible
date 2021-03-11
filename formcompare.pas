@@ -7,9 +7,9 @@ uses
 
 type
 
-  { TCompareForm }
+  { TFavoriteForm }
 
-  TCompareForm = class(TForm)
+  TFavoriteForm = class(TForm)
     ButtonOK: TButton;
     CheckListBox: TCheckListBox;
     procedure ButtonOKClick(Sender: TObject);
@@ -24,7 +24,7 @@ type
   end;
 
 var
-  CompareForm: TCompareForm;
+  FavoriteForm: TFavoriteForm;
 
 implementation
 
@@ -32,13 +32,13 @@ uses UnitShelf, UnitLocal;
 
 {$R *.lfm}
 
-procedure TCompareForm.Localize;
+procedure TFavoriteForm.Localize;
 begin
   Caption := ' ' + T('Bible');
   ButtonOK.Caption := T('OK');
 end;
 
-procedure TCompareForm.FormCreate(Sender: TObject);
+procedure TFavoriteForm.FormCreate(Sender: TObject);
 begin
   MakeListBox;
 
@@ -48,26 +48,26 @@ begin
   {$endif}
 end;
 
-procedure TCompareForm.FormShow(Sender: TObject);
+procedure TFavoriteForm.FormShow(Sender: TObject);
 begin
   ShelfToListBox;
 end;
 
-procedure TCompareForm.MakeListBox;
+procedure TFavoriteForm.MakeListBox;
 var i: integer;
 begin
   for i:=0 to Shelf.Count-1 do
     CheckListBox.Items.Add(Shelf[i].Name);
 end;
 
-procedure TCompareForm.ShelfToListBox;
+procedure TFavoriteForm.ShelfToListBox;
 var i: integer;
 begin
   for i:= 0 to Shelf.Count-1 do
     CheckListBox.Checked[i] := Shelf[i].Enabled;
 end;
 
-procedure TCompareForm.ListBoxToShelf;
+procedure TFavoriteForm.ListBoxToShelf;
 var i: integer;
 begin
   for i:= 0 to Shelf.Count-1 do
@@ -75,7 +75,7 @@ begin
       Shelf[i].Enabled := CheckListBox.Checked[i];
 end;
 
-procedure TCompareForm.ButtonOKClick(Sender: TObject);
+procedure TFavoriteForm.ButtonOKClick(Sender: TObject);
 begin
   ListBoxToShelf;
 end;

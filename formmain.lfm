@@ -105,7 +105,7 @@ object MainForm: TMainForm
     object ToolButtonModules: TToolButton
       Left = 4
       Top = 0
-      Action = ActionModules2
+      Action = ActionFavorites
       ParentShowHint = False
       ShowHint = True
     end
@@ -2505,9 +2505,9 @@ object MainForm: TMainForm
       ImageIndex = 11
       OnExecute = cmdModules
     end
-    object ActionModules2: TAction
+    object ActionFavorites: TAction
       Category = 'Tools'
-      Caption = 'ActionModules2'
+      Caption = 'ActionFavorites'
       ImageIndex = 11
       OnExecute = CmdModules2
     end

@@ -16,7 +16,7 @@ begin
   Application.CreateForm(TAboutBox,     AboutBox);
   Application.CreateForm(TNotifyForm,   NotifyForm );
   Application.CreateForm(TSearchForm,   SearchForm );
-  Application.CreateForm(TCompareForm,  CompareForm);
+  Application.CreateForm(TFavoriteForm, FavoriteForm);
   Application.CreateForm(TCopyForm,     CopyForm);
   Application.CreateForm(TDownloadForm, DownloadForm);
   MainForm.LocalizeApplication;

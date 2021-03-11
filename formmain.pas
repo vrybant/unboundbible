@@ -14,7 +14,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
-    ActionModules2: TAction;
+    ActionFavorites: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
     miIssue: TMenuItem;
@@ -527,7 +527,7 @@ begin
 
   MainForm     .Localize;
   SearchForm   .Localize;
-  CompareForm  .Localize;
+  FavoriteForm .Localize;
   AboutBox     .Localize;
   CopyForm     .Localize;
   DownloadForm .Localize;
@@ -826,7 +826,7 @@ end;
 
 procedure TMainForm.CmdModules2(Sender: TObject);
 begin
-  if CompareForm.ShowModal <> mrOk then Exit;
+  if FavoriteForm.ShowModal <> mrOk then Exit;
   LoadComboBox;
   if PageControl.ActivePageIndex = apCompare then CmdCompare(Self);
 end;
