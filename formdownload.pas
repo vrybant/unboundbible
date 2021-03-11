@@ -14,7 +14,9 @@ type
     ButtonDownloads: TButton;
     ButtonFolder: TButton;
     ButtonOK: TButton;
+    LabelInfo: TLabel;
     LabelTest: TLabel;
+    Panel1: TPanel;
     StringGrid: TStringGrid;
     procedure ButtonDownloadsClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
@@ -25,6 +27,7 @@ type
     procedure StringGridGetCheckboxState(Sender: TObject; aCol, aRow: Integer;
       var Value: TCheckboxState);
     procedure StringGridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
+    procedure StringGridSelection(Sender: TObject; aCol, aRow: Integer);
   private
     procedure ShelfToListBox;
     procedure ListBoxToShelf;
@@ -135,6 +138,12 @@ begin
   if LabelTest.Width > StringGrid.Columns[aCol].Width - delta then
     HintText := StringGrid.Cells[aCol, aRow];
   LabelTest.Visible := False;
+end;
+
+procedure TDownloadForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
+begin
+  LabelInfo.Caption := Trim(StringGrid.Cells[1, aRow]);
+
 end;
 
 end.

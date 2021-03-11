@@ -1,7 +1,7 @@
 object DownloadForm: TDownloadForm
-  Left = 569
+  Left = 508
   Height = 475
-  Top = 222
+  Top = 300
   Width = 640
   BorderStyle = bsDialog
   Caption = ' Modules'
@@ -13,7 +13,7 @@ object DownloadForm: TDownloadForm
   Position = poScreenCenter
   LCLVersion = '2.0.10.0'
   object ButtonOK: TButton
-    Left = 279
+    Left = 536
     Height = 25
     Top = 440
     Width = 82
@@ -27,11 +27,12 @@ object DownloadForm: TDownloadForm
   end
   object StringGrid: TStringGrid
     Left = 8
-    Height = 424
+    Height = 336
     Top = 8
     Width = 624
     AutoFillColumns = True
     ColCount = 3
+    ColumnClickSorts = True
     Columns = <    
       item
         Alignment = taCenter
@@ -65,37 +66,58 @@ object DownloadForm: TDownloadForm
     OnCheckboxToggled = StringGridCheckboxToggled
     OnGetCellHint = StringGridGetCellHint
     OnGetCheckboxState = StringGridGetCheckboxState
+    OnSelection = StringGridSelection
     ColWidths = (
       40
       540
       40
     )
   end
-  object LabelTest: TLabel
-    Left = 8
-    Height = 15
-    Top = 440
-    Width = 48
-    Caption = 'LabelTest'
-    ParentColor = False
-    Visible = False
-  end
   object ButtonDownloads: TButton
-    Left = 100
+    Left = 536
     Height = 25
-    Top = 440
+    Top = 400
     Width = 84
     Caption = 'Downloads'
     OnClick = ButtonDownloadsClick
     TabOrder = 2
   end
   object ButtonFolder: TButton
-    Left = 460
+    Left = 536
     Height = 25
-    Top = 440
+    Top = 360
     Width = 84
     Caption = 'Folder'
     OnClick = ButtonFolderClick
     TabOrder = 3
+  end
+  object Panel1: TPanel
+    Left = 8
+    Height = 105
+    Top = 360
+    Width = 512
+    BevelInner = bvRaised
+    BevelOuter = bvLowered
+    ClientHeight = 105
+    ClientWidth = 512
+    TabOrder = 4
+    object LabelTest: TLabel
+      Left = 16
+      Height = 15
+      Top = 80
+      Width = 48
+      Caption = 'LabelTest'
+      ParentColor = False
+    end
+    object LabelInfo: TLabel
+      Left = 16
+      Height = 64
+      Top = 16
+      Width = 480
+      AutoSize = False
+      Caption = 'LabelInfo'
+      ParentColor = False
+      WordWrap = True
+    end
   end
 end
