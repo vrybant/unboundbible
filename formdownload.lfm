@@ -22,6 +22,7 @@ object DownloadForm: TDownloadForm
     Constraints.MinWidth = 82
     Default = True
     ModalResult = 1
+    OnClick = ButtonOKClick
     TabOrder = 0
   end
   object StringGrid: TStringGrid
@@ -34,36 +35,40 @@ object DownloadForm: TDownloadForm
     Columns = <    
       item
         Alignment = taCenter
+        ButtonStyle = cbsCheckboxColumn
         MaxSize = 40
+        SizePriority = 0
+        Title.Alignment = taCenter
+        Title.Caption = '✓'
+        Width = 40
+      end    
+      item
+        ButtonStyle = cbsNone
+        Title.Alignment = taCenter
+        Title.Caption = 'Title'
+        Width = 540
+      end    
+      item
+        Alignment = taCenter
+        ButtonStyle = cbsNone
         SizePriority = 0
         Title.Alignment = taCenter
         Title.Caption = '🌎'
         Width = 40
-      end    
-      item
-        MaxSize = 500
-        Title.Alignment = taCenter
-        Title.Caption = 'Title'
-        Width = 380
-      end    
-      item
-        SizePriority = 0
-        Title.Alignment = taCenter
-        Title.Caption = 'File'
-        Width = 200
       end>
     DefaultDrawing = False
     FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRowSelect, goSmoothScroll, goCellHints]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goTabs, goRowSelect, goSmoothScroll, goCellHints]
     ParentShowHint = False
-    RowCount = 10
     ShowHint = True
     TabOrder = 1
+    OnCheckboxToggled = StringGridCheckboxToggled
     OnGetCellHint = StringGridGetCellHint
+    OnGetCheckboxState = StringGridGetCheckboxState
     ColWidths = (
       40
-      380
-      200
+      540
+      40
     )
   end
   object LabelTest: TLabel

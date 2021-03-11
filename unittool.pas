@@ -230,9 +230,10 @@ var
   function GetInfo(const Module: TModule): TStringArray;
   begin
     SetLength(Result, 3);
-    Result[0] := BoolToStr(Module.language='', '', Module.language);
+    Result[0] := '*';
     Result[1] := ' ' + Module.Name;
-    Result[2] := ' ' + Module.Filename;
+    Result[2] := BoolToStr(Module.language='', '', Module.language);
+//  Result[*] := ' ' + Module.Filename;
   end;
 
 begin
