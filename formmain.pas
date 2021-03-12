@@ -203,7 +203,7 @@ type
     procedure CmdStyle(Sender: TObject);
     procedure CmdStyle2(Sender: TObject);
     procedure CmdModules(Sender: TObject);
-    procedure CmdModules2(Sender: TObject);
+    procedure CmdFavorite(Sender: TObject);
 
     procedure ComboBoxChange(Sender: TObject);
     procedure ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
@@ -823,10 +823,11 @@ begin
   DownloadForm.ShowModal;
 end;
 
-procedure TMainForm.CmdModules2(Sender: TObject);
+procedure TMainForm.CmdFavorite(Sender: TObject);
 begin
   if FavoriteForm.ShowModal <> mrOk then Exit;
   LoadComboBox;
+  if FavoriteForm.CurrItem <> '' then SelectBible(FavoriteForm.CurrItem);
   if PageControl.ActivePageIndex = apCompare then CmdCompare(Self);
 end;
 

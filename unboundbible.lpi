@@ -162,7 +162,9 @@
       <Unit18>
         <Filename Value="formfavorite.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FavoriteForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormFavorite"/>
       </Unit18>
     </Units>

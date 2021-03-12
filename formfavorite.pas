@@ -21,6 +21,7 @@ type
     procedure ListBoxToShelf;
   public
     procedure Localize;
+    function CurrItem: string;
   end;
 
 var
@@ -77,7 +78,16 @@ end;
 
 procedure TFavoriteForm.ButtonOKClick(Sender: TObject);
 begin
+  if CheckListBox.ItemIndex >= 0 then
+    CheckListBox.Checked[CheckListBox.ItemIndex] := True;
   ListBoxToShelf;
+end;
+
+function TFavoriteForm.CurrItem: string;
+begin
+  Result := '';
+  if CheckListBox.ItemIndex >= 0 then
+    Result := CheckListBox.Items[CheckListBox.ItemIndex];
 end;
 
 end.
