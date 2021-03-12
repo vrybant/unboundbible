@@ -22,7 +22,6 @@ type
     StringGrid: TStringGrid;
     procedure ButtonDownloadsClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
-    procedure ButtonCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -33,9 +32,9 @@ type
     procedure StringGridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
     procedure StringGridSelection(Sender: TObject; aCol, aRow: Integer);
   private
-    procedure ListBoxToShelf;
-  public
+    CheckList: array of TCheckBoxState;
     procedure LoadGrid;
+  public
     procedure Localize;
   end;
 
@@ -45,15 +44,6 @@ var
 implementation
 
 uses UnitData, UnitModule, UnitShelf, UnitLocal, UnitCommentary, UnitDictionary;
-
-var
-  CheckList: array of TCheckBoxState;
-
-const
-  roFavorite = 0;
-  roName = 1;
-  roLang = 2;
-  roInfo = 3;
 
 {$R *.lfm}
 
@@ -69,8 +59,13 @@ end;
 
 procedure TDownloadForm.FormCreate(Sender: TObject);
 begin
-  StringGrid.RowCount := 1;
   Application.HintPause := 1;
+  StringGrid.Columns[0].Visible:= False;
+
+  {$ifdef linux}
+    StringGrid.Top := StringGrid.Top + 1;
+    StringGrid.Height := StringGrid.Height - 1;
+  {$endif}
 end;
 
 procedure TDownloadForm.FormPaint(Sender: TObject);
@@ -79,15 +74,8 @@ begin
 end;
 
 procedure TDownloadForm.FormShow(Sender: TObject);
-var i: integer;
 begin
   LoadGrid;
-
-  SetLength(CheckList, 500);
-  for i:= 0 to Shelf.Count-1 do CheckList[i] := cbUnchecked;
-
-  for i:= 0 to Shelf.Count-1 do
-    CheckList[i] := iif(Shelf[i].Favorite, cbChecked, cbUnchecked);
 end;
 
 procedure TDownloadForm.LoadGrid;
@@ -106,25 +94,27 @@ var
   end;
 
 begin
+  StringGrid.RowCount := 1;
+
   for i:=0 to Shelf.Count-1 do
     StringGrid.InsertRowWithValues(i+1, GetInfo(Shelf[i]));
+
+  SetLength(CheckList, Shelf.Count);
+  for i:= 0 to Shelf.Count-1 do
+    CheckList[i] := iif(Shelf[i].Favorite, cbChecked, cbUnchecked);
 
   for i:=0 to Commentaries.Count-1 do
     StringGrid.InsertRowWithValues(i+1, GetInfo(Commentaries[i]));
 
   for i:=0 to Dictionaries.Count-1 do
     StringGrid.InsertRowWithValues(i+1, GetInfo(Dictionaries[i]));
+
 end;
 
 procedure TDownloadForm.ButtonFolderClick(Sender: TObject);
 begin
   CreateDataDirectory;
   OpenFolder(DataPath);
-end;
-
-procedure TDownloadForm.ButtonCloseClick(Sender: TObject);
-begin
-  ListBoxToShelf;
 end;
 
 procedure TDownloadForm.ButtonDownloadsClick(Sender: TObject);
@@ -144,17 +134,6 @@ begin
   if (aRow > 0) and (aCol = 0) then Value := CheckList[aRow-1];
 end;
 
-procedure TDownloadForm.ListBoxToShelf;
-var i: integer;
-begin
-  output(StringGrid.Row);
-  output(StringGrid.Cells[1,StringGrid.Row]);
-
-  //for i:= 0 to Shelf.Count-1 do
-  //    if StringGrid.Cells[1,StringGrid.Row] <> currBible.name then
-  //      Shelf[i].Favorite := CheckList[i] = cbChecked;
-end;
-
 procedure TDownloadForm.StringGridGetCellHint(Sender: TObject; aCol,
   aRow: Integer; var HintText: String);
 const
@@ -171,14 +150,11 @@ end;
 procedure TDownloadForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
 begin
   LabelFilename.Caption := StringGrid.Cells[3, aRow];
-
   Memo.Clear;
-  Memo.ScrollBars := iif(Length(StringGrid.Cells[4, aRow]) < 400, ssNone, ssAutoVertical);
+  Memo.ScrollBars := ssAutoVertical;
+  if Length(StringGrid.Cells[4, aRow]) < 400 then Memo.ScrollBars := ssNone;
   Memo.Lines.Add(StringGrid.Cells[4, aRow]);
   Memo.SelStart := 1;
-
-
-  output(Length(StringGrid.Cells[4, aRow]));
 end;
 
 end.

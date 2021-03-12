@@ -29,14 +29,13 @@ object DownloadForm: TDownloadForm
         SizePriority = 0
         Title.Alignment = taCenter
         Title.Caption = '✓'
-        Width = 0
-        Visible = False
+        Width = 40
       end    
       item
         ButtonStyle = cbsNone
         Title.Alignment = taCenter
         Title.Caption = 'Title'
-        Width = 561
+        Width = 521
       end    
       item
         Alignment = taCenter
@@ -69,8 +68,8 @@ object DownloadForm: TDownloadForm
     OnGetCheckboxState = StringGridGetCheckboxState
     OnSelection = StringGridSelection
     ColWidths = (
-      0
-      561
+      40
+      521
       40
       0
       0
@@ -101,7 +100,6 @@ object DownloadForm: TDownloadForm
     Width = 84
     Caption = 'Close'
     ModalResult = 1
-    OnClick = ButtonCloseClick
     TabOrder = 3
   end
   object Panel: TPanel
@@ -130,14 +128,6 @@ object DownloadForm: TDownloadForm
       Caption = 'filename'
       ParentColor = False
     end
-    object LabelTest: TLabel
-      Left = 0
-      Height = 15
-      Top = -16
-      Width = 48
-      Caption = 'LabelTest'
-      ParentColor = False
-    end
   end
   object Memo: TMemo
     Left = 21
@@ -147,7 +137,15 @@ object DownloadForm: TDownloadForm
     BorderStyle = bsNone
     ParentColor = True
     ReadOnly = True
-    ScrollBars = ssAutoVertical
+    ScrollBars = ssVertical
     TabOrder = 5
+  end
+  object LabelTest: TLabel
+    Left = 7
+    Height = 15
+    Top = 317
+    Width = 48
+    Caption = 'LabelTest'
+    ParentColor = False
   end
 end
