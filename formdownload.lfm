@@ -147,5 +147,6 @@ object DownloadForm: TDownloadForm
     Width = 48
     Caption = 'LabelTest'
     ParentColor = False
+    Visible = False
   end
 end

@@ -61,6 +61,7 @@ procedure TDownloadForm.FormCreate(Sender: TObject);
 begin
   Application.HintPause := 1;
   StringGrid.Columns[0].Visible:= False;
+  LabelFilename.Caption := '';
 
   {$ifdef linux}
     StringGrid.Top := StringGrid.Top + 1;
@@ -150,6 +151,7 @@ end;
 procedure TDownloadForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
 begin
   LabelFilename.Caption := StringGrid.Cells[3, aRow];
+  LabelFile.Visible := LabelFilename.Caption <> '';
   Memo.Clear;
   Memo.ScrollBars := ssAutoVertical;
   if Length(StringGrid.Cells[4, aRow]) < 400 then Memo.ScrollBars := ssNone;
