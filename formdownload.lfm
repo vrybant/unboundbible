@@ -62,7 +62,7 @@ object DownloadForm: TDownloadForm
     ParentShowHint = False
     RowCount = 4
     ShowHint = True
-    TabOrder = 1
+    TabOrder = 0
     OnCheckboxToggled = StringGridCheckboxToggled
     OnGetCellHint = StringGridGetCellHint
     OnGetCheckboxState = StringGridGetCheckboxState
@@ -82,7 +82,7 @@ object DownloadForm: TDownloadForm
     Width = 84
     Caption = 'Downloads'
     OnClick = ButtonDownloadsClick
-    TabOrder = 0
+    TabOrder = 1
   end
   object ButtonFolder: TButton
     Left = 512
