@@ -16,14 +16,15 @@ type
     ButtonClose: TButton;
     LabelFile: TLabel;
     LabelFilename: TLabel;
-    LabelInfo: TLabel;
     LabelTest: TLabel;
-    Panel1: TPanel;
+    Memo: TMemo;
+    Panel: TPanel;
     StringGrid: TStringGrid;
     procedure ButtonDownloadsClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
     procedure ButtonCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure StringGridCheckboxToggled(sender: TObject; aCol, aRow: Integer;
       aState: TCheckboxState);
@@ -63,14 +64,18 @@ begin
   ButtonDownloads.Caption := T('Download');
   ButtonFolder.Caption := T('Folder');
   StringGrid.Columns[1].Title.Caption := T('Title');
-  LabelFile.Caption := T('File') + ':';
-  LabelFilename.Left := LabelFile.Left + LabelFile.Width + 10;
+  LabelFile.Caption := T('File Name') + ' : ';
 end;
 
 procedure TDownloadForm.FormCreate(Sender: TObject);
 begin
   StringGrid.RowCount := 1;
   Application.HintPause := 1;
+end;
+
+procedure TDownloadForm.FormPaint(Sender: TObject);
+begin
+  LabelFilename.Left := LabelFile.Left + LabelFile.Width;
 end;
 
 procedure TDownloadForm.FormShow(Sender: TObject);
@@ -166,7 +171,14 @@ end;
 procedure TDownloadForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
 begin
   LabelFilename.Caption := StringGrid.Cells[3, aRow];
-  LabelInfo.Caption     := StringGrid.Cells[4, aRow];
+
+  Memo.Clear;
+  Memo.ScrollBars := iif(Length(StringGrid.Cells[4, aRow]) < 400, ssNone, ssAutoVertical);
+  Memo.Lines.Add(StringGrid.Cells[4, aRow]);
+  Memo.SelStart := 1;
+
+
+  output(Length(StringGrid.Cells[4, aRow]));
 end;
 
 end.
