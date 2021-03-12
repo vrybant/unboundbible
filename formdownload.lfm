@@ -9,6 +9,7 @@ object DownloadForm: TDownloadForm
   ClientWidth = 640
   Color = clBtnFace
   OnCreate = FormCreate
+  OnShow = FormShow
   ParentFont = True
   Position = poScreenCenter
   LCLVersion = '2.0.10.0'
@@ -27,11 +28,10 @@ object DownloadForm: TDownloadForm
   end
   object StringGrid: TStringGrid
     Left = 8
-    Height = 336
+    Height = 320
     Top = 8
     Width = 624
     AutoFillColumns = True
-    ColCount = 3
     ColumnClickSorts = True
     Columns = <    
       item
@@ -41,13 +41,14 @@ object DownloadForm: TDownloadForm
         SizePriority = 0
         Title.Alignment = taCenter
         Title.Caption = '✓'
-        Width = 40
+        Width = 0
+        Visible = False
       end    
       item
         ButtonStyle = cbsNone
         Title.Alignment = taCenter
         Title.Caption = 'Title'
-        Width = 540
+        Width = 580
       end    
       item
         Alignment = taCenter
@@ -56,6 +57,17 @@ object DownloadForm: TDownloadForm
         Title.Alignment = taCenter
         Title.Caption = '🌎'
         Width = 40
+      end    
+      item
+        ButtonStyle = cbsNone
+        Title.Caption = 'Title'
+        Width = 0
+        Visible = False
+      end    
+      item
+        Title.Caption = 'Title'
+        Width = 0
+        Visible = False
       end>
     DefaultDrawing = False
     FixedCols = 0
@@ -69,15 +81,17 @@ object DownloadForm: TDownloadForm
     OnGetCheckboxState = StringGridGetCheckboxState
     OnSelection = StringGridSelection
     ColWidths = (
+      0
+      580
       40
-      540
-      40
+      0
+      0
     )
   end
   object ButtonDownloads: TButton
     Left = 536
     Height = 25
-    Top = 400
+    Top = 392
     Width = 84
     Caption = 'Downloads'
     OnClick = ButtonDownloadsClick
@@ -86,7 +100,7 @@ object DownloadForm: TDownloadForm
   object ButtonFolder: TButton
     Left = 536
     Height = 25
-    Top = 360
+    Top = 344
     Width = 84
     Caption = 'Folder'
     OnClick = ButtonFolderClick
@@ -94,31 +108,47 @@ object DownloadForm: TDownloadForm
   end
   object Panel1: TPanel
     Left = 8
-    Height = 105
-    Top = 360
+    Height = 121
+    Top = 344
     Width = 512
     BevelInner = bvRaised
     BevelOuter = bvLowered
-    ClientHeight = 105
+    ClientHeight = 121
     ClientWidth = 512
     TabOrder = 4
     object LabelTest: TLabel
       Left = 16
       Height = 15
-      Top = 80
+      Top = 104
       Width = 48
       Caption = 'LabelTest'
       ParentColor = False
     end
     object LabelInfo: TLabel
       Left = 16
-      Height = 64
-      Top = 16
+      Height = 80
+      Top = 32
       Width = 480
       AutoSize = False
       Caption = 'LabelInfo'
       ParentColor = False
       WordWrap = True
+    end
+    object LabelFile: TLabel
+      Left = 16
+      Height = 15
+      Top = 12
+      Width = 27
+      Caption = 'File : '
+      ParentColor = False
+    end
+    object LabelFilename: TLabel
+      Left = 45
+      Height = 15
+      Top = 12
+      Width = 76
+      Caption = 'LabelFilename'
+      ParentColor = False
     end
   end
 end

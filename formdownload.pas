@@ -14,6 +14,8 @@ type
     ButtonDownloads: TButton;
     ButtonFolder: TButton;
     ButtonClose: TButton;
+    LabelFile: TLabel;
+    LabelFilename: TLabel;
     LabelInfo: TLabel;
     LabelTest: TLabel;
     Panel1: TPanel;
@@ -22,6 +24,7 @@ type
     procedure ButtonFolderClick(Sender: TObject);
     procedure ButtonCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure StringGridCheckboxToggled(sender: TObject; aCol, aRow: Integer;
       aState: TCheckboxState);
     procedure StringGridGetCheckboxState(Sender: TObject; aCol, aRow: Integer;
@@ -45,6 +48,12 @@ uses UnitData, UnitModule, UnitShelf, UnitLocal, UnitCommentary, UnitDictionary;
 var
   CheckList: array of TCheckBoxState;
 
+const
+  roFavorite = 0;
+  roName = 1;
+  roLang = 2;
+  roInfo = 3;
+
 {$R *.lfm}
 
 procedure TDownloadForm.Localize;
@@ -54,14 +63,19 @@ begin
   ButtonDownloads.Caption := T('Download');
   ButtonFolder.Caption := T('Folder');
   StringGrid.Columns[1].Title.Caption := T('Title');
+  LabelFile.Caption := T('File') + ':';
+  LabelFilename.Left := LabelFile.Left + LabelFile.Width + 10;
 end;
 
 procedure TDownloadForm.FormCreate(Sender: TObject);
-var i: integer;
 begin
   StringGrid.RowCount := 1;
   Application.HintPause := 1;
+end;
 
+procedure TDownloadForm.FormShow(Sender: TObject);
+var i: integer;
+begin
   LoadGrid;
 
   SetLength(CheckList, 500);
@@ -73,16 +87,17 @@ end;
 
 procedure TDownloadForm.LoadGrid;
 var
-  List : TStringArray;
   i : integer;
 
   function GetInfo(const Module: TModule): TStringArray;
   begin
-    SetLength(Result, 3);
-    Result[0] := '*';
+    SetLength(Result, 5);
+    Result[0] := '';
     Result[1] := ' ' + Module.Name;
-    Result[2] := BoolToStr(Module.language='', '', Module.language);
-//  Result[*] := ' ' + Module.Filename;
+    Result[2] := Module.language;
+    Result[3] := Module.fileName;
+    Result[4] := Module.info;
+    if Module.info = '' then Result[4] := Module.Name;
   end;
 
 begin
@@ -150,8 +165,8 @@ end;
 
 procedure TDownloadForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
 begin
-  LabelInfo.Caption := Trim(StringGrid.Cells[1, aRow]);
-
+  LabelFilename.Caption := StringGrid.Cells[3, aRow];
+  LabelInfo.Caption     := StringGrid.Cells[4, aRow];
 end;
 
 end.
