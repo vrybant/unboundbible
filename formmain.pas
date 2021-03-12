@@ -920,7 +920,7 @@ var i : integer;
 begin
   ComboBox.Items.Clear;
   for i := 0 to Shelf.Count - 1 do
-    if Shelf[i].Enabled then ComboBox.Items.Add(Shelf[i].Name);
+    if Shelf[i].Favorite then ComboBox.Items.Add(Shelf[i].Name);
   for i := 0 to ComboBox.Items.Count - 1 do
       if ComboBox.Items[i] = CurrBible.Name then ComboBox.ItemIndex := i;
 end;

@@ -163,6 +163,7 @@
         <Filename Value="formfavorite.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="FormFavorite"/>
       </Unit18>
     </Units>
   </ProjectOptions>

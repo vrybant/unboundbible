@@ -101,7 +101,7 @@ begin
 
   for i:=0 to Shelf.Count-1 do
     begin
-      if not Shelf[i].Enabled then Continue;
+      if not Shelf[i].Favorite then Continue;
       str := ListToString(Shelf[i].GetRange(CurrVerse), ' ');
       if str = '' then Continue;
       Result += '<br><l>' + Shelf[i].Name + '</l><br>' + str + '<br>';

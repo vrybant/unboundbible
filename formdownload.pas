@@ -67,7 +67,7 @@ begin
   for i:= 0 to Shelf.Count-1 do CheckList[i] := cbUnchecked;
 
   for i:= 0 to Shelf.Count-1 do
-    CheckList[i] := iif(Shelf[i].Enabled, cbChecked, cbUnchecked);
+    CheckList[i] := iif(Shelf[i].Favorite, cbChecked, cbUnchecked);
 end;
 
 procedure TDownloadForm.LoadGrid(Strings: TStringsArray);
@@ -124,7 +124,7 @@ begin
 
   for i:= 0 to Shelf.Count-1 do
       if StringGrid.Cells[1,StringGrid.Row] <> currBible.name then
-        Shelf[i].Enabled := CheckList[i] = cbChecked;
+        Shelf[i].Favorite := CheckList[i] = cbChecked;
 end;
 
 procedure TDownloadForm.StringGridGetCellHint(Sender: TObject; aCol,

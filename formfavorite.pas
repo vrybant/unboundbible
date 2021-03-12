@@ -64,7 +64,7 @@ procedure TFavoriteForm.ShelfToListBox;
 var i: integer;
 begin
   for i:= 0 to Shelf.Count-1 do
-    CheckListBox.Checked[i] := Shelf[i].Enabled;
+    CheckListBox.Checked[i] := Shelf[i].Favorite;
 end;
 
 procedure TFavoriteForm.ListBoxToShelf;
@@ -72,7 +72,7 @@ var i: integer;
 begin
   for i:= 0 to Shelf.Count-1 do
     if CheckListBox.Items[i] <> currBible.name then
-      Shelf[i].Enabled := CheckListBox.Checked[i];
+      Shelf[i].Favorite := CheckListBox.Checked[i];
 end;
 
 procedure TFavoriteForm.ButtonOKClick(Sender: TObject);
