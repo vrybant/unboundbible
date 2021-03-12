@@ -45,6 +45,7 @@ type
     default_     : boolean;
     accented     : boolean;
   public
+    favorite : boolean;
     constructor Create(FilePath: string; new: boolean = false);
     procedure CommitTransaction;
     procedure CreateTables;
@@ -86,6 +87,7 @@ begin
   default_     := false;
   accented     := false;
   format       := unbound;
+  favorite     := false;
 
   ext := ExtractFileExt(FilePath);
   if  (ext = '.mybible') or (ext = '.bbli') then format := mysword;

@@ -32,7 +32,6 @@ type
     procedure StringGridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
     procedure StringGridSelection(Sender: TObject; aCol, aRow: Integer);
   private
-    CheckList: array of TCheckBoxState;
     procedure LoadGrid;
   public
     procedure Localize;
@@ -60,7 +59,7 @@ end;
 procedure TDownloadForm.FormCreate(Sender: TObject);
 begin
   Application.HintPause := 1;
-  StringGrid.Columns[0].Visible:= False;
+  StringGrid.Columns[0].Visible := False;
   LabelFilename.Caption := '';
 
   {$ifdef linux}
@@ -86,7 +85,7 @@ var
   function GetInfo(const Module: TModule): TStringArray;
   begin
     SetLength(Result, 5);
-    Result[0] := '';
+    Result[0] := iif(Module.Favorite, '*', '');
     Result[1] := ' ' + Module.Name;
     Result[2] := Module.language;
     Result[3] := Module.fileName;
@@ -98,18 +97,13 @@ begin
   StringGrid.RowCount := 1;
 
   for i:=0 to Shelf.Count-1 do
-    StringGrid.InsertRowWithValues(i+1, GetInfo(Shelf[i]));
-
-  SetLength(CheckList, Shelf.Count);
-  for i:= 0 to Shelf.Count-1 do
-    CheckList[i] := iif(Shelf[i].Favorite, cbChecked, cbUnchecked);
+    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Shelf[i]));
 
   for i:=0 to Commentaries.Count-1 do
-    StringGrid.InsertRowWithValues(i+1, GetInfo(Commentaries[i]));
+    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Commentaries[i]));
 
   for i:=0 to Dictionaries.Count-1 do
-    StringGrid.InsertRowWithValues(i+1, GetInfo(Dictionaries[i]));
-
+    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Dictionaries[i]));
 end;
 
 procedure TDownloadForm.ButtonFolderClick(Sender: TObject);
@@ -126,13 +120,15 @@ end;
 procedure TDownloadForm.StringGridCheckboxToggled(sender: TObject; aCol,
   aRow: Integer; aState: TCheckboxState);
 begin
-  if (aRow > 0) and (aCol = 0) then CheckList[aRow-1] := aState;
+  if (aRow > 0) and (aCol = 0) then
+    StringGrid.Cells[aCol, aRow] := iif(aState = cbChecked, '*', '');
 end;
 
 procedure TDownloadForm.StringGridGetCheckboxState(Sender: TObject; aCol,
   aRow: Integer; var Value: TCheckboxState);
 begin
-  if (aRow > 0) and (aCol = 0) then Value := CheckList[aRow-1];
+  if (aRow > 0) and (aCol = 0) then
+    Value := iif(StringGrid.Cells[aCol, aRow] = '*', cbChecked, cbUnchecked);
 end;
 
 procedure TDownloadForm.StringGridGetCellHint(Sender: TObject; aCol,

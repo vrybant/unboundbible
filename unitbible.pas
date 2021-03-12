@@ -20,7 +20,6 @@ type
     procedure LoadUnboundDatabase;
     procedure LoadMyswordDatabase;
   public
-    Favorite : boolean;
     constructor Create(FilePath: string; new: boolean = false);
     procedure CreateTables;
     procedure LoadDatabase;
