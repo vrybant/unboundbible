@@ -29,10 +29,9 @@ type
     procedure StringGridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
     procedure StringGridSelection(Sender: TObject; aCol, aRow: Integer);
   private
-    procedure ShelfToListBox;
     procedure ListBoxToShelf;
   public
-    procedure LoadGrid(Strings: TStringsArray);
+    procedure LoadGrid;
     procedure Localize;
   end;
 
@@ -41,7 +40,7 @@ var
 
 implementation
 
-uses UnitData, UnitShelf, UnitLocal;
+uses UnitData, UnitModule, UnitShelf, UnitLocal, UnitCommentary, UnitDictionary;
 
 var
   CheckList: array of TCheckBoxState;
@@ -63,6 +62,8 @@ begin
   StringGrid.RowCount := 1;
   Application.HintPause := 1;
 
+  LoadGrid;
+
   SetLength(CheckList, 500);
   for i:= 0 to Shelf.Count-1 do CheckList[i] := cbUnchecked;
 
@@ -70,17 +71,29 @@ begin
     CheckList[i] := iif(Shelf[i].Favorite, cbChecked, cbUnchecked);
 end;
 
-procedure TDownloadForm.LoadGrid(Strings: TStringsArray);
+procedure TDownloadForm.LoadGrid;
 var
   List : TStringArray;
-  index : integer = 1;
+  i : integer;
+
+  function GetInfo(const Module: TModule): TStringArray;
+  begin
+    SetLength(Result, 3);
+    Result[0] := '*';
+    Result[1] := ' ' + Module.Name;
+    Result[2] := BoolToStr(Module.language='', '', Module.language);
+//  Result[*] := ' ' + Module.Filename;
+  end;
+
 begin
-   for List in Strings do
-     begin
-       StringGrid.InsertRowWithValues(index, List);
-       index += 1;
-     end;
-//   StringGrid.SortColRow(True, 1);
+  for i:=0 to Shelf.Count-1 do
+    StringGrid.InsertRowWithValues(i+1, GetInfo(Shelf[i]));
+
+  for i:=0 to Commentaries.Count-1 do
+    StringGrid.InsertRowWithValues(i+1, GetInfo(Commentaries[i]));
+
+  for i:=0 to Dictionaries.Count-1 do
+    StringGrid.InsertRowWithValues(i+1, GetInfo(Dictionaries[i]));
 end;
 
 procedure TDownloadForm.ButtonFolderClick(Sender: TObject);
@@ -111,19 +124,15 @@ begin
   if (aRow > 0) and (aCol = 0) then Value := CheckList[aRow-1];
 end;
 
-procedure TDownloadForm.ShelfToListBox;
-begin
-end;
-
 procedure TDownloadForm.ListBoxToShelf;
 var i: integer;
 begin
   output(StringGrid.Row);
   output(StringGrid.Cells[1,StringGrid.Row]);
 
-  for i:= 0 to Shelf.Count-1 do
-      if StringGrid.Cells[1,StringGrid.Row] <> currBible.name then
-        Shelf[i].Favorite := CheckList[i] = cbChecked;
+  //for i:= 0 to Shelf.Count-1 do
+  //    if StringGrid.Cells[1,StringGrid.Row] <> currBible.name then
+  //      Shelf[i].Favorite := CheckList[i] = cbChecked;
 end;
 
 procedure TDownloadForm.StringGridGetCellHint(Sender: TObject; aCol,

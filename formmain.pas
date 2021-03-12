@@ -820,7 +820,6 @@ end;
 procedure TMainForm.CmdModules(Sender: TObject);
 begin
   if Shelf.Count = 0 then Exit;
-  DownloadForm.LoadGrid(Get_Downloads);
   DownloadForm.ShowModal;
 end;
 

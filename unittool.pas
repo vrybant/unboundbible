@@ -13,7 +13,6 @@ function Get_Dictionary(st: string = ''): string;
 function Get_Strong(number: string = ''): string;
 function Get_Footnote(marker: string = ''): string;
 function Get_Verses: string;
-function Get_Downloads: TStringsArray;
 
 implementation
 
@@ -220,28 +219,6 @@ begin
   if Options.cvEnd then quote := quote + ' '+ link else quote := link + ' ' + quote;
 
   Result += quote + '<br> ';
-end;
-
-function Get_Downloads: TStringsArray;
-var
-  k : integer = 0;
-  i : integer;
-
-  function GetInfo(const Module: TModule): TStringArray;
-  begin
-    SetLength(Result, 3);
-    Result[0] := '*';
-    Result[1] := ' ' + Module.Name;
-    Result[2] := BoolToStr(Module.language='', '', Module.language);
-//  Result[*] := ' ' + Module.Filename;
-  end;
-
-begin
-  SetLength(Result, 500);
-  for i:=0 to        Shelf.Count-1 do begin Result[k] := GetInfo(Shelf[i]       ); k +=1 end;
-  for i:=0 to Commentaries.Count-1 do begin Result[k] := GetInfo(Commentaries[i]); k +=1 end;
-  for i:=0 to Dictionaries.Count-1 do begin Result[k] := GetInfo(Dictionaries[i]); k +=1 end;
-  SetLength(Result, k);
 end;
 
 end.

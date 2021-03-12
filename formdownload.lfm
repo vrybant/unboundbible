@@ -61,6 +61,7 @@ object DownloadForm: TDownloadForm
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goTabs, goRowSelect, goSmoothScroll, goCellHints]
     ParentShowHint = False
+    RowCount = 4
     ShowHint = True
     TabOrder = 1
     OnCheckboxToggled = StringGridCheckboxToggled
