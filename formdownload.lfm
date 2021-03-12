@@ -12,17 +12,17 @@ object DownloadForm: TDownloadForm
   ParentFont = True
   Position = poScreenCenter
   LCLVersion = '2.0.10.0'
-  object ButtonOK: TButton
+  object ButtonClose: TButton
     Left = 536
     Height = 25
     Top = 440
     Width = 82
-    Caption = 'OK'
+    Caption = 'Close'
     Constraints.MaxWidth = 82
     Constraints.MinWidth = 82
     Default = True
     ModalResult = 1
-    OnClick = ButtonOKClick
+    OnClick = ButtonCloseClick
     TabOrder = 0
   end
   object StringGrid: TStringGrid

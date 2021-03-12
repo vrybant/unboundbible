@@ -13,14 +13,14 @@ type
   TDownloadForm = class(TForm)
     ButtonDownloads: TButton;
     ButtonFolder: TButton;
-    ButtonOK: TButton;
+    ButtonClose: TButton;
     LabelInfo: TLabel;
     LabelTest: TLabel;
     Panel1: TPanel;
     StringGrid: TStringGrid;
     procedure ButtonDownloadsClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
-    procedure ButtonOKClick(Sender: TObject);
+    procedure ButtonCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure StringGridCheckboxToggled(sender: TObject; aCol, aRow: Integer;
       aState: TCheckboxState);
@@ -51,7 +51,7 @@ var
 procedure TDownloadForm.Localize;
 begin
   Caption := ' ' + T('Modules');
-  ButtonOK.Caption := T('OK');
+  ButtonClose.Caption := T('Close');
   ButtonDownloads.Caption := T('Download');
   ButtonFolder.Caption := T('Folder');
   StringGrid.Columns[1].Title.Caption := T('Title');
@@ -89,7 +89,7 @@ begin
   OpenFolder(DataPath);
 end;
 
-procedure TDownloadForm.ButtonOKClick(Sender: TObject);
+procedure TDownloadForm.ButtonCloseClick(Sender: TObject);
 begin
   ListBoxToShelf;
 end;
@@ -112,7 +112,6 @@ begin
 end;
 
 procedure TDownloadForm.ShelfToListBox;
-var i: integer;
 begin
 end;
 
