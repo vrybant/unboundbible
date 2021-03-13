@@ -32,6 +32,7 @@ type
     procedure StringGridSelection(Sender: TObject; aCol, aRow: Integer);
     procedure StringGridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
   private
+    {$ifdef windows} MemoWidth : integer; {$endif}
     procedure LoadGrid;
   public
     procedure Localize;
@@ -61,6 +62,7 @@ begin
   Application.HintPause := 1;
   StringGrid.Columns[0].Visible := False;
   LabelFilename.Caption := '';
+  {$ifdef windows} MemoWidth := Memo.Width; {$endif}
 
   {$ifdef linux}
     StringGrid.Top := StringGrid.Top + 1;
@@ -71,6 +73,9 @@ end;
 procedure TDownloadForm.FormPaint(Sender: TObject);
 begin
   LabelFilename.Left := LabelFile.Left + LabelFile.Width;
+  {$ifdef windows}
+    Memo.Width := MemoWidth - iif(Memo.ScrollBars = ssNone, 10, 0);
+  {$endif}
 end;
 
 procedure TDownloadForm.FormShow(Sender: TObject);
