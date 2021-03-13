@@ -18,15 +18,19 @@ object FavoriteForm: TFavoriteForm
     Height = 242
     Top = 8
     Width = 434
+    DragMode = dmAutomatic
+    ExtendedSelect = False
     Font.Color = clWindowText
     Font.Height = -13
     ItemHeight = 0
+    OnSelectionChange = CheckListBoxSelectionChange
     ParentFont = False
     TabOrder = 1
+    TopIndex = -1
   end
   object ButtonOK: TButton
     Left = 188
-    Height = 25
+    Height = 29
     Top = 261
     Width = 80
     AutoSize = True

@@ -827,7 +827,7 @@ procedure TMainForm.CmdFavorite(Sender: TObject);
 begin
   if FavoriteForm.ShowModal <> mrOk then Exit;
   LoadComboBox;
-  if FavoriteForm.CurrItem <> '' then SelectBible(FavoriteForm.CurrItem);
+//if FavoriteForm.CurrItem <> '' then SelectBible(FavoriteForm.CurrItem);
   if PageControl.ActivePageIndex = apCompare then CmdCompare(Self);
 end;
 

@@ -3,7 +3,8 @@ unit FormFavorite;
 interface
 
 uses
-  Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, CheckLst, SysUtils;
+  Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, CheckLst, Types,
+  SysUtils, UnitLib;
 
 type
 
@@ -15,6 +16,7 @@ type
     procedure ButtonOKClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure CheckListBoxSelectionChange(Sender: TObject; User: boolean);
   private
     procedure MakeListBox;
     procedure ShelfToListBox;
@@ -36,7 +38,7 @@ uses UnitShelf, UnitLocal;
 procedure TFavoriteForm.Localize;
 begin
   Caption := ' ' + T('Bible');
-  ButtonOK.Caption := T('OK');
+  ButtonOK.Caption := T('Close');
 end;
 
 procedure TFavoriteForm.FormCreate(Sender: TObject);
@@ -61,6 +63,13 @@ begin
     CheckListBox.Items.Add(Shelf[i].Name);
 end;
 
+function TFavoriteForm.CurrItem: string;
+begin
+  Result := '';
+  if CheckListBox.ItemIndex >= 0 then
+    Result := CheckListBox.Items[CheckListBox.ItemIndex];
+end;
+
 procedure TFavoriteForm.ShelfToListBox;
 var i: integer;
 begin
@@ -83,11 +92,9 @@ begin
   ListBoxToShelf;
 end;
 
-function TFavoriteForm.CurrItem: string;
+procedure TFavoriteForm.CheckListBoxSelectionChange(Sender: TObject; User: boolean);
 begin
-  Result := '';
-  if CheckListBox.ItemIndex >= 0 then
-    Result := CheckListBox.Items[CheckListBox.ItemIndex];
+  {$ifdef windows} if User then CheckListBox.ItemIndex := -1; {$endif}
 end;
 
 end.
