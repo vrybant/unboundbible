@@ -29,8 +29,8 @@ type
       aState: TCheckboxState);
     procedure StringGridGetCheckboxState(Sender: TObject; aCol, aRow: Integer;
       var Value: TCheckboxState);
-    procedure StringGridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
     procedure StringGridSelection(Sender: TObject; aCol, aRow: Integer);
+    procedure StringGridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
   private
     procedure LoadGrid;
   public
@@ -76,6 +76,7 @@ end;
 procedure TDownloadForm.FormShow(Sender: TObject);
 begin
   LoadGrid;
+  StringGridSelection(Self, StringGrid.Col, StringGrid.Row);
 end;
 
 procedure TDownloadForm.LoadGrid;
@@ -106,17 +107,6 @@ begin
     StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Dictionaries[i]));
 end;
 
-procedure TDownloadForm.ButtonFolderClick(Sender: TObject);
-begin
-  CreateDataDirectory;
-  OpenFolder(DataPath);
-end;
-
-procedure TDownloadForm.ButtonDownloadsClick(Sender: TObject);
-begin
-  OpenURL(DownloadsURL);
-end;
-
 procedure TDownloadForm.StringGridCheckboxToggled(sender: TObject; aCol,
   aRow: Integer; aState: TCheckboxState);
 begin
@@ -129,6 +119,17 @@ procedure TDownloadForm.StringGridGetCheckboxState(Sender: TObject; aCol,
 begin
   if (aRow > 0) and (aCol = 0) then
     Value := iif(StringGrid.Cells[aCol, aRow] = '*', cbChecked, cbUnchecked);
+end;
+
+procedure TDownloadForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
+begin
+  LabelFilename.Caption := StringGrid.Cells[3, aRow];
+  LabelFile.Visible := LabelFilename.Caption <> '';
+  Memo.Clear;
+  Memo.ScrollBars := ssAutoVertical;
+  if Length(StringGrid.Cells[4, aRow]) < 400 then Memo.ScrollBars := ssNone;
+  Memo.Lines.Add(StringGrid.Cells[4, aRow]);
+  Memo.SelStart := 1;
 end;
 
 procedure TDownloadForm.StringGridGetCellHint(Sender: TObject; aCol,
@@ -144,15 +145,15 @@ begin
   LabelTest.Visible := False;
 end;
 
-procedure TDownloadForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
+procedure TDownloadForm.ButtonFolderClick(Sender: TObject);
 begin
-  LabelFilename.Caption := StringGrid.Cells[3, aRow];
-  LabelFile.Visible := LabelFilename.Caption <> '';
-  Memo.Clear;
-  Memo.ScrollBars := ssAutoVertical;
-  if Length(StringGrid.Cells[4, aRow]) < 400 then Memo.ScrollBars := ssNone;
-  Memo.Lines.Add(StringGrid.Cells[4, aRow]);
-  Memo.SelStart := 1;
+  CreateDataDirectory;
+  OpenFolder(DataPath);
+end;
+
+procedure TDownloadForm.ButtonDownloadsClick(Sender: TObject);
+begin
+  OpenURL(DownloadsURL);
 end;
 
 end.

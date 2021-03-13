@@ -87,8 +87,8 @@ end;
 
 procedure TFavoriteForm.ButtonOKClick(Sender: TObject);
 begin
-  if CheckListBox.ItemIndex >= 0 then
-    CheckListBox.Checked[CheckListBox.ItemIndex] := True;
+//  if CheckListBox.ItemIndex >= 0 then
+//    CheckListBox.Checked[CheckListBox.ItemIndex] := True;
   ListBoxToShelf;
 end;
 

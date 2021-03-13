@@ -35,7 +35,7 @@ object DownloadForm: TDownloadForm
         ButtonStyle = cbsNone
         Title.Alignment = taCenter
         Title.Caption = 'Title'
-        Width = 521
+        Width = 523
       end    
       item
         Alignment = taCenter
@@ -69,7 +69,7 @@ object DownloadForm: TDownloadForm
     OnSelection = StringGridSelection
     ColWidths = (
       40
-      521
+      523
       40
       0
       0
@@ -116,7 +116,7 @@ object DownloadForm: TDownloadForm
       Left = 13
       Height = 15
       Top = 11
-      Width = 27
+      Width = 31
       Caption = 'File : '
       ParentColor = False
     end
@@ -124,7 +124,7 @@ object DownloadForm: TDownloadForm
       Left = 41
       Height = 15
       Top = 11
-      Width = 46
+      Width = 52
       Caption = 'filename'
       ParentColor = False
     end
@@ -144,7 +144,7 @@ object DownloadForm: TDownloadForm
     Left = 7
     Height = 15
     Top = 317
-    Width = 48
+    Width = 55
     Caption = 'LabelTest'
     ParentColor = False
     Visible = False
