@@ -70,102 +70,86 @@
         <UnitName Value="UnitShelf"/>
       </Unit2>
       <Unit3>
-        <Filename Value="formabout.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="AboutBox"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="FormAbout"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="formsearch.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="SearchForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="FormSearch"/>
-      </Unit4>
-      <Unit5>
         <Filename Value="unittool.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitTool"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="formcopy.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="CopyForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="FormCopy"/>
-      </Unit6>
-      <Unit7>
+      </Unit3>
+      <Unit4>
         <Filename Value="unitdata.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitData"/>
-      </Unit7>
-      <Unit8>
+      </Unit4>
+      <Unit5>
         <Filename Value="unitsqliteex.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitSQLiteEx"/>
-      </Unit8>
-      <Unit9>
+      </Unit5>
+      <Unit6>
         <Filename Value="unitmodule.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitModule"/>
-      </Unit9>
-      <Unit10>
+      </Unit6>
+      <Unit7>
         <Filename Value="unitcommentary.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitCommentary"/>
-      </Unit10>
-      <Unit11>
+      </Unit7>
+      <Unit8>
         <Filename Value="unitdictionary.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitDictionary"/>
-      </Unit11>
-      <Unit12>
+      </Unit8>
+      <Unit9>
         <Filename Value="unitprepare.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitPrepare"/>
-      </Unit12>
-      <Unit13>
-        <Filename Value="formnotify.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="NotifyForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="FormNotify"/>
-      </Unit13>
-      <Unit14>
-        <Filename Value="formdownload.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="DownloadForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="FormDownload"/>
-      </Unit14>
-      <Unit15>
+      </Unit9>
+      <Unit10>
         <Filename Value="unitbible.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitBible"/>
-      </Unit15>
-      <Unit16>
+      </Unit10>
+      <Unit11>
         <Filename Value="unitreference.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitReference"/>
-      </Unit16>
-      <Unit17>
+      </Unit11>
+      <Unit12>
         <Filename Value="unitlocal.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitLocal"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="forms\formabout.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+        <UnitName Value="FormAbout"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="forms\formcopy.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="forms\formfavorite.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+        <UnitName Value="FormFavorite"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="forms\formsearch.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="forms\formnotify.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
       </Unit17>
       <Unit18>
-        <Filename Value="formfavorite.pas"/>
+        <Filename Value="forms\formdownload.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FavoriteForm"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="FormFavorite"/>
       </Unit18>
     </Units>
   </ProjectOptions>
@@ -177,6 +161,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="forms"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

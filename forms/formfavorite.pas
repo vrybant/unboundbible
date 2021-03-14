@@ -3,7 +3,7 @@ unit FormFavorite;
 interface
 
 uses
-  Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, CheckLst, Types,
+  Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, CheckLst,
   SysUtils, UnitLib;
 
 type
