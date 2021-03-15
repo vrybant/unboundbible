@@ -199,6 +199,7 @@ object MainForm: TMainForm
       Top = 0
       Action = ActionModules
       ImageIndex = 34
+      Visible = False
     end
     object ToolButtonDictionary: TToolButton
       Left = 121

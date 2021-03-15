@@ -2,7 +2,7 @@
 ; -- unboundbible.iss --
                              
 #define MyAppName "Unbound Bible"
-#define MyAppVersion "5.2"
+#define MyAppVersion "5.3"
 #define MyAppCopyright "GNU GPL"
 #define MyAppPublisher "Vladimir Rybant"
 #define MyAppURL "http://vladimirrybant.org"
@@ -52,16 +52,12 @@
  Filename: "{app}\{#MyAppExeName}" ; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: postinstall nowait skipifsilent
 
 [UninstallDelete]
- Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\kjv.unbound"
- Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\kjv+.unbound"
- Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\rst+.unbound"
- Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\rstw.unbound"
- Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\ubio.unbound"
  Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\kjv.bbl.unbound"
  Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\kjv+.bbl.unbound"
  Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\rst+.bbl.unbound"
  Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\rstw.bbl.unbound"
  Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\ubio.bbl.unbound"
+ Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\esrvr1909.bbl.unbound"
  Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\strong.dct.unbound"
  Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\strongru.dct.unbound"
  Type: files          ; Name: "{%USERPROFILE}\{#MyAppName}\ob.xrefs.unbound"
