@@ -143,11 +143,11 @@ begin
   List := GetDatabaseList;
 
   for f in List do
-    begin
-      if Pos('.xrefs.',f) = 0 then continue; // .crossreferences.
-      Item := TReference.Create(f);
-      if Item.connected then Add(Item) else Item.Free;
-    end;
+    if f.Contains('.xrefs.') then
+      begin
+        Item := TReference.Create(f);
+        if Item.connected then Add(Item) else Item.Free;
+      end;
 end;
 
 function TReferences.GetData(Verse: TVerse; language: string; out info: string): TVerseArray;

@@ -54,11 +54,12 @@ begin
   List := GetDatabaseList;
 
   for f in List do
-    begin
-      if Pos('.bbl.',f) + Pos('.SQLite3',f) = 0 then Continue;
-      if Pos('.dictionary.',f) + Pos('.commentaries.',f) + Pos('.crossreferences.',f) > 0 then Continue;
-      Item := TBible.Create(f);
-      if Item.connected then Add(Item) else Item.Free;
+    if f.Contains('.bbl.') or f.Contains('.SQLite3') then
+      begin
+        if f.Contains('.dictionary.') or f.Contains('.commentaries.') then Continue;
+        if f.Contains('.crossreferences.') then Continue;
+        Item := TBible.Create(f);
+        if Item.connected then Add(Item) else Item.Free;
     end;
 end;
 

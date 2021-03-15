@@ -792,7 +792,7 @@ begin
 
   if SaveDialog.Execute then
   begin
-    if Pos('.rtf', SaveDialog.FileName) = 0 then
+    if not SaveDialog.FileName.Contains('.rtf') then
       SaveDialog.FileName := SaveDialog.FileName + '.rtf';
 
     if FileExists(SaveDialog.FileName) then
@@ -957,7 +957,7 @@ function TMainForm.SelectBible(name: string): boolean;
 var i : integer;
 begin
   Result := False;
-  if Pos(':',name) > 0 then Exit;
+  if name.Contains(':') then Exit;
   for i := 0 to ComboBox.Items.Count-1 do
     if ComboBox.Items[i] = name then
       begin
@@ -1106,7 +1106,7 @@ begin
   B := PageControl.ActivePageIndex = apBible;
   L := PageControl.ActivePageIndex = apNotes;
   S := UnboundMemo.SelLength > iif(B,1,0);
-  M := Pos(chr, UnboundMemo.SelText) > 0; // multiline
+  M := UnboundMemo.SelText.Contains(chr); // multiline
 
   ActionSearchfor.Visible  := S and not M;
   ActionLookup.Visible     := S and not M;
