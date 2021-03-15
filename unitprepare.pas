@@ -59,7 +59,7 @@ begin
     if Prefix('<', List[i]) then
       if not EnabledTag(List[i]) then List[i] := '';
 
-  s := Trim(ListToString(List));
+  s := ''.Join('',List).Trim;
   RemoveDoubleSpaces(s);
 end;
 
@@ -88,7 +88,7 @@ begin
         List[i] := '<m>' + number + '</m>';
       end;
 
-  s := Trim(ListToString(List));
+  s := ''.Join('',List).Trim;
 end;
 
 procedure ExtractMarkers(var s: string);
@@ -106,7 +106,7 @@ begin
         Replace(marker,'>' ,'');
         List[i] := marker + ' [~';
       end;
-  s := ListToString(List);
+  s := ''.Join('',List);
 end;
 
 procedure Footnotes(var s: string);

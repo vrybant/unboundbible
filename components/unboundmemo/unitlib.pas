@@ -41,7 +41,6 @@ function Utf8ToRTF(const s: string): string;
 
 // arrays
 
-function ListToString(const List: TStringArray; separator: string = ''): string;
 function ListToArray(const List: TStringList): TStringArray;
 function XmlToList(s: string): TStringArray;
 
@@ -263,17 +262,6 @@ begin
 end;
 
 // arrays
-
-function ListToString(const List: TStringArray; separator: string = ''): string;
-var i : integer;
-begin
-  Result := '';
-  for i:=0 to Length(List)-1 do
-    begin
-      Result += List[i];
-      if i <> Length(List) then Result += separator;
-    end;
-end;
 
 function ListToArray(const List: TStringList): TStringArray;
 var i : integer;

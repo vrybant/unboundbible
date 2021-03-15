@@ -101,7 +101,8 @@ begin
   for i:=0 to Shelf.Count-1 do
     begin
       if not Shelf[i].Favorite then Continue;
-      str := ListToString(Shelf[i].GetRange(CurrVerse), ' ');
+      str := ''.Join(' ', Shelf[i].GetRange(CurrVerse));
+
       if str = '' then Continue;
       Result += '<br><l>' + Shelf[i].Name + '</l><br>' + str + '<br>';
     end;
@@ -120,7 +121,7 @@ begin
     begin
       link := CurrBible.VerseToStr(item, not Options.cvAbbreviate);
       if link = '' then Continue;
-      Result += '<l>' + link + '</l> ' + ListToString(CurrBible.GetRange(item), ' ') + '<br><br>';
+      Result += '<l>' + link + '</l> ' + ''.Join(' ', CurrBible.GetRange(item)) + '<br><br>';
     end;
 end;
 
