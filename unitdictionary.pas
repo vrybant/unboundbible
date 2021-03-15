@@ -159,11 +159,11 @@ begin
   List := GetDatabaseList;
 
   for f in List do
-    begin
-      if Pos('.dct.',f) + Pos('.dictionary.',f) = 0 then continue;
-      Item := TDictionary.Create(f);
-      if Item.connected then Add(Item) else Item.Free;
-    end;
+    if f.Contains('.dct.') or f.Contains('.dictionary.') then
+      begin
+        Item := TDictionary.Create(f);
+        if Item.connected then Add(Item) else Item.Free;
+      end;
 end;
 
 function TDictionaries.StrongByLanguage(language: string): integer;

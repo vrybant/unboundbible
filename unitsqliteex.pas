@@ -45,10 +45,10 @@ end;
 
 procedure PurgeTags(var s: string);
 begin
-  if Pos('<RF',s) > 0 then CutStr(s,'<RF','<Rf>');
-  if Pos('<f' ,s) > 0 then CutStr(s,'<f' ,'</f>');
-  if Pos('<TS',s) > 0 then CutStr(s,'<TS','<Ts>');
-  if Pos('<h>',s) > 0 then CutStr(s,'<h>','</h>');
+  if s.Contains('<RF') then CutStr(s,'<RF','<Rf>');
+  if s.Contains('<f' ) then CutStr(s,'<f' ,'</f>');
+  if s.Contains('<TS') then CutStr(s,'<TS','<Ts>');
+  if s.Contains('<h>') then CutStr(s,'<h>','</h>');
 end;
 
 function Super(s: string): boolean;
@@ -62,7 +62,7 @@ begin;
   if wholeWords in Options then s := ' ' + CleanString(s) + ' ';
 
   for i:=Low(SearchList) to High(SearchList) do
-    if Pos(SearchList[i],s) = 0 then Result := False;
+    if not s.Contains(SearchList[i]) then Result := False;
 end;
 
 procedure xSuper(ctx: psqlite3_context; {%H-}N: cint; V: ppsqlite3_value); cdecl;

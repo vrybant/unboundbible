@@ -174,11 +174,11 @@ begin
   List := GetDatabaseList;
 
   for f in List do
-    begin
-      if Pos('.cmt.',f) + Pos('.commentaries.',f) = 0 then continue;
-      Item := TCommentary.Create(f);
-      if Item.connected then Add(Item) else Item.Free;
-    end;
+    if f.Contains('.cmt.') or f.Contains('.commentaries.') then
+      begin
+        Item := TCommentary.Create(f);
+        if Item.connected then Add(Item) else Item.Free;
+      end;
 end;
 
 function TCommentaries.GetFootnote(module: string; Verse: TVerse; marker: string): string;

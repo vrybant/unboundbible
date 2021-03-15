@@ -69,7 +69,7 @@ var
   number : string;
   i : integer;
 begin
-  if Pos('<W',s) = 0 then Exit;
+  if not s.Contains('<W') then Exit;
   List := XmlToList(s);
 
   for i:=Low(List) to High(List) do
@@ -144,8 +144,8 @@ begin
 
   if format in [unbound, mysword] then
     begin
-      if Pos('<f>',s) > 0 then Footnotes(s);
-      if Pos('<f ',s) > 0 then FootnotesEx(s);
+      if s.Contains('<f>') then Footnotes(s);
+      if s.Contains('<f ') then FootnotesEx(s);
     end;
 
   if purge then CutStr(s,'<f>','</f>');

@@ -214,7 +214,7 @@ begin
   if not Assigned(Book) then Exit;
 
   if full then title := Book.title else title := Book.abbr;
-  if Pos('.', title) = 0 then space := ' ';
+  if not title.Contains('.') then space := ' ';
 
   Result := title + space + ToStr(verse.chapter) + ':' + ToStr(verse.number);
   if (verse.number <> 0) and (verse.count > 1) then
@@ -261,7 +261,7 @@ var
 
 begin
   Result.book := -1;
-  if Pos(':',link) = 0 then Exit;
+  if not link.Contains(':') then Exit;
   link := Trim(link);
 
   for i:=0 to Books.Count-1 do
@@ -461,7 +461,7 @@ begin
       for item in List do
         if Prefix('<', item) then
           if not Prefix('<W', item) then
-            if Pos(item, r) = 0 then r += item;
+            if not r.Contains(item) then r += item;
     end;
 end;
 
@@ -509,12 +509,12 @@ begin
   if Prefix('✻',marker) then tag := '<f>'
                         else tag := '<f q=' + marker + '>';
 
-  while Pos(tag,s) > 0 do
+  while s.Contains(tag) do
     begin
       x := Pos(tag,s);
       x := x + Length(tag);
       s := Copy(s, x, Length(s));
-      x := Pos('</f>',s); if x = 0 then break;
+      x := Pos('</f>',s); if x = 0 then Break;
       Result := Result + Copy(s,1,x-1) + '<br>';
     end;
 
