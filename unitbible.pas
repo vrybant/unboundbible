@@ -237,7 +237,7 @@ var
     s := Copy(link,len+1,255);
     s := Trim(s);
 
-    if Length(s) = 0 then Exit;
+    if s.IsEmpty then Exit;
     if not IsNumeral(s[1]) then Exit;
 
     Result.count := 1;

@@ -140,6 +140,7 @@
         <Filename Value="forms\formsearch.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="FormSearch"/>
       </Unit16>
       <Unit17>
         <Filename Value="forms\formnotify.pas"/>
@@ -150,6 +151,7 @@
         <Filename Value="forms\formdownload.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="FormDownload"/>
       </Unit18>
     </Units>
   </ProjectOptions>
