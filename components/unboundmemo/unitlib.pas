@@ -41,7 +41,6 @@ function Utf8ToRTF(const s: string): string;
 
 // arrays
 
-function StringToList(s: string; separator: char): TStringArray;
 function ListToString(const List: TStringArray; separator: string = ''): string;
 function ListToArray(const List: TStringList): TStringArray;
 function XmlToList(s: string): TStringArray;
@@ -264,39 +263,6 @@ begin
 end;
 
 // arrays
-
-function StringToList(s: string; separator: char): TStringArray;
-var
-  Point : array of integer = [];
-  index : integer = 0;
-  n : integer = 0;
-  i, len : integer;
-begin
-  SetLength(Result,Length(s)+2);
-  SetLength(Point ,Length(s)+2);
-  Point[0] := 0;
-
-  for i:=1 to Length(s) do
-    if s[i] = separator then
-      begin
-        Inc(n);
-        Point[n] := i;
-      end;
-
-  Point[n+1] := Length(s)+1;
-
-  for i:=0 to n do
-    begin
-      len := Point[i+1]-Point[i]-1;
-      if len > 0 then
-        begin
-          Result[index] := Copy(s, Point[i]+1, len);
-          Inc(index);
-        end;
-    end;
-
-  SetLength(Result,index);
-end;
 
 function ListToString(const List: TStringArray; separator: string = ''): string;
 var i : integer;

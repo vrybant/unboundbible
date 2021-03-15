@@ -65,7 +65,7 @@ var
   item : string;
 begin
   if not (caseSensitive in Options) then searchString := Utf8LowerCase(searchString);
-  List := StringToList(searchString,' ');
+  List := searchString.Split(' ');
   for item in List do Highlight(s, item, Options);
 end;
 

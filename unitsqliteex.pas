@@ -35,7 +35,7 @@ begin
   AccentedOption := accented;
   if not (caseSensitive in Options) then s := Utf8LowerCase(s);
 
-  SearchList := StringToList(s,' ');
+  SearchList := s.Split(' ');
   if not (wholeWords in Options) then Exit;
 
   if (format = mysword) and IsStrong(s) then c := '' else c := ' ';

@@ -167,7 +167,7 @@ begin
       Exit;
     end;
 
-  List := StringToList(SelText, LineBreaker);
+  List := SelText.Split(LineBreaker);
 
   if GetNumber(SelText) > 0 then
     begin
