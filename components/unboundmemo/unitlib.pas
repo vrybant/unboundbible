@@ -12,7 +12,6 @@ uses
 
 type
   TIntegerArray = array of integer;
-   TStringArray = array of string;
   TStringsArray = array of TStringArray;
 
 // string's functions
@@ -272,39 +271,8 @@ begin
 end;
 
 function XmlToList(s: string): TStringArray;
-var
-  temp : string = '';
-  i : integer = 0;
-  c : char;
 begin
-  SetLength(Result,Length(s)+1);
-
-  for c in s do
-    begin
-      if c = '<' then
-        begin
-          Result[i] := temp;
-          inc(i);
-          temp := '';
-        end;
-
-      temp := temp + c;
-
-      if c = '>' then
-        begin
-          Result[i] := temp;
-          inc(i);
-          temp := '';
-        end;
-    end;
-
-  if temp <> '' then
-    begin
-      Result[i] := temp;
-      inc(i);
-    end;
-
-  SetLength(Result,i);
+  Result := s.Replace('<', #10'<').Replace('>', '>'#10).Split(#10);
 end;
 
 // сlipboard
