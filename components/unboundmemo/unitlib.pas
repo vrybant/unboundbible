@@ -215,7 +215,7 @@ procedure CutStr(var s: string; StartSt, EndSt: string);
 var
   x1,x2,len : integer;
 begin
-  while Pos(StartSt, s) > 0 do
+  while s.Contains(StartSt) do
     begin
       x1 := Pos(StartSt,s);
       x2 := Pos(  EndSt,s);

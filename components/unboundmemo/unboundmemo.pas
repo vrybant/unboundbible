@@ -3,7 +3,7 @@ unit UnboundMemo;
 interface
 
 uses
-  {$ifdef windows} Windows, rmWinEx, {$endif}
+  {$ifdef windows} Windows, {$endif}
   Forms, SysUtils, LResources, Classes, Graphics, Controls, ExtCtrls,
   LCLProc, LCLType, LazUTF8, RichMemo, RichMemoEx, UnitLib,
   {$ifdef windows} UmParseWin; {$else} UmParse; {$endif}
@@ -160,7 +160,7 @@ procedure TUnboundMemo.GetParagraphRange;
 var
   List : TStringArray;
 begin
-  if Pos(LineBreaker, SelText) = 0 then
+  if not SelText.Contains(LineBreaker) then
     begin
       ParagraphStart := GetParagraphNumber(SelStart, SelLength = 0);
       ParagraphCount := 1;

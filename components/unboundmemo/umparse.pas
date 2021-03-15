@@ -29,7 +29,7 @@ begin
   Replace(s,'</td>','<br><tab>');
   Replace(s,'</tr>','<br><tab>');
 
-  if Pos('</p>',s) = 0 then Replace(s,'<p>','<br><tab>');
+  if not s.Contains('</p>') then Replace(s,'<p>','<br><tab>');
   Replace(s,'</p>','<br>');
 
   RemoveDoubleSpaces(s);
