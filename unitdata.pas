@@ -180,23 +180,6 @@ begin
   SetLength(Result, index);
 end;
 
-procedure CopyDefaultsFiles;
-var
-  List : TStringArray;
-  f, d : string;
-begin
-  if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
-  if not ApplicationUpdate and (Length(GetDatabaseList) > 0) then Exit;
-
-  List := GetFileList(SharePath + BibleDirectory, '*.unbound');
-  for f in List do
-    begin
-      if f.CountChar('.') < 2 then Continue; // only new files
-      d := DataPath + Slash + ExtractFileName(f);
-      CopyFile(f, d);
-    end;
-end;
-
 procedure UnzipDefaultsFiles;
 var
   UnZipper: TUnZipper;
