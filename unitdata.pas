@@ -3,7 +3,7 @@ unit UnitData;
 interface
 
 uses
-  Classes, Fgl, SysUtils, Graphics, FileUtil, IniFiles, UnitLib;
+  Classes, Fgl, SysUtils, Graphics, FileUtil, IniFiles, Zipper, UnitLib;
 
 const
   ApplicationName = 'Unbound Bible';
@@ -120,6 +120,10 @@ var
     462,464,466,467,270,280,315,320
     );
 
+const
+  OldFilesArray : array [1..5] of string = (
+    'kjv+.unbound','kjv.unbound','rst+.unbound','rstw.unbound','ubio.unbound');
+
 function unbound2mybible(id: integer): integer;
 begin
   Result := id;
@@ -178,12 +182,46 @@ end;
 
 procedure CopyDefaultsFiles;
 var
-  SourcePath : string;
+  List : TStringArray;
+  f, d : string;
 begin
   if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
-  SourcePath := SharePath + BibleDirectory;
   if not ApplicationUpdate and (Length(GetDatabaseList) > 0) then Exit;
-  CopyDirTree(SourcePath, DataPath, [cffOverwriteFile]);
+
+  List := GetFileList(SharePath + BibleDirectory, '*.unbound');
+  for f in List do
+    begin
+      if f.CountChar('.') < 2 then Continue; // only new files
+      d := DataPath + Slash + ExtractFileName(f);
+      CopyFile(f, d);
+    end;
+end;
+
+procedure UnzipDefaultsFiles;
+var
+  UnZipper: TUnZipper;
+  List : TStringArray;
+  f : string;
+begin
+  if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
+  if not ApplicationUpdate and (Length(GetDatabaseList) > 0) then Exit;
+
+  List := GetFileList(SharePath + BibleDirectory, '*.zip');
+
+  UnZipper := TUnZipper.Create;
+  UnZipper.UseUTF8 := True;
+  UnZipper.OutputPath := DataPath;
+
+  for f in List do
+    try
+      UnZipper.FileName := f;
+      UnZipper.Examine;
+      UnZipper.UnZipAllFiles;
+    except
+      //
+    end;
+
+  UnZipper.Free;
 end;
 
 function ru: string;
@@ -260,7 +298,7 @@ end;
 initialization
   DefaultFont := TFont.Create;
   ReadConfig;
-  CopyDefaultsFiles;
+  UnzipDefaultsFiles;
 
 finalization
   SaveConfig;
