@@ -120,10 +120,6 @@ var
     462,464,466,467,270,280,315,320
     );
 
-const
-  OldFilesArray : array [1..5] of string = (
-    'kjv+.unbound','kjv.unbound','rst+.unbound','rstw.unbound','ubio.unbound');
-
 function unbound2mybible(id: integer): integer;
 begin
   Result := id;
@@ -198,13 +194,27 @@ begin
   for f in List do
     try
       UnZipper.FileName := f;
-      UnZipper.Examine;
       UnZipper.UnZipAllFiles;
     except
       //
     end;
 
   UnZipper.Free;
+end;
+
+procedure RemoveOldFiles;
+var
+  f, t : string;
+const
+  OldFiles : array [1..5] of string = (
+    'kjv+.unbound','kjv.unbound','rst+.unbound','rstw.unbound','ubio.unbound');
+begin
+  if not ApplicationUpdate then Exit;
+  for f in OldFiles do
+    begin
+      t := DataPath + Slash + f;
+      if FileExists(t) then DeleteFile(t);
+    end;
 end;
 
 function ru: string;
@@ -282,6 +292,7 @@ initialization
   DefaultFont := TFont.Create;
   ReadConfig;
   UnzipDefaultsFiles;
+  RemoveOldFiles;
 
 finalization
   SaveConfig;
