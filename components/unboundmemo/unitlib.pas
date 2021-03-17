@@ -65,7 +65,6 @@ procedure StringsToFile(filename: string; Strings: TStringArray);
 function GetLanguageID: string;
 function GetLanguageIDs: string;
 function IsRightToLeft(language: string): boolean;
-function Cyrillic(language: string): boolean;
 
 // graphics
 
@@ -436,14 +435,6 @@ begin
    if Prefix('he',language) or
       Prefix('ar',language) or
       Prefix('fa',language) then Result := true;
-end;
-
-function Cyrillic(language: string): boolean;
-begin
-   Result := false;
-   if Prefix('ru',language) or
-      Prefix('uk',language) or
-      Prefix('bg',language) then Result := true;
 end;
 
 // graphics
