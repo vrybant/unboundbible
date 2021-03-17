@@ -110,7 +110,7 @@ begin
     SetSel( {$ifdef unix} x2,x2 {$else} x2+1,x2+1 {$endif} );
   until (Foreground <> fore) or (x2 > limit);
 
-  SetSel(x1, x2); Result := RemoveCRLF(SelText);
+  SetSel(x1, x2); Result := RemoveLineBreaker(SelText);
   SetSel(n1, n2); Result := Trim(Result);
 end;
 

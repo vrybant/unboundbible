@@ -31,7 +31,7 @@ procedure Replace(var s: string; const oldPattern, newPattern: string);
 procedure CutStr(var s: string; StartSt, EndSt: string);
 procedure RemoveDoubleSpaces(var s: string);
 function RemoveTags(s: string): string;
-function RemoveCRLF(s: string): string;
+function RemoveLineBreaker(s: string): string;
 function iif(condition: boolean; trueResult, falseResult: variant): variant;
 
 // unicode
@@ -221,7 +221,7 @@ begin
     end;
 end;
 
-function RemoveCRLF(s: string): string;
+function RemoveLineBreaker(s: string): string;
 begin
   Replace(s, #10, ''); // line feed
   Replace(s, #13, ''); // carriage return
