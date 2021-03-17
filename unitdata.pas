@@ -287,8 +287,8 @@ end;
 initialization
   DefaultFont := TFont.Create;
   ReadConfig;
-//  UnzipDefaultsFiles;
-//  RemoveOldFiles;
+  UnzipDefaultsFiles;
+  RemoveOldFiles;
 
 finalization
   SaveConfig;
