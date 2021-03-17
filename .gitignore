@@ -17,6 +17,7 @@ lib/*
 *.xlsx
 backup/*
 titles/text/*
+forms/backup/*
 components/zeosdbo/packages/lazarus/lib/*
 components/zeosdbo/examples/*
 components/richmemo/lib/*

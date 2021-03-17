@@ -122,13 +122,18 @@
       <Unit13>
         <Filename Value="forms\formabout.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="AboutBox"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormAbout"/>
       </Unit13>
       <Unit14>
         <Filename Value="forms\formcopy.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="CopyForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="FormCopy"/>
       </Unit14>
       <Unit15>
         <Filename Value="forms\formfavorite.pas"/>
@@ -146,6 +151,7 @@
         <Filename Value="forms\formnotify.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="FormNotify"/>
       </Unit17>
       <Unit18>
         <Filename Value="forms\formdownload.pas"/>
