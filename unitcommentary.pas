@@ -149,11 +149,8 @@ var
   s1 : string = '';
   s2 : string = '';
 begin
-  if Cyrillic(GetLanguageID) then
-    begin
-      if Cyrillic(Item1.language) then s1 := ' ';
-      if Cyrillic(Item2.language) then s2 := ' ';
-    end;
+  if Item1.language = GetLanguageID then s1 := ' ';
+  if Item2.language = GetLanguageID then s2 := ' ';
 
   Result := CompareText(s1 + Item1.Name, s2 + Item2.Name);
 end;

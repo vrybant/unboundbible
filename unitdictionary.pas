@@ -129,18 +129,9 @@ end;
 //                                         TDictionaries
 //=================================================================================================
 
-function Comparison(const Item1: TDictionary; const Item2: TDictionary): integer;
-var
-  s1 : string = '';
-  s2 : string = '';
+function Comparison(const Item1, Item2: TDictionary): integer;
 begin
-  if Cyrillic(GetLanguageID) then
-    begin
-      if Cyrillic(Item1.language) then s1 := ' ';
-      if Cyrillic(Item2.language) then s2 := ' ';
-    end;
-
-  Result := CompareText(s1 + Item1.Name, s2 + Item2.Name);
+  Result := CompareText(Item1.Name, Item2.Name);
 end;
 
 constructor TDictionaries.Create;
