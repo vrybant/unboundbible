@@ -354,7 +354,7 @@ begin
     TabSheetReference .TabVisible := False;
     TabSheetCommentary.TabVisible := False;
     TabSheetDictionary.TabVisible := False;
-    IdleTimer.Interval := 10;
+    IdleTimer.Interval := 50;
   {$endif}
 
   UpdateActionImage;

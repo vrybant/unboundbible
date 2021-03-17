@@ -198,7 +198,6 @@ object MainForm: TMainForm
       Left = 32
       Top = 0
       Action = ActionModules
-      ImageIndex = 34
       Visible = False
     end
     object ToolButtonDictionary: TToolButton
@@ -2503,7 +2502,6 @@ object MainForm: TMainForm
     object ActionModules: TAction
       Category = 'Tools'
       Caption = 'ActionModules'
-      ImageIndex = 11
       OnExecute = cmdModules
     end
     object ActionFavorites: TAction
