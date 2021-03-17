@@ -43,9 +43,8 @@ end;
 function EnabledTag(tag: string): boolean;
 var i : integer;
 begin
-  Result := True;
-  for i:=1 to Max do if Prefix(TagsDictionary[i,2], tag) then Exit;
-  Result := false;
+  for i:=1 to Max do if Prefix(TagsDictionary[i,2], tag) then Exit(True);
+  Result := False;
 end;
 
 procedure CleanUnabledTags(var s: string);

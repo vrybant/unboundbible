@@ -87,11 +87,10 @@ var
   n1,n2,x0,x1,x2 : integer;
   limit : integer;
 begin
-  Result := '';
-  if SelLength > 0 then Exit;
+  if SelLength > 0 then Exit('');
 
   fore := Foreground;
-  if fore = fgText then Exit;
+  if fore = fgText then Exit('');
   GetSel(n1,n2);
 
   x0 := SelStart;

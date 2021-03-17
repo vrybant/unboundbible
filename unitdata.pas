@@ -132,11 +132,7 @@ begin
   Result := id;
   if id = 0 then Exit;
   for i:=1 to Length(myBibleArray) do
-    if id = myBibleArray[i] then
-      begin
-        Result := i;
-        Exit;
-      end;
+    if id = myBibleArray[i] then Exit(i);
 end;
 
 function IsNewTestament(n: integer): boolean;
@@ -291,8 +287,8 @@ end;
 initialization
   DefaultFont := TFont.Create;
   ReadConfig;
-  UnzipDefaultsFiles;
-  RemoveOldFiles;
+//  UnzipDefaultsFiles;
+//  RemoveOldFiles;
 
 finalization
   SaveConfig;

@@ -209,9 +209,8 @@ var
   title : string;
   space : string = '';
 begin
-  Result := '';
   Book := BookByNum(verse.book);
-  if not Assigned(Book) then Exit;
+  if not Assigned(Book) then Exit('');
 
   if full then title := Book.title else title := Book.abbr;
   if not title.Contains('.') then space := ' ';
