@@ -1324,15 +1324,11 @@ var
   l : boolean;
 begin
   l := BookBox.ItemIndex < 0;
-
-  BookBox.Items.BeginUpdate;
   BookBox.Font.Assign(DefaultFont);
   BookBox.BiDiMode := bdLeftToRight;
   if CurrBible.RightToLeft then BookBox.BiDiMode := bdRightToLeft;
-
   BookBox.Items.AddStrings(CurrBible.GetTitles, True);
   if l and (BookBox.Count > 0) then BookBox.ItemIndex := 0;
-  BookBox.Items.EndUpdate;
 end;
 
 //-----------------------------------------------------------------------------------------

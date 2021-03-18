@@ -465,11 +465,11 @@ begin
 end;
 
 function TBible.GetTitles: TStringArray;
-var i : integer;
+var
+  Item : TBook;
 begin
-  SetLength(Result, Books.Count);
-  for i := 0 to Books.Count - 1 do
-    Result[i] := Books[i].Title;
+  Result := [];
+  for Item in Books do Result.Add(Item.Title);
 end;
 
 function TBible.ChaptersCount(Verse: TVerse): integer;
