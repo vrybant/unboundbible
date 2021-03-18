@@ -6,24 +6,24 @@ uses
   SysUtils, Classes, Fgl, Graphics, IniFiles, ClipBrd, LCLProc, UnitData, UnitLib;
 
 type
-  TLocalized = class
+  TLocal = class
     filename : string;
     language : string;
     id : string;
   end;
 
-  TLocalization = class(TFPGList<TLocalized>)
+  TLocalization = class(TFPGList<TLocal>)
   private
-    FLocal : string;
+    FID : string;
     LocalFile : TIniFile;
-    procedure SetLocal(Value: string);
+    procedure SetID(Value: string);
     procedure SetLocalFile;
   public
     constructor Create;
     destructor Destroy; override;
-    function DefaultLocal: string;
+    function DefaultID: string;
     function Translate(const s: string): string;
-    property Local: string read FLocal write SetLocal;
+    property id: string read FID write SetID;
   end;
 
 var
@@ -42,7 +42,7 @@ end;
 //                                       TLocalization
 //-------------------------------------------------------------------------------------------------
 
-function Comparison(const Item1: TLocalized; const Item2: TLocalized): integer;
+function Comparison(const Item1: TLocal; const Item2: TLocal): integer;
 begin
   Result := CompareText(Item1.language, Item2.language);
 end;
@@ -50,7 +50,7 @@ end;
 constructor TLocalization.Create;
 var
   IniFile: TIniFile;
-  Item : TLocalized;
+  Local : TLocal;
   List : TStringArray;
   f : string;
 begin
@@ -61,47 +61,44 @@ begin
   for f in List do
     begin
       if Length(ExtractOnlyName(f)) = 2 then Continue; // remove old files
-      Item := TLocalized.Create;
+      Local := TLocal.Create;
       IniFile := TIniFile.Create(f);
-      Item.language := IniFile.ReadString('Details','Language','--');
-      Item.id := IniFile.ReadString('Details','LangID','--');
-      Item.filename := f;
+      Local.language := IniFile.ReadString('Details','Language','--');
+      Local.id := IniFile.ReadString('Details','LangID','--');
+      Local.filename := f;
       IniFile.Free;
-      Add(Item);
+      Add(Local);
     end;
 
   Sort(Comparison);
 end;
 
-function TLocalization.DefaultLocal: string;
-var i : integer;
+function TLocalization.DefaultID: string;
+var
+  L : TLocal;
 begin
   Result := 'en';
-
-  for i:=0 to Count-1 do
-    if Items[i].id = GetLanguageID then Result := Items[i].id;
-
-  for i:=0 to Count-1 do
-    if Items[i].id = GetLanguageIDs then Result := Items[i].id;
+  for L in Self do if L.id = GetLanguageID  then Result := L.id;
+  for L in Self do if L.id = GetLanguageIDs then Result := L.id;
 end;
 
 procedure TLocalization.SetLocalFile;
 var
+  L : TLocal;
   filename : string;
-  i : integer;
 begin
   filename := SharePath + LangDirectory + Slash + 'english.lng';
 
-  for i:=0 to Count-1 do
-    if Items[i].id = Local then filename := Items[i].filename;
+  for L in Self do
+    if L.id = id then filename := L.filename;
 
   if Assigned(LocalFile) then LocalFile.Free;
   LocalFile := TIniFile.Create(filename);
 end;
 
-procedure TLocalization.SetLocal(Value: string);
+procedure TLocalization.SetID(Value: string);
 begin
-  FLocal := Value;
+  FID := Value;
   SetLocalFile;
 end;
 

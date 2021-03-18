@@ -42,8 +42,8 @@ var
 begin
   Developer := ' ' + 'Vladimir Rybant';
 
-  if Local = 'ru' then Developer := 'Владимир Рыбант';
-  if Local = 'uk' then Developer := 'Володимир Рiбант';
+  if Localization.id = 'ru' then Developer := 'Владимир Рыбант';
+  if Localization.id = 'uk' then Developer := 'Володимир Рiбант';
 
   Caption := ' ' + T('About');
   LabelVersion.Caption := T('Version') + ' ' + ApplicationVersion;

@@ -16,7 +16,6 @@ const
 var
   ApplicationUpdate : boolean = false;
   DefaultFont: TFont;
-  Local : string;
 
 type
   TFileFormat = (unbound, mysword, mybible);
@@ -107,6 +106,8 @@ function IssueURL: string;
 function DonateURL: string;
 
 implementation
+
+uses UnitLocal;
 
 const
   MaxBooks = 88;
@@ -216,7 +217,7 @@ end;
 function ru: string;
 begin
   Result := '';
-  if (Local = 'ru') or (Local = 'uk') then Result := 'ru';
+  if (Localization.id = 'ru') or (Localization.id = 'uk') then Result := 'ru';
 end;
 
 function HomeURL: string;
