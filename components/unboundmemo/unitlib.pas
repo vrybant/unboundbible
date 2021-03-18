@@ -1,6 +1,6 @@
 unit UnitLib;
 
-{$mode delphi}{$H+}
+{$mode delphi}{$modeswitch typehelpers}{$H+}
 
 interface
 
@@ -13,6 +13,11 @@ uses
 type
   TIntegerArray = array of integer;
   TStringsArray = array of TStringArray;
+
+type
+  TStringArrayHelper = type helper for TStringArray
+    procedure Add(const Value: string);
+  end;
 
 // string's functions
 
@@ -95,6 +100,14 @@ const
 implementation
 
 var DarkTheme : boolean = False;
+
+// helper
+
+procedure TStringArrayHelper.Add(const Value: string);
+begin
+  SetLength(Self, Length(Self)+1);
+  Self[Length(Self)-1] := Value;
+end;
 
 // string's functions
 
