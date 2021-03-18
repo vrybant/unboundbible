@@ -216,7 +216,7 @@ end;
 function ru: string;
 begin
   Result := '';
-  if (Local = 'ru_RU') or (Local = 'uk_UA') then Result := 'ru';
+  if (Local = 'ru') or (Local = 'uk') then Result := 'ru';
 end;
 
 function HomeURL: string;
