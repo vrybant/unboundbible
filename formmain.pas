@@ -523,7 +523,7 @@ end;
 
 procedure TMainForm.LocalizeApplication;
 begin
-  Localization.SetLocal(Local);
+  Localization.Local := Local;
 
   MainForm     .Localize;
   SearchForm   .Localize;

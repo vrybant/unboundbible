@@ -13,13 +13,17 @@ type
   end;
 
   TLocalization = class(TFPGList<TLocalized>)
+  private
+    FLocal : string;
     LocalFile : TIniFile;
+    procedure SetLocal(Value: string);
+    procedure SetLocalFile;
   public
     constructor Create;
     destructor Destroy; override;
     function DefaultLocal: string;
-    procedure SetLocal(lang: string);
     function Translate(const s: string): string;
+    property Local: string read FLocal write SetLocal;
   end;
 
 var
@@ -81,7 +85,7 @@ begin
     if Items[i].id = GetLanguageIDs then Result := Items[i].id;
 end;
 
-procedure TLocalization.SetLocal(lang: string);
+procedure TLocalization.SetLocalFile;
 var
   filename : string;
   i : integer;
@@ -89,10 +93,16 @@ begin
   filename := SharePath + LangDirectory + Slash + 'english.lng';
 
   for i:=0 to Count-1 do
-    if Items[i].id = lang then filename := Items[i].filename;
+    if Items[i].id = Local then filename := Items[i].filename;
 
   if Assigned(LocalFile) then LocalFile.Free;
   LocalFile := TIniFile.Create(filename);
+end;
+
+procedure TLocalization.SetLocal(Value: string);
+begin
+  FLocal := Value;
+  SetLocalFile;
 end;
 
 function TLocalization.Translate(const s: string): string;
