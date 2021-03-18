@@ -8,15 +8,16 @@ uses
 type
   TShelf = class(TFPGList<TBible>)
   private
-    Current : integer;
     procedure Load;
     procedure SavePrivates;
     procedure ReadPrivates;
+    procedure SetCurrent(Value: string);
   public
+    Index : integer;
     constructor Create;
-    procedure SetCurrent(Name: string);
-    function GetDefaultBible: string;
     destructor Destroy; override;
+    function GetDefaultBible: string;
+    property Current: string write SetCurrent;
   end;
 
 var
@@ -28,7 +29,7 @@ implementation
 
 function CurrBible: TBible;
 begin
-  Result := Shelf[Shelf.Current];
+  Result := Shelf[Shelf.Index];
 end;
 
 function Comparison(const Item1: TBible; const Item2: TBible): integer;
@@ -39,7 +40,7 @@ end;
 constructor TShelf.Create;
 begin
   inherited;
-  Current := 0;
+  Index := 0;
   Load;
   Sort(Comparison);
   ReadPrivates;
@@ -63,54 +64,55 @@ begin
     end;
 end;
 
-procedure TShelf.SetCurrent(Name: string);
+procedure TShelf.SetCurrent(Value: string);
 var i : integer;
 begin
   if Count = 0 then Exit;
 
   for i:= Count-1 downto 0 do
-    if Items[i].Name = Name then Current := i;
+    if Items[i].Name = Value then Index := i;
 
-  Self[Current].LoadDatabase;
-  if not Self[Current].GoodLink(CurrVerse) then CurrVerse := Self[Current].FirstVerse;
+  Self[Index].LoadDatabase;
+  if not Self[Index].GoodLink(CurrVerse) then CurrVerse := Self[Index].FirstVerse;
 end;
 
 function TShelf.GetDefaultBible: string;
-var i : integer;
+var
+  Item : TBible;
 begin
   Result := 'King James Version';
-  for i:=0 to Count-1 do
-    if Items[i].default_ then
-      if Items[i].language = GetLanguageID then Result := Items[i].name;
+  for Item in Self do
+    if Item.default_ then
+      if Item.language = GetLanguageID then Result := Item.name;
 end;
 
 procedure TShelf.SavePrivates;
 var
   IniFile : TIniFile;
-  i : integer;
+  Item : TBible;
 begin
   IniFile := TIniFile.Create(ConfigFile);
-  for i:=0 to Count-1 do Items[i].SavePrivate(IniFile);
+  for Item in Self do Item.SavePrivate(IniFile);
   IniFile.Free;
 end;
 
 procedure TShelf.ReadPrivates;
 var
   IniFile : TIniFile;
-  i : integer;
+  Item : TBible;
 begin
   IniFile := TIniFile.Create(ConfigFile);
-  for i:=0 to Count-1 do Items[i].ReadPrivate(IniFile);
+  for Item in Self do Item.ReadPrivate(IniFile);
   IniFile.Free;
 end;
 
 destructor TShelf.Destroy;
-var i : integer;
+var
+  Item : TBible;
 begin
 //Self[Current].Extract;
-
   SavePrivates;
-  for i:=0 to Count-1 do Items[i].Free;
+  for Item in Self do Item.Free;
   inherited Destroy;
 end;
 

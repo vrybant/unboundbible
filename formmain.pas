@@ -314,7 +314,7 @@ begin
 
   if Shelf.Count > 0 then
   begin
-    Shelf.SetCurrent(DefaultCurrent);
+    Shelf.Current := DefaultCurrent;
     LoadComboBox;
     MakeBookList;
     if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
@@ -618,7 +618,7 @@ procedure TMainForm.ComboBoxChange(Sender: TObject);
 var
   select : boolean;
 begin
-  Shelf.SetCurrent(ComboBox.Items[ComboBox.ItemIndex]);
+  Shelf.Current := ComboBox.Items[ComboBox.ItemIndex];
   MakeBookList;
   select := CurrVerse.number > 1;
   {$ifdef linux}
