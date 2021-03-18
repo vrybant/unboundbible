@@ -50,7 +50,7 @@ end;
 constructor TLocalization.Create;
 var
   IniFile: TIniFile;
-  Local : TLocal;
+  Item : TLocal;
   List : TStringArray;
   f : string;
 begin
@@ -61,13 +61,13 @@ begin
   for f in List do
     begin
       if Length(ExtractOnlyName(f)) = 2 then Continue; // remove old files
-      Local := TLocal.Create;
+      Item := TLocal.Create;
       IniFile := TIniFile.Create(f);
-      Local.language := IniFile.ReadString('Details','Language','--');
-      Local.id := IniFile.ReadString('Details','LangID','--');
-      Local.filename := f;
+      Item.language := IniFile.ReadString('Details','Language','--');
+      Item.id := IniFile.ReadString('Details','LangID','--');
+      Item.filename := f;
       IniFile.Free;
-      Add(Local);
+      Add(Item);
     end;
 
   Sort(Comparison);
@@ -84,13 +84,13 @@ end;
 
 procedure TLocalization.SetLocalFile;
 var
-  L : TLocal;
+  Item : TLocal;
   filename : string;
 begin
   filename := SharePath + LangDirectory + Slash + 'english.lng';
 
-  for L in Self do
-    if L.id = id then filename := L.filename;
+  for Item in Self do
+    if Item.id = id then filename := Item.filename;
 
   if Assigned(LocalFile) then LocalFile.Free;
   LocalFile := TIniFile.Create(filename);
@@ -108,9 +108,10 @@ begin
 end;
 
 destructor TLocalization.Destroy;
-var i : integer;
+var
+  Item : TLocal;
 begin
-  for i:=0 to Count-1 do Items[i].Free;
+  for Item in Self do Item.Free;
   if Assigned(LocalFile) then LocalFile.Free;
   inherited Destroy;
 end;
