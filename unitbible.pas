@@ -34,7 +34,7 @@ type
     function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     function GetAll: TContentArray;
     procedure ShowTags;
-    procedure GetTitles(var List: TStringList);
+    function GetTitles: TStringArray;
     function  ChaptersCount(Verse: TVerse): integer;
     function  GetFootnote(Verse: TVerse; marker: string): string;
     procedure SavePrivate(const IniFile: TIniFile);
@@ -464,11 +464,12 @@ begin
     end;
 end;
 
-procedure TBible.GetTitles(var List: TStringList);
+function TBible.GetTitles: TStringArray;
 var i : integer;
 begin
+  SetLength(Result, Books.Count);
   for i := 0 to Books.Count - 1 do
-    List.Add(Books[i].Title);
+    Result[i] := Books[i].Title;
 end;
 
 function TBible.ChaptersCount(Verse: TVerse): integer;

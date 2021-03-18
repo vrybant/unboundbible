@@ -1321,22 +1321,16 @@ end;
 
 procedure TMainForm.MakeBookList;
 var
-  List: TStringList;
   l : boolean;
 begin
   l := BookBox.ItemIndex < 0;
 
   BookBox.Items.BeginUpdate;
-  BookBox.Items.Clear;
   BookBox.Font.Assign(DefaultFont);
-
-  List := TStringList.Create;
-  CurrBible.GetTitles(List);
   BookBox.BiDiMode := bdLeftToRight;
   if CurrBible.RightToLeft then BookBox.BiDiMode := bdRightToLeft;
-  BookBox.Items.Assign(List);
-  List.Free;
 
+  BookBox.Items.AddStrings(CurrBible.GetTitles, True);
   if l and (BookBox.Count > 0) then BookBox.ItemIndex := 0;
   BookBox.Items.EndUpdate;
 end;
