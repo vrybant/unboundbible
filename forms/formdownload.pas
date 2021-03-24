@@ -86,30 +86,29 @@ end;
 
 procedure TDownloadForm.LoadGrid;
 var
-  i : integer;
+  Module : TModule;
 
   function GetInfo(const Module: TModule): TStringArray;
   begin
-    SetLength(Result, 5);
-    Result[0] := iif(Module.Favorite, '*', '');
-    Result[1] := ' ' + Module.Name;
-    Result[2] := Module.language;
-    Result[3] := Module.fileName;
-    Result[4] := Module.info;
-    if Module.info = '' then Result[4] := Module.Name;
+    Result := [];
+    Result.Add(iif(Module.Favorite, '*', ''));
+    Result.Add(' ' + Module.Name);
+    Result.Add(Module.language);
+    Result.Add(Module.fileName);
+    Result.Add(iif(Module.info.IsEmpty, Module.Name, Module.info));
   end;
 
 begin
   StringGrid.RowCount := 1;
 
-  for i:=0 to Shelf.Count-1 do
-    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Shelf[i]));
+  for Module in Shelf do
+    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Module));
 
-  for i:=0 to Commentaries.Count-1 do
-    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Commentaries[i]));
+  for Module in Commentaries do
+    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Module));
 
-  for i:=0 to Dictionaries.Count-1 do
-    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Dictionaries[i]));
+  for Module in Dictionaries do
+    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Module));
 end;
 
 procedure TDownloadForm.StringGridCheckboxToggled(sender: TObject; aCol,
