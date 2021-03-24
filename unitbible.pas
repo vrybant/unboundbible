@@ -188,19 +188,21 @@ begin
 end;
 
 function TBible.BookByNum(n: integer): TBook;
-var i : integer;
+var
+  Book : TBook;
 begin
   Result := nil;
-  for i:=0 to Books.Count-1 do
-    if Books[i].Number = n then Result := Books[i];
+  for Book in Books do
+    if Book.Number = n then Result := Book;
 end;
 
 function TBible.BookByName(s: string): TBook;
-var i : integer;
+var
+  Book : TBook;
 begin
   Result := nil;
-  for i:=0 to Books.Count-1 do
-    if Books[i].Title = s then Result := Books[i];
+  for Book in Books do
+    if Book.Title = s then Result := Book;
 end;
 
 function TBible.VerseToStr(verse: TVerse; full: boolean): string;
@@ -222,16 +224,16 @@ end;
 
 function TBible.SrtToVerse(link : string): TVerse;
 var
-  i : integer;
+  Book : TBook;
 
-  procedure GetLink(i: integer; T: boolean);
+  procedure GetLink(T: boolean);
   var
     s, p : string;
     len, n : integer;
     endVerse : integer;
   begin
-    if T then len := Length(Books[i].title)
-         else len := Length(Books[i].abbr );
+    if T then len := Length(Book.title)
+         else len := Length(Book.abbr );
 
     s := Copy(link,len+1,255);
     s := Trim(s);
@@ -250,7 +252,7 @@ var
         endVerse := ToInt(p);
       end;
 
-    n := Pos(':',s);      Result.book    := Books[i].number;
+    n := Pos(':',s);      Result.book    := Book.number;
     p := Copy(s,1,n-1);   Result.chapter := ToInt(p);
     p := Copy(s,n+1,255); Result.number  := ToInt(p);
 
@@ -263,10 +265,10 @@ begin
   if not link.Contains(':') then Exit;
   link := Trim(link);
 
-  for i:=0 to Books.Count-1 do
+  for Book in Books do
     begin
-      if Prefix(Books[i].title,link) then GetLink(i,true );
-      if Prefix(Books[i].abbr ,link) then GetLink(i,false);
+      if Prefix(Book.title,link) then GetLink(True );
+      if Prefix(Book.abbr ,link) then GetLink(False);
     end;
 end;
 
@@ -345,15 +347,16 @@ end;
 
 function TBible.RankContents(const Contents: TContentArray): TContentArray;
 var
-  i,j,k : integer;
+  Book : TBook;
+  Content : TContent;
+  k : integer = 0;
 begin
-  SetLength(Result,Length(Contents));
-  k:=0;
-  for i:=0 to Books.Count-1 do
-    for j:=0 to Length(Contents)-1 do
-      if Contents[j].verse.book = Books[i].Number then
+  SetLength(Result, Length(Contents));
+  for Book in Books do
+    for Content in Contents do
+      if Content.verse.book = Book.Number then
         begin
-          Result[k] := Contents[j];
+          Result[k] := Content;
           Inc(k);
         end;
 end;
@@ -466,10 +469,10 @@ end;
 
 function TBible.GetTitles: TStringArray;
 var
-  Item : TBook;
+  Book : TBook;
 begin
   Result := [];
-  for Item in Books do Result.Add(Item.Title);
+  for Book in Books do Result.Add(Book.Title);
 end;
 
 function TBible.ChaptersCount(Verse: TVerse): integer;
@@ -588,9 +591,10 @@ begin
 end;
 
 destructor TBible.Destroy;
-var i : integer;
+var
+  Book : TBook;
 begin
-  for i:=0 to Books.Count-1 do Books[i].Free;
+  for Book in Books do Book.Free;
   Books.Free;
   inherited Destroy;
 end;
