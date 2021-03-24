@@ -274,7 +274,7 @@ end;
 
 function TBible.GetChapter(Verse: TVerse): TStringArray;
 var
-  id, i : integer;
+  id : integer;
   line : string;
   nt : boolean;
 begin
@@ -305,7 +305,7 @@ end;
 
 function TBible.GetRange(Verse: TVerse; prepare: boolean=true): TStringArray;
 var
-  id, i : integer;
+  id : integer;
   line : string;
   nt : boolean;
 begin

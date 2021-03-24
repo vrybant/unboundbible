@@ -74,7 +74,7 @@ function TReference.GetData(Verse: TVerse): TVerseArray;
 var
   V : TVerse;
   v_from, v_to : string;
-  i, id, toverse, votes, count : integer;
+  id, toverse, votes, count : integer;
 begin
   Result := [];
 
