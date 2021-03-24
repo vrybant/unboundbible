@@ -278,7 +278,7 @@ var
   line : string;
   nt : boolean;
 begin
-  SetLength(Result,0);
+  Result := [];
   id := EncodeID(Verse.book);
   nt := IsNewTestament(Verse.book);
 
@@ -311,7 +311,7 @@ var
   line : string;
   nt : boolean;
 begin
-  SetLength(Result,0);
+  Result := [];
   id := EncodeID(Verse.book);
   nt := IsNewTestament(Verse.book);
 
@@ -369,7 +369,7 @@ var
   nt : boolean;
   i : integer;
 begin
-  SetLength(Result,0);
+  Result := [];
   SetSearchOptions(searchString, SearchOptions, format, accented);
 
   if Range.from > 0 then
@@ -415,7 +415,7 @@ var
   nt : boolean;
   i : integer;
 begin
-  SetLength(Result,0);
+  Result := [];
 
   try
     try

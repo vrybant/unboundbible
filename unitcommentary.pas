@@ -76,7 +76,7 @@ var
   i, id : integer;
   count : integer;
 begin
-  SetLength(Result,0);
+  Result := [];
 
   id := EncodeID(Verse.book);
   v_from := ToStr(Verse.number);

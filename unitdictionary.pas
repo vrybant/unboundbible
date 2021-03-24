@@ -93,7 +93,7 @@ var
   i : integer;
   count : integer;
 begin
-  SetLength(Result,0);
+  Result := [];
 
   try
     try

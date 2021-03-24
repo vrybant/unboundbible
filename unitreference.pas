@@ -76,7 +76,7 @@ var
   v_from, v_to : string;
   i, id, toverse, votes, count : integer;
 begin
-  SetLength(Result,0);
+  Result := [];
 
   id := EncodeID(Verse.book);
   v_from := ToStr(Verse.number);
@@ -155,7 +155,7 @@ var
   filename : string;
   i : integer;
 begin
-  SetLength(Result,0);
+  Result := [];
   info := '';
 
   if self.Count = 0 then Exit;
