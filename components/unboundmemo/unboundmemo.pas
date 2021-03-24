@@ -128,9 +128,9 @@ begin
 
   if Paragraphic and (Button = mbLeft) then
     begin
-      if Hyperlink <> '' then GetSel(x1,x2);
+      if not Hyperlink.isEmpty then GetSel(x1,x2);
       GetParagraphRange;
-      if Hyperlink <> '' then SetSel(x1,x2);
+      if not Hyperlink.isEmpty then SetSel(x1,x2);
     end;
 
   inherited;

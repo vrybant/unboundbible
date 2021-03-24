@@ -103,7 +103,7 @@ begin
       if not Shelf[i].Favorite then Continue;
       str := ''.Join(' ', Shelf[i].GetRange(CurrVerse));
 
-      if str = '' then Continue;
+      if str.isEmpty then Continue;
       Result += '<br><l>' + Shelf[i].Name + '</l><br>' + str + '<br>';
     end;
 end;
@@ -120,7 +120,7 @@ begin
   for item in Verses do
     begin
       link := CurrBible.VerseToStr(item, not Options.cvAbbreviate);
-      if link = '' then Continue;
+      if link.isEmpty then Continue;
       Result += '<l>' + link + '</l> ' + ''.Join(' ', CurrBible.GetRange(item)) + '<br><br>';
     end;
 end;
@@ -151,7 +151,7 @@ var
   item : string;
 begin
   Result := '';
-  if st = '' then Exit;
+  if st.isEmpty then Exit;
 
   for Dictionary in Dictionaries do
     begin

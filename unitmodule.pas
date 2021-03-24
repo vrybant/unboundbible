@@ -239,7 +239,7 @@ begin
 
   if connected then
     begin
-      if name = '' then name := fileName;
+      if name.isEmpty then name := fileName;
       RightToLeft := IsRightToLeft(language);
       info := RemoveTags(info);
       accented := language = 'ru';

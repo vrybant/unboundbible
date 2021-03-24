@@ -825,7 +825,7 @@ procedure TMainForm.CmdFavorite(Sender: TObject);
 begin
   if FavoriteForm.ShowModal <> mrOk then Exit;
   LoadComboBox;
-//if FavoriteForm.CurrItem <> '' then SelectBible(FavoriteForm.CurrItem);
+//if not FavoriteForm.CurrItem.IsEmpty then SelectBible(FavoriteForm.CurrItem);
   if PageControl.ActivePageIndex = apCompare then CmdCompare(Self);
 end;
 
@@ -882,7 +882,7 @@ begin
       CurrVerse.Count  := MemoBible.ParagraphCount;
     end;
 
-  if Memo.hyperlink = '' then Exit;
+  if Memo.hyperlink.isEmpty then Exit;
 
   if Memo.Foreground = fgLink then
     if SelectBible(Memo.hyperlink) then Exit;
@@ -1412,7 +1412,7 @@ begin
   if Shelf.Count = 0 then Exit;
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
   data := Get_Reference(info);
-  if data = '' then text += T('Сross-references not found.') else text += data;
+  if data.isEmpty then text += T('Сross-references not found.') else text += data;
   MemoReference.Font.Assign(DefaultFont);
   MemoReference.LoadText(text);
   SelectPage(apReferences);
@@ -1427,7 +1427,7 @@ begin
   data := Get_Commentary;
   text += data;
 
-  if data = '' then text += T('Commentaries not found.') + '<br><br>';
+  if data.isEmpty then text += T('Commentaries not found.') + '<br><br>';
 
   MemoCommentary.Font.Assign(DefaultFont);
   MemoCommentary.LoadHtml(text);
@@ -1443,13 +1443,13 @@ begin
   data := Get_Dictionary(s);
   text += data;
 
-  if (data = '') and (s <> '') then
+  if data.IsEmpty and not s.IsEmpty then
     begin
       text += T('You search for % produced no results.') + '<br><br>';
       Replace(text,'%',DoubleQuotedStr(s));
     end;
 
-  if s = '' then text := T('Please enter your query in the search bar.');
+  if s.isEmpty then text := T('Please enter your query in the search bar.');
 
   MemoDictionary.Font.Assign(DefaultFont);
   MemoDictionary.LoadHtml(text);
@@ -1460,7 +1460,7 @@ procedure TMainForm.LoadStrong(s: string);
 var text : string;
 begin
   text := Get_Strong(s);
-  if text = '' then Exit;
+  if text.isEmpty then Exit;
   NotifyForm.Title.Caption := T('Strong''s Dictionary');
   NotifyForm.Compact := True;
   NotifyForm.Memo.LoadHtml(text);
@@ -1472,7 +1472,7 @@ procedure TMainForm.LoadFootnote(s: string);
 var text : string;
 begin
   text := Get_Footnote(s);
-  if text = '' then Exit;
+  if text.isEmpty then Exit;
   NotifyForm.Title.Caption := T('Footnote');
   NotifyForm.Compact := False;
   NotifyForm.Memo.LoadHtml(text);
