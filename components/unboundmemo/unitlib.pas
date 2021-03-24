@@ -15,10 +15,14 @@ type
   TStringsArray = array of TStringArray;
 
 type
-  TStringArrayHelper = type helper for TStringArray
+  TStringArrayHelper = type Helper for TStringArray
+  private
+    function GetCount: integer;
+    procedure  SetCount(Value: integer);
+  public
     function IsEmpty: Boolean;
-    function Count: integer;
     procedure Add(const Value: string);
+    property Count: integer read GetCount write SetCount;
   end;
 
 // string's functions
@@ -110,7 +114,12 @@ begin
   Result := Length(Self) = 0;
 end;
 
-function TStringArrayHelper.Count: integer;
+procedure TStringArrayHelper.SetCount(Value: integer);
+begin
+  SetLength(Self, Value);
+end;
+
+function TStringArrayHelper.GetCount: integer;
 begin
   Result := Length(Self);
 end;
