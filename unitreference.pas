@@ -152,27 +152,27 @@ end;
 
 function TReferences.GetData(Verse: TVerse; language: string; out info: string): TVerseArray;
 var
+  Reference : TReference;
   filename : string;
-  i : integer;
 begin
   Result := [];
   info := '';
 
-  if self.Count = 0 then Exit;
   filename := BoolToStr(Prefix('ru', language),'obru.xrefs.unbound','ob.xrefs.unbound');
 
-  for i:=0 to Count-1 do
-    if Items[i].filename = filename then
+  for Reference in References do
+    if Reference.filename = filename then
         begin
-          Result := Items[i].GetData(Verse);
-          info := Items[i].info;
+          Result := Reference.GetData(Verse);
+          info := Reference.info;
         end;
 end;
 
 destructor TReferences.Destroy;
-var i : integer;
+var
+  Reference : TReference;
 begin
-  for i:=0 to Count-1 do Items[i].Free;
+  for Reference in References do Reference.Free;
   inherited Destroy;
 end;
 
