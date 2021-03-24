@@ -137,7 +137,7 @@ begin
     begin
       if Commentaries[i].footnotes then Continue;
       Strings := Commentaries[i].GetData(CurrVerse);
-      if Length(Strings) = 0 then Continue;
+      if Strings.IsEmpty then Continue;
       Result += '<h>' + Commentaries[i].Name + '</h><br><br>';
       for item in Strings  do Result += '<tab>' + item + '<br>';
       Result += '<br>';
@@ -157,7 +157,7 @@ begin
     begin
       if Dictionaries[i].embedded then Continue;
       Strings := Dictionaries[i].GetData(st);
-      if Length(Strings) = 0 then Continue;
+      if Strings.IsEmpty then Continue;
       Result += '<h>' + Dictionaries[i].Name + '</h><br><br>';
       for item in Strings do Result += '<tab>' + item + '<br>';
       Result += '<br>';

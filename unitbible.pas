@@ -342,7 +342,7 @@ end;
 
 function TBible.GoodLink(Verse: TVerse): boolean;
 begin
-  Result := Length(GetRange(Verse)) > 0;
+  Result := not GetRange(Verse).IsEmpty;
 end;
 
 function TBible.RankContents(const Contents: TContentArray): TContentArray;
@@ -530,7 +530,7 @@ var
 begin
   Result := '';
   Range := GetRange(Verse, false);
-  if Length(Range) > 0 then Result := ExtractFootnotes(Range[0], marker);
+  if not Range.IsEmpty then Result := ExtractFootnotes(Range[0], marker);
 end;
 
 procedure TBible.SavePrivate(const IniFile : TIniFile);

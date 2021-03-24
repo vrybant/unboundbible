@@ -171,14 +171,14 @@ begin
   if GetNumber(SelText) > 0 then
     begin
       ParagraphStart := GetNumber(SelText);
-      ParagraphCount := Length(List);
+      ParagraphCount := List.Count;
       Exit;
     end;
 
-  if Length(List) > 1 then
+  if List.Count > 1 then
     begin
       ParagraphStart := GetNumber(List[1]) - 1;
-      ParagraphCount := Length(List);
+      ParagraphCount := List.Count;
     end;
 end;
 
