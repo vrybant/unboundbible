@@ -127,18 +127,18 @@ end;
 
 function Get_Commentary: string;
 var
+  Commentary : TCommentary;
   Strings : TStringArray;
   item : string;
-  i : integer;
 begin
   Result := '';
 
-  for i:=0 to Commentaries.Count-1 do
+  for Commentary in Commentaries do
     begin
-      if Commentaries[i].footnotes then Continue;
-      Strings := Commentaries[i].GetData(CurrVerse);
+      if Commentary.footnotes then Continue;
+      Strings := Commentary.GetData(CurrVerse);
       if Strings.IsEmpty then Continue;
-      Result += '<h>' + Commentaries[i].Name + '</h><br><br>';
+      Result += '<h>' + Commentary.Name + '</h><br><br>';
       for item in Strings  do Result += '<tab>' + item + '<br>';
       Result += '<br>';
     end;
@@ -146,19 +146,19 @@ end;
 
 function Get_Dictionary(st: string = ''): string;
 var
+  Dictionary : TDictionary;
   Strings : TStringArray;
   item : string;
-  i : integer;
 begin
   Result := '';
   if st = '' then Exit;
 
-  for i:=0 to Dictionaries.Count-1 do
+  for Dictionary in Dictionaries do
     begin
-      if Dictionaries[i].embedded then Continue;
-      Strings := Dictionaries[i].GetData(st);
+      if Dictionary.embedded then Continue;
+      Strings := Dictionary.GetData(st);
       if Strings.IsEmpty then Continue;
-      Result += '<h>' + Dictionaries[i].Name + '</h><br><br>';
+      Result += '<h>' + Dictionary.Name + '</h><br><br>';
       for item in Strings do Result += '<tab>' + item + '<br>';
       Result += '<br>';
     end;

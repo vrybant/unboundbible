@@ -180,36 +180,38 @@ end;
 
 function TCommentaries.GetFootnote(module: string; Verse: TVerse; marker: string): string;
 var
+  Commentary : TCommentary;
   name : string;
-  i : integer;
 begin
   Result := '';
   if self.Count = 0 then Exit;
   if marker = '❉' then marker := '*';
   name := ExtractOnlyName(module);
 
-  for i:=0 to self.Count-1 do
+  for Commentary in Self do
     begin
-      if not self[i].footnotes then Continue;
-      if not Prefix(name,self[i].filename) then Continue;
-      Result := self[i].GetFootnote(Verse, marker);
+      if not Commentary.footnotes then Continue;
+      if not Prefix(name, Commentary.filename) then Continue;
+      Result := Commentary.GetFootnote(Verse, marker);
     end;
 end;
 
 function TCommentaries.IsEmpty: boolean;
-var i : integer;
+var
+  Commentary : TCommentary;
 begin
   Result := True;
-  if self.Count = 0 then Exit;
+  if Self.Count = 0 then Exit;
 
-  for i:=0 to self.Count-1 do
-    if not self[i].footnotes then Result := False;
+  for Commentary in Self do
+    if not Commentary.footnotes then Result := False;
 end;
 
 destructor TCommentaries.Destroy;
-var i : integer;
+var
+  Commentary : TCommentary;
 begin
-  for i:=0 to Count-1 do Items[i].Free;
+  for Commentary in Self do Commentary.Free;
   inherited Destroy;
 end;
 
