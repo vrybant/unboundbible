@@ -16,7 +16,10 @@ type
 
 type
   TStringArrayHelper = type helper for TStringArray
+    function IsEmpty: Boolean;
+    function GetCount: integer;
     procedure Add(const Value: string);
+    property Count: integer read GetCount;
   end;
 
 // string's functions
@@ -102,6 +105,16 @@ implementation
 var DarkTheme : boolean = False;
 
 // helper
+
+function TStringArrayHelper.IsEmpty: Boolean;
+begin
+  Result := Length(Self) = 0;
+end;
+
+function TStringArrayHelper.GetCount: integer;
+begin
+  Result := Length(Self);
+end;
 
 procedure TStringArrayHelper.Add(const Value: string);
 begin
