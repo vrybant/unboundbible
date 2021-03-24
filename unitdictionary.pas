@@ -22,7 +22,7 @@ type
   TDictionaries = class(TFPGList<TDictionary>)
   private
     procedure Load;
-    function StrongByLanguage(language: string): integer;
+    function StrongByLanguage(language: string): TDictionary;
   public
     constructor Create;
     function GetStrong(Verse: TVerse; language: string; number: string): string;
@@ -157,51 +157,51 @@ begin
       end;
 end;
 
-function TDictionaries.StrongByLanguage(language: string): integer;
-var i : integer;
+function TDictionaries.StrongByLanguage(language: string): TDictionary;
+var
+  Dictionary : TDictionary;
 begin
-  Result := -1;
-  if self.Count = 0 then Exit;
+  Result := nil;
 
-  for i:=0 to self.Count-1 do
+  for Dictionary in Dictionaries do
     begin
-      if not self[i].strong then Continue;
-      if not self[i].embedded then Continue;
-      if self[i].language = language then Result := i;
+      if not Dictionary.strong then Continue;
+      if not Dictionary.embedded then Continue;
+      if Dictionary.language = language then Result := Dictionary;
     end;
 end;
 
 function TDictionaries.GetStrong(Verse: TVerse; language: string; number: string): string;
 var
+  Dictionary : TDictionary;
   symbol : string;
-  x : integer;
 begin
   Result := '';
-  if self.Count = 0 then Exit;
+  if Count = 0 then Exit;
 
   if IsNewTestament(verse.book) then symbol := 'G' else symbol := 'H';
   if not Prefix(symbol,number) then number := symbol + number;
 
-  x := StrongByLanguage(language);
-  if x < 0 then x := StrongByLanguage('en');
-
-  if x >= 0 then Result := self[x].GetStrongData(number);
+  Dictionary := StrongByLanguage(language);
+  if Dictionary = nil then Dictionary := StrongByLanguage('en');
+  if Dictionary <> nil then Result := Dictionary.GetStrongData(number);
 end;
 
 function TDictionaries.IsEmpty: boolean;
-var i : integer;
+var
+  Dictionary : TDictionary;
 begin
   Result := True;
-  if self.Count = 0 then Exit;
 
-  for i:=0 to self.Count-1 do
-    if not self[i].embedded then Result := False;
+  for Dictionary in Dictionaries do
+    if not Dictionary.embedded then Result := False;
 end;
 
 destructor TDictionaries.Destroy;
-var i : integer;
+var
+  Dictionary : TDictionary;
 begin
-  for i:=0 to Count-1 do Items[i].Free;
+  for Dictionary in Dictionaries do Dictionary.Free;
   inherited Destroy;
 end;
 
