@@ -48,7 +48,7 @@ end;
 
 procedure TShelf.Load;
 var
-  Item : TBible;
+  Bible : TBible;
   List : TStringArray;
   f : string;
 begin
@@ -59,8 +59,8 @@ begin
       begin
         if f.Contains('.dictionary.') or f.Contains('.commentaries.') then Continue;
         if f.Contains('.crossreferences.') then Continue;
-        Item := TBible.Create(f);
-        if Item.connected then Add(Item) else Item.Free;
+        Bible := TBible.Create(f);
+        if Bible.connected then Add(Bible) else Bible.Free;
     end;
 end;
 
@@ -78,41 +78,41 @@ end;
 
 function TShelf.GetDefaultBible: string;
 var
-  Item : TBible;
+  Bible : TBible;
 begin
   Result := 'King James Version';
-  for Item in Self do
-    if Item.default_ then
-      if Item.language = GetLanguageID then Result := Item.name;
+  for Bible in Self do
+    if Bible.default_ then
+      if Bible.language = GetLanguageID then Result := Bible.name;
 end;
 
 procedure TShelf.SavePrivates;
 var
   IniFile : TIniFile;
-  Item : TBible;
+  Bible : TBible;
 begin
   IniFile := TIniFile.Create(ConfigFile);
-  for Item in Self do Item.SavePrivate(IniFile);
+  for Bible in Self do Bible.SavePrivate(IniFile);
   IniFile.Free;
 end;
 
 procedure TShelf.ReadPrivates;
 var
   IniFile : TIniFile;
-  Item : TBible;
+  Bible : TBible;
 begin
   IniFile := TIniFile.Create(ConfigFile);
-  for Item in Self do Item.ReadPrivate(IniFile);
+  for Bible in Self do Bible.ReadPrivate(IniFile);
   IniFile.Free;
 end;
 
 destructor TShelf.Destroy;
 var
-  Item : TBible;
+  Bible : TBible;
 begin
 //Self[Current].Extract;
   SavePrivates;
-  for Item in Self do Item.Free;
+  for Bible in Self do Bible.Free;
   inherited Destroy;
 end;
 
