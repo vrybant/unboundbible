@@ -152,25 +152,18 @@ begin
 end;
 
 function GetDatabaseList: TStringArray;
-const
-  ext : array [1..4] of string = ('.unbound','.bbli','.mybible','.SQLite3');
 var
   List : TStringArray;
   s, item : string;
-  index : integer = 0;
+const
+  ext : array [1..4] of string = ('.unbound','.bbli','.mybible','.SQLite3');
 begin
   List := GetFileList(DataPath, '*.*');
-  SetLength(Result, Length(List));
+  Result := [];
 
   for item in List do
     for s in ext do
-      if Suffix(s, item) then
-        begin
-          Result[index] := item;
-          index += 1;
-        end;
-
-  SetLength(Result, index);
+      if Suffix(s, item) then Result.Add(item);
 end;
 
 procedure UnzipDefaultsFiles;
