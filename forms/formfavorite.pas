@@ -31,7 +31,7 @@ var
 
 implementation
 
-uses UnitShelf, UnitLocal;
+uses UnitBible, UnitShelf, UnitLocal;
 
 {$R *.lfm}
 
@@ -57,10 +57,10 @@ begin
 end;
 
 procedure TFavoriteForm.MakeListBox;
-var i: integer;
+var
+  Bible : TBible;
 begin
-  for i:=0 to Shelf.Count-1 do
-    CheckListBox.Items.Add(Shelf[i].Name);
+  for Bible in Shelf do CheckListBox.Items.Add(Bible.Name);
 end;
 
 function TFavoriteForm.CurrItem: string;
@@ -71,14 +71,16 @@ begin
 end;
 
 procedure TFavoriteForm.ShelfToListBox;
-var i: integer;
+var
+  i : integer;
 begin
   for i:= 0 to Shelf.Count-1 do
     CheckListBox.Checked[i] := Shelf[i].Favorite;
 end;
 
 procedure TFavoriteForm.ListBoxToShelf;
-var i: integer;
+var
+  i: integer;
 begin
   for i:= 0 to Shelf.Count-1 do
     if CheckListBox.Items[i] <> currBible.name then
