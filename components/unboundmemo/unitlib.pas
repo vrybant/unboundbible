@@ -290,8 +290,7 @@ function ListToArray(const List: TStringList): TStringArray;
 var i : integer;
 begin
   SetLength(Result, List.Count);
-  for i:=0 to List.Count-1 do
-    Result[i] := List[i];
+  for i:=0 to List.Count-1 do Result[i] := List[i];
 end;
 
 function XmlToList(s: string): TStringArray;
