@@ -95,7 +95,7 @@ begin
         Query.First;
 
         count := 0;
-        for i:=0 to Query.RecordCount-1 do
+        while not Query.Eof do
           try
             v := minVerse;
             try v.book    := Query.FieldByName(z.xbook     ).AsInteger; except end;
@@ -115,6 +115,7 @@ begin
           finally
             Query.Next;
           end;
+
         SetLength(Result, count);
     except
       //

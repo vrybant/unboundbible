@@ -90,7 +90,6 @@ end;
 function TDictionary.GetData(key: string): TStringArray;
 var
   line : string;
-  i : integer;
   count : integer;
 begin
   Result := [];
@@ -105,14 +104,12 @@ begin
       Query.First;
 
       count := 0;
-      for i:=0 to Query.RecordCount-1 do
+      while not Query.Eof do
         try
           line := Query.FieldByName(z.data).AsString;
-          if line <> '' then
-             begin
-               Result[count] := line;
-               count += 1;
-             end;
+          if line.IsEmpty then Continue;
+          Result[count] := line;
+          count += 1;
         finally
           Query.Next;
         end;

@@ -287,14 +287,12 @@ begin
       Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + ToStr(id) +
                                  ' AND ' + z.chapter + '=' + ToStr(Verse.chapter);
       Query.Open;
-      Query.Last;
-      SetLength(Result, Query.RecordCount);
-      Query.First;
-
-      for i:=Low(Result) to High(Result) do
-        begin
-          try line := Query.FieldByName(z.text).AsString; except line := '' end;
-          Result[i] := Preparation(line, format, nt, false);
+      while not Query.Eof do
+        try
+          line := Query.FieldByName(z.text).AsString;
+          line := Preparation(line, format, nt, false);
+          Result.Add(line);
+        finally
           Query.Next;
         end;
     except
@@ -322,14 +320,12 @@ begin
                       ' AND ' + z.verse   + ' >= ' + ToStr(Verse.number ) +
                       ' AND ' + z.verse   + ' < '  + ToStr(Verse.number + Verse.count);
       Query.Open;
-      Query.Last;
-      SetLength(Result, Query.RecordCount);
-      Query.First;
-
-      for i:=Low(Result) to High(Result) do
-        begin
-          try line := Query.FieldByName(z.text).AsString; except line := '' end;
-          if prepare then Result[i] := Preparation(line, format, nt) else Result[i] := line;
+      while not Query.Eof do
+        try
+          line := Query.FieldByName(z.text).AsString;
+          if prepare then line := Preparation(line, format, nt);
+          Result.Add(line);
+        finally
           Query.Next;
         end;
     except
@@ -369,7 +365,6 @@ var
   nt : boolean;
   i : integer;
 begin
-  Result := [];
   SetSearchOptions(searchString, SearchOptions, format, accented);
 
   if Range.from > 0 then
@@ -385,7 +380,7 @@ begin
       Query.Open;
 
       Query.Last; // must be called before RecordCount
-      SetLength(Contents,Query.RecordCount);
+      SetLength(Contents, Query.RecordCount);
       Query.First;
 
       for i:=Low(Contents) to High(Contents) do
@@ -404,7 +399,7 @@ begin
       Query.Close;
     end;
   except
-    Exit;
+    Exit([]);
   end;
 
   Result := RankContents(Contents);
@@ -423,7 +418,7 @@ begin
       Query.Open;
 
       Query.Last; // must be called before RecordCount
-      SetLength(Result,Query.RecordCount);
+      SetLength(Result, Query.RecordCount);
       Query.First;
 
       for i:=Low(Result) to High(Result) do
