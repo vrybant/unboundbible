@@ -1,6 +1,6 @@
 
 Name: unboundbible
-Version: 5.1
+Version: 5.3
 Release: 0
 Group: Applications/Education
 Summary: Open Source Bible Application 
@@ -28,5 +28,8 @@ Unbound Bible is an open source and free, multilingual Bible software.
 %{_datadir}/%{name}/titles/*
 
 %changelog
+* Tue Mar 23 2021 Vladimir Rybant <vrybant@gmail.com> - 5.3-0
+- Fixed some bugs.
+
 * Tue Sep 01 2020 Vladimir Rybant <vrybant@gmail.com> - 5.1-0
 - Fixed some bugs.
