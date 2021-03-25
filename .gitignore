@@ -7,6 +7,7 @@ __history
 *.map
 *.exe
 *.deb
+*.rpm
 *.dll
 *.ini
 bin/*
