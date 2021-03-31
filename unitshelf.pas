@@ -80,10 +80,12 @@ function TShelf.GetDefaultBible: string;
 var
   Bible : TBible;
 begin
-  Result := 'King James Version';
   for Bible in Self do
     if Bible.default_ then
-      if Bible.language = GetLanguageID then Result := Bible.name;
+      begin
+        if Bible.language = GetLanguageID then Exit(Bible.name);
+        if Bible.language = 'en' then Result := Bible.name;
+      end;
 end;
 
 procedure TShelf.SavePrivates;
