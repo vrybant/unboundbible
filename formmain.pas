@@ -232,7 +232,6 @@ type
     procedure ToolButtonDonateClick(Sender: TObject);
     procedure ToolButtonSearchClick(Sender: TObject);
   private
-    DefaultCurrent: string;
     NoteFileName: string;
     RecentList: TStringList;
     Statuses: TStatuses;
@@ -314,7 +313,6 @@ begin
 
   if Shelf.Count > 0 then
   begin
-    Shelf.Current := DefaultCurrent;
     LoadComboBox;
     MakeBookList;
     if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
@@ -1530,7 +1528,7 @@ begin
                                else IniFile.WriteString('Window', 'State', 'Normal');
 
   IniFile.WriteInteger('Window', 'Splitter', PanelLeft.Width);
-  IniFile.WriteString('Application', 'DefaultBible', CurrBible.name);
+  IniFile.WriteString('Application', 'CurrentBible', CurrBible.name);
   IniFile.WriteString('Application', 'Interface', Localization.id);
 //IniFile.WriteBool('Application', 'Donate', DonateVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
@@ -1553,7 +1551,7 @@ var
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
-  DefaultCurrent := IniFile.ReadString('Application', 'DefaultBible', Shelf.GetDefaultBible);
+  Shelf.Current := IniFile.ReadString('Application', 'CurrentBible', Shelf.GetDefaultBible);
 
   Height := IniFile.ReadInteger('Window', 'Height', Screen.Height - 220);
   Width := IniFile.ReadInteger('Window', 'Width', Screen.Width - 450);
