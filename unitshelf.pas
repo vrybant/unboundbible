@@ -58,12 +58,17 @@ begin
 end;
 
 procedure TShelf.SetCurrent(Value: string);
-var i : integer;
+var
+  Bible : TBible;
 begin
   if Count = 0 then Exit;
 
-  for i:= Count-1 downto 0 do
-    if Items[i].Name = Value then CurrBible := Items[i];
+  for Bible in Self do
+    if Bible.Name = Value then
+      begin
+        CurrBible := Bible;
+        Break;
+      end;
 
   CurrBible.LoadDatabase;
   if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
