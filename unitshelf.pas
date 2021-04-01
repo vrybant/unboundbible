@@ -13,7 +13,6 @@ type
     procedure ReadPrivates;
     procedure SetCurrent(Value: string);
   public
-    Index : integer;
     constructor Create;
     destructor Destroy; override;
     function GetDefaultBible: string;
@@ -22,15 +21,9 @@ type
 
 var
   Shelf : TShelf;
-
-function CurrBible: TBible;
+  CurrBible: TBible;
 
 implementation
-
-function CurrBible: TBible;
-begin
-  Result := Shelf[Shelf.Index];
-end;
 
 function Comparison(const Item1: TBible; const Item2: TBible): integer;
 begin
@@ -40,7 +33,7 @@ end;
 constructor TShelf.Create;
 begin
   inherited;
-  Index := 0;
+  CurrBible := nil;
   Load;
   Sort(Comparison);
   ReadPrivates;
@@ -70,10 +63,10 @@ begin
   if Count = 0 then Exit;
 
   for i:= Count-1 downto 0 do
-    if Items[i].Name = Value then Index := i;
+    if Items[i].Name = Value then CurrBible := Items[i];
 
-  Self[Index].LoadDatabase;
-  if not Self[Index].GoodLink(CurrVerse) then CurrVerse := Self[Index].FirstVerse;
+  CurrBible.LoadDatabase;
+  if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
 end;
 
 function TShelf.GetDefaultBible: string;
@@ -113,7 +106,7 @@ destructor TShelf.Destroy;
 var
   Bible : TBible;
 begin
-//Self[Current].Extract;
+//CurrBible.Extract;
   SavePrivates;
   for Bible in Self do Bible.Free;
   inherited Destroy;
