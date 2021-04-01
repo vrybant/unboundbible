@@ -80,6 +80,7 @@ function TShelf.GetDefaultBible: string;
 var
   Bible : TBible;
 begin
+  Result := '';
   for Bible in Self do
     if Bible.default_ then
       begin
