@@ -312,7 +312,7 @@ begin
   ReadConfig;
   LoadComboBox;
 
-  if Shelf.Count > 0 then
+  if not Shelf.IsEmpty then
   begin
     MakeBookList;
     if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
@@ -322,7 +322,7 @@ begin
                     // so we call it from FormActivate
   end;
 
-  if Shelf.Count = 0 then
+  if Shelf.IsEmpty then
   begin
     ActionOptions.Enabled := False;
     ActionCompare.Enabled := False;
@@ -815,7 +815,7 @@ end;
 
 procedure TMainForm.CmdModules(Sender: TObject);
 begin
-  if Shelf.Count = 0 then Exit;
+  if Shelf.IsEmpty then Exit;
   DownloadForm.ShowModal;
 end;
 
@@ -868,7 +868,7 @@ var
   Memo : TUnboundMemo;
   Verse : TVerse;
 begin
-  if Shelf.Count = 0  then Exit;
+  if Shelf.IsEmpty then Exit;
   Memo := Sender as TUnboundMemo;
 
   if Button = mbRight then ShowPopup;
@@ -985,7 +985,7 @@ procedure TMainForm.GoToVerse(Verse: TVerse; select: boolean);
 var
   Book : TBook;
 begin
-  if Shelf.Count = 0 then Exit;
+  if Shelf.IsEmpty then Exit;
   if not CurrBible.GoodLink(Verse) then Exit;
 
   Book := CurrBible.BookByNum(Verse.Book);
@@ -1358,7 +1358,7 @@ end;
 
 procedure TMainForm.LoadChapter;
 begin
-  if Shelf.Count = 0 then Exit;
+  if Shelf.IsEmpty then Exit;
   MemoBible.Font.Assign(DefaultFont);
   MemoBible.LoadText(Get_Chapter, true);
   SelectPage(apBible);
@@ -1373,7 +1373,7 @@ const
 begin
   s := Trim(s);
   if Utf8Length(s) < 2 then Exit;
-  if Shelf.Count = 0 then Exit;
+  if Shelf.IsEmpty then Exit;
 
   Cursor := crHourGlass;
   text := Get_Search(s, count);
@@ -1398,7 +1398,7 @@ end;
 procedure TMainForm.LoadCompare;
 var text : string;
 begin
-  if Shelf.Count = 0 then Exit;
+  if Shelf.IsEmpty then Exit;
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br> ';
   text += Get_Compare;
   MemoCompare.Font.Assign(DefaultFont);
@@ -1411,7 +1411,7 @@ var
   text, data: string;
   info : string = '';
 begin
-  if Shelf.Count = 0 then Exit;
+  if Shelf.IsEmpty then Exit;
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
   data := Get_Reference(info);
   if data.isEmpty then text += T('Сross-references not found.') else text += data;
@@ -1517,7 +1517,7 @@ var
   IniFile: TIniFile;
   i: integer;
 begin
-  if Shelf.Count = 0 then Exit;
+  if Shelf.IsEmpty then Exit;
   IniFile := TIniFile.Create(ConfigFile);
 
   if WindowState = wsNormal then

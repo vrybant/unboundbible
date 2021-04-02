@@ -15,6 +15,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    function IsEmpty: boolean;
     function GetDefaultBible: string;
     property Current: string write SetCurrent;
   end;
@@ -72,6 +73,11 @@ begin
 
   CurrBible.LoadDatabase;
   if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
+end;
+
+function TShelf.IsEmpty: boolean;
+begin
+  Result := Count = 0;
 end;
 
 function TShelf.GetDefaultBible: string;
