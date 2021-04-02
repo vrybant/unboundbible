@@ -283,8 +283,8 @@ implementation
 
 uses
   {$ifdef windows} UmParseWin, {$endif}
-  FormAbout, FormNotify, FormSearch, FormFavorite, UnitTool, UnitLocal, UnitShelf, FormCopy,
-  FormDownload, UnitCommentary, UnitDictionary;
+  FormAbout, FormNotify, FormSearch, FormFavorite, UnitTool, UnitLocal, FormCopy, FormDownload,
+  UnitBible, UnitShelf, UnitCommentary, UnitDictionary;
 
 const
   apBible        = 0; // active page
@@ -912,13 +912,17 @@ end;
 //-------------------------------------------------------------------------------------------------
 
 procedure TMainForm.LoadComboBox;
-var i : integer;
+var
+  Bible : TBible;
 begin
   ComboBox.Items.Clear;
-  for i := 0 to Shelf.Count - 1 do
-    if Shelf[i].Favorite then ComboBox.Items.Add(Shelf[i].Name);
-  for i := 0 to ComboBox.Items.Count - 1 do
-      if ComboBox.Items[i] = CurrBible.Name then ComboBox.ItemIndex := i;
+
+  for Bible in Shelf do
+    if Bible.Favorite then
+      begin
+        ComboBox.Items.Add(Bible.Name);
+        if Bible = CurrBible then ComboBox.ItemIndex := ComboBox.Items.Count - 1;
+      end;
 end;
 
 procedure TMainForm.UpdateCaption(s: string);
