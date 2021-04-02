@@ -17,7 +17,8 @@ function Get_Verses: string;
 implementation
 
 uses
-  UnitData, UnitLocal, UnitModule, UnitShelf, FormSearch, UnitReference, UnitCommentary, UnitDictionary;
+  FormSearch, UnitData, UnitLocal, UnitModule, UnitBible, UnitShelf,
+  UnitReference, UnitCommentary, UnitDictionary;
 
 function Get_Chapter: string;
 var
@@ -93,19 +94,18 @@ end;
 
 function Get_Compare: string;
 var
-  str : string;
-  i : integer;
+  Bible : TBible;
+  s : string;
 begin
   Result := '';
 
-  for i:=0 to Shelf.Count-1 do
-    begin
-      if not Shelf[i].Favorite then Continue;
-      str := ''.Join(' ', Shelf[i].GetRange(CurrVerse));
-
-      if str.isEmpty then Continue;
-      Result += '<br><l>' + Shelf[i].Name + '</l><br>' + str + '<br>';
-    end;
+  for Bible in Shelf do
+    if Bible.Favorite then
+      begin
+        s := ''.Join(' ', Bible.GetRange(CurrVerse));
+        if s.isEmpty then Continue;
+        Result += '<br><l>' + Bible.Name + '</l><br>' + s + '<br>';
+      end;
 end;
 
 function Get_Reference(out info: string): string;
@@ -187,7 +187,7 @@ var
   l : boolean = False;
 begin
   if CurrBible.RightToLeft then Result := '<rtl>' else Result := '';
-  if Shelf.Count = 0 then Exit;
+  if Shelf.IsEmpty then Exit;
 
   Book := CurrBible.BookByNum(CurrVerse.Book);
   if not Assigned(Book) then Exit;
