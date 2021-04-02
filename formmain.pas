@@ -310,10 +310,10 @@ begin
   SaveDialog.InitialDir := DocumentsPath;
   NoteFileName := Untitled;
   ReadConfig;
+  LoadComboBox;
 
   if Shelf.Count > 0 then
   begin
-    LoadComboBox;
     MakeBookList;
     if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
     UpdateStatus(CurrBible.fileName + ' | ' + CurrBible.Info);
