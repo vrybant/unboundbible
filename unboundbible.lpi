@@ -138,7 +138,9 @@
       <Unit15>
         <Filename Value="forms\formfavorite.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FavoriteForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormFavorite"/>
       </Unit15>
       <Unit16>

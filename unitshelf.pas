@@ -62,7 +62,7 @@ procedure TShelf.SetCurrent(Value: string);
 var
   Bible : TBible;
 begin
-  if Count = 0 then Exit;
+  if IsEmpty then Exit;
 
   for Bible in Self do
     if Bible.Name = Value then

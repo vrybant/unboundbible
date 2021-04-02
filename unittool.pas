@@ -166,7 +166,7 @@ end;
 
 function Get_Strong(number: string = ''): string;
 begin
-  if Dictionaries.Count = 0 then Exit('');
+  if Dictionaries.IsEmpty then Exit('');
   Result := Dictionaries.GetStrong(CurrVerse, CurrBible.language, number);
 end;
 
