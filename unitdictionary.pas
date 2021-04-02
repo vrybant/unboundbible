@@ -25,8 +25,8 @@ type
     function StrongByLanguage(language: string): TDictionary;
   public
     constructor Create;
+    function EmbeddedOnly: boolean;
     function GetStrong(Verse: TVerse; language: string; number: string): string;
-    function IsEmpty: boolean;
     destructor Destroy; override;
   end;
 
@@ -184,12 +184,11 @@ begin
   if Dictionary <> nil then Result := Dictionary.GetStrongData(number);
 end;
 
-function TDictionaries.IsEmpty: boolean;
+function TDictionaries.EmbeddedOnly: boolean;
 var
   Dictionary : TDictionary;
 begin
   Result := True;
-
   for Dictionary in Dictionaries do
     if not Dictionary.embedded then Result := False;
 end;

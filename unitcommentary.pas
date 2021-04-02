@@ -25,7 +25,7 @@ type
   public
     constructor Create;
     function GetFootnote(module: string; Verse: TVerse; marker: string): string;
-    function IsEmpty: boolean;
+    function FootnotesOnly: boolean;
     destructor Destroy; override;
   end;
 
@@ -182,7 +182,7 @@ var
   name : string;
 begin
   Result := '';
-  if self.Count = 0 then Exit;
+  if Count = 0 then Exit;
   if marker = '❉' then marker := '*';
   name := ExtractOnlyName(module);
 
@@ -194,13 +194,11 @@ begin
     end;
 end;
 
-function TCommentaries.IsEmpty: boolean;
+function TCommentaries.FootnotesOnly: boolean;
 var
   Commentary : TCommentary;
 begin
   Result := True;
-  if Self.Count = 0 then Exit;
-
   for Commentary in Self do
     if not Commentary.footnotes then Result := False;
 end;
