@@ -63,6 +63,7 @@ var
   Bible : TBible;
 begin
   if IsEmpty then Exit;
+  CurrBible := Self[0];
 
   for Bible in Self do
     if Bible.Name = Value then
