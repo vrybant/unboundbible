@@ -48,7 +48,7 @@ Cut = Couper
 Delete = Supprimer 
 Developer = Développeur
 Dictionaries = Dictionnaires
-Donate = Donate
+Donate = Donner
 Download = Télécharger
 Edit = Éditer
 Encoding = Encodage
@@ -112,7 +112,7 @@ Search for % = Chercher % dans la Bible
 Search… = Chercher…
 Select All = Selectionner tout
 Set default = Par défaut
-Strong's Dictionary = Strong's Dictionary
+Strong's Dictionary = Concordane Strong
 Text Options = Options du texte
 Title = Titre
 Tools = Outils
@@ -132,7 +132,7 @@ Please narrow your search. = Veuillez préciser votre recherche.
 This search returned too many results. = Cette recherche donne un trop grand nombre de résultats. 
 You don't have any commentary modules. = Vous n'avez aucun module de commentaire.
 You don't have any dictionary modules. = Aucun module dictionnaire n'est installé.
-You search for % produced no results. = Votre recherche % n'a donné aucun résultat. 
+You search for % produced no results. = Votre recherche (%) n'a donné aucun résultat. 
 
 [macOS]
 
@@ -178,7 +178,7 @@ Zoom = Zoom
 // Localizable strings
 
 Change Font = Changer la police 
-Do you want to save the changes? = Voulez-vous enregistrer les changements ? 
+Do you want to save the changes? = Voulez-vous conserver les changements ? 
 Document Name = Nom du document 
 Don't Save = Ne pas enregistrer 
 Failed to save document. = Échec de l'enregistrement du document. 
@@ -188,5 +188,5 @@ The beta version has expired. = La version beta a expiré.
 The document % could not be opened. = Le document % n'a pas pu être ouvert. 
 Update = Mise à jour
 Update to the stable version. = Installer la version stable.
-verses was found = Des versets ont été trouvés 
+verses was found = versets ont été trouvés 
 Your changes will be lost if you don't save them. = Vos changements seront perdus si vous ne les enregistrez pas. 
