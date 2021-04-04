@@ -11,13 +11,12 @@ type
     procedure Load;
     procedure SavePrivates;
     procedure ReadPrivates;
-    procedure SetCurrent(Value: string);
   public
     constructor Create;
     destructor Destroy; override;
     function IsEmpty: boolean;
     function GetDefaultBible: string;
-    property Current: string write SetCurrent;
+    procedure SetCurrent(Value: string);
   end;
 
 var

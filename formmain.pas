@@ -616,7 +616,7 @@ procedure TMainForm.ComboBoxChange(Sender: TObject);
 var
   select : boolean;
 begin
-  Shelf.Current := ComboBox.Items[ComboBox.ItemIndex];
+  Shelf.SetCurrent( ComboBox.Items[ComboBox.ItemIndex] ) ;
   MakeBookList;
   select := CurrVerse.number > 1;
   {$ifdef linux}
@@ -1551,11 +1551,13 @@ end;
 procedure TMainForm.ReadConfig;
 var
   IniFile: TIniFile;
+  CurrentBible : string;
   i, max: integer;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
-  Shelf.Current := IniFile.ReadString('Application', 'CurrentBible', Shelf.GetDefaultBible);
+  CurrentBible := IniFile.ReadString('Application', 'CurrentBible', Shelf.GetDefaultBible);
+  Shelf.SetCurrent(CurrentBible);
 
   Height := IniFile.ReadInteger('Window', 'Height', Screen.Height - 220);
   Width := IniFile.ReadInteger('Window', 'Width', Screen.Width - 450);
