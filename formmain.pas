@@ -918,11 +918,10 @@ begin
   ComboBox.Items.Clear;
 
   for Bible in Shelf do
-    if Bible.Favorite then
-      begin
-        ComboBox.Items.Add(Bible.Name);
-        if Bible = CurrBible then ComboBox.ItemIndex := ComboBox.Items.Count - 1;
-      end;
+    begin
+      ComboBox.Items.Add(Bible.Name);
+      if Bible = CurrBible then ComboBox.ItemIndex := ComboBox.Items.Count - 1;
+    end;
 end;
 
 procedure TMainForm.UpdateCaption(s: string);
