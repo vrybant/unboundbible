@@ -1,6 +1,6 @@
 
 Name: unboundbible
-Version: 5.3
+Version: 5.4
 Release: 0
 Group: Applications/Education
 Summary: Open Source Bible Application 
