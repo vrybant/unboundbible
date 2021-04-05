@@ -158,7 +158,9 @@
       <Unit18>
         <Filename Value="forms\formdownload.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="DownloadForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormDownload"/>
       </Unit18>
     </Units>

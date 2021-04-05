@@ -103,7 +103,7 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButtonModules: TToolButton
-      Left = 4
+      Left = 37
       Top = 0
       Action = ActionFavorites
       ParentShowHint = False
@@ -195,10 +195,9 @@ object MainForm: TMainForm
       Action = ActionCommentaries
     end
     object ToolButtonCopyright: TToolButton
-      Left = 32
+      Left = 4
       Top = 0
       Action = ActionModules
-      Visible = False
     end
     object ToolButtonDictionary: TToolButton
       Left = 121
@@ -230,7 +229,7 @@ object MainForm: TMainForm
       Action = ActionReference
     end
     object ToolSeparator1: TToolButton
-      Left = 60
+      Left = 32
       Height = 28
       Top = 0
       Caption = 'ToolSeparator'
@@ -2502,6 +2501,7 @@ object MainForm: TMainForm
     object ActionModules: TAction
       Category = 'Tools'
       Caption = 'ActionModules'
+      ImageIndex = 34
       OnExecute = cmdModules
     end
     object ActionFavorites: TAction

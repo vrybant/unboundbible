@@ -12,6 +12,7 @@ object DownloadForm: TDownloadForm
   OnPaint = FormPaint
   OnShow = FormShow
   ParentFont = True
+  PopupMenu = PopupMenu
   Position = poScreenCenter
   LCLVersion = '2.0.10.0'
   object StringGrid: TStringGrid
@@ -35,7 +36,7 @@ object DownloadForm: TDownloadForm
         ButtonStyle = cbsNone
         Title.Alignment = taCenter
         Title.Caption = 'Title'
-        Width = 523
+        Width = 521
       end    
       item
         Alignment = taCenter
@@ -69,7 +70,7 @@ object DownloadForm: TDownloadForm
     OnSelection = StringGridSelection
     ColWidths = (
       40
-      523
+      521
       40
       0
       0
@@ -116,7 +117,7 @@ object DownloadForm: TDownloadForm
       Left = 13
       Height = 15
       Top = 11
-      Width = 31
+      Width = 27
       Caption = 'File : '
       ParentColor = False
     end
@@ -124,7 +125,7 @@ object DownloadForm: TDownloadForm
       Left = 41
       Height = 15
       Top = 11
-      Width = 52
+      Width = 46
       Caption = 'filename'
       ParentColor = False
     end
@@ -144,9 +145,16 @@ object DownloadForm: TDownloadForm
     Left = 7
     Height = 15
     Top = 317
-    Width = 55
+    Width = 48
     Caption = 'LabelTest'
     ParentColor = False
     Visible = False
+  end
+  object PopupMenu: TPopupMenu
+    Left = 294
+    Top = 164
+    object miDelete: TMenuItem
+      Caption = 'Delete'
+    end
   end
 end

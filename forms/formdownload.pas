@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, Grids, SysUtils,
-  LCLIntf, UnitLib;
+  LCLIntf, Menus, UnitLib;
 
 type
 
@@ -18,7 +18,9 @@ type
     LabelFilename: TLabel;
     LabelTest: TLabel;
     Memo: TMemo;
+    miDelete: TMenuItem;
     Panel: TPanel;
+    PopupMenu: TPopupMenu;
     StringGrid: TStringGrid;
     procedure ButtonDownloadsClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
