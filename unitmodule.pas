@@ -44,7 +44,6 @@ type
     interlinear  : boolean;
     default_     : boolean;
     accented     : boolean;
-    favorite     : boolean;
   public
     constructor Create(FilePath: string; new: boolean = false);
     procedure CommitTransaction;
@@ -87,7 +86,6 @@ begin
   default_     := false;
   accented     := false;
   format       := unbound;
-  favorite     := true;
 
   ext := ExtractFileExt(FilePath);
   if  (ext = '.mybible') or (ext = '.bbli') then format := mysword;

@@ -102,10 +102,10 @@ object MainForm: TMainForm
       ImageIndex = 15
       Style = tbsDivider
     end
-    object ToolButtonModules: TToolButton
+    object ToolButtonFavorites: TToolButton
       Left = 37
       Top = 0
-      Action = ActionFavorites
+      Action = ActionCompare
       ParentShowHint = False
       ShowHint = True
     end
@@ -2503,12 +2503,6 @@ object MainForm: TMainForm
       Caption = 'ActionModules'
       ImageIndex = 34
       OnExecute = cmdModules
-    end
-    object ActionFavorites: TAction
-      Category = 'Tools'
-      Caption = 'ActionFavorites'
-      ImageIndex = 11
-      OnExecute = CmdFavorite
     end
   end
   object OpenDialog: TOpenDialog

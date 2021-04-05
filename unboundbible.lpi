@@ -136,32 +136,32 @@
         <UnitName Value="FormCopy"/>
       </Unit14>
       <Unit15>
-        <Filename Value="forms\formfavorite.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FavoriteForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="FormFavorite"/>
-      </Unit15>
-      <Unit16>
         <Filename Value="forms\formsearch.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <UnitName Value="FormSearch"/>
-      </Unit16>
-      <Unit17>
+      </Unit15>
+      <Unit16>
         <Filename Value="forms\formnotify.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <UnitName Value="FormNotify"/>
-      </Unit17>
-      <Unit18>
+      </Unit16>
+      <Unit17>
         <Filename Value="forms\formdownload.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DownloadForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormDownload"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="forms\formcompare.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="CompareForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="FormCompare"/>
       </Unit18>
     </Units>
   </ProjectOptions>

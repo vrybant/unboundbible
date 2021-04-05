@@ -14,7 +14,6 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
-    ActionFavorites: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
     miIssue: TMenuItem;
@@ -154,7 +153,7 @@ type
     ToolButtonBullets: TToolButton;
     ToolButtonCenter: TToolButton;
     ToolButtonCommentary: TToolButton;
-    ToolButtonModules: TToolButton;
+    ToolButtonFavorites: TToolButton;
     ToolButtonCopy: TToolButton;
     ToolButtonCopyright: TToolButton;
     ToolButtonCut: TToolButton;
@@ -203,7 +202,6 @@ type
     procedure CmdStyle(Sender: TObject);
     procedure CmdStyle2(Sender: TObject);
     procedure CmdModules(Sender: TObject);
-    procedure CmdFavorite(Sender: TObject);
 
     procedure ComboBoxChange(Sender: TObject);
     procedure ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
@@ -283,7 +281,7 @@ implementation
 
 uses
   {$ifdef windows} UmParseWin, {$endif}
-  FormAbout, FormNotify, FormSearch, FormFavorite, UnitTool, UnitLocal, FormCopy, FormDownload,
+  FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLocal, FormCopy, FormDownload,
   UnitBible, UnitShelf, UnitCommentary, UnitDictionary;
 
 const
@@ -503,7 +501,7 @@ begin
   ToolButtonPaste.Hint := T('Paste');
   ToolButtonUndo.Hint := T('Undo');
 
-  ToolButtonModules.Hint := T('Bible');
+  ToolButtonFavorites.Hint := T('Compare');
   ToolButtonReference.Hint := T('Cross-References');
   ToolButtonCommentary.Hint := T('Commentaries');
   ToolButtonDictionary.Hint := T('Dictionaries');
@@ -523,7 +521,7 @@ procedure TMainForm.LocalizeApplication;
 begin
   MainForm     .Localize;
   SearchForm   .Localize;
-  FavoriteForm .Localize;
+  CompareForm  .Localize;
   AboutBox     .Localize;
   CopyForm     .Localize;
   DownloadForm .Localize;
@@ -644,6 +642,8 @@ end;
 
 procedure TMainForm.CmdCompare(Sender: TObject);
 begin
+  if Sender <> PageControl then
+    if CompareForm.ShowModal <> mrOk then Exit;
   LoadCompare;
 end;
 
@@ -817,14 +817,6 @@ procedure TMainForm.CmdModules(Sender: TObject);
 begin
   if Shelf.IsEmpty then Exit;
   DownloadForm.ShowModal;
-end;
-
-procedure TMainForm.CmdFavorite(Sender: TObject);
-begin
-  if FavoriteForm.ShowModal <> mrOk then Exit;
-  LoadComboBox;
-//if not FavoriteForm.CurrItem.IsEmpty then SelectBible(FavoriteForm.CurrItem);
-  if PageControl.ActivePageIndex = apCompare then CmdCompare(Self);
 end;
 
 procedure TMainForm.CmdExit(Sender: TObject);

@@ -1,36 +1,33 @@
-object FavoriteForm: TFavoriteForm
+object CompareForm: TCompareForm
   Left = 520
   Height = 298
   Top = 255
   Width = 450
   BorderStyle = bsDialog
-  Caption = ' Bible'
+  Caption = ' Compare Options'
   ClientHeight = 298
   ClientWidth = 450
   Color = clBtnFace
+  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   ParentFont = True
   Position = poScreenCenter
-  LCLVersion = '2.0.10.0'
+  LCLVersion = '1.6.4.0'
   object CheckListBox: TCheckListBox
     Left = 8
     Height = 242
     Top = 8
     Width = 434
-    DragMode = dmAutomatic
-    ExtendedSelect = False
     Font.Color = clWindowText
     Font.Height = -13
     ItemHeight = 0
-    OnSelectionChange = CheckListBoxSelectionChange
     ParentFont = False
     TabOrder = 1
-    TopIndex = -1
   end
   object ButtonOK: TButton
     Left = 188
-    Height = 29
+    Height = 25
     Top = 261
     Width = 80
     AutoSize = True
@@ -39,7 +36,6 @@ object FavoriteForm: TFavoriteForm
     Constraints.MinWidth = 80
     Default = True
     ModalResult = 1
-    OnClick = ButtonOKClick
     TabOrder = 0
   end
 end

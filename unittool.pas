@@ -100,7 +100,7 @@ begin
   Result := '';
 
   for Bible in Shelf do
-    if Bible.Favorite then
+    if Bible.compare then
       begin
         s := ''.Join(' ', Bible.GetRange(CurrVerse));
         if s.isEmpty then Continue;

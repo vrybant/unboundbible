@@ -93,7 +93,7 @@ var
   function GetInfo(const Module: TModule): TStringArray;
   begin
     Result := [];
-    Result.Add(iif(Module.Favorite, '*', ''));
+    Result.Add('*');
     Result.Add(' ' + Module.Name);
     Result.Add(Module.language);
     Result.Add(Module.fileName);

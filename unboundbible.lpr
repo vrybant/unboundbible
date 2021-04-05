@@ -5,7 +5,7 @@ uses
   {$ifdef darwin} printer4lazarus, {$endif}
   Interfaces, Graphics, Forms, richmemopackage,
   UnitTool, UnitModule, UnitShelf, UnitCommentary, UnitDictionary, UnitReference,
-  FormMain, FormAbout, FormNotify, FormSearch, FormFavorite, FormCopy, FormDownload;
+  FormMain, FormAbout, FormNotify, FormSearch, FormCompare, FormCopy, FormDownload;
 
 {$R *.res}
 
@@ -16,7 +16,7 @@ begin
   Application.CreateForm(TAboutBox,     AboutBox);
   Application.CreateForm(TNotifyForm,   NotifyForm);
   Application.CreateForm(TSearchForm,   SearchForm);
-  Application.CreateForm(TFavoriteForm, FavoriteForm);
+  Application.CreateForm(TCompareForm,  CompareForm);
   Application.CreateForm(TCopyForm,     CopyForm);
   Application.CreateForm(TDownloadForm, DownloadForm);
   MainForm.LocalizeApplication;
