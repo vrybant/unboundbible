@@ -124,7 +124,7 @@ var
 function unbound2mybible(id: integer): integer;
 begin
   Result := id;
-  if (id > 0) and (id <= Length(myBibleArray)) then Result := myBibleArray[id];
+  if id in [1..Length(myBibleArray)] then Result := myBibleArray[id];
 end;
 
 function mybible2unbound(id: integer): integer;
@@ -138,7 +138,7 @@ end;
 
 function IsNewTestament(n: integer): boolean;
 begin
-  Result := (n >= 40) and (n < 77);
+  Result := n in [40..76];
 end;
 
 function DataPath: string;
