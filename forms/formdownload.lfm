@@ -155,6 +155,8 @@ object DownloadForm: TDownloadForm
     Top = 164
     object miDelete: TMenuItem
       Caption = 'Delete'
+      ImageIndex = 31
+      OnClick = miDeleteClick
     end
   end
 end

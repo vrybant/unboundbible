@@ -3,8 +3,8 @@ unit FormDownload;
 interface
 
 uses
-  Classes, Graphics, Forms, Controls, StdCtrls, Buttons, ExtCtrls, Grids, SysUtils,
-  LCLIntf, Menus, UnitLib;
+  Classes, Graphics, Dialogs, Forms, Controls, StdCtrls, Buttons, ExtCtrls, Grids, SysUtils,
+  LCLIntf, LCLType, Menus, UnitLib;
 
 type
 
@@ -27,6 +27,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure miDeleteClick(Sender: TObject);
     procedure StringGridCheckboxToggled(sender: TObject; aCol, aRow: Integer;
       aState: TCheckboxState);
     procedure StringGridGetCheckboxState(Sender: TObject; aCol, aRow: Integer;
@@ -84,6 +85,13 @@ procedure TDownloadForm.FormShow(Sender: TObject);
 begin
   LoadGrid;
   StringGridSelection(Self, StringGrid.Col, StringGrid.Row);
+end;
+
+procedure TDownloadForm.miDeleteClick(Sender: TObject);
+begin
+  if MessageDlg(T('Do you want to delete this module:') + ' '
+    + StringGrid.Cells[1, StringGrid.Row] + '?',
+      mtConfirmation, [mbYes, mbCancel], 0) <> idYes then Exit;
 end;
 
 procedure TDownloadForm.LoadGrid;
