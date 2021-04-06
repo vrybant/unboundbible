@@ -198,6 +198,7 @@ object MainForm: TMainForm
       Left = 4
       Top = 0
       Action = ActionModules
+      Visible = False
     end
     object ToolButtonDictionary: TToolButton
       Left = 121
@@ -234,6 +235,7 @@ object MainForm: TMainForm
       Top = 0
       Caption = 'ToolSeparator'
       Style = tbsDivider
+      Visible = False
     end
   end
   object PanelLeft: TPanel
@@ -2501,7 +2503,6 @@ object MainForm: TMainForm
     object ActionModules: TAction
       Category = 'Tools'
       Caption = 'ActionModules'
-      ImageIndex = 34
       OnExecute = cmdModules
     end
   end
