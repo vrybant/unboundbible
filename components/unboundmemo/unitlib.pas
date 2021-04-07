@@ -95,13 +95,14 @@ procedure Output(s: string); overload;
 procedure Output(n: integer); overload;
 
 const
-  Slash = DirectorySeparator;
-
-const
   clBlueScreen = TColor($BB4700);
   clGreenScreen = TColor($40B100);
   clSysGray = clGray;
   clSysRed = clRed;
+
+const
+  Slash = DirectorySeparator;
+  LineBreaker = {$ifdef windows}#13{$else}#10{$endif};
 
 implementation
 

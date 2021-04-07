@@ -44,9 +44,6 @@ type
     procedure SaveToFile(const FileName : string);
   end;
 
-const
-  LineBreaker = {$ifdef windows}#13{$else}#10{$endif};
-
 implementation
 
 constructor TRichMemoEx.Create(AOwner: TComponent);

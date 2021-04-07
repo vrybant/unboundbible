@@ -91,8 +91,8 @@ end;
 procedure TDownloadForm.MenuItemDeleteClick(Sender: TObject);
 begin
   if QuestionDlg(' ' + T('Confirmation'),
-    T('Do you wish to delete this module?' + #13#13) +
-      StringGrid.Cells[1, StringGrid.Row].Trim + #13#13,
+    T('Do you wish to delete this module?' + LineBreaker + LineBreaker) +
+      StringGrid.Cells[1, StringGrid.Row].Trim + LineBreaker,
         mtWarning, [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) <> idYes then Exit;
 end;
 

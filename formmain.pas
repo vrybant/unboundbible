@@ -1091,13 +1091,11 @@ end;
 procedure TMainForm.EnableActions;
 var
   B, L, M, S : boolean;
-const
-  chr : char = {$ifdef windows} #13 {$else} #10 {$endif};
 begin
   B := PageControl.ActivePageIndex = apBible;
   L := PageControl.ActivePageIndex = apNotes;
   S := UnboundMemo.SelLength > iif(B,1,0);
-  M := UnboundMemo.SelText.Contains(chr); // multiline
+  M := UnboundMemo.SelText.Contains(LineBreaker); // multiline
 
   ActionSearchfor.Visible  := S and not M;
   ActionLookup.Visible     := S and not M;
