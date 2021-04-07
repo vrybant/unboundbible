@@ -89,9 +89,9 @@ end;
 
 procedure TDownloadForm.miDeleteClick(Sender: TObject);
 begin
-  if MessageDlg(T('Do you want to delete this module:') + ' '
-    + StringGrid.Cells[1, StringGrid.Row] + '?',
-      mtConfirmation, [mbYes, mbCancel], 0) <> idYes then Exit;
+  if QuestionDlg(' ' + T('Confirmation'), T('Do you want to delete "') +
+    StringGrid.Cells[1, StringGrid.Row].Trim + '"?',
+      mtWarning, [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) <> idYes then Exit;
 end;
 
 procedure TDownloadForm.LoadGrid;
