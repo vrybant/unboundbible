@@ -151,12 +151,12 @@ object DownloadForm: TDownloadForm
     Visible = False
   end
   object PopupMenu: TPopupMenu
-    Left = 294
+    Left = 296
     Top = 164
-    object miDelete: TMenuItem
+    object MenuItemDelete: TMenuItem
       Caption = 'Delete'
       ImageIndex = 31
-      OnClick = miDeleteClick
+      OnClick = MenuItemDeleteClick
     end
   end
 end

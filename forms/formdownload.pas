@@ -18,16 +18,16 @@ type
     LabelFilename: TLabel;
     LabelTest: TLabel;
     Memo: TMemo;
-    miDelete: TMenuItem;
     Panel: TPanel;
     PopupMenu: TPopupMenu;
+    MenuItemDelete: TMenuItem;
     StringGrid: TStringGrid;
     procedure ButtonDownloadsClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure miDeleteClick(Sender: TObject);
+    procedure MenuItemDeleteClick(Sender: TObject);
     procedure StringGridCheckboxToggled(sender: TObject; aCol, aRow: Integer;
       aState: TCheckboxState);
     procedure StringGridGetCheckboxState(Sender: TObject; aCol, aRow: Integer;
@@ -58,6 +58,7 @@ begin
   ButtonFolder.Caption := T('Folder');
   StringGrid.Columns[1].Title.Caption := T('Title');
   LabelFile.Caption := T('File Name') + ' : ';
+  MenuItemDelete.Caption := T('Delete');
 end;
 
 procedure TDownloadForm.FormCreate(Sender: TObject);
@@ -87,11 +88,12 @@ begin
   StringGridSelection(Self, StringGrid.Col, StringGrid.Row);
 end;
 
-procedure TDownloadForm.miDeleteClick(Sender: TObject);
+procedure TDownloadForm.MenuItemDeleteClick(Sender: TObject);
 begin
-  if QuestionDlg(' ' + T('Confirmation'), T('Do you want to delete "') +
-    StringGrid.Cells[1, StringGrid.Row].Trim + '"?',
-      mtWarning, [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) <> idYes then Exit;
+  if QuestionDlg(' ' + T('Confirmation'),
+    T('Do you wish to delete this module?' + #13#13) +
+      StringGrid.Cells[1, StringGrid.Row].Trim + #13#13,
+        mtWarning, [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) <> idYes then Exit;
 end;
 
 procedure TDownloadForm.LoadGrid;
