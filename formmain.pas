@@ -792,8 +792,9 @@ begin
       SaveDialog.FileName := SaveDialog.FileName + '.rtf';
 
     if FileExists(SaveDialog.FileName) then
-      if MessageDlg(Format(T('OK to overwrite %s?'), [SaveDialog.FileName]),
-        mtConfirmation, mbYesNoCancel, 0) <> idYes then Exit;
+      if QuestionDlg(' ' + T('Confirmation'),
+        Format(T('OK to overwrite %s?'), [SaveDialog.FileName]), mtConfirmation,
+          [mrYes, T('Yes'), mrNo, T('No'), mrCancel, T('Cancel'), 'IsDefault'], 0) <> idYes then Exit;
 
     MemoNotes.SaveToFile(SaveDialog.FileName);
     NoteFileName := SaveDialog.FileName;
@@ -1001,7 +1002,8 @@ begin
   if not MemoNotes.Modified then Exit;
   SelectPage(apNotes);
 
-  Response := MessageDlg(T('Save changes?'), mtConfirmation, mbYesNoCancel, 0);
+  Response := QuestionDlg(' ' + T('Confirmation'), T('Save changes?'),
+      mtConfirmation, [mrYes, T('Yes'), mrNo, T('No'), mrCancel, T('Cancel'), 'IsDefault'], 0);
 
   // remake!!
   case Response of
