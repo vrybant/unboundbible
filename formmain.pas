@@ -782,28 +782,26 @@ end;
 procedure TMainForm.CmdFileSaveAs(Sender: TObject);
 begin
   SelectPage(apNotes);
-
   if NoteFileName = Untitled then SaveDialog.InitialDir := DocumentsPath
                              else SaveDialog.InitialDir := ExtractFilePath(NoteFileName);
 
-  if SaveDialog.Execute then
-  begin
-    if not SaveDialog.FileName.Contains('.rtf') then
-      SaveDialog.FileName := SaveDialog.FileName + '.rtf';
+  if not SaveDialog.Execute then Exit;
 
-    if FileExists(SaveDialog.FileName) then
-      if QuestionDlg(' ' + T('Confirmation'),
-        Format(T('OK to overwrite %s?'), [SaveDialog.FileName]), mtConfirmation,
-          [mrYes, T('Yes'), mrNo, T('No'), mrCancel, T('Cancel'), 'IsDefault'], 0) <> idYes then Exit;
+  if not SaveDialog.FileName.Contains('.rtf') then
+    SaveDialog.FileName := SaveDialog.FileName + '.rtf';
 
-    MemoNotes.SaveToFile(SaveDialog.FileName);
-    NoteFileName := SaveDialog.FileName;
+  if FileExists(SaveDialog.FileName) then
+    if QuestionDlg(' ' + T('Confirmation'),
+      Format(T('OK to overwrite %s?'), [SaveDialog.FileName]), mtConfirmation,
+        [mrYes, T('Yes'), mrNo, T('No'), mrCancel, T('Cancel'), 'IsDefault'], 0) <> idYes then Exit;
 
-    RebuildRecentList;
+  MemoNotes.SaveToFile(SaveDialog.FileName);
+  NoteFileName := SaveDialog.FileName;
 
-    MemoNotes.Modified := False;
-    UpdateCaption(ExtractOnlyName(NoteFileName));
-  end;
+  RebuildRecentList;
+
+  MemoNotes.Modified := False;
+  UpdateCaption(ExtractOnlyName(NoteFileName));
 end;
 
 procedure TMainForm.CmdFilePrint(Sender: TObject);
