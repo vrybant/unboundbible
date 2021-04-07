@@ -792,8 +792,8 @@ begin
 
   if FileExists(SaveDialog.FileName) then
     if QuestionDlg(' ' + T('Confirmation'),
-      Format(T('OK to overwrite %s?'), [SaveDialog.FileName]), mtConfirmation,
-        [mrYes, T('Yes'), mrNo, T('No'), mrCancel, T('Cancel'), 'IsDefault'], 0) <> idYes then Exit;
+      Format(T('OK to overwrite %s?'), [SaveDialog.FileName]), mtWarning,
+        [mrYes, T('Yes'), mrNo, T('No'), 'IsDefault'], 0) <> idYes then Exit;
 
   MemoNotes.SaveToFile(SaveDialog.FileName);
   NoteFileName := SaveDialog.FileName;
