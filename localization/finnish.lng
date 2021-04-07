@@ -86,6 +86,7 @@ Modules = Vertailuvalinnat
 NT = UT
 New = Uusi
 New Testament = Uusi Testamentti
+No = Ei
 Notes = Muistiinpanot
 OK = OK
 OK to overwrite %s? = OK to overwrite %s?
