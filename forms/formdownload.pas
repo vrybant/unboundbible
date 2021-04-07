@@ -72,6 +72,8 @@ begin
     StringGrid.Top := StringGrid.Top + 1;
     StringGrid.Height := StringGrid.Height - 1;
   {$endif}
+
+  PopupMenu.AutoPopup := False;
 end;
 
 procedure TDownloadForm.FormPaint(Sender: TObject);
@@ -93,7 +95,10 @@ begin
   if QuestionDlg(' ' + T('Confirmation'),
     T('Do you wish to delete this module?' + LineBreaker + LineBreaker) +
       StringGrid.Cells[1, StringGrid.Row].Trim + LineBreaker,
-        mtWarning, [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) <> idYes then Exit;
+        mtWarning, [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) = idYes then
+          begin
+            // delete module
+          end;
 end;
 
 procedure TDownloadForm.LoadGrid;
