@@ -175,7 +175,7 @@ procedure UnzipDefaultsFiles;
 var
   UnZipper: TUnZipper;
   List : TStringArray;
-  f : string;
+  f, d : string;
   empty : boolean;
 begin
   if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
@@ -190,11 +190,15 @@ begin
   UnZipper.OutputPath := DataPath;
 
   for f in List do
-    try
-      UnZipper.FileName := f;
-      UnZipper.UnZipAllFiles;
-    except
-      //
+    begin
+      d := DataPath + Slash + ExtractOnlyName(f);
+      if not empty and not FileExists(d) then Continue;
+      try
+        UnZipper.FileName := f;
+        UnZipper.UnZipAllFiles;
+      except
+        //
+      end;
     end;
 
   UnZipper.Free;
