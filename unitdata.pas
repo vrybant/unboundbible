@@ -166,14 +166,22 @@ begin
       if Suffix(s, item) then Result.Add(item);
 end;
 
+function GetUnboundBiblesList: TStringArray;
+begin
+  Result := GetFileList(DataPath, '*.bbl.unbound');
+end;
+
 procedure UnzipDefaultsFiles;
 var
   UnZipper: TUnZipper;
   List : TStringArray;
   f : string;
+  empty : boolean;
 begin
   if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
-  if not ApplicationUpdate and (Length(GetDatabaseList) > 0) then Exit;
+
+  empty := GetUnboundBiblesList.IsEmpty;
+  if not ApplicationUpdate and not empty then Exit;
 
   List := GetFileList(SharePath + BibleDirectory, '*.zip');
 
