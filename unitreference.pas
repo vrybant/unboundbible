@@ -159,7 +159,7 @@ begin
   Result := [];
   info := '';
 
-  filename := BoolToStr(Prefix('ru', language),'obru.xrefs.unbound','ob.xrefs.unbound');
+  filename := BoolToStr(Prefix('ru', language),'ru.ob.xrefs.unbound','en.ob.xrefs.unbound');
 
   for Reference in References do
     if Reference.filename = filename then

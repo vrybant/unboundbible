@@ -8,7 +8,7 @@ uses
 const
   ApplicationName = 'Unbound Bible';
   ApplicationVersion = '5.4';
-  BibleDirectory = 'bibles';
+  ModulesDirectory = 'modules';
   LangDirectory = 'localization';
   Untitled = 'Untitled';
   RecentMax = 10;
@@ -183,7 +183,7 @@ begin
   empty := GetUnboundBiblesList.IsEmpty;
   if not ApplicationUpdate and not empty then Exit;
 
-  List := GetFileList(SharePath + BibleDirectory, '*.zip');
+  List := GetFileList(SharePath + ModulesDirectory, '*.zip');
 
   UnZipper := TUnZipper.Create;
   UnZipper.UseUTF8 := True;
