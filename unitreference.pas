@@ -21,6 +21,7 @@ type
   TReferences = class(TFPGList<TReference>)
   private
     procedure Load;
+    function ReferenceByLanguage(language: string): TReference;
   public
     constructor Create;
     function GetData(Verse: TVerse; language: string; out info: string): TVerseArray;
@@ -151,29 +152,34 @@ begin
       end;
 end;
 
+function TReferences.ReferenceByLanguage(language: string): TReference;
+var
+  Reference : TReference;
+begin
+  Result := nil;
+  for Reference in Self do
+    if Reference.language = language then Exit(Reference);
+end;
+
 function TReferences.GetData(Verse: TVerse; language: string; out info: string): TVerseArray;
 var
   Reference : TReference;
-  filename : string;
 begin
-  Result := [];
   info := '';
 
-  filename := BoolToStr(Prefix('ru', language),'ru.ob.xrefs.unbound','en.ob.xrefs.unbound');
+  Reference := ReferenceByLanguage(language);
+  if Reference = nil then Reference := ReferenceByLanguage('en');
+  if Reference = nil then Exit([]);
 
-  for Reference in References do
-    if Reference.filename = filename then
-        begin
-          Result := Reference.GetData(Verse);
-          info := Reference.info;
-        end;
+  Result := Reference.GetData(Verse);
+  info := Reference.info;
 end;
 
 destructor TReferences.Destroy;
 var
   Reference : TReference;
 begin
-  for Reference in References do Reference.Free;
+  for Reference in Self do Reference.Free;
   inherited Destroy;
 end;
 
