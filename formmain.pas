@@ -314,7 +314,7 @@ begin
   begin
     MakeBookList;
     if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
-    UpdateStatus(CurrBible.fileName + ' | ' + CurrBible.Info);
+    UpdateStatus(CurrBible.Info);
 
     // LoadChapter; // RichMemo doesn't load from Stream,
                     // so we call it from FormActivate
@@ -623,7 +623,7 @@ begin
     GotoVerse(CurrVerse, select);
   {$endif}
   SelectPage(apBible);
-  UpdateStatus(CurrBible.fileName + ' | ' + CurrBible.Info);
+  UpdateStatus(CurrBible.Info);
 end;
 
 procedure TMainForm.ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
