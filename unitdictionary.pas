@@ -160,7 +160,7 @@ var
 begin
   Result := nil;
 
-  for Dictionary in Dictionaries do
+  for Dictionary in Self do
     begin
       if not Dictionary.strong then Continue;
       if not Dictionary.embedded then Continue;
@@ -189,7 +189,7 @@ var
   Dictionary : TDictionary;
 begin
   Result := True;
-  for Dictionary in Dictionaries do
+  for Dictionary in Self do
     if not Dictionary.embedded then Result := False;
 end;
 
@@ -197,7 +197,7 @@ destructor TDictionaries.Destroy;
 var
   Dictionary : TDictionary;
 begin
-  for Dictionary in Dictionaries do Dictionary.Free;
+  for Dictionary in Self do Dictionary.Free;
   inherited Destroy;
 end;
 
