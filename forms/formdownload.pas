@@ -3,14 +3,15 @@ unit FormDownload;
 interface
 
 uses
-  Classes, Graphics, Dialogs, Forms, Controls, StdCtrls, Buttons, ExtCtrls, Grids, SysUtils,
-  LCLIntf, LCLType, Menus, UnitLib;
+  Classes, Graphics, Dialogs, Forms, Controls, ComCtrls, StdCtrls, Buttons, ExtCtrls, Grids,
+  SysUtils, LCLIntf, LCLType, Menus, UnitLib;
 
 type
 
   { TDownloadForm }
 
   TDownloadForm = class(TForm)
+    Images: TImageList;
     ButtonDownloads: TButton;
     ButtonFolder: TButton;
     ButtonClose: TButton;
@@ -19,9 +20,13 @@ type
     LabelTest: TLabel;
     Memo: TMemo;
     Panel: TPanel;
+    StandardToolBar: TToolBar;
     PopupMenu: TPopupMenu;
     MenuItemDelete: TMenuItem;
     StringGrid: TStringGrid;
+    ToolButtonDownload: TToolButton;
+    ToolButtonFolder: TToolButton;
+    ToolButtonDelete: TToolButton;
     procedure ButtonDownloadsClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -34,6 +39,7 @@ type
       var Value: TCheckboxState);
     procedure StringGridSelection(Sender: TObject; aCol, aRow: Integer);
     procedure StringGridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
+    procedure ToolButtonDeleteClick(Sender: TObject);
   private
     {$ifdef windows} MemoWidth : integer; {$endif}
     procedure LoadGrid;
@@ -92,13 +98,6 @@ end;
 
 procedure TDownloadForm.MenuItemDeleteClick(Sender: TObject);
 begin
-  if QuestionDlg(' ' + T('Confirmation'),
-    T('Do you wish to delete this module?' + LineBreaker + LineBreaker) +
-      StringGrid.Cells[1, StringGrid.Row].Trim + LineBreaker,
-        mtWarning, [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) = idYes then
-          begin
-            // delete module
-          end;
 end;
 
 procedure TDownloadForm.LoadGrid;
@@ -164,6 +163,17 @@ begin
   if LabelTest.Width > StringGrid.Columns[aCol].Width - delta then
     HintText := StringGrid.Cells[aCol, aRow];
   LabelTest.Visible := False;
+end;
+
+procedure TDownloadForm.ToolButtonDeleteClick(Sender: TObject);
+begin
+  if QuestionDlg(' ' + T('Confirmation'),
+    T('Do you wish to delete this module?' + LineBreaker + LineBreaker) +
+      StringGrid.Cells[1, StringGrid.Row].Trim + LineBreaker,
+        mtWarning, [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) = idYes then
+          begin
+            // delete module
+          end;
 end;
 
 procedure TDownloadForm.ButtonFolderClick(Sender: TObject);
