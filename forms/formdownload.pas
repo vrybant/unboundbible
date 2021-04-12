@@ -143,6 +143,7 @@ end;
 
 procedure TDownloadForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
 begin
+  ToolButtonDelete.Enabled := CurrBible.name <> StringGrid.Cells[1, aRow].TrimLeft;
   LabelFilename.Caption := StringGrid.Cells[3, aRow];
   LabelFile.Visible := LabelFilename.Caption <> '';
   Memo.Clear;
@@ -168,10 +169,12 @@ end;
 procedure TDownloadForm.ToolButtonDeleteClick(Sender: TObject);
 begin
   if QuestionDlg(' ' + T('Confirmation'),
-    T('Do you wish to delete this module?' + LineBreaker + LineBreaker) +
+    T('Do you wish to delete this module?') + LineBreaker + LineBreaker +
       StringGrid.Cells[1, StringGrid.Row].Trim + LineBreaker,
         mtWarning, [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) = idYes then
           begin
+            StringGrid.DeleteRow(StringGrid.Row);
+            StringGridSelection(Sender, StringGrid.Col, StringGrid.Row);
             // delete module
           end;
 end;
