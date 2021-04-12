@@ -17,6 +17,7 @@ type
     function IsEmpty: boolean;
     function GetDefaultBible: string;
     procedure SetCurrent(Value: string);
+    procedure DeleteItem(filename: string);
   end;
 
 var
@@ -90,6 +91,18 @@ begin
       begin
         if Bible.language = GetLanguageID then Exit(Bible.name);
         if Bible.language = 'en' then Result := Bible.name;
+      end;
+end;
+
+procedure TShelf.DeleteItem(filename: string);
+var
+  i : integer;
+begin
+  for i:=0 to Self.Count-1 do
+    if Self[i].fileName = filename then
+      begin
+        Self.Delete(i);
+        Break;
       end;
 end;
 

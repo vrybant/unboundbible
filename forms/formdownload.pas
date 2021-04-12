@@ -32,7 +32,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure MenuItemDeleteClick(Sender: TObject);
     procedure StringGridCheckboxToggled(sender: TObject; aCol, aRow: Integer;
       aState: TCheckboxState);
     procedure StringGridGetCheckboxState(Sender: TObject; aCol, aRow: Integer;
@@ -43,6 +42,7 @@ type
   private
     {$ifdef windows} MemoWidth : integer; {$endif}
     procedure LoadGrid;
+    procedure DeleteModule(mfile, mtype: string);
   public
     procedure Localize;
   end;
@@ -56,15 +56,22 @@ uses UnitData, UnitModule, UnitShelf, UnitLocal, UnitCommentary, UnitDictionary;
 
 {$R *.lfm}
 
+const
+  clName = 1;
+//clLang = 2;
+  clFile = 3;
+  clInfo = 4;
+  clType = 5;
+
 procedure TDownloadForm.Localize;
 begin
   Caption := ' ' + T('Modules');
+  MenuItemDelete.Caption := T('Delete');
+  StringGrid.Columns[clName].Title.Caption := T('Title');
+  LabelFile.Caption := T('File Name') + ' : ';
   ButtonClose.Caption := T('Close');
   ButtonDownloads.Caption := T('Download');
   ButtonFolder.Caption := T('Folder');
-  StringGrid.Columns[1].Title.Caption := T('Title');
-  LabelFile.Caption := T('File Name') + ' : ';
-  MenuItemDelete.Caption := T('Delete');
 end;
 
 procedure TDownloadForm.FormCreate(Sender: TObject);
@@ -96,15 +103,11 @@ begin
   StringGridSelection(Self, StringGrid.Col, StringGrid.Row);
 end;
 
-procedure TDownloadForm.MenuItemDeleteClick(Sender: TObject);
-begin
-end;
-
 procedure TDownloadForm.LoadGrid;
 var
   Module : TModule;
 
-  function GetInfo(const Module: TModule): TStringArray;
+  function GetInfo(const Module: TModule; mtype: string): TStringArray;
   begin
     Result := [];
     Result.Add('*');
@@ -112,19 +115,20 @@ var
     Result.Add(Module.language);
     Result.Add(Module.fileName);
     Result.Add(iif(Module.info.IsEmpty, Module.Name, Module.info));
+    Result.Add(mtype);
   end;
 
 begin
   StringGrid.RowCount := 1;
 
   for Module in Shelf do
-    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Module));
+    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Module,'bible'));
 
   for Module in Commentaries do
-    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Module));
+    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Module,'commentary'));
 
   for Module in Dictionaries do
-    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Module));
+    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Module,'dictionary'));
 end;
 
 procedure TDownloadForm.StringGridCheckboxToggled(sender: TObject; aCol,
@@ -143,13 +147,13 @@ end;
 
 procedure TDownloadForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
 begin
-  ToolButtonDelete.Enabled := CurrBible.name <> StringGrid.Cells[1, aRow].TrimLeft;
-  LabelFilename.Caption := StringGrid.Cells[3, aRow];
+  ToolButtonDelete.Enabled := CurrBible.name <> StringGrid.Cells[clName, aRow].TrimLeft;
+  LabelFilename.Caption := StringGrid.Cells[clInfo, aRow];
   LabelFile.Visible := LabelFilename.Caption <> '';
   Memo.Clear;
   Memo.ScrollBars := ssAutoVertical;
-  if Length(StringGrid.Cells[4, aRow]) < 400 then Memo.ScrollBars := ssNone;
-  Memo.Lines.Add(StringGrid.Cells[4, aRow]);
+  if Length(StringGrid.Cells[clInfo, aRow]) < 400 then Memo.ScrollBars := ssNone;
+  Memo.Lines.Add(StringGrid.Cells[clInfo, aRow]);
   Memo.SelStart := 1;
 end;
 
@@ -166,17 +170,29 @@ begin
   LabelTest.Visible := False;
 end;
 
-procedure TDownloadForm.ToolButtonDeleteClick(Sender: TObject);
+procedure TDownloadForm.DeleteModule(mfile, mtype: string);
 begin
+  if mtype = 'bible'      then Shelf.DeleteItem(mfile);
+  if mtype = 'commentary' then Exit;
+  if mtype = 'dictionary' then Exit;
+end;
+
+procedure TDownloadForm.ToolButtonDeleteClick(Sender: TObject);
+var
+  name, mfile, mtype : string;
+begin
+   name := StringGrid.Cells[clName, StringGrid.Row].Trim;
+  mfile := StringGrid.Cells[clFile, StringGrid.Row].Trim;
+  mtype := StringGrid.Cells[clType, StringGrid.Row].Trim;
+
   if QuestionDlg(' ' + T('Confirmation'),
-    T('Do you wish to delete this module?') + LineBreaker + LineBreaker +
-      StringGrid.Cells[1, StringGrid.Row].Trim + LineBreaker,
-        mtWarning, [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) = idYes then
-          begin
-            StringGrid.DeleteRow(StringGrid.Row);
-            StringGridSelection(Sender, StringGrid.Col, StringGrid.Row);
-            // delete module
-          end;
+    T('Do you wish to delete this module?') + LineBreaker + LineBreaker + Name + LineBreaker,
+      mtWarning, [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) = idYes then
+        begin
+          DeleteModule(mfile, mtype);
+          StringGrid.DeleteRow(StringGrid.Row);
+          StringGridSelection(Sender, StringGrid.Col, StringGrid.Row);
+        end;
 end;
 
 procedure TDownloadForm.ButtonFolderClick(Sender: TObject);

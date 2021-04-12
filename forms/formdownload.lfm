@@ -56,6 +56,7 @@ object DownloadForm: TDownloadForm
     Top = 32
     Width = 606
     AutoFillColumns = True
+    ColCount = 6
     ColumnClickSorts = True
     Columns = <    
       item
@@ -91,6 +92,11 @@ object DownloadForm: TDownloadForm
         Title.Caption = 'Title'
         Width = 0
         Visible = False
+      end    
+      item
+        Title.Caption = 'Title'
+        Width = 0
+        Visible = False
       end>
     DefaultDrawing = False
     FixedCols = 0
@@ -107,6 +113,7 @@ object DownloadForm: TDownloadForm
       40
       522
       40
+      0
       0
       0
     )
@@ -191,7 +198,6 @@ object DownloadForm: TDownloadForm
     object MenuItemDelete: TMenuItem
       Caption = 'Delete'
       ImageIndex = 31
-      OnClick = MenuItemDeleteClick
     end
   end
   object Images: TImageList
