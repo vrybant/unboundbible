@@ -966,7 +966,7 @@ begin
   for item in BookBox.Items do
     if item = title then
       begin
-        BookBox.ItemIndex := BookBox.Items.IndexOf(item);;
+        BookBox.ItemIndex := BookBox.Items.IndexOf(item);
         if scroll then BookBox.TopIndex := BookBox.ItemIndex;
       end;
 end;
@@ -1026,14 +1026,11 @@ end;
 
 procedure TMainForm.OnLangClick(Sender: TObject);
 var
-  i: integer;
+  MenuItem : TMenuItem;
 begin
   Localization.id := (Sender as TMenuItem).Hint;
-
-  for i := 0 to miLocalization.Count - 1 do
-    miLocalization.Items[i].Checked := False;
+  for MenuItem in miLocalization do MenuItem.Checked := False;
   (Sender as TMenuItem).Checked := True;
-
   LocalizeApplication;
 end;
 
