@@ -23,7 +23,6 @@ uses
 function Get_Chapter: string;
 var
   Strings : TStringArray;
-  text : string;
   i : integer;
 begin
   Result := '';
@@ -31,11 +30,7 @@ begin
   Strings := CurrBible.GetChapter(CurrVerse);
 
   for i:=Low(Strings) to High(Strings) do
-    begin
-      text := Strings[i];
-      text := '<l> ' + ToStr(i+1) + '</l> ' + text + '<br>';
-      Result += text;
-    end;
+    Result += '<l> ' + ToStr(i+1) + '</l> ' + Strings[i] + '<br>';
 end;
 
 procedure Highlight(var s: string; target: string; Options: TSearchOptions);

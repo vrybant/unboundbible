@@ -52,7 +52,8 @@ begin
 end;
 
 function Super(s: string): boolean;
-var i : integer;
+var
+  line : string;
 begin;
   Result := True;
   PurgeTags(s);
@@ -61,8 +62,8 @@ begin;
   if not (caseSensitive in Options) then s := Utf8LowerCase(s);
   if wholeWords in Options then s := ' ' + CleanString(s) + ' ';
 
-  for i:=Low(SearchList) to High(SearchList) do
-    if not s.Contains(SearchList[i]) then Result := False;
+  for line in SearchList do
+    if not s.Contains(line) then Result := False;
 end;
 
 procedure xSuper(ctx: psqlite3_context; {%H-}N: cint; V: ppsqlite3_value); cdecl;
