@@ -96,12 +96,12 @@ end;
 
 procedure TShelf.DeleteItem(filename: string);
 var
-  i : integer;
+  Bible : TBible;
 begin
-  for i:=0 to Self.Count-1 do
-    if Self[i].fileName = filename then
+  for Bible in Self do
+    if Bible.filename = filename then
       begin
-        Self.Delete(i);
+        Delete(Self.IndexOf(Bible));
         Break;
       end;
 end;

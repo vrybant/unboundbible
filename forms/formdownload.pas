@@ -42,7 +42,7 @@ type
   private
     {$ifdef windows} MemoWidth : integer; {$endif}
     procedure LoadGrid;
-    procedure DeleteModule(mfile, mtype: string);
+    procedure DeleteModule(filename, mtype: string);
   public
     procedure Localize;
   end;
@@ -170,11 +170,11 @@ begin
   LabelTest.Visible := False;
 end;
 
-procedure TDownloadForm.DeleteModule(mfile, mtype: string);
+procedure TDownloadForm.DeleteModule(filename, mtype: string);
 begin
-  if mtype = 'bible'      then Shelf.DeleteItem(mfile);
-  if mtype = 'commentary' then Exit;
-  if mtype = 'dictionary' then Exit;
+  if mtype = 'bible'      then Shelf.DeleteItem(filename);
+  if mtype = 'commentary' then Commentaries.DeleteItem(filename);
+  if mtype = 'dictionary' then Dictionaries.DeleteItem(filename);
 end;
 
 procedure TDownloadForm.ToolButtonDeleteClick(Sender: TObject);
