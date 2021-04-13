@@ -201,8 +201,9 @@ begin
   for Dictionary in Self do
     if Dictionary.filename = filename then
       begin
+        Dictionary.Delete;
+        Dictionary.Free;
         Delete(Self.IndexOf(Dictionary));
-        Break;
       end;
 end;
 

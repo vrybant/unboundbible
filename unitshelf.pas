@@ -101,8 +101,9 @@ begin
   for Bible in Self do
     if Bible.filename = filename then
       begin
+        Bible.Delete;
+        Bible.Free;
         Delete(Self.IndexOf(Bible));
-        Break;
       end;
 end;
 

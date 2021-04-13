@@ -52,6 +52,7 @@ type
     function DecodeID(id: integer): integer;
     function TableExists(table: string): boolean;
     procedure InsertDetails;
+    procedure Delete;
     destructor Destroy; override;
   private
     procedure OpenDatabase;
@@ -155,6 +156,12 @@ begin
   try Connection.GetTableNames({$ifdef zeos}'',{$endif}TableNames) except end;
   Result := TableNames.IndexOf(table) >= 0;
   TableNames.Free;
+end;
+
+procedure TModule.Delete;
+begin
+  Connection.Close;
+  DeleteFile(filePath);
 end;
 
 destructor TModule.Destroy;

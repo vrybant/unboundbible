@@ -211,8 +211,9 @@ begin
   for Commentary in Self do
     if Commentary.filename = filename then
       begin
+        Commentary.Delete;
+        Commentary.Free;
         Delete(Self.IndexOf(Commentary));
-        Break;
       end;
 end;
 
