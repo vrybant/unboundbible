@@ -17,7 +17,6 @@ type
     procedure FormShow(Sender: TObject);
   private
     procedure MakeListBox;
-    procedure ShelfToListBox;
     procedure ListBoxToShelf;
   public
     procedure Localize;
@@ -28,7 +27,7 @@ var
 
 implementation
 
-uses UnitShelf, UnitLocal;
+uses UnitShelf, UnitBible, UnitLocal;
 
 {$R *.lfm}
 
@@ -40,8 +39,6 @@ end;
 
 procedure TCompareForm.FormCreate(Sender: TObject);
 begin
-  MakeListBox;
-
   {$ifdef darwin}
   ButtonOK.Visible := False;
   Height := 182;
@@ -50,28 +47,27 @@ end;
 
 procedure TCompareForm.FormShow(Sender: TObject);
 begin
-  ShelfToListBox;
+  MakeListBox;
 end;
 
 procedure TCompareForm.MakeListBox;
-var i: integer;
+var
+  Bible : TBible;
 begin
-  for i:=0 to Shelf.Count-1 do
-    CheckListBox.Items.Add(Shelf[i].Name);
-end;
-
-procedure TCompareForm.ShelfToListBox;
-var i: integer;
-begin
-  for i:= 0 to Shelf.Count-1 do
-    CheckListBox.Checked[i] := Shelf[i].Compare;
+  CheckListBox.Clear;
+  for Bible in Shelf do
+    begin
+      CheckListBox.Items.Add(Bible.Name);
+      CheckListBox.Checked[CheckListBox.Count-1] := Bible.Compare;
+    end;
 end;
 
 procedure TCompareForm.ListBoxToShelf;
-var i: integer;
+var
+  Bible : TBible;
 begin
-  for i:= 0 to Shelf.Count-1 do
-    Shelf[i].Compare := CheckListBox.Checked[i];
+  for Bible in Shelf do
+    Bible.Compare := CheckListBox.Checked[Shelf.IndexOf(Bible)];
 end;
 
 procedure TCompareForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
