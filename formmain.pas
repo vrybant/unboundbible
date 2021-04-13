@@ -1050,19 +1050,17 @@ end;
 
 procedure TMainForm.RecentMenuInit;
 var
-  Item : TMenuItem;
-  s : string;
-  i : integer;
+  MenuItem : TMenuItem;
+  item : string;
 begin
   miRecent.Enabled := RecentList.Count > 0;
   miRecent.Clear;
 
-  for i := RecentList.Count - 1 downto 0 do
+  for item in RecentList.Reverse do
     begin
-      s := ExtractOnlyName(RecentList[i]);
-      Item := NewItem(s, 0, False, True, OnRecentClick, 0, '');
-      Item.Tag := i;
-      miRecent.Add(Item);
+      MenuItem := NewItem(ExtractOnlyName(item), 0, False, True, OnRecentClick, 0, '');
+      MenuItem.Tag := RecentList.IndexOf(item);
+      miRecent.Add(MenuItem);
     end;
 end;
 
