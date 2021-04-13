@@ -961,16 +961,14 @@ end;
 
 procedure TMainForm.SelectBook(title: string; scroll: boolean);
 var
-  i, index : integer;
+  item : string;
 begin
-  index := -1;
-  for i:=0 to BookBox.Items.Count-1 do
-    if BookBox.Items[i] = title then index := i;
-
-  if index < 0 then Exit;
-
-  BookBox.ItemIndex := index;
-  if scroll then BookBox.TopIndex := index;
+  for item in BookBox.Items do
+    if item = title then
+      begin
+        BookBox.ItemIndex := BookBox.Items.IndexOf(item);;
+        if scroll then BookBox.TopIndex := BookBox.ItemIndex;
+      end;
 end;
 
 procedure TMainForm.GoToVerse(Verse: TVerse; select: boolean);
