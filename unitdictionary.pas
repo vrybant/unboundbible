@@ -27,7 +27,7 @@ type
     constructor Create;
     function EmbeddedOnly: boolean;
     function GetStrong(Verse: TVerse; language: string; number: string): string;
-    procedure DeleteItem(filename: string);
+    procedure DeleteItem(Item: TDictionary);
     destructor Destroy; override;
   end;
 
@@ -194,17 +194,11 @@ begin
     if not Dictionary.embedded then Result := False;
 end;
 
-procedure TDictionaries.DeleteItem(filename: string);
-var
-  Dictionary : TDictionary;
+procedure TDictionaries.DeleteItem(Item: TDictionary);
 begin
-  for Dictionary in Self do
-    if Dictionary.filename = filename then
-      begin
-        Dictionary.Delete;
-        Dictionary.Free;
-        Delete(Self.IndexOf(Dictionary));
-      end;
+  Item.Delete;
+  Item.Free;
+  Delete(IndexOf(Item));
 end;
 
 destructor TDictionaries.Destroy;

@@ -26,7 +26,7 @@ type
     constructor Create;
     function GetFootnote(module: string; Verse: TVerse; marker: string): string;
     function FootnotesOnly: boolean;
-    procedure DeleteItem(filename: string);
+    procedure DeleteItem(Item: TCommentary);
     destructor Destroy; override;
   end;
 
@@ -204,17 +204,11 @@ begin
     if not Commentary.footnotes then Result := False;
 end;
 
-procedure TCommentaries.DeleteItem(filename: string);
-var
-  Commentary : TCommentary;
+procedure TCommentaries.DeleteItem(Item: TCommentary);
 begin
-  for Commentary in Self do
-    if Commentary.filename = filename then
-      begin
-        Commentary.Delete;
-        Commentary.Free;
-        Delete(Self.IndexOf(Commentary));
-      end;
+  Item.Delete;
+  Item.Free;
+  Delete(IndexOf(Item));
 end;
 
 destructor TCommentaries.Destroy;

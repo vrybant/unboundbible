@@ -17,7 +17,8 @@ type
     function IsEmpty: boolean;
     function GetDefaultBible: string;
     procedure SetCurrent(Value: string);
-    procedure DeleteItem(filename: string);
+//    procedure DeleteItem(filename: string);
+    procedure DeleteItem(Item: TBible);
   end;
 
 var
@@ -94,17 +95,11 @@ begin
       end;
 end;
 
-procedure TShelf.DeleteItem(filename: string);
-var
-  Bible : TBible;
+procedure TShelf.DeleteItem(Item: TBible);
 begin
-  for Bible in Self do
-    if Bible.filename = filename then
-      begin
-        Bible.Delete;
-        Bible.Free;
-        Delete(Self.IndexOf(Bible));
-      end;
+  Item.Delete;
+  Item.Free;
+  Delete(IndexOf(Item));
 end;
 
 procedure TShelf.SavePrivates;

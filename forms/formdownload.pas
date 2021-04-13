@@ -52,7 +52,7 @@ var
 
 implementation
 
-uses UnitData, UnitModule, UnitShelf, UnitLocal, UnitCommentary, UnitDictionary;
+uses UnitData, UnitModule, UnitBible, UnitShelf, UnitLocal, UnitCommentary, UnitDictionary;
 
 {$R *.lfm}
 
@@ -171,10 +171,23 @@ begin
 end;
 
 procedure TDownloadForm.DeleteModule(filename, mtype: string);
+var
+  Item : TModule;
 begin
-  if mtype = 'bible'      then Shelf.DeleteItem(filename);
-  if mtype = 'commentary' then Commentaries.DeleteItem(filename);
-  if mtype = 'dictionary' then Dictionaries.DeleteItem(filename);
+  if mtype = 'bible' then
+    for Item in Shelf do
+      if Item.filename = filename then
+        Shelf.DeleteItem(Item as TBible);
+
+  if mtype = 'commentary' then
+    for Item in Commentaries do
+      if Item.filename = filename then
+        Commentaries.DeleteItem(Item as TCommentary);
+
+  if mtype = 'dictionary' then
+    for Item in Dictionaries do
+      if Item.filename = filename then
+        Dictionaries.DeleteItem(Item as TDictionary);
 end;
 
 procedure TDownloadForm.ToolButtonDeleteClick(Sender: TObject);
