@@ -1491,7 +1491,7 @@ end;
 procedure TMainForm.SaveConfig;
 var
   IniFile: TIniFile;
-  i: integer;
+  item : string;
 begin
   if Shelf.IsEmpty then Exit;
   IniFile := TIniFile.Create(ConfigFile);
@@ -1518,8 +1518,8 @@ begin
   IniFile.WriteBool('Options', 'End', Options.cvEnd);
   IniFile.WriteInteger('Recent', 'Count', RecentList.Count);
 
-  for i := 0 to RecentList.Count - 1 do
-    IniFile.WriteString('Recent', 'File_' + ToStr(i), RecentList[i]);
+  for item in RecentList do
+    IniFile.WriteString('Recent', 'File_' + RecentList.IndexOf(item).ToString, item);
 
   IniFile.Free;
 end;
