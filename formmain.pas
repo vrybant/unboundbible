@@ -231,7 +231,7 @@ type
     procedure ToolButtonSearchClick(Sender: TObject);
   private
     NoteFileName: string;
-    RecentList: TStringList;
+    RecentList: TStringArray;
     Statuses: TStatuses;
 //  DonateVisited: boolean;
     IdleMessage : string;
@@ -303,7 +303,7 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Caption := ApplicationName + ' ' + ApplicationVersion;
 
-  RecentList := TStringList.Create;
+  RecentList := [];
   Statuses := TStatuses.Create;
   SaveDialog.InitialDir := DocumentsPath;
   NoteFileName := Untitled;
@@ -359,7 +359,6 @@ end;
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   SaveConfig;
-  RecentList.Free;
   Statuses.Free;
 end;
 
@@ -1158,14 +1157,14 @@ end;
 
 procedure TMainForm.RebuildRecentList;
 var
-  i: integer;
+  item : string;
 begin
-  for i := 0 to RecentList.Count - 1 do
-    if RecentList[i] = NoteFileName then
-    begin
-      RecentList.Delete(i);
-      Break;
-    end;
+  for item in RecentList do
+    if item = NoteFileName then
+      begin
+        RecentList.Delete(RecentList.IndexOf(item));
+        Break;
+      end;
 
   RecentList.Add(NoteFileName);
   if RecentList.Count > RecentMax then RecentList.Delete(0);
