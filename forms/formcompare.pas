@@ -12,9 +12,9 @@ type
   TCompareForm = class(TForm)
     ButtonOK: TButton;
     CheckListBox: TCheckListBox;
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
   private
     procedure MakeListBox;
     procedure ListBoxToShelf;
@@ -50,6 +50,11 @@ begin
   MakeListBox;
 end;
 
+procedure TCompareForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  ListBoxToShelf;
+end;
+
 procedure TCompareForm.MakeListBox;
 var
   Bible : TBible;
@@ -68,11 +73,6 @@ var
 begin
   for Bible in Shelf do
     Bible.Compare := CheckListBox.Checked[Shelf.IndexOf(Bible)];
-end;
-
-procedure TCompareForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-  ListBoxToShelf;
 end;
 
 end.
