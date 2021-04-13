@@ -148,7 +148,7 @@ end;
 procedure TDownloadForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
 begin
   ToolButtonDelete.Enabled := CurrBible.name <> StringGrid.Cells[clName, aRow].TrimLeft;
-  LabelFilename.Caption := StringGrid.Cells[clInfo, aRow];
+  LabelFilename.Caption := StringGrid.Cells[clFile, aRow];
   LabelFile.Visible := LabelFilename.Caption <> '';
   Memo.Clear;
   Memo.ScrollBars := ssAutoVertical;
