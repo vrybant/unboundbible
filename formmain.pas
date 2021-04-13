@@ -944,16 +944,18 @@ begin
 end;
 
 function TMainForm.SelectBible(name: string): boolean;
-var i : integer;
+var
+  item : string;
 begin
   Result := False;
   if name.Contains(':') then Exit;
-  for i := 0 to ComboBox.Items.Count-1 do
-    if ComboBox.Items[i] = name then
+
+  for item in ComboBox.Items do
+    if item = name then
       begin
-        ComboBox.ItemIndex := i;
+        ComboBox.ItemIndex := ComboBox.Items.IndexOf(item);
         ComboBoxChange(nil);
-        Result := True;
+        Exit(True);
       end;
 end;
 
