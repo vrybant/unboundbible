@@ -22,6 +22,9 @@ type
   public
     function IsEmpty: Boolean;
     procedure Add(const Value: string);
+    procedure Delete(index: integer);
+    function IndexOf(const s: string): integer;
+    function Reverse: TStringArray;
     property Count: integer read GetCount write SetCount;
   end;
 
@@ -129,6 +132,32 @@ procedure TStringArrayHelper.Add(const Value: string);
 begin
   SetLength(Self, Length(Self)+1);
   Self[Length(Self)-1] := Value;
+end;
+
+procedure TStringArrayHelper.Delete(index: integer);
+var
+  List : TStringArray = [];
+  i : integer;
+begin
+  for i:=0 to Count-1 do
+    if i <> index then List.Add(Self[i]);
+  Self := List;
+end;
+
+function TStringArrayHelper.IndexOf(const s: string): integer;
+begin
+  Result := 0;
+  while (Result < Count) and (Self[Result] <> s) do Result += 1;
+  if Result=Count then Result := -1;
+end;
+
+function TStringArrayHelper.Reverse: TStringArray;
+var
+  i : integer;
+begin
+  Result := [];
+  for i:= Count-1 downto 0 do
+    Result.Add(Self[i]);
 end;
 
 // string's functions
