@@ -1161,10 +1161,7 @@ var
 begin
   for item in RecentList do
     if item = NoteFileName then
-      begin
-        RecentList.Delete(RecentList.IndexOf(item));
-        Break;
-      end;
+      RecentList.Delete(RecentList.IndexOf(item));
 
   RecentList.Add(NoteFileName);
   if RecentList.Count > RecentMax then RecentList.Delete(0);
