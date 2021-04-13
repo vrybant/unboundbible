@@ -1016,12 +1016,8 @@ begin
 end;
 
 procedure TMainForm.OnRecentClick(Sender: TObject);
-var i: integer;
 begin
-  for i := 0 to miRecent.Count - 1 do
-    if (Sender as TMenuItem).tag = i then
-      if CheckFileSave then
-        PerformFileOpen(RecentList[i]);
+  if CheckFileSave then PerformFileOpen(RecentList[(Sender as TMenuItem).tag]);
 end;
 
 procedure TMainForm.OnLangClick(Sender: TObject);
