@@ -52,16 +52,20 @@ var
 
 implementation
 
-uses UnitData, UnitModule, UnitBible, UnitShelf, UnitLocal, UnitCommentary, UnitDictionary;
+uses
+  UnitData, UnitLocal, UnitModule, UnitBible, UnitShelf, UnitCommentary,
+  UnitDictionary, UnitReference;
 
 {$R *.lfm}
 
 const
+  clNone = 0;
   clName = 1;
-//clLang = 2;
+  clLang = 2;
   clFile = 3;
   clInfo = 4;
   clType = 5;
+  clsMax = 6;
 
 procedure TDownloadForm.Localize;
 begin
@@ -105,30 +109,31 @@ end;
 
 procedure TDownloadForm.LoadGrid;
 var
-  Module : TModule;
+  Module: TModule;
 
-  function GetInfo(const Module: TModule; mtype: string): TStringArray;
+  procedure InsertRow(mtype: string);
+  var
+    List : TStringArray = [];
   begin
-    Result := [];
-    Result.Add('*');
-    Result.Add(' ' + Module.Name);
-    Result.Add(Module.language);
-    Result.Add(Module.fileName);
-    Result.Add(iif(Module.info.IsEmpty, Module.Name, Module.info));
-    Result.Add(mtype);
+    SetLength(List,clsMax);
+
+    List[clNone] := '';
+    List[clName] := ' ' + Module.Name;
+    List[clLang] := Module.language;
+    List[clFile] := Module.fileName;
+    List[clInfo] := iif(Module.info.IsEmpty, Module.Name, Module.info);
+    List[clType] := mtype;
+
+    StringGrid.InsertRowWithValues(StringGrid.RowCount, List);
   end;
 
 begin
   StringGrid.RowCount := 1;
 
-  for Module in Shelf do
-    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Module,'bible'));
-
-  for Module in Commentaries do
-    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Module,'commentary'));
-
-  for Module in Dictionaries do
-    StringGrid.InsertRowWithValues(StringGrid.RowCount, GetInfo(Module,'dictionary'));
+  for Module in Shelf        do InsertRow('bible');
+  for Module in Commentaries do InsertRow('commentary');
+  for Module in Dictionaries do InsertRow('dictionary');
+  for Module in References   do InsertRow('reference');
 end;
 
 procedure TDownloadForm.StringGridCheckboxToggled(sender: TObject; aCol,
@@ -188,6 +193,11 @@ begin
     for Item in Dictionaries do
       if Item.filename = filename then
         Dictionaries.DeleteItem(Item as TDictionary);
+
+  if mtype = 'reference' then
+    for Item in References do
+      if Item.filename = filename then
+        References.DeleteItem(Item as TReference);
 end;
 
 procedure TDownloadForm.ToolButtonDeleteClick(Sender: TObject);
