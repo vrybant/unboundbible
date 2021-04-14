@@ -282,7 +282,7 @@ implementation
 uses
   {$ifdef windows} UmParseWin, {$endif}
   FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLocal, FormCopy, FormDownload,
-  UnitBible, UnitShelf, UnitCommentary, UnitDictionary;
+  UnitBible, UnitCommentary, UnitDictionary;
 
 const
   apBible        = 0; // active page

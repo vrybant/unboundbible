@@ -17,8 +17,8 @@ function Get_Verses: string;
 implementation
 
 uses
-  FormSearch, UnitData, UnitLocal, UnitModule, UnitBible, UnitShelf,
-  UnitReference, UnitCommentary, UnitDictionary;
+  FormSearch, UnitData, UnitLocal, UnitModule, UnitBible, UnitReference,
+  UnitCommentary, UnitDictionary;
 
 function Get_Chapter: string;
 var

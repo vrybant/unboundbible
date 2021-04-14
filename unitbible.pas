@@ -3,7 +3,7 @@ unit UnitBible;
 interface
 
 uses
-  Classes, SysUtils, Dialogs, Graphics, IniFiles, ClipBrd, LazUtf8, DB, SQLdb,
+  Classes, Fgl, SysUtils, Graphics, Dialogs, ClipBrd, LazUtf8, IniFiles, DB, SQLdb,
   UnitModule, UnitData, UnitPrepare, UnitLib;
 
 type
@@ -44,6 +44,25 @@ type
     procedure Extract;
     destructor Destroy; override;
   end;
+
+type
+  TShelf = class(TFPGList<TBible>)
+  private
+    procedure Load;
+    procedure SavePrivates;
+    procedure ReadPrivates;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    function IsEmpty: boolean;
+    function GetDefaultBible: string;
+    procedure SetCurrent(Value: string);
+    procedure DeleteItem(Item: TBible);
+  end;
+
+var
+  Shelf : TShelf;
+  CurrBible: TBible;
 
 implementation
 
@@ -594,5 +613,120 @@ begin
   Books.Free;
   inherited Destroy;
 end;
+
+//=================================================================================================
+//                                           TShelf
+//=================================================================================================
+
+function Comparison(const Item1: TBible; const Item2: TBible): integer;
+begin
+  Result := CompareText(Item1.Name, Item2.Name);
+end;
+
+constructor TShelf.Create;
+begin
+  inherited;
+  CurrBible := nil;
+  Load;
+  Sort(Comparison);
+  ReadPrivates;
+end;
+
+procedure TShelf.Load;
+var
+  Bible : TBible;
+  List : TStringArray;
+  f : string;
+begin
+  List := GetDatabaseList;
+
+  for f in List do
+    if f.Contains('.bbl.') or f.Contains('.SQLite3') then
+      begin
+        if f.Contains('.dictionary.') or f.Contains('.commentaries.') then Continue;
+        if f.Contains('.crossreferences.') then Continue;
+        Bible := TBible.Create(f);
+        if Bible.connected then Add(Bible) else Bible.Free;
+    end;
+end;
+
+procedure TShelf.SetCurrent(Value: string);
+var
+  Bible : TBible;
+begin
+  if IsEmpty then Exit;
+  CurrBible := Self[0];
+
+  for Bible in Self do
+    if Bible.Name = Value then
+      begin
+        CurrBible := Bible;
+        Break;
+      end;
+
+  CurrBible.LoadDatabase;
+  if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
+end;
+
+function TShelf.IsEmpty: boolean;
+begin
+  Result := Count = 0;
+end;
+
+function TShelf.GetDefaultBible: string;
+var
+  Bible : TBible;
+begin
+  Result := '';
+  for Bible in Self do
+    if Bible.default_ then
+      begin
+        if Bible.language = GetLanguageID then Exit(Bible.name);
+        if Bible.language = 'en' then Result := Bible.name;
+      end;
+end;
+
+procedure TShelf.DeleteItem(Item: TBible);
+begin
+  Item.Delete;
+  Item.Free;
+  Delete(IndexOf(Item));
+end;
+
+procedure TShelf.SavePrivates;
+var
+  IniFile : TIniFile;
+  Bible : TBible;
+begin
+  IniFile := TIniFile.Create(ConfigFile);
+  for Bible in Self do Bible.SavePrivate(IniFile);
+  IniFile.Free;
+end;
+
+procedure TShelf.ReadPrivates;
+var
+  IniFile : TIniFile;
+  Bible : TBible;
+begin
+  IniFile := TIniFile.Create(ConfigFile);
+  for Bible in Self do Bible.ReadPrivate(IniFile);
+  IniFile.Free;
+end;
+
+destructor TShelf.Destroy;
+var
+  Bible : TBible;
+begin
+//CurrBible.Extract;
+  SavePrivates;
+  for Bible in Self do Bible.Free;
+  inherited Destroy;
+end;
+
+initialization
+  Shelf := TShelf.Create;
+
+finalization
+  Shelf.Free;
 
 end.

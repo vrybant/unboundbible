@@ -32,7 +32,7 @@ function CurrentSearchRange: TRange;
 
 implementation
 
-uses UnitShelf, UnitLocal;
+uses UnitBible, UnitLocal;
 
 {$R *.lfm}
 
