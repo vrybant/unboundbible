@@ -3,22 +3,22 @@ program unboundbible;
 uses
   {$ifdef unix}{$ifdef UseCThreads} cthreads, {$endif}{$endif}
   {$ifdef darwin} printer4lazarus, {$endif}
-  Interfaces, Graphics, Forms, richmemopackage,
-  UnitTool, UnitModule, UnitCommentary, UnitDictionary, UnitReference,
-  FormMain, FormAbout, FormNotify, FormSearch, FormCompare, FormCopy, FormDownload;
+  Interfaces, Graphics, Forms, richmemopackage, UnitTool, UnitModule,
+  UnitCommentary, UnitDictionary, UnitReference, FormMain, FormAbout,
+  FormNotify, FormSearch, FormCompare, FormCopy, FormShelf;
 
 {$R *.res}
 
 begin
-  Application.Title := {$ifdef windows} 'Unbound Bible'; {$else} 'unboundbible'; {$endif}
+  Application.Title := {$ifdef windows} 'Unbound Bible' {$else} 'unboundbible' {$endif};
   Application.Initialize;
-  Application.CreateForm(TMainForm,     MainForm);
-  Application.CreateForm(TAboutBox,     AboutBox);
-  Application.CreateForm(TNotifyForm,   NotifyForm);
-  Application.CreateForm(TSearchForm,   SearchForm);
-  Application.CreateForm(TCompareForm,  CompareForm);
-  Application.CreateForm(TCopyForm,     CopyForm);
-  Application.CreateForm(TDownloadForm, DownloadForm);
+  Application.CreateForm(TMainForm,    MainForm);
+  Application.CreateForm(TAboutBox,    AboutBox);
+  Application.CreateForm(TNotifyForm,  NotifyForm);
+  Application.CreateForm(TSearchForm,  SearchForm);
+  Application.CreateForm(TCompareForm, CompareForm);
+  Application.CreateForm(TCopyForm,    CopyForm);
+  Application.CreateForm(TShelfForm,   ShelfForm);
   MainForm.LocalizeApplication;
   Application.Run;
 end.

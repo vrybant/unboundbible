@@ -143,20 +143,20 @@
         <UnitName Value="FormNotify"/>
       </Unit15>
       <Unit16>
-        <Filename Value="forms\formdownload.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="DownloadForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="FormDownload"/>
-      </Unit16>
-      <Unit17>
         <Filename Value="forms\formcompare.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="CompareForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormCompare"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="forms\formshelf.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="ShelfForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="FormShelf"/>
       </Unit17>
     </Units>
   </ProjectOptions>

@@ -1,4 +1,4 @@
-unit FormDownload;
+unit FormShelf;
 
 interface
 
@@ -8,9 +8,9 @@ uses
 
 type
 
-  { TDownloadForm }
+  { TShelfForm }
 
-  TDownloadForm = class(TForm)
+  TShelfForm = class(TForm)
     Images: TImageList;
     ButtonDownloads: TButton;
     ButtonFolder: TButton;
@@ -48,7 +48,7 @@ type
   end;
 
 var
-  DownloadForm: TDownloadForm;
+  ShelfForm: TShelfForm;
 
 implementation
 
@@ -66,7 +66,7 @@ const
   clType = 5;
   clsMax = 6;
 
-procedure TDownloadForm.Localize;
+procedure TShelfForm.Localize;
 begin
   Caption := ' ' + T('Modules');
   MenuItemDelete.Caption := T('Delete');
@@ -77,7 +77,7 @@ begin
   ButtonFolder.Caption := T('Folder');
 end;
 
-procedure TDownloadForm.FormCreate(Sender: TObject);
+procedure TShelfForm.FormCreate(Sender: TObject);
 begin
   Application.HintPause := 1;
   StringGrid.Columns[0].Visible := False;
@@ -92,7 +92,7 @@ begin
   PopupMenu.AutoPopup := False;
 end;
 
-procedure TDownloadForm.FormPaint(Sender: TObject);
+procedure TShelfForm.FormPaint(Sender: TObject);
 begin
   LabelFilename.Left := LabelFile.Left + LabelFile.Width;
   {$ifdef windows}
@@ -100,13 +100,13 @@ begin
   {$endif}
 end;
 
-procedure TDownloadForm.FormShow(Sender: TObject);
+procedure TShelfForm.FormShow(Sender: TObject);
 begin
   LoadGrid;
   StringGridSelection(Self, StringGrid.Col, StringGrid.Row);
 end;
 
-procedure TDownloadForm.LoadGrid;
+procedure TShelfForm.LoadGrid;
 var
   Module: TModule;
 
@@ -135,21 +135,21 @@ begin
   for Module in References   do InsertRow('reference');
 end;
 
-procedure TDownloadForm.StringGridCheckboxToggled(sender: TObject; aCol,
+procedure TShelfForm.StringGridCheckboxToggled(sender: TObject; aCol,
   aRow: Integer; aState: TCheckboxState);
 begin
   if (aRow > 0) and (aCol = 0) then
     StringGrid.Cells[aCol, aRow] := iif(aState = cbChecked, '*', '');
 end;
 
-procedure TDownloadForm.StringGridGetCheckboxState(Sender: TObject; aCol,
+procedure TShelfForm.StringGridGetCheckboxState(Sender: TObject; aCol,
   aRow: Integer; var Value: TCheckboxState);
 begin
   if (aRow > 0) and (aCol = 0) then
     Value := iif(StringGrid.Cells[aCol, aRow] = '*', cbChecked, cbUnchecked);
 end;
 
-procedure TDownloadForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
+procedure TShelfForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
 begin
   ToolButtonDelete.Enabled := CurrBible.name <> StringGrid.Cells[clName, aRow].TrimLeft;
   LabelFilename.Caption := StringGrid.Cells[clFile, aRow];
@@ -161,7 +161,7 @@ begin
   Memo.SelStart := 1;
 end;
 
-procedure TDownloadForm.StringGridGetCellHint(Sender: TObject; aCol,
+procedure TShelfForm.StringGridGetCellHint(Sender: TObject; aCol,
   aRow: Integer; var HintText: String);
 const
   delta = {$ifdef windows} 4 {$else} 6 {$endif};
@@ -174,7 +174,7 @@ begin
   LabelTest.Visible := False;
 end;
 
-procedure TDownloadForm.DeleteModule(filename, mtype: string);
+procedure TShelfForm.DeleteModule(filename, mtype: string);
 var
   Item : TModule;
 begin
@@ -199,7 +199,7 @@ begin
         References.DeleteItem(Item as TReference);
 end;
 
-procedure TDownloadForm.ToolButtonDeleteClick(Sender: TObject);
+procedure TShelfForm.ToolButtonDeleteClick(Sender: TObject);
 var
   name, mfile, mtype : string;
 begin
@@ -217,13 +217,13 @@ begin
         end;
 end;
 
-procedure TDownloadForm.ButtonFolderClick(Sender: TObject);
+procedure TShelfForm.ButtonFolderClick(Sender: TObject);
 begin
   CreateDataDirectory;
   OpenFolder(DataPath);
 end;
 
-procedure TDownloadForm.ButtonDownloadsClick(Sender: TObject);
+procedure TShelfForm.ButtonDownloadsClick(Sender: TObject);
 begin
   OpenURL(DownloadsURL);
 end;

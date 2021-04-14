@@ -281,7 +281,7 @@ implementation
 
 uses
   {$ifdef windows} UmParseWin, {$endif}
-  FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLocal, FormCopy, FormDownload,
+  FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLocal, FormCopy, FormShelf,
   UnitBible, UnitCommentary, UnitDictionary;
 
 const
@@ -518,12 +518,12 @@ end;
 
 procedure TMainForm.LocalizeApplication;
 begin
-  MainForm     .Localize;
-  SearchForm   .Localize;
-  CompareForm  .Localize;
-  AboutBox     .Localize;
-  CopyForm     .Localize;
-  DownloadForm .Localize;
+  MainForm   .Localize;
+  SearchForm .Localize;
+  CompareForm.Localize;
+  AboutBox   .Localize;
+  CopyForm   .Localize;
+  ShelfForm  .Localize;
 end;
 
 //-------------------------------------------------------------------------------------------------
@@ -814,7 +814,7 @@ end;
 procedure TMainForm.CmdModules(Sender: TObject);
 begin
   if Bibles.IsEmpty then Exit;
-  DownloadForm.ShowModal;
+  ShelfForm.ShowModal;
 end;
 
 procedure TMainForm.CmdExit(Sender: TObject);

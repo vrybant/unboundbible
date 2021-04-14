@@ -1,4 +1,4 @@
-object DownloadForm: TDownloadForm
+object ShelfForm: TShelfForm
   Left = 508
   Height = 456
   Top = 290
