@@ -94,7 +94,7 @@ var
 begin
   Result := '';
 
-  for Bible in Shelf do
+  for Bible in Bibles do
     if Bible.compare then
       begin
         s := ''.Join(' ', Bible.GetRange(CurrVerse));
@@ -181,7 +181,7 @@ var
   l : boolean = False;
 begin
   if CurrBible.RightToLeft then Result := '<rtl>' else Result := '';
-  if Shelf.IsEmpty then Exit;
+  if Bibles.IsEmpty then Exit;
 
   Book := CurrBible.BookByNum(CurrVerse.Book);
   if not Assigned(Book) then Exit;

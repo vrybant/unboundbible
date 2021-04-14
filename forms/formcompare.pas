@@ -17,7 +17,7 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
   private
     procedure MakeListBox;
-    procedure ListBoxToShelf;
+    procedure ListBoxToBibles;
   public
     procedure Localize;
   end;
@@ -52,7 +52,7 @@ end;
 
 procedure TCompareForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  ListBoxToShelf;
+  ListBoxToBibles;
 end;
 
 procedure TCompareForm.MakeListBox;
@@ -60,19 +60,19 @@ var
   Bible : TBible;
 begin
   CheckListBox.Clear;
-  for Bible in Shelf do
+  for Bible in Bibles do
     begin
       CheckListBox.Items.Add(Bible.Name);
       CheckListBox.Checked[CheckListBox.Count-1] := Bible.Compare;
     end;
 end;
 
-procedure TCompareForm.ListBoxToShelf;
+procedure TCompareForm.ListBoxToBibles;
 var
   Bible : TBible;
 begin
-  for Bible in Shelf do
-    Bible.Compare := CheckListBox.Checked[Shelf.IndexOf(Bible)];
+  for Bible in Bibles do
+    Bible.Compare := CheckListBox.Checked[Bibles.IndexOf(Bible)];
 end;
 
 end.

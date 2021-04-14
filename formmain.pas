@@ -310,7 +310,7 @@ begin
   ReadConfig;
   LoadComboBox;
 
-  if not Shelf.IsEmpty then
+  if not Bibles.IsEmpty then
   begin
     MakeBookList;
     if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
@@ -320,7 +320,7 @@ begin
                     // so we call it from FormActivate
   end;
 
-  if Shelf.IsEmpty then
+  if Bibles.IsEmpty then
   begin
     ActionOptions.Enabled := False;
     ActionCompare.Enabled := False;
@@ -613,7 +613,7 @@ procedure TMainForm.ComboBoxChange(Sender: TObject);
 var
   select : boolean;
 begin
-  Shelf.SetCurrent( ComboBox.Items[ComboBox.ItemIndex] ) ;
+  Bibles.SetCurrent( ComboBox.Items[ComboBox.ItemIndex] ) ;
   MakeBookList;
   select := CurrVerse.number > 1;
   {$ifdef linux}
@@ -813,7 +813,7 @@ end;
 
 procedure TMainForm.CmdModules(Sender: TObject);
 begin
-  if Shelf.IsEmpty then Exit;
+  if Bibles.IsEmpty then Exit;
   DownloadForm.ShowModal;
 end;
 
@@ -858,7 +858,7 @@ var
   Memo : TUnboundMemo;
   Verse : TVerse;
 begin
-  if Shelf.IsEmpty then Exit;
+  if Bibles.IsEmpty then Exit;
   Memo := Sender as TUnboundMemo;
 
   if Button = mbRight then ShowPopup;
@@ -907,7 +907,7 @@ var
 begin
   ComboBox.Items.Clear;
 
-  for Bible in Shelf do
+  for Bible in Bibles do
     begin
       ComboBox.Items.Add(Bible.Name);
       if Bible = CurrBible then ComboBox.ItemIndex := ComboBox.Items.Count - 1;
@@ -974,7 +974,7 @@ procedure TMainForm.GoToVerse(Verse: TVerse; select: boolean);
 var
   Book : TBook;
 begin
-  if Shelf.IsEmpty then Exit;
+  if Bibles.IsEmpty then Exit;
   if not CurrBible.GoodLink(Verse) then Exit;
 
   Book := CurrBible.BookByNum(Verse.Book);
@@ -1334,7 +1334,7 @@ end;
 
 procedure TMainForm.LoadChapter;
 begin
-  if Shelf.IsEmpty then Exit;
+  if Bibles.IsEmpty then Exit;
   MemoBible.Font.Assign(DefaultFont);
   MemoBible.LoadText(Get_Chapter, true);
   SelectPage(apBible);
@@ -1349,7 +1349,7 @@ const
 begin
   s := Trim(s);
   if Utf8Length(s) < 2 then Exit;
-  if Shelf.IsEmpty then Exit;
+  if Bibles.IsEmpty then Exit;
 
   Cursor := crHourGlass;
   text := Get_Search(s, count);
@@ -1374,7 +1374,7 @@ end;
 procedure TMainForm.LoadCompare;
 var text : string;
 begin
-  if Shelf.IsEmpty then Exit;
+  if Bibles.IsEmpty then Exit;
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br> ';
   text += Get_Compare;
   MemoCompare.Font.Assign(DefaultFont);
@@ -1387,7 +1387,7 @@ var
   text, data: string;
   info : string = '';
 begin
-  if Shelf.IsEmpty then Exit;
+  if Bibles.IsEmpty then Exit;
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
   data := Get_Reference(info);
   if data.isEmpty then text += T('Сross-references not found.') else text += data;
@@ -1493,7 +1493,7 @@ var
   IniFile: TIniFile;
   item : string;
 begin
-  if Shelf.IsEmpty then Exit;
+  if Bibles.IsEmpty then Exit;
   IniFile := TIniFile.Create(ConfigFile);
 
   if WindowState = wsNormal then
@@ -1532,8 +1532,8 @@ var
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
-  CurrentBible := IniFile.ReadString('Application', 'CurrentBible', Shelf.GetDefaultBible);
-  Shelf.SetCurrent(CurrentBible);
+  CurrentBible := IniFile.ReadString('Application', 'CurrentBible', Bibles.GetDefaultBible);
+  Bibles.SetCurrent(CurrentBible);
 
   Height := IniFile.ReadInteger('Window', 'Height', Screen.Height - 220);
   Width := IniFile.ReadInteger('Window', 'Width', Screen.Width - 450);

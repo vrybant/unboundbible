@@ -129,7 +129,7 @@ var
 begin
   StringGrid.RowCount := 1;
 
-  for Module in Shelf        do InsertRow('bible');
+  for Module in Bibles       do InsertRow('bible');
   for Module in Commentaries do InsertRow('commentary');
   for Module in Dictionaries do InsertRow('dictionary');
   for Module in References   do InsertRow('reference');
@@ -179,9 +179,9 @@ var
   Item : TModule;
 begin
   if mtype = 'bible' then
-    for Item in Shelf do
+    for Item in Bibles do
       if Item.filename = filename then
-        Shelf.DeleteItem(Item as TBible);
+        Bibles.DeleteItem(Item as TBible);
 
   if mtype = 'commentary' then
     for Item in Commentaries do

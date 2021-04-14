@@ -46,7 +46,7 @@ type
   end;
 
 type
-  TShelf = class(TFPGList<TBible>)
+  TBibles = class(TFPGList<TBible>)
   private
     procedure Load;
     procedure SavePrivates;
@@ -61,7 +61,7 @@ type
   end;
 
 var
-  Shelf : TShelf;
+  Bibles : TBibles;
   CurrBible: TBible;
 
 implementation
@@ -615,7 +615,7 @@ begin
 end;
 
 //=================================================================================================
-//                                           TShelf
+//                                           TBibles
 //=================================================================================================
 
 function Comparison(const Item1: TBible; const Item2: TBible): integer;
@@ -623,7 +623,7 @@ begin
   Result := CompareText(Item1.Name, Item2.Name);
 end;
 
-constructor TShelf.Create;
+constructor TBibles.Create;
 begin
   inherited;
   CurrBible := nil;
@@ -632,7 +632,7 @@ begin
   ReadPrivates;
 end;
 
-procedure TShelf.Load;
+procedure TBibles.Load;
 var
   Bible : TBible;
   List : TStringArray;
@@ -650,7 +650,7 @@ begin
     end;
 end;
 
-procedure TShelf.SetCurrent(Value: string);
+procedure TBibles.SetCurrent(Value: string);
 var
   Bible : TBible;
 begin
@@ -668,12 +668,12 @@ begin
   if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
 end;
 
-function TShelf.IsEmpty: boolean;
+function TBibles.IsEmpty: boolean;
 begin
   Result := Count = 0;
 end;
 
-function TShelf.GetDefaultBible: string;
+function TBibles.GetDefaultBible: string;
 var
   Bible : TBible;
 begin
@@ -686,14 +686,14 @@ begin
       end;
 end;
 
-procedure TShelf.DeleteItem(Item: TBible);
+procedure TBibles.DeleteItem(Item: TBible);
 begin
   Item.Delete;
   Item.Free;
   Delete(IndexOf(Item));
 end;
 
-procedure TShelf.SavePrivates;
+procedure TBibles.SavePrivates;
 var
   IniFile : TIniFile;
   Bible : TBible;
@@ -703,7 +703,7 @@ begin
   IniFile.Free;
 end;
 
-procedure TShelf.ReadPrivates;
+procedure TBibles.ReadPrivates;
 var
   IniFile : TIniFile;
   Bible : TBible;
@@ -713,7 +713,7 @@ begin
   IniFile.Free;
 end;
 
-destructor TShelf.Destroy;
+destructor TBibles.Destroy;
 var
   Bible : TBible;
 begin
@@ -724,9 +724,9 @@ begin
 end;
 
 initialization
-  Shelf := TShelf.Create;
+  Bibles := TBibles.Create;
 
 finalization
-  Shelf.Free;
+  Bibles.Free;
 
 end.
