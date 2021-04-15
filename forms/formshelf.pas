@@ -12,9 +12,6 @@ type
 
   TShelfForm = class(TForm)
     Images: TImageList;
-    ButtonDownloads: TButton;
-    ButtonFolder: TButton;
-    ButtonClose: TButton;
     LabelFile: TLabel;
     LabelFilename: TLabel;
     LabelTest: TLabel;
@@ -27,6 +24,7 @@ type
     ToolButtonDownload: TToolButton;
     ToolButtonFolder: TToolButton;
     ToolButtonDelete: TToolButton;
+    ButtonClose: TButton;
     procedure ButtonDownloadsClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -39,6 +37,8 @@ type
     procedure StringGridSelection(Sender: TObject; aCol, aRow: Integer);
     procedure StringGridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
     procedure ToolButtonDeleteClick(Sender: TObject);
+    procedure ToolButtonDownloadClick(Sender: TObject);
+    procedure ToolButtonFolderClick(Sender: TObject);
   private
     {$ifdef windows} MemoWidth : integer; {$endif}
     procedure LoadGrid;
@@ -73,8 +73,9 @@ begin
   StringGrid.Columns[clName].Title.Caption := T('Title');
   LabelFile.Caption := T('File Name') + ' : ';
   ButtonClose.Caption := T('Close');
-  ButtonDownloads.Caption := T('Download');
-  ButtonFolder.Caption := T('Folder');
+  ToolButtonDownload.Hint := T('Download');
+  ToolButtonFolder.Hint := T('Folder');
+  ToolButtonDelete.Hint := T('Delete');
 end;
 
 procedure TShelfForm.FormCreate(Sender: TObject);
@@ -215,6 +216,17 @@ begin
           StringGrid.DeleteRow(StringGrid.Row);
           StringGridSelection(Sender, StringGrid.Col, StringGrid.Row);
         end;
+end;
+
+procedure TShelfForm.ToolButtonDownloadClick(Sender: TObject);
+begin
+  OpenURL(DownloadsURL);
+end;
+
+procedure TShelfForm.ToolButtonFolderClick(Sender: TObject);
+begin
+  CreateDataDirectory;
+  OpenFolder(DataPath);
 end;
 
 procedure TShelfForm.ButtonFolderClick(Sender: TObject);

@@ -1,11 +1,11 @@
 object ShelfForm: TShelfForm
   Left = 508
-  Height = 456
+  Height = 450
   Top = 290
   Width = 620
   BorderStyle = bsDialog
   Caption = ' Modules'
-  ClientHeight = 456
+  ClientHeight = 450
   ClientWidth = 620
   Color = clBtnFace
   OnCreate = FormCreate
@@ -30,18 +30,20 @@ object ShelfForm: TShelfForm
     ParentColor = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 6
+    TabOrder = 4
     Wrapable = False
     object ToolButtonDownload: TToolButton
       Left = 4
       Top = 0
       ImageIndex = 0
+      OnClick = ToolButtonDownloadClick
     end
     object ToolButtonFolder: TToolButton
       Left = 32
       Top = 0
       Caption = 'ToolButtonFolder'
       ImageIndex = 1
+      OnClick = ToolButtonFolderClick
     end
     object ToolButtonDelete: TToolButton
       Left = 60
@@ -118,43 +120,25 @@ object ShelfForm: TShelfForm
       0
     )
   end
-  object ButtonDownloads: TButton
-    Left = 512
-    Height = 25
-    Top = 376
-    Width = 84
-    Caption = 'Downloads'
-    OnClick = ButtonDownloadsClick
-    TabOrder = 1
-  end
-  object ButtonFolder: TButton
-    Left = 512
-    Height = 25
-    Top = 336
-    Width = 84
-    Caption = 'Folder'
-    OnClick = ButtonFolderClick
-    TabOrder = 2
-  end
   object ButtonClose: TButton
-    Left = 512
+    Left = 517
     Height = 25
-    Top = 416
-    Width = 84
+    Top = 410
+    Width = 88
     Caption = 'Close'
     ModalResult = 1
-    TabOrder = 3
+    TabOrder = 1
   end
   object Panel: TPanel
     Left = 8
-    Height = 118
-    Top = 330
-    Width = 485
+    Height = 115
+    Top = 327
+    Width = 496
     BevelInner = bvRaised
     BevelOuter = bvLowered
-    ClientHeight = 118
-    ClientWidth = 485
-    TabOrder = 4
+    ClientHeight = 115
+    ClientWidth = 496
+    TabOrder = 2
     object LabelFile: TLabel
       Left = 13
       Height = 15
@@ -174,14 +158,14 @@ object ShelfForm: TShelfForm
   end
   object Memo: TMemo
     Left = 21
-    Height = 76
-    Top = 362
-    Width = 470
+    Height = 78
+    Top = 360
+    Width = 480
     BorderStyle = bsNone
     ParentColor = True
     ReadOnly = True
     ScrollBars = ssVertical
-    TabOrder = 5
+    TabOrder = 3
   end
   object LabelTest: TLabel
     Left = 7
