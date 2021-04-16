@@ -815,6 +815,7 @@ procedure TMainForm.CmdModules(Sender: TObject);
 begin
   if Bibles.IsEmpty then Exit;
   ShelfForm.ShowModal;
+  LoadComboBox;
 end;
 
 procedure TMainForm.CmdExit(Sender: TObject);
