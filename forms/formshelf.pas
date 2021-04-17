@@ -80,8 +80,6 @@ end;
 procedure TShelfForm.FormCreate(Sender: TObject);
 begin
   Modules := TModules.Create;
-  Modules.Add(nil); // titles
-
   Application.HintPause := 1;
   StringGrid.Columns[0].Visible := False;
   LabelFilename.Caption := '';
@@ -133,6 +131,8 @@ var
   end;
 
 begin
+  Modules.Clear;
+  Modules.Add(nil); // titles
   StringGrid.RowCount := 1;
 
   for Module in Bibles       do InsertRow(Module);
