@@ -59,7 +59,7 @@ object ShelfForm: TShelfForm
     Top = 32
     Width = 606
     AutoFillColumns = True
-    ColCount = 6
+    ColCount = 3
     ColumnClickSorts = True
     Columns = <    
       item
@@ -84,22 +84,6 @@ object ShelfForm: TShelfForm
         Title.Alignment = taCenter
         Title.Caption = '🌎'
         Width = 40
-      end    
-      item
-        ButtonStyle = cbsNone
-        Title.Caption = 'Title'
-        Width = 0
-        Visible = False
-      end    
-      item
-        Title.Caption = 'Title'
-        Width = 0
-        Visible = False
-      end    
-      item
-        Title.Caption = 'Title'
-        Width = 0
-        Visible = False
       end>
     DefaultDrawing = False
     FixedCols = 0
@@ -116,9 +100,6 @@ object ShelfForm: TShelfForm
       40
       522
       40
-      0
-      0
-      0
     )
   end
   object ButtonClose: TButton
