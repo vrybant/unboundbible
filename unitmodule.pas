@@ -160,7 +160,7 @@ end;
 
 procedure TModule.Delete;
 begin
-  Connection.Close;
+  {$ifndef zeos} Connection.Close; {$endif}
   DeleteFile(filePath);
 end;
 
