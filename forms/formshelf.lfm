@@ -9,6 +9,7 @@ object ShelfForm: TShelfForm
   ClientWidth = 620
   Color = clBtnFace
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnPaint = FormPaint
   OnShow = FormShow
   ParentFont = True

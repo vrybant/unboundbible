@@ -7,7 +7,7 @@ unit UnitModule;
 interface
 
 uses
-  Classes, SysUtils, Dialogs, Graphics, ClipBrd, LazUtf8, DB, SQLdb,
+  Classes, Fgl, SysUtils, Dialogs, Graphics, ClipBrd, LazUtf8, DB, SQLdb,
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
   UnitData, UnitLib;
 
@@ -57,6 +57,8 @@ type
   private
     procedure OpenDatabase;
   end;
+
+ TModules = TFPGList<TModule>;
 
 implementation
 

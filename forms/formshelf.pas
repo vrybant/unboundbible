@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Graphics, Dialogs, Forms, Controls, ComCtrls, StdCtrls, Buttons, ExtCtrls, Grids,
-  SysUtils, LCLIntf, LCLType, Menus, UnitLib;
+  SysUtils, LCLIntf, LCLType, Menus, UnitLib, UnitModule;
 
 type
 
@@ -28,6 +28,7 @@ type
     procedure ButtonDownloadsClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure StringGridCheckboxToggled(sender: TObject; aCol, aRow: Integer;
@@ -40,9 +41,10 @@ type
     procedure ToolButtonDownloadClick(Sender: TObject);
     procedure ToolButtonFolderClick(Sender: TObject);
   private
+    Modules : TModules;
     {$ifdef windows} MemoWidth : integer; {$endif}
     procedure LoadGrid;
-    procedure DeleteModule(filename, mtype: string);
+    procedure DeleteModule(Module: TModule);
   public
     procedure Localize;
   end;
@@ -53,7 +55,7 @@ var
 implementation
 
 uses
-  UnitData, UnitLocal, UnitModule, UnitBible, UnitCommentary, UnitDictionary, UnitReference;
+  UnitData, UnitLocal, UnitBible, UnitCommentary, UnitDictionary, UnitReference;
 
 {$R *.lfm}
 
@@ -61,10 +63,7 @@ const
   clNone = 0;
   clName = 1;
   clLang = 2;
-  clFile = 3;
-  clInfo = 4;
-  clType = 5;
-  clsMax = 6;
+  clsMax = 3;
 
 procedure TShelfForm.Localize;
 begin
@@ -80,6 +79,9 @@ end;
 
 procedure TShelfForm.FormCreate(Sender: TObject);
 begin
+  Modules := TModules.Create;
+  Modules.Add(nil); // titles
+
   Application.HintPause := 1;
   StringGrid.Columns[0].Visible := False;
   LabelFilename.Caption := '';
@@ -91,6 +93,11 @@ begin
   {$endif}
 
   PopupMenu.AutoPopup := False;
+end;
+
+procedure TShelfForm.FormDestroy(Sender: TObject);
+begin
+  Modules.Free;
 end;
 
 procedure TShelfForm.FormPaint(Sender: TObject);
@@ -111,7 +118,7 @@ procedure TShelfForm.LoadGrid;
 var
   Module: TModule;
 
-  procedure InsertRow(mtype: string);
+  procedure InsertRow(Module: TModule);
   var
     List : TStringArray = [];
   begin
@@ -120,20 +127,18 @@ var
     List[clNone] := '';
     List[clName] := ' ' + Module.Name;
     List[clLang] := Module.language;
-    List[clFile] := Module.fileName;
-    List[clInfo] := iif(Module.info.IsEmpty, Module.Name, Module.info);
-    List[clType] := mtype;
 
     StringGrid.InsertRowWithValues(StringGrid.RowCount, List);
+    Modules.Add(Module);
   end;
 
 begin
   StringGrid.RowCount := 1;
 
-  for Module in Bibles       do InsertRow('bible');
-  for Module in Commentaries do InsertRow('commentary');
-  for Module in Dictionaries do InsertRow('dictionary');
-  for Module in References   do InsertRow('reference');
+  for Module in Bibles       do InsertRow(Module);
+  for Module in Commentaries do InsertRow(Module);
+  for Module in Dictionaries do InsertRow(Module);
+  for Module in References   do InsertRow(Module);
 end;
 
 procedure TShelfForm.StringGridCheckboxToggled(sender: TObject; aCol,
@@ -152,13 +157,14 @@ end;
 
 procedure TShelfForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
 begin
+  if Modules.Count <= 1 then Exit;
   ToolButtonDelete.Enabled := CurrBible.name <> StringGrid.Cells[clName, aRow].TrimLeft;
-  LabelFilename.Caption := StringGrid.Cells[clFile, aRow];
+  LabelFilename.Caption := Modules[aRow].fileName;
   LabelFile.Visible := LabelFilename.Caption <> '';
   Memo.Clear;
   Memo.ScrollBars := ssAutoVertical;
-  if Length(StringGrid.Cells[clInfo, aRow]) < 400 then Memo.ScrollBars := ssNone;
-  Memo.Lines.Add(StringGrid.Cells[clInfo, aRow]);
+  if Length(Modules[aRow].info) < 400 then Memo.ScrollBars := ssNone;
+  Memo.Lines.Add(Modules[aRow].info);
   Memo.SelStart := 1;
 end;
 
@@ -175,47 +181,26 @@ begin
   LabelTest.Visible := False;
 end;
 
-procedure TShelfForm.DeleteModule(filename, mtype: string);
-var
-  Item : TModule;
+procedure TShelfForm.DeleteModule(Module: TModule);
 begin
-  if mtype = 'bible' then
-    for Item in Bibles do
-      if Item.filename = filename then
-        Bibles.DeleteItem(Item as TBible);
-
-  if mtype = 'commentary' then
-    for Item in Commentaries do
-      if Item.filename = filename then
-        Commentaries.DeleteItem(Item as TCommentary);
-
-  if mtype = 'dictionary' then
-    for Item in Dictionaries do
-      if Item.filename = filename then
-        Dictionaries.DeleteItem(Item as TDictionary);
-
-  if mtype = 'reference' then
-    for Item in References do
-      if Item.filename = filename then
-        References.DeleteItem(Item as TReference);
+ if Module.ClassType = TBible      then Bibles      .DeleteItem(Module as TBible      );
+ if Module.ClassType = TCommentary then Commentaries.DeleteItem(Module as TCommentary );
+ if Module.ClassType = TDictionary then Dictionaries.DeleteItem(Module as TDictionary );
+ if Module.ClassType = TReference  then References  .DeleteItem(Module as TReference  );
 end;
 
 procedure TShelfForm.ToolButtonDeleteClick(Sender: TObject);
-var
-  name, mfile, mtype : string;
 begin
-   name := StringGrid.Cells[clName, StringGrid.Row].Trim;
-  mfile := StringGrid.Cells[clFile, StringGrid.Row].Trim;
-  mtype := StringGrid.Cells[clType, StringGrid.Row].Trim;
-
   if QuestionDlg(' ' + T('Confirmation'),
-    T('Do you wish to delete this module?') + LineBreaker + LineBreaker + Name + LineBreaker,
-      mtWarning, [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) = idYes then
-        begin
-          DeleteModule(mfile, mtype);
-          StringGrid.DeleteRow(StringGrid.Row);
-          StringGridSelection(Sender, StringGrid.Col, StringGrid.Row);
-        end;
+    T('Do you wish to delete this module?') + LineBreaker + LineBreaker +
+      Modules[StringGrid.Row].name + LineBreaker, mtWarning,
+        [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) = idYes then
+          begin
+            DeleteModule(Modules[StringGrid.Row]);
+            Modules.Delete(StringGrid.Row);
+            StringGrid.DeleteRow(StringGrid.Row);
+            StringGridSelection(Sender, StringGrid.Col, StringGrid.Row);
+          end;
 end;
 
 procedure TShelfForm.ToolButtonDownloadClick(Sender: TObject);
