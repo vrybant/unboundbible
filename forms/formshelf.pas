@@ -31,10 +31,6 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure StringGridCheckboxToggled(sender: TObject; aCol, aRow: Integer;
-      aState: TCheckboxState);
-    procedure StringGridGetCheckboxState(Sender: TObject; aCol, aRow: Integer;
-      var Value: TCheckboxState);
     procedure StringGridSelection(Sender: TObject; aCol, aRow: Integer);
     procedure StringGridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
     procedure ToolButtonDeleteClick(Sender: TObject);
@@ -60,10 +56,9 @@ uses
 {$R *.lfm}
 
 const
-  clNone = 0;
-  clName = 1;
-  clLang = 2;
-  clsMax = 3;
+  clName = 0;
+  clLang = 1;
+  clsMax = 2;
 
 procedure TShelfForm.Localize;
 begin
@@ -81,7 +76,6 @@ procedure TShelfForm.FormCreate(Sender: TObject);
 begin
   Modules := TModules.Create;
   Application.HintPause := 1;
-  StringGrid.Columns[0].Visible := False;
   LabelFilename.Caption := '';
   {$ifdef windows} MemoWidth := Memo.Width; {$endif}
 
@@ -122,7 +116,6 @@ var
   begin
     SetLength(List,clsMax);
 
-    List[clNone] := '';
     List[clName] := ' ' + Module.Name;
     List[clLang] := Module.language;
 
@@ -139,20 +132,6 @@ begin
   for Module in Commentaries do InsertRow(Module);
   for Module in Dictionaries do InsertRow(Module);
   for Module in References   do InsertRow(Module);
-end;
-
-procedure TShelfForm.StringGridCheckboxToggled(sender: TObject; aCol,
-  aRow: Integer; aState: TCheckboxState);
-begin
-  if (aRow > 0) and (aCol = 0) then
-    StringGrid.Cells[aCol, aRow] := iif(aState = cbChecked, '*', '');
-end;
-
-procedure TShelfForm.StringGridGetCheckboxState(Sender: TObject; aCol,
-  aRow: Integer; var Value: TCheckboxState);
-begin
-  if (aRow > 0) and (aCol = 0) then
-    Value := iif(StringGrid.Cells[aCol, aRow] = '*', cbChecked, cbUnchecked);
 end;
 
 procedure TShelfForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);

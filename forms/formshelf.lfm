@@ -59,23 +59,14 @@ object ShelfForm: TShelfForm
     Top = 32
     Width = 606
     AutoFillColumns = True
-    ColCount = 3
+    ColCount = 2
     ColumnClickSorts = True
     Columns = <    
-      item
-        Alignment = taCenter
-        ButtonStyle = cbsCheckboxColumn
-        MaxSize = 40
-        SizePriority = 0
-        Title.Alignment = taCenter
-        Title.Caption = '✓'
-        Width = 40
-      end    
       item
         ButtonStyle = cbsNone
         Title.Alignment = taCenter
         Title.Caption = 'Title'
-        Width = 522
+        Width = 562
       end    
       item
         Alignment = taCenter
@@ -92,13 +83,10 @@ object ShelfForm: TShelfForm
     RowCount = 4
     ShowHint = True
     TabOrder = 0
-    OnCheckboxToggled = StringGridCheckboxToggled
     OnGetCellHint = StringGridGetCellHint
-    OnGetCheckboxState = StringGridGetCheckboxState
     OnSelection = StringGridSelection
     ColWidths = (
-      40
-      522
+      562
       40
     )
   end
