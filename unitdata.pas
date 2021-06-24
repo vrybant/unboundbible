@@ -208,10 +208,12 @@ procedure RemoveOldFiles;
 var
   f, t : string;
 const
-  OldFiles : array [1..14] of string = (
-    'kjv+.unbound','kjv.unbound','rst+.unbound','rstw.unbound','ubio.unbound',
-    'kjv+.bbl.unbound','kjv.bbl.unbound','rst+.bbl.unbound','rstw.bbl.unbound','ubio.bbl.unbound',
-    'ob.xrefs.unbound','obru.xrefs.unbound','strong.dct.unbound','strongru.dct.unbound');
+  OldFiles : array [1..5] of string = (
+    'kjv+.unbound',
+    'kjv.unbound',
+    'rst+.unbound',
+    'rstw.unbound',
+    'ubio.unbound');
 begin
   if not ApplicationUpdate then Exit;
   for f in OldFiles do
