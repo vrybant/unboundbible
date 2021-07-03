@@ -209,14 +209,14 @@ object MainForm: TMainForm
       Left = 678
       Height = 28
       Top = 0
-      Width = 175
+      Width = 226
       BevelOuter = bvNone
       Color = clWindow
       ParentColor = False
       TabOrder = 0
     end
     object ToolButtonSearch: TToolButton
-      Left = 853
+      Left = 904
       Hint = 'Search'
       Top = 0
       Caption = 'Search...'
@@ -251,37 +251,14 @@ object MainForm: TMainForm
     Font.Height = -9
     ParentFont = False
     TabOrder = 1
-    object BookBox: TListBox
-      Left = 4
-      Height = 274
-      Top = 31
-      Width = 134
-      Font.Color = clWindowText
-      Font.Height = -13
-      ItemHeight = 0
-      OnClick = BookBoxClick
-      ParentFont = False
-      ScrollWidth = 132
-      TabOrder = 0
-    end
-    object ChapterBox: TListBox
-      Left = 144
-      Height = 274
-      Top = 31
-      Width = 45
-      Font.Color = clWindowText
-      Font.Height = -15
-      ItemHeight = 0
-      OnClick = ChapterBoxClick
-      ParentFont = False
-      ScrollWidth = 43
-      TabOrder = 1
-    end
     object ComboBox: TComboBox
-      Left = 4
+      Left = 5
       Height = 25
-      Top = 0
+      Top = 1
       Width = 185
+      Align = alTop
+      BorderSpacing.Left = 4
+      BorderSpacing.Right = 4
       DropDownCount = 12
       Font.Color = clWindowText
       Font.Height = -13
@@ -291,6 +268,41 @@ object MainForm: TMainForm
       ParentFont = False
       Style = csDropDownList
       TabOrder = 2
+    end
+    object BookBox: TListBox
+      Left = 5
+      Height = 292
+      Top = 30
+      Width = 136
+      Align = alClient
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 4
+      BorderSpacing.Right = 4
+      BorderSpacing.Bottom = 4
+      Font.Color = clWindowText
+      Font.Height = -13
+      ItemHeight = 0
+      OnClick = BookBoxClick
+      ParentFont = False
+      ScrollWidth = 132
+      TabOrder = 0
+    end
+    object ChapterBox: TListBox
+      Left = 145
+      Height = 292
+      Top = 30
+      Width = 45
+      Align = alRight
+      BorderSpacing.Top = 4
+      BorderSpacing.Right = 4
+      BorderSpacing.Bottom = 4
+      Font.Color = clWindowText
+      Font.Height = -15
+      ItemHeight = 0
+      OnClick = ChapterBoxClick
+      ParentFont = False
+      ScrollWidth = 43
+      TabOrder = 1
     end
   end
   object StatusBar: TStatusBar

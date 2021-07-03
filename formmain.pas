@@ -401,22 +401,7 @@ begin
 end;
 
 procedure TMainForm.FormPaint(Sender: TObject);
-const
-  Streak = 3;
 begin
-  ComboBox.Width := PanelLeft.Width - ComboBox.Left - Streak;
-
-  BookBox.Top := ComboBox.Top + ComboBox.Height + Streak;
-  ChapterBox.Top := BookBox.Top;
-
-  BookBox.Height := PanelLeft.Height - BookBox.Top - BookBox.Left;
-  ChapterBox.Height := BookBox.Height;
-
-  ChapterBox.Width := WidthInPixels(DefaultFont,'150') + 30;
-  BookBox.Width := PanelLeft.Width - BookBox.Left - BookBox.Left - ChapterBox.Width - Streak;
-  ChapterBox.Left := PanelLeft.Width - ChapterBox.Width - Streak;
-
-
   ToolPanel.Width := StandardToolBar.Width - ToolButtonRight.Width - ToolButtonSearch.Width
                    - {$ifdef linux} ToolButtonRight.Left {$else} ToolButtonBullets.Left {$endif};
 
