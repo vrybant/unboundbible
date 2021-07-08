@@ -91,7 +91,8 @@ begin
   format       := unbound;
 
   ext := ExtractFileExt(FilePath);
-  if  (ext = '.mybible') or (ext = '.bbli') then format := mysword;
+  if (ext = '.mybible') or (ext = '.bbli') then format := mysword;
+  if (ext = '.SQLite3') then format := mysword;
 
   {$ifdef zeos}
     Connection := TZConnection.Create(nil);
@@ -123,7 +124,6 @@ begin
     if not Connection.Connected then Exit;
     SQLite3CreateFunctions(dbhandle);
  // Connection.ExecuteDirect('PRAGMA case_sensitive_like = 1');
-    if TableExists('info') then format := mybible;
   except
     output('connection failed ' + FilePath);
     Exit;
