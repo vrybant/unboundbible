@@ -495,9 +495,9 @@ end;
 function IsRightToLeft(language: string): boolean;
 begin
    Result := false;
-   if Prefix('he',language) or
-      Prefix('ar',language) or
-      Prefix('fa',language) then Result := true;
+   if Prefix( 'he',language) or
+      Prefix('ara',language) or
+      Prefix( 'fa',language) then Result := true;
 end;
 
 // graphics
