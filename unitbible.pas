@@ -196,9 +196,6 @@ procedure TBible.LoadDatabase;
 begin
   if loaded then Exit;
   if format = mysword then LoadMyswordDatabase else LoadUnboundDatabase;
-  if not loaded then Exit;
-//Output(self.fileName + ' loaded');
-//ShowTags;
 end;
 
 function TBible.FirstVerse: TVerse;
