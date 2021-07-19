@@ -32,6 +32,15 @@ type
     bible, book, chapter, verse, text, books, number, name, abbr : string;
   end;
 
+  TSearchOption = (caseSensitive, wholeWords);
+  TSearchOptions = set of TSearchOption;
+
+  TRange = record
+    from, till : integer;
+  end;
+
+  { TBible }
+
   TBible = class(TModule)
   private
     Books : TFPGList<TBook>;

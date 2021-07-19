@@ -282,7 +282,7 @@ implementation
 uses
   {$ifdef windows} UmParseWin, {$endif}
   FormAbout, FormNotify, FormSearch, FormCompare, UnitTools, UnitLocal, FormCopy, FormShelf,
-  UnitBible, UnitCommentary, UnitDictionary;
+  UnitModule, UnitBible, UnitCommentary, UnitDictionary;
 
 const
   apBible        = 0; // active page
@@ -955,7 +955,7 @@ begin
   MakeChapterList;
   LoadChapter;
 
-  SelectBook(Book.title, IsNewTestament(CurrVerse.book));
+  SelectBook(Book.title, TModule.IsNewTestament(CurrVerse.book));
   ChapterBox.ItemIndex := CurrVerse.Chapter - 1;
 
   if select then MemoBible.SelectParagraph(CurrVerse.Number);

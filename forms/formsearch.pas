@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
-  Buttons, ExtCtrls, LCLType, UnitTools, UnitData;
+  Buttons, ExtCtrls, LCLType, UnitBible;
 
 type
 
@@ -32,7 +32,7 @@ function CurrentSearchRange: TRange;
 
 implementation
 
-uses UnitBible, UnitLocal;
+uses UnitTools, UnitLocal;
 
 {$R *.lfm}
 

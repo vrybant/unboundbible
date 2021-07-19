@@ -17,15 +17,6 @@ var
   ApplicationUpdate : boolean = false;
   DefaultFont: TFont;
 
-type
-  TSearchOption = (caseSensitive, wholeWords);
-  TSearchOptions = set of TSearchOption;
-
-type
-  TRange = record
-    from, till : integer;
-  end;
-
 const
   BibleHubArray : array [1..66] of string = (
     'genesis','exodus','leviticus','numbers','deuteronomy','joshua','judges','ruth','1_samuel','2_samuel',
@@ -40,7 +31,6 @@ const
 const
   AcuteChar = #$CC#$81;
 
-function IsNewTestament(n: integer): boolean;
 procedure CreateDataDirectory;
 function ConfigFile: string;
 function DataPath: string;
@@ -53,11 +43,6 @@ function DonateURL: string;
 implementation
 
 uses UnitTools, UnitLocal;
-
-function IsNewTestament(n: integer): boolean;
-begin
-  Result := n in [40..76];
-end;
 
 function DataPath: string;
 begin

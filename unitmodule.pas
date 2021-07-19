@@ -50,6 +50,7 @@ type
     constructor Create(FilePath: string; new: boolean = false);
     procedure CommitTransaction;
     procedure CreateTables;
+    class function IsNewTestament(n: integer): boolean;
     function EncodeID(id: integer): integer;
     function DecodeID(id: integer): integer;
     function TableExists(table: string): boolean;
@@ -152,6 +153,11 @@ end;
 procedure TModule.CommitTransaction;
 begin
   {$ifdef zeos} Connection.Commit; {$else} Transaction.Commit; {$endif}
+end;
+
+class function TModule.IsNewTestament(n: integer): boolean;
+begin
+  Result := n in [40..76];
 end;
 
 function TModule.unbound2mybible(id: integer): integer;

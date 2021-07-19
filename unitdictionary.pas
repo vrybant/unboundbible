@@ -177,7 +177,7 @@ begin
   Result := '';
   if Count = 0 then Exit;
 
-  if IsNewTestament(verse.book) then symbol := 'G' else symbol := 'H';
+  if TModule.IsNewTestament(verse.book) then symbol := 'G' else symbol := 'H';
   if not Prefix(symbol,number) then number := symbol + number;
 
   Dictionary := StrongByLanguage(language);
