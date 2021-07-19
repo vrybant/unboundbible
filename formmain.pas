@@ -242,7 +242,7 @@ type
     procedure EnableActions;
     procedure UpDownButtons;
     procedure SelectBook(title: string; scroll: boolean);
-    procedure GoToCurrVerse(select: boolean);
+    procedure ShowCurrVerse(select: boolean);
     procedure LangMenuInit;
     procedure LoadChapter;
     procedure LoadSearch(s: string);
@@ -361,7 +361,7 @@ begin
         TabSheetCommentary.TabVisible := False;
         TabSheetDictionary.TabVisible := False;
       {$endif}
-      GoToCurrVerse(CurrVerse.number > 1);
+      ShowCurrVerse(CurrVerse.number > 1);
     end;
 
   {$ifdef windows} IdleMessage := 'HideCursor'; {$endif}
@@ -591,9 +591,9 @@ begin
   MakeBookList;
   select := CurrVerse.number > 1;
   {$ifdef linux}
-    IdleMessage := 'GoToCurrVerse(' + ToStr(select) + ')';
+    IdleMessage := 'ShowCurrVerse(' + ToStr(select) + ')';
   {$else}
-    GoToCurrVerse(select);
+    ShowCurrVerse(select);
   {$endif}
   SelectPage(apBible);
   UpdateStatus(CurrBible.Info);
@@ -851,7 +851,7 @@ begin
     begin
       if not CurrBible.GoodLink(Memo.hyperlink) then Exit;
       CurrVerse := CurrBible.SrtToVerse(Memo.hyperlink);
-      GoToCurrVerse(True);
+      ShowCurrVerse(True);
     end;
 
   if Memo = MemoBible then
@@ -943,7 +943,7 @@ begin
       end;
 end;
 
-procedure TMainForm.GoToCurrVerse(select: boolean);
+procedure TMainForm.ShowCurrVerse(select: boolean);
 var
   Book : TBook;
 begin
@@ -1207,8 +1207,8 @@ begin
   if IdleMessage = 'HideCursor' then HideCursor;
   {$endif}
   {$ifdef linux}
-  if IdleMessage = 'GoToCurrVerse(True)'  then GoToCurrVerse(True);
-  if IdleMessage = 'GoToCurrVerse(False)' then GoToCurrVerse(False);
+  if IdleMessage = 'ShowCurrVerse(True)'  then ShowCurrVerse(True);
+  if IdleMessage = 'ShowCurrVerse(False)' then ShowCurrVerse(False);
   {$endif}
   IdleMessage := '';
 end;
