@@ -2,7 +2,7 @@ unit UnitTools;
 
 interface
 
-uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitBible, UnitLib;
+uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, IniFiles, UnitBible, UnitLib;
 
 type
   TCopyOptions = record
@@ -21,11 +21,13 @@ type
     class function Get_Footnote(marker: string = ''): string;
     class function Get_Verses: string;
     class procedure SetCurrBible(Value: string);
+    class procedure SaveConfig;
+    class procedure ReadConfig;
   end;
 
 var
   Bibles : TBibles;
-  CurrBible : TBible;
+  CurrBible : TBible = nil;
   CurrVerse : TVerse;
   Options : TCopyOptions;
 
@@ -245,11 +247,50 @@ begin
   if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
 end;
 
+class procedure Tools.SaveConfig;
+var IniFile: TIniFile;
+begin
+  IniFile := TIniFile.Create(ConfigFile);
+
+  IniFile.WriteString('Application', 'Version', ApplicationVersion);
+  IniFile.WriteString('Application', 'FontName', DefaultFont.Name);
+  IniFile.WriteInteger('Application', 'FontSize', DefaultFont.Size);
+  IniFile.WriteInteger('Verse', 'Book', CurrVerse.book);
+  IniFile.WriteInteger('Verse', 'Chapter', CurrVerse.chapter);
+  IniFile.WriteInteger('Verse', 'Number', CurrVerse.number);
+  IniFile.WriteInteger('Verse', 'Count', CurrVerse.count);
+
+  IniFile.Free;
+end;
+
+class procedure Tools.ReadConfig;
+var
+  IniFile: TIniFile;
+  Version: string;
+const
+  DefaultFontName = {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
+  DefaultFontSize = 12;
+begin
+  IniFile := TIniFile.Create(ConfigFile);
+
+  Version := IniFile.ReadString('Application', 'Version', '');
+  ApplicationUpdate := ApplicationVersion <> Version;
+  DefaultFont.Name := IniFile.ReadString('Application', 'FontName', DefaultFontName);
+  DefaultFont.Size := IniFile.ReadInteger('Application', 'FontSize', DefaultFontSize);
+  CurrVerse.book := IniFile.ReadInteger('Verse', 'Book', 0);
+  CurrVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);
+  CurrVerse.number := IniFile.ReadInteger('Verse', 'Number', 0);
+  CurrVerse.count := IniFile.ReadInteger('Verse', 'Count', 0);
+
+  IniFile.Free;
+end;
+
 initialization
   Bibles := TBibles.Create;
-  CurrBible := nil;
+  Tools.ReadConfig;
 
 finalization
+  Tools.SaveConfig;
   Bibles.Free;
 
 end.

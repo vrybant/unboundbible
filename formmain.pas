@@ -625,7 +625,6 @@ var path : string;
 begin
   path := GetBibleHubURL(CurrVerse.book);
   if path <> '' then OpenURL(path);
-  output(path);
 end;
 
 procedure TMainForm.CmdEdit(Sender: TObject);

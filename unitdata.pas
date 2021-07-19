@@ -3,7 +3,7 @@ unit UnitData;
 interface
 
 uses
-  Classes, SysUtils, Graphics, FileUtil, IniFiles, Zipper, UnitLib;
+  Classes, SysUtils, Graphics, FileUtil, Zipper, UnitLib;
 
 const
   ApplicationName = 'Unbound Bible';
@@ -164,52 +164,12 @@ begin
   Result += ToStr(CurrVerse.chapter) + '-' + ToStr(CurrVerse.number) + '.htm';
 end;
 
-procedure SaveConfig;
-var IniFile: TIniFile;
-begin
-  IniFile := TIniFile.Create(ConfigFile);
-
-  IniFile.WriteString('Application', 'Version', ApplicationVersion);
-  IniFile.WriteString('Application', 'FontName', DefaultFont.Name);
-  IniFile.WriteInteger('Application', 'FontSize', DefaultFont.Size);
-  IniFile.WriteInteger('Verse', 'Book', CurrVerse.book);
-  IniFile.WriteInteger('Verse', 'Chapter', CurrVerse.chapter);
-  IniFile.WriteInteger('Verse', 'Number', CurrVerse.number);
-  IniFile.WriteInteger('Verse', 'Count', CurrVerse.count);
-
-  IniFile.Free;
-end;
-
-procedure ReadConfig;
-var
-  IniFile: TIniFile;
-  Version: string;
-const
-  DefaultFontName = {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
-  DefaultFontSize = 12;
-begin
-  IniFile := TIniFile.Create(ConfigFile);
-
-  Version := IniFile.ReadString('Application', 'Version', '');
-  ApplicationUpdate := ApplicationVersion <> Version;
-  DefaultFont.Name := IniFile.ReadString('Application', 'FontName', DefaultFontName);
-  DefaultFont.Size := IniFile.ReadInteger('Application', 'FontSize', DefaultFontSize);
-  CurrVerse.book := IniFile.ReadInteger('Verse', 'Book', 0);
-  CurrVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);
-  CurrVerse.number := IniFile.ReadInteger('Verse', 'Number', 0);
-  CurrVerse.count := IniFile.ReadInteger('Verse', 'Count', 0);
-
-  IniFile.Free;
-end;
-
 initialization
   DefaultFont := TFont.Create;
-  ReadConfig;
   UnzipDefaultsFiles;
   RemoveOldFiles;
 
 finalization
-  SaveConfig;
   DefaultFont.Free;
 
 end.
