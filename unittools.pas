@@ -23,7 +23,6 @@ type
     class procedure SetCurrBible(Value: string);
     class procedure SaveConfig;
     class procedure ReadConfig;
-    class procedure RemoveOldFiles;
   end;
 
 var
@@ -287,27 +286,7 @@ begin
   IniFile.Free;
 end;
 
-class procedure Tools.RemoveOldFiles;
-var
-  f, t : string;
-const
-  OldFiles : array [1..5] of string = (
-    'kjv+.unbound',
-    'kjv.unbound',
-    'rst+.unbound',
-    'rstw.unbound',
-    'ubio.unbound');
-begin
-  if not ApplicationUpdate then Exit;
-  for f in OldFiles do
-    begin
-      t := DataPath + Slash + f;
-      if FileExists(t) then DeleteFile(t);
-    end;
-end;
-
 initialization
-  Tools.RemoveOldFiles;
   DefaultFont := TFont.Create;
   Bibles := TBibles.Create;
   Tools.ReadConfig;

@@ -24,7 +24,7 @@ function HomeURL: string;
 function DownloadsURL: string;
 function IssueURL: string;
 function DonateURL: string;
-function GetBibleHubURL(book : integer): string;
+function BibleHubURL(book : integer): string;
 
 implementation
 
@@ -71,39 +71,6 @@ begin
   Result := GetFileList(DataPath, '*.bbl.unbound');
 end;
 
-procedure UnzipDefaultsFiles;
-var
-  UnZipper: TUnZipper;
-  List : TStringArray;
-  f, d : string;
-  empty : boolean;
-begin
-  if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
-
-  empty := GetUnboundBiblesList.IsEmpty;
-  if not ApplicationUpdate and not empty then Exit;
-
-  List := GetFileList(SharePath + ModulesDirectory, '*.zip');
-
-  UnZipper := TUnZipper.Create;
-  UnZipper.UseUTF8 := True;
-  UnZipper.OutputPath := DataPath;
-
-  for f in List do
-    begin
-      d := DataPath + Slash + ExtractOnlyName(f);
-      if not empty and not FileExists(d) then Continue;
-      try
-        UnZipper.FileName := f;
-        UnZipper.UnZipAllFiles;
-      except
-        //
-      end;
-    end;
-
-  UnZipper.Free;
-end;
-
 function ru: string;
 begin
   Result := '';
@@ -137,14 +104,67 @@ begin
   Result += 'config.ini';
 end;
 
-function GetBibleHubURL(book: integer): string;
+function BibleHubURL(book: integer): string;
 begin
   if not (book in [1..66]) then Exit('');
   Result := 'http://biblehub.com/interlinear/' + BibleHubArray[CurrVerse.book] + '/';
   Result += ToStr(CurrVerse.chapter) + '-' + ToStr(CurrVerse.number) + '.htm';
 end;
 
+procedure RemoveOldFiles;
+var
+  f, t : string;
+const
+  OldFiles : array [1..5] of string = (
+    'kjv+.unbound',
+    'kjv.unbound',
+    'rst+.unbound',
+    'rstw.unbound',
+    'ubio.unbound');
+begin
+  if not ApplicationUpdate then Exit;
+  for f in OldFiles do
+    begin
+      t := DataPath + Slash + f;
+      if FileExists(t) then DeleteFile(t);
+    end;
+end;
+
+procedure UnzipDefaultsFiles;
+var
+  UnZipper: TUnZipper;
+  List : TStringArray;
+  f, d : string;
+  empty : boolean;
+begin
+  if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
+
+  empty := GetUnboundBiblesList.IsEmpty;
+  if not ApplicationUpdate and not empty then Exit;
+
+  List := GetFileList(SharePath + ModulesDirectory, '*.zip');
+
+  UnZipper := TUnZipper.Create;
+  UnZipper.UseUTF8 := True;
+  UnZipper.OutputPath := DataPath;
+
+  for f in List do
+    begin
+      d := DataPath + Slash + ExtractOnlyName(f);
+      if not empty and not FileExists(d) then Continue;
+      try
+        UnZipper.FileName := f;
+        UnZipper.UnZipAllFiles;
+      except
+        //
+      end;
+    end;
+
+  UnZipper.Free;
+end;
+
 initialization
+  RemoveOldFiles;
   UnzipDefaultsFiles;
 
 end.

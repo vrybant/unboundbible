@@ -623,7 +623,7 @@ end;
 procedure TMainForm.CmdInterline(Sender: TObject);
 var path : string;
 begin
-  path := GetBibleHubURL(CurrVerse.book);
+  path := BibleHubURL(CurrVerse.book);
   if path <> '' then OpenURL(path);
 end;
 
