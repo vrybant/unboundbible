@@ -9,7 +9,7 @@ interface
 uses
   Classes, Fgl, SysUtils, Dialogs, Graphics, ClipBrd, LazUtf8, DB, SQLdb,
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
-  UnitData, UnitLib;
+  UnitLib;
 
 type
   TFileFormat = (unbound, mysword, mybible);
@@ -57,6 +57,8 @@ type
     procedure Delete;
     destructor Destroy; override;
   private
+    function unbound2mybible(id: integer): integer;
+    function mybible2unbound(id: integer): integer;
     procedure OpenDatabase;
   end;
 
@@ -65,6 +67,18 @@ type
 implementation
 
 uses UnitSQLiteEx;
+
+const
+  MaxBooks = 88;
+
+var
+  myBibleArray : array [1..MaxBooks] of integer = (
+    010,020,030,040,050,060,070,080,090,100,110,120,130,140,150,160,190,220,230,240,
+    250,260,290,300,310,330,340,350,360,370,380,390,400,410,420,430,440,450,460,470,
+    480,490,500,510,520,530,540,550,560,570,580,590,600,610,620,630,640,650,660,670,
+    680,690,700,710,720,730,000,000,000,000,000,000,000,000,000,000,165,468,170,180,
+    462,464,466,467,270,280,315,320
+    );
 
 constructor TModule.Create(FilePath: string; new: boolean = false);
 var
@@ -138,6 +152,21 @@ end;
 procedure TModule.CommitTransaction;
 begin
   {$ifdef zeos} Connection.Commit; {$else} Transaction.Commit; {$endif}
+end;
+
+function TModule.unbound2mybible(id: integer): integer;
+begin
+  Result := id;
+  if id in [1..Length(myBibleArray)] then Result := myBibleArray[id];
+end;
+
+function TModule.mybible2unbound(id: integer): integer;
+var i : integer;
+begin
+  Result := id;
+  if id = 0 then Exit;
+  for i:=1 to Length(myBibleArray) do
+    if id = myBibleArray[i] then Exit(i);
 end;
 
 function TModule.EncodeID(id: integer): integer;

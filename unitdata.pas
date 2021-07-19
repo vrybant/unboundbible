@@ -45,24 +45,6 @@ type
 var
   Options : TCopyOptions;
 
-  TitlesArray : array [1..66] of string = (
-    'Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth','1 Samuel','2 Samuel',
-    '1 Kings','2 Kings','1 Chronicles','2 Chronicles','Ezra','Nehemiah','Esther','Job','Psalms','Proverbs',
-    'Ecclesiastes','Song of Songs','Isaiah','Jeremiah','Lamentations','Ezekiel','Daniel','Hosea','Joel',
-    'Amos','Obadiah','Jonah','Micah','Nahum','Habakkuk','Zephaniah','Haggai','Zechariah','Malachi','Matthew',
-    'Mark','Luke','John','Acts','Romans','1 Corinthians','2 Corinthians','Galatians','Ephesians','Philippians',
-    'Colossians','1 Thessalonians','2 Thessalonians','1 Timothy','2 Timothy','Titus','Philemon','Hebrews',
-    'James','1 Peter','2 Peter','1 John','2 John','3 John','Jude','Revelation'
-    );
-
-  AbbrevArray : array [1..66] of string = (
-    'Gen.','Ex.','Lev.','Num.','Deut.','Josh.','Judg.','Ruth','1 Sam.','2 Sam.','1 Kin.','2 Kin.','1 Chr.',
-    '2 Chr.','Ezra','Neh.','Esth.','Job','Ps.','Prov.','Eccl.','Song','Is.','Jer.','Lam.','Ezek.','Dan.',
-    'Hos.','Joel','Amos','Obad.','Jon.','Mic.','Nah.','Hab.','Zeph.','Hag.','Zech.','Mal.','Matt.','Mark',
-    'Luke','John','Acts','Rom.','1 Cor.','2 Cor.','Gal.','Eph.','Phil.','Col.','1 Thess.','2 Thess.','1 Tim.',
-    '2 Tim.','Titus','Philem.','Heb.','James','1 Pet.','2 Pet.','1 John','2 John','3 John','Jude','Rev.'
-    );
-
   BibleHubArray : array [1..66] of string = (
     'genesis','exodus','leviticus','numbers','deuteronomy','joshua','judges','ruth','1_samuel','2_samuel',
     '1_kings','2_kings','1_chronicles','2_chronicles','ezra','nehemiah','esther','job','psalms','proverbs',
@@ -76,8 +58,6 @@ var
 const
   AcuteChar = #$CC#$81;
 
-function unbound2mybible(id: integer): integer;
-function mybible2unbound(id: integer): integer;
 function IsNewTestament(n: integer): boolean;
 procedure CreateDataDirectory;
 function ConfigFile: string;
@@ -91,33 +71,6 @@ function DonateURL: string;
 implementation
 
 uses UnitTools, UnitLocal;
-
-const
-  MaxBooks = 88;
-
-var
-  myBibleArray : array [1..MaxBooks] of integer = (
-    010,020,030,040,050,060,070,080,090,100,110,120,130,140,150,160,190,220,230,240,
-    250,260,290,300,310,330,340,350,360,370,380,390,400,410,420,430,440,450,460,470,
-    480,490,500,510,520,530,540,550,560,570,580,590,600,610,620,630,640,650,660,670,
-    680,690,700,710,720,730,000,000,000,000,000,000,000,000,000,000,165,468,170,180,
-    462,464,466,467,270,280,315,320
-    );
-
-function unbound2mybible(id: integer): integer;
-begin
-  Result := id;
-  if id in [1..Length(myBibleArray)] then Result := myBibleArray[id];
-end;
-
-function mybible2unbound(id: integer): integer;
-var i : integer;
-begin
-  Result := id;
-  if id = 0 then Exit;
-  for i:=1 to Length(myBibleArray) do
-    if id = myBibleArray[i] then Exit(i);
-end;
 
 function IsNewTestament(n: integer): boolean;
 begin

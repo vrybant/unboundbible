@@ -21,7 +21,7 @@ type
 
 var
   Bibles : TBibles;
-  CurrBible: TBible;
+  CurrBible : TBible;
   CurrVerse : TVerse;
 
 implementation
