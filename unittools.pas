@@ -27,7 +27,6 @@ type
   end;
 
 var
-  Bibles : TBibles;
   CurrBible : TBible = nil;
   CurrVerse : TVerse;
   Options : TCopyOptions;
@@ -42,14 +41,12 @@ uses
 constructor TTools.Create;
 begin
   DefaultFont := TFont.Create;
-  Bibles := TBibles.Create;
-  Tools.ReadConfig;
+  ReadConfig;
 end;
 
 destructor TTools.Destroy;
 begin
-  Tools.SaveConfig;
-  Bibles.Free;
+  SaveConfig;
   DefaultFont.Free;
 end;
 

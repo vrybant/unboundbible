@@ -92,6 +92,9 @@ type
 const
   minVerse : TVerse = (book: 1; chapter : 1; number : 1; count : 1);
 
+var
+  Bibles : TBibles;
+
 implementation
 
 uses UnitSQLiteEx;
@@ -746,5 +749,11 @@ begin
   for Bible in Self do Bible.Free;
   inherited Destroy;
 end;
+
+initialization
+  Bibles := TBibles.Create;
+
+finalization
+  Bibles.Free;
 
 end.
