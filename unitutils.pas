@@ -104,25 +104,6 @@ begin
   UnZipper.Free;
 end;
 
-procedure RemoveOldFiles;
-var
-  f, t : string;
-const
-  OldFiles : array [1..5] of string = (
-    'kjv+.unbound',
-    'kjv.unbound',
-    'rst+.unbound',
-    'rstw.unbound',
-    'ubio.unbound');
-begin
-  if not ApplicationUpdate then Exit;
-  for f in OldFiles do
-    begin
-      t := DataPath + Slash + f;
-      if FileExists(t) then DeleteFile(t);
-    end;
-end;
-
 function ru: string;
 begin
   Result := '';
@@ -165,7 +146,6 @@ end;
 
 initialization
   UnzipDefaultsFiles;
-  RemoveOldFiles;
 
 end.
 
