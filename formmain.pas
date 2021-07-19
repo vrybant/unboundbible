@@ -309,23 +309,12 @@ begin
   NoteFileName := Untitled;
   ReadConfig;
   LoadComboBox;
+  MakeBookList;
+  if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
+  UpdateStatus(CurrBible.Info);
 
-  if not Bibles.IsEmpty then
-  begin
-    MakeBookList;
-    if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
-    UpdateStatus(CurrBible.Info);
-
-    // LoadChapter; // RichMemo doesn't load from Stream,
-                    // so we call it from FormActivate
-  end;
-
-  if Bibles.IsEmpty then
-  begin
-    ActionOptions.Enabled := False;
-    ActionCompare.Enabled := False;
-    ActionCopyAs .Enabled := False;
-  end;
+  // LoadChapter; // RichMemo doesn't load from Stream,
+                  // so we call it from FormActivate
 
   LangMenuInit;
   RecentMenuInit;
@@ -798,7 +787,6 @@ end;
 
 procedure TMainForm.CmdModules(Sender: TObject);
 begin
-  if Bibles.IsEmpty then Exit;
   ShelfForm.ShowModal;
   LoadComboBox;
 end;
@@ -844,7 +832,6 @@ var
   Memo : TUnboundMemo;
   Verse : TVerse;
 begin
-  if Bibles.IsEmpty then Exit;
   Memo := Sender as TUnboundMemo;
 
   if Button = mbRight then ShowPopup;
@@ -960,7 +947,6 @@ procedure TMainForm.GoToVerse(Verse: TVerse; select: boolean);
 var
   Book : TBook;
 begin
-  if Bibles.IsEmpty then Exit;
   if not CurrBible.GoodLink(Verse) then Exit;
 
   Book := CurrBible.BookByNum(Verse.Book);
@@ -1320,7 +1306,6 @@ end;
 
 procedure TMainForm.LoadChapter;
 begin
-  if Bibles.IsEmpty then Exit;
   MemoBible.Font.Assign(DefaultFont);
   MemoBible.LoadText(Tools.Get_Chapter, true);
   SelectPage(apBible);
@@ -1335,7 +1320,6 @@ const
 begin
   s := Trim(s);
   if Utf8Length(s) < 2 then Exit;
-  if Bibles.IsEmpty then Exit;
 
   Cursor := crHourGlass;
   text := Tools.Get_Search(s, count);
@@ -1360,7 +1344,6 @@ end;
 procedure TMainForm.LoadCompare;
 var text : string;
 begin
-  if Bibles.IsEmpty then Exit;
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br> ';
   text += Tools.Get_Compare;
   MemoCompare.Font.Assign(DefaultFont);
@@ -1373,7 +1356,6 @@ var
   text, data: string;
   info : string = '';
 begin
-  if Bibles.IsEmpty then Exit;
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
   data := Tools.Get_Reference(info);
   if data.isEmpty then text += T('Сross-references not found.') else text += data;
@@ -1479,7 +1461,6 @@ var
   IniFile: TIniFile;
   item : string;
 begin
-  if Bibles.IsEmpty then Exit;
   IniFile := TIniFile.Create(ConfigFile);
 
   if WindowState = wsNormal then

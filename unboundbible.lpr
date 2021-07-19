@@ -12,6 +12,9 @@ uses
 begin
   Application.Title := {$ifdef windows} 'Unbound Bible' {$else} 'unboundbible' {$endif};
   Application.Initialize;
+
+  if Bibles.IsEmpty then Exit;
+
   Application.CreateForm(TMainForm,    MainForm);
   Application.CreateForm(TAboutBox,    AboutBox);
   Application.CreateForm(TNotifyForm,  NotifyForm);
@@ -19,6 +22,7 @@ begin
   Application.CreateForm(TCompareForm, CompareForm);
   Application.CreateForm(TCopyForm,    CopyForm);
   Application.CreateForm(TShelfForm,   ShelfForm);
+
   MainForm.LocalizeApplication;
   Application.Run;
 end.

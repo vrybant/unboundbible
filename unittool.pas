@@ -189,7 +189,6 @@ var
   l : boolean = False;
 begin
   if CurrBible.RightToLeft then Result := '<rtl>' else Result := '';
-  if Bibles.IsEmpty then Exit;
 
   Book := CurrBible.BookByNum(CurrVerse.Book);
   if not Assigned(Book) then Exit;
@@ -227,7 +226,6 @@ class procedure Tools.SetCurrent(Value: string);
 var
   Bible : TBible;
 begin
-  if Bibles.IsEmpty then Exit;
   CurrBible := Bibles[0];
 
   for Bible in Bibles do
