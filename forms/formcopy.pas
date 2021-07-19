@@ -35,7 +35,7 @@ var
 
 implementation
 
-uses UnitConst, UnitLocal;
+uses UnitUtils, UnitLocal;
 
 const
   cgAbbreviate  = 0;

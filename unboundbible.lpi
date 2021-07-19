@@ -70,9 +70,9 @@
         <UnitName Value="UnitTools"/>
       </Unit2>
       <Unit3>
-        <Filename Value="unitconst.pas"/>
+        <Filename Value="unitutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitConst"/>
+        <UnitName Value="UnitUtils"/>
       </Unit3>
       <Unit4>
         <Filename Value="unitsqliteex.pas"/>

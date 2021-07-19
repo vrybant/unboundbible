@@ -6,7 +6,7 @@ uses
   Classes, Fgl, SysUtils, LazFileUtils, LazUTF8, Forms, Controls, Graphics, Dialogs,
   StdCtrls, Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
   ClipBrd, StdActns, Buttons, PrintersDlgs, Types, RichMemo, UnboundMemo,
-  UnitConst, UnitLib;
+  UnitUtils, UnitLib;
 
 type
   TStatuses = TFPGMap<integer, string>;
@@ -623,7 +623,7 @@ end;
 procedure TMainForm.CmdInterline(Sender: TObject);
 var path : string;
 begin
-  path := BibleHubURL(CurrVerse.book);
+  path := GetBibleHubURL(CurrVerse.book);
   if path <> '' then OpenURL(path);
 end;
 
