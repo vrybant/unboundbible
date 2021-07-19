@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Fgl, SysUtils, Graphics, Dialogs, ClipBrd, LazUtf8, IniFiles, DB, SQLdb,
-  UnitModule, UnitUtils, UnitPrepare, UnitLib;
+  UnitModule, UnitConst, UnitPrepare, UnitLib;
 
 type
   TVerse = record

@@ -1,9 +1,9 @@
-unit UnitUtils;
+unit UnitConst;
 
 interface
 
 uses
-  Classes, SysUtils, Graphics, FileUtil, Zipper, UnitLib;
+  Classes, SysUtils, Graphics, FileUtil, UnitLib;
 
 const
   ApplicationName = 'Unbound Bible';
@@ -24,7 +24,7 @@ function HomeURL: string;
 function DownloadsURL: string;
 function IssueURL: string;
 function DonateURL: string;
-function GetBibleHubURL(book : integer): string;
+function BibleHubURL(book : integer): string;
 
 implementation
 
@@ -66,44 +66,6 @@ begin
       if Suffix(s, item) then Result.Add(item);
 end;
 
-function GetUnboundBiblesList: TStringArray;
-begin
-  Result := GetFileList(DataPath, '*.bbl.unbound');
-end;
-
-procedure UnzipDefaultsFiles;
-var
-  UnZipper: TUnZipper;
-  List : TStringArray;
-  f, d : string;
-  empty : boolean;
-begin
-  if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
-
-  empty := GetUnboundBiblesList.IsEmpty;
-  if not ApplicationUpdate and not empty then Exit;
-
-  List := GetFileList(SharePath + ModulesDirectory, '*.zip');
-
-  UnZipper := TUnZipper.Create;
-  UnZipper.UseUTF8 := True;
-  UnZipper.OutputPath := DataPath;
-
-  for f in List do
-    begin
-      d := DataPath + Slash + ExtractOnlyName(f);
-      if not empty and not FileExists(d) then Continue;
-      try
-        UnZipper.FileName := f;
-        UnZipper.UnZipAllFiles;
-      except
-        //
-      end;
-    end;
-
-  UnZipper.Free;
-end;
-
 function ru: string;
 begin
   Result := '';
@@ -137,15 +99,12 @@ begin
   Result += 'config.ini';
 end;
 
-function GetBibleHubURL(book: integer): string;
+function BibleHubURL(book: integer): string;
 begin
   if not (book in [1..66]) then Exit('');
   Result := 'http://biblehub.com/interlinear/' + BibleHubArray[CurrVerse.book] + '/';
   Result += ToStr(CurrVerse.chapter) + '-' + ToStr(CurrVerse.number) + '.htm';
 end;
-
-initialization
-  UnzipDefaultsFiles;
 
 end.
 

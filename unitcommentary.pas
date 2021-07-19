@@ -3,7 +3,7 @@ unit UnitCommentary;
 interface
 
 uses
-  Classes, Fgl, SysUtils, UnitModule, UnitBible, UnitUtils, UnitLib;
+  Classes, Fgl, SysUtils, UnitModule, UnitBible, UnitConst, UnitLib;
 
 type
   TCommentaryAlias = record

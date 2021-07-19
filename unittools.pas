@@ -2,7 +2,8 @@ unit UnitTools;
 
 interface
 
-uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, IniFiles, UnitBible, UnitLib;
+uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, IniFiles, Zipper,
+  UnitBible, UnitLib;
 
 type
   TCopyOptions = record
@@ -24,6 +25,7 @@ type
     class procedure SaveConfig;
     class procedure ReadConfig;
     class procedure RemoveOldFiles;
+    class procedure UnzipDefaultsFiles;
   end;
 
 var
@@ -36,7 +38,7 @@ var
 implementation
 
 uses
-  FormSearch, UnitUtils, UnitLocal, UnitModule, UnitReference, UnitCommentary, UnitDictionary;
+  FormSearch, UnitConst, UnitLocal, UnitModule, UnitReference, UnitCommentary, UnitDictionary;
 
 class function Tools.Get_Chapter: string;
 var
@@ -306,8 +308,44 @@ begin
     end;
 end;
 
+class procedure Tools.UnzipDefaultsFiles;
+var
+  UnZipper: TUnZipper;
+  List : TStringArray;
+  f, d : string;
+  empty : boolean;
+begin
+  if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
+
+  List :=  GetFileList(DataPath, '*.bbl.unbound');
+  empty := List.IsEmpty;
+  if not ApplicationUpdate and not empty then Exit;
+
+  List := GetFileList(SharePath + ModulesDirectory, '*.zip');
+
+  UnZipper := TUnZipper.Create;
+  UnZipper.UseUTF8 := True;
+  UnZipper.OutputPath := DataPath;
+
+  for f in List do
+    begin
+      d := DataPath + Slash + ExtractOnlyName(f);
+      if not empty and not FileExists(d) then Continue;
+      try
+        UnZipper.FileName := f;
+        UnZipper.UnZipAllFiles;
+      except
+        //
+      end;
+    end;
+
+  UnZipper.Free;
+end;
+
 initialization
   Tools.RemoveOldFiles;
+  Tools.UnzipDefaultsFiles;
+
   DefaultFont := TFont.Create;
   Bibles := TBibles.Create;
   Tools.ReadConfig;

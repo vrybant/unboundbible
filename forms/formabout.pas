@@ -27,7 +27,7 @@ var
 
 implementation
 
-uses UnitUtils, UnitLocal;
+uses UnitConst, UnitLocal;
 
 {$R *.lfm}
 
