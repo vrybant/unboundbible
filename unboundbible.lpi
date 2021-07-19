@@ -65,9 +65,9 @@
         <UnitName Value="FormMain"/>
       </Unit1>
       <Unit2>
-        <Filename Value="unittool.pas"/>
+        <Filename Value="unittools.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitTool"/>
+        <UnitName Value="UnitTools"/>
       </Unit2>
       <Unit3>
         <Filename Value="unitdata.pas"/>

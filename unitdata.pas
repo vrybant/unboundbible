@@ -90,7 +90,7 @@ function DonateURL: string;
 
 implementation
 
-uses UnitTool, UnitLocal;
+uses UnitTools, UnitLocal;
 
 const
   MaxBooks = 88;
