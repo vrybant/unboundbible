@@ -12,6 +12,8 @@ uses
   UnitData, UnitLib;
 
 type
+  TFileFormat = (unbound, mysword, mybible);
+
   TModule = class
     {$ifdef zeos}
       Connection : TZConnection;

@@ -18,8 +18,6 @@ var
   DefaultFont: TFont;
 
 type
-  TFileFormat = (unbound, mysword, mybible);
-
   TSearchOption = (caseSensitive, wholeWords);
   TSearchOptions = set of TSearchOption;
 
@@ -29,12 +27,6 @@ type
   end;
 
 type
-  TVerse = record
-    book, chapter, number, count : integer;
-  end;
-
-  TVerseArray = array of TVerse;
-
   TBook = class
   public
     title   : string;
@@ -46,19 +38,11 @@ type
 
   TBooks = TFPGList<TBook>;
 
-  TContent = record
-    verse : TVerse;
-    text : string;
-  end;
-
-  TContentArray = array of TContent;
-
   TCopyOptions = record
     cvAbbreviate, cvEnumerated, cvGuillemets, cvParentheses, cvEnd : boolean;
   end;
 
 var
-  CurrVerse : TVerse;
   Options : TCopyOptions;
 
   TitlesArray : array [1..66] of string = (
@@ -90,7 +74,6 @@ var
     );
 
 const
-  minVerse : TVerse = (book: 1; chapter : 1; number : 1; count : 1);
   AcuteChar = #$CC#$81;
 
 function unbound2mybible(id: integer): integer;
@@ -107,7 +90,7 @@ function DonateURL: string;
 
 implementation
 
-uses UnitLocal;
+uses UnitTool, UnitLocal;
 
 const
   MaxBooks = 88;

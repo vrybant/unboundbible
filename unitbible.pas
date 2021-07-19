@@ -7,6 +7,19 @@ uses
   UnitModule, UnitData, UnitPrepare, UnitLib;
 
 type
+  TVerse = record
+    book, chapter, number, count : integer;
+  end;
+
+  TVerseArray = array of TVerse;
+
+  TContent = record
+    verse : TVerse;
+    text : string;
+  end;
+
+  TContentArray = array of TContent;
+
   TBibleAlias = record
     bible, book, chapter, verse, text, books, number, name, abbr : string;
   end;
@@ -58,6 +71,9 @@ type
     function GetDefaultBible: string;
     procedure DeleteItem(Item: TBible);
   end;
+
+const
+  minVerse : TVerse = (book: 1; chapter : 1; number : 1; count : 1);
 
 implementation
 
