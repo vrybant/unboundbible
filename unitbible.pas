@@ -56,13 +56,8 @@ type
     destructor Destroy; override;
     function IsEmpty: boolean;
     function GetDefaultBible: string;
-    procedure SetCurrent(Value: string);
     procedure DeleteItem(Item: TBible);
   end;
-
-var
-  Bibles : TBibles;
-  CurrBible: TBible;
 
 implementation
 
@@ -623,7 +618,6 @@ end;
 constructor TBibles.Create;
 begin
   inherited;
-  CurrBible := nil;
   Load;
   Sort(Comparison);
   ReadPrivates;
@@ -645,24 +639,6 @@ begin
         Bible := TBible.Create(f);
         if Bible.connected then Add(Bible) else Bible.Free;
     end;
-end;
-
-procedure TBibles.SetCurrent(Value: string);
-var
-  Bible : TBible;
-begin
-  if IsEmpty then Exit;
-  CurrBible := Self[0];
-
-  for Bible in Self do
-    if Bible.Name = Value then
-      begin
-        CurrBible := Bible;
-        Break;
-      end;
-
-  CurrBible.LoadDatabase;
-  if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
 end;
 
 function TBibles.IsEmpty: boolean;
@@ -719,11 +695,5 @@ begin
   for Bible in Self do Bible.Free;
   inherited Destroy;
 end;
-
-initialization
-  Bibles := TBibles.Create;
-
-finalization
-  Bibles.Free;
 
 end.

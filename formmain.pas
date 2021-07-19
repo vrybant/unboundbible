@@ -598,7 +598,7 @@ procedure TMainForm.ComboBoxChange(Sender: TObject);
 var
   select : boolean;
 begin
-  Bibles.SetCurrent( ComboBox.Items[ComboBox.ItemIndex] ) ;
+  Tools.SetCurrent( ComboBox.Items[ComboBox.ItemIndex] ) ;
   MakeBookList;
   select := CurrVerse.number > 1;
   {$ifdef linux}
@@ -1322,7 +1322,7 @@ procedure TMainForm.LoadChapter;
 begin
   if Bibles.IsEmpty then Exit;
   MemoBible.Font.Assign(DefaultFont);
-  MemoBible.LoadText(Get_Chapter, true);
+  MemoBible.LoadText(Tools.Get_Chapter, true);
   SelectPage(apBible);
 end;
 
@@ -1338,7 +1338,7 @@ begin
   if Bibles.IsEmpty then Exit;
 
   Cursor := crHourGlass;
-  text := Get_Search(s, count);
+  text := Tools.Get_Search(s, count);
 
   if count = 0 then
     begin
@@ -1362,7 +1362,7 @@ var text : string;
 begin
   if Bibles.IsEmpty then Exit;
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br> ';
-  text += Get_Compare;
+  text += Tools.Get_Compare;
   MemoCompare.Font.Assign(DefaultFont);
   MemoCompare.LoadText(text);
   SelectPage(apCompare);
@@ -1375,7 +1375,7 @@ var
 begin
   if Bibles.IsEmpty then Exit;
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
-  data := Get_Reference(info);
+  data := Tools.Get_Reference(info);
   if data.isEmpty then text += T('Сross-references not found.') else text += data;
   MemoReference.Font.Assign(DefaultFont);
   MemoReference.LoadText(text);
@@ -1388,7 +1388,7 @@ var
   text, data : string;
 begin
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
-  data := Get_Commentary;
+  data := Tools.Get_Commentary;
   text += data;
 
   if data.isEmpty then text += T('Commentaries not found.') + '<br><br>';
@@ -1404,7 +1404,7 @@ var
   data : string;
 begin
   s := Trim(s);
-  data := Get_Dictionary(s);
+  data := Tools.Get_Dictionary(s);
   text += data;
 
   if data.IsEmpty and not s.IsEmpty then
@@ -1423,7 +1423,7 @@ end;
 procedure TMainForm.LoadStrong(s: string);
 var text : string;
 begin
-  text := Get_Strong(s);
+  text := Tools.Get_Strong(s);
   if text.isEmpty then Exit;
   NotifyForm.Title.Caption := T('Strong''s Dictionary');
   NotifyForm.Compact := True;
@@ -1435,7 +1435,7 @@ end;
 procedure TMainForm.LoadFootnote(s: string);
 var text : string;
 begin
-  text := Get_Footnote(s);
+  text := Tools.Get_Footnote(s);
   if text.isEmpty then Exit;
   NotifyForm.Title.Caption := T('Footnote');
   NotifyForm.Compact := False;
@@ -1447,7 +1447,7 @@ end;
 {$ifdef windows}
 procedure TMainForm.VersesToClipboard;
 begin
-  RichTextToClipboard(ParseWin(Get_Verses, DefaultFont), RemoveTags(Get_Verses));
+  RichTextToClipboard(ParseWin(Tools.Get_Verses, DefaultFont), RemoveTags(Tools.Get_Verses));
 end;
 {$endif}
 
@@ -1519,7 +1519,7 @@ begin
   IniFile := TIniFile.Create(ConfigFile);
 
   CurrentBible := IniFile.ReadString('Application', 'CurrentBible', Bibles.GetDefaultBible);
-  Bibles.SetCurrent(CurrentBible);
+  Tools.SetCurrent(CurrentBible);
 
   Height := IniFile.ReadInteger('Window', 'Height', Screen.Height - 220);
   Width := IniFile.ReadInteger('Window', 'Width', Screen.Width - 450);

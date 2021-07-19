@@ -2,25 +2,33 @@ unit UnitTool;
 
 interface
 
-uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitLib;
+uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitBible, UnitLib;
 
-function Get_Chapter: string;
-function Get_Search(st: string; out count: integer): string;
-function Get_Compare: string;
-function Get_Reference(out info: string): string;
-function Get_Commentary: string;
-function Get_Dictionary(st: string = ''): string;
-function Get_Strong(number: string = ''): string;
-function Get_Footnote(marker: string = ''): string;
-function Get_Verses: string;
+type
+  Tools = class
+  public
+    class function Get_Chapter: string;
+    class function Get_Search(st: string; out count: integer): string;
+    class function Get_Compare: string;
+    class function Get_Reference(out info: string): string;
+    class function Get_Commentary: string;
+    class function Get_Dictionary(st: string = ''): string;
+    class function Get_Strong(number: string = ''): string;
+    class function Get_Footnote(marker: string = ''): string;
+    class function Get_Verses: string;
+    class procedure SetCurrent(Value: string);
+  end;
+
+var
+  Bibles : TBibles;
+  CurrBible: TBible;
 
 implementation
 
 uses
-  FormSearch, UnitData, UnitLocal, UnitModule, UnitBible, UnitReference,
-  UnitCommentary, UnitDictionary;
+  FormSearch, UnitData, UnitLocal, UnitModule, UnitReference, UnitCommentary, UnitDictionary;
 
-function Get_Chapter: string;
+class function Tools.Get_Chapter: string;
 var
   Strings : TStringArray;
   i : integer;
@@ -65,7 +73,7 @@ begin
   for item in List do Highlight(s, item, Options);
 end;
 
-function Get_Search(st: string; out count: integer): string;
+class function Tools.Get_Search(st: string; out count: integer): string;
 var
   ContentArray : TContentArray;
   content : TContent;
@@ -87,7 +95,7 @@ begin
     end;
 end;
 
-function Get_Compare: string;
+class function Tools.Get_Compare: string;
 var
   Bible : TBible;
   s : string;
@@ -103,7 +111,7 @@ begin
       end;
 end;
 
-function Get_Reference(out info: string): string;
+class function Tools.Get_Reference(out info: string): string;
 var
   Verses : TVerseArray;
   item : TVerse;
@@ -120,7 +128,7 @@ begin
     end;
 end;
 
-function Get_Commentary: string;
+class function Tools.Get_Commentary: string;
 var
   Commentary : TCommentary;
   Strings : TStringArray;
@@ -139,7 +147,7 @@ begin
     end;
 end;
 
-function Get_Dictionary(st: string = ''): string;
+class function Tools.Get_Dictionary(st: string = ''): string;
 var
   Dictionary : TDictionary;
   Strings : TStringArray;
@@ -159,19 +167,19 @@ begin
     end;
 end;
 
-function Get_Strong(number: string = ''): string;
+class function Tools.Get_Strong(number: string = ''): string;
 begin
   Result := Dictionaries.GetStrong(CurrVerse, CurrBible.language, number);
 end;
 
-function Get_Footnote(marker: string = ''): string;
+class function Tools.Get_Footnote(marker: string = ''): string;
 begin
   if CurrBible.format = mybible
     then Result := Commentaries.GetFootnote(CurrBible.fileName, CurrVerse, marker)
     else Result := CurrBible.GetFootnote(CurrVerse, marker);
 end;
 
-function Get_Verses: string;
+class function Tools.Get_Verses: string;
 var
   Book : TBook;
   List : TStringArray;
@@ -214,5 +222,30 @@ begin
 
   Result += quote + '<br> ';
 end;
+
+class procedure Tools.SetCurrent(Value: string);
+var
+  Bible : TBible;
+begin
+  if Bibles.IsEmpty then Exit;
+  CurrBible := Bibles[0];
+
+  for Bible in Bibles do
+    if Bible.Name = Value then
+      begin
+        CurrBible := Bible;
+        Break;
+      end;
+
+  CurrBible.LoadDatabase;
+  if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
+end;
+
+initialization
+  Bibles := TBibles.Create;
+  CurrBible := nil;
+
+finalization
+  Bibles.Free;
 
 end.
