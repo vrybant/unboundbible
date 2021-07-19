@@ -35,7 +35,7 @@ var
 implementation
 
 uses
-  FormSearch, UnitData, UnitLocal, UnitModule, UnitReference, UnitCommentary, UnitDictionary;
+  FormSearch, UnitUtils, UnitLocal, UnitModule, UnitReference, UnitCommentary, UnitDictionary;
 
 class function Tools.Get_Chapter: string;
 var

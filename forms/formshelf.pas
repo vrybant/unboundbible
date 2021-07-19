@@ -51,7 +51,7 @@ var
 implementation
 
 uses
-  UnitTools, UnitData, UnitLocal, UnitBible, UnitCommentary, UnitDictionary, UnitReference;
+  UnitTools, UnitUtils, UnitLocal, UnitBible, UnitCommentary, UnitDictionary, UnitReference;
 
 {$R *.lfm}
 
