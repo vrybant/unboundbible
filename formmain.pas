@@ -830,6 +830,7 @@ end;
 procedure TMainForm.MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
   Memo : TUnboundMemo;
+  Verse : TVerse;
 begin
   Memo := Sender as TUnboundMemo;
 
@@ -849,8 +850,9 @@ begin
 
   if Memo.Foreground = fgLink then
     begin
-      if not CurrBible.GoodLink(Memo.hyperlink) then Exit;
-      CurrVerse := CurrBible.SrtToVerse(Memo.hyperlink);
+      Verse := CurrBible.SrtToVerse(Memo.hyperlink);
+      if not CurrBible.GoodLink(Verse) then Exit;
+      CurrVerse := Verse;
       ShowCurrVerse(True);
     end;
 
@@ -1438,7 +1440,7 @@ begin
   MemoPreview := TUnboundMemo.Create(self);
   MemoPreview.Parent := MainForm;
   MemoPreview.Font.Assign(DefaultFont);
-  MemoPreview.LoadText(Get_Verses);
+  MemoPreview.LoadText(Tools.Get_Verses);
   MemoPreview.SelectAll;
   MemoPreview.CopyToClipboard;
   MemoPreview.Visible := false;
