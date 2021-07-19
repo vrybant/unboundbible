@@ -44,7 +44,8 @@ type
     function SrtToVerse(link : string): TVerse;
     function GetChapter(Verse: TVerse): TStringArray;
     function GetRange(Verse: TVerse; prepare: boolean=true): TStringArray;
-    function GoodLink(Verse: TVerse): boolean;
+    function GoodLink(s: string): boolean; overload;
+    function GoodLink(Verse: TVerse): boolean; overload;
     function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     function GetAll: TContentArray;
     procedure ShowTags;
@@ -362,6 +363,11 @@ begin
   finally
     Query.Close;
   end;
+end;
+
+function TBible.GoodLink(s: string): boolean;
+begin
+  Result := GoodLink(SrtToVerse(s));
 end;
 
 function TBible.GoodLink(Verse: TVerse): boolean;

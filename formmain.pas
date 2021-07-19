@@ -6,7 +6,7 @@ uses
   Classes, Fgl, SysUtils, LazFileUtils, LazUTF8, Forms, Controls, Graphics, Dialogs,
   StdCtrls, Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
   ClipBrd, StdActns, Buttons, PrintersDlgs, Types, RichMemo, UnboundMemo,
-  UnitBible, UnitData, UnitLib;
+  UnitData, UnitLib;
 
 type
   TStatuses = TFPGMap<integer, string>;
@@ -242,7 +242,7 @@ type
     procedure EnableActions;
     procedure UpDownButtons;
     procedure SelectBook(title: string; scroll: boolean);
-    procedure GoToVerse(Verse: TVerse; select: boolean);
+    procedure GoToCurrVerse(select: boolean);
     procedure LangMenuInit;
     procedure LoadChapter;
     procedure LoadSearch(s: string);
@@ -282,7 +282,7 @@ implementation
 uses
   {$ifdef windows} UmParseWin, {$endif}
   FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLocal, FormCopy, FormShelf,
-  UnitCommentary, UnitDictionary;
+  UnitBible, UnitCommentary, UnitDictionary;
 
 const
   apBible        = 0; // active page
@@ -361,7 +361,7 @@ begin
         TabSheetCommentary.TabVisible := False;
         TabSheetDictionary.TabVisible := False;
       {$endif}
-      GoToVerse(CurrVerse,(CurrVerse.number > 1));
+      GoToCurrVerse(CurrVerse.number > 1);
     end;
 
   {$ifdef windows} IdleMessage := 'HideCursor'; {$endif}
@@ -587,13 +587,13 @@ procedure TMainForm.ComboBoxChange(Sender: TObject);
 var
   select : boolean;
 begin
-  Tools.SetCurrent( ComboBox.Items[ComboBox.ItemIndex] ) ;
+  Tools.SetCurrBible( ComboBox.Items[ComboBox.ItemIndex] ) ;
   MakeBookList;
   select := CurrVerse.number > 1;
   {$ifdef linux}
-    IdleMessage := 'GotoVerse(CurrVerse,' + ToStr(select) + ')';
+    IdleMessage := 'GoToCurrVerse(' + ToStr(select) + ')';
   {$else}
-    GotoVerse(CurrVerse, select);
+    GoToCurrVerse(select);
   {$endif}
   SelectPage(apBible);
   UpdateStatus(CurrBible.Info);
@@ -830,7 +830,6 @@ end;
 procedure TMainForm.MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
   Memo : TUnboundMemo;
-  Verse : TVerse;
 begin
   Memo := Sender as TUnboundMemo;
 
@@ -849,10 +848,11 @@ begin
     if SelectBible(Memo.hyperlink) then Exit;
 
   if Memo.Foreground = fgLink then
-      begin
-        Verse := CurrBible.SrtToVerse(Memo.hyperlink);
-        if Verse.Book > 0 then GoToVerse(Verse, True);
-      end;
+    begin
+      if not CurrBible.GoodLink(Memo.hyperlink) then Exit;
+      CurrVerse := CurrBible.SrtToVerse(Memo.hyperlink);
+      GoToCurrVerse(True);
+    end;
 
   if Memo = MemoBible then
     if Memo.Foreground = fgFootnote then LoadFootnote(Memo.hyperlink);
@@ -943,23 +943,20 @@ begin
       end;
 end;
 
-procedure TMainForm.GoToVerse(Verse: TVerse; select: boolean);
+procedure TMainForm.GoToCurrVerse(select: boolean);
 var
   Book : TBook;
 begin
-  if not CurrBible.GoodLink(Verse) then Exit;
-
-  Book := CurrBible.BookByNum(Verse.Book);
+  Book := CurrBible.BookByNum(CurrVerse.Book);
   if not Assigned(Book) then Exit;
 
-  CurrVerse := Verse;
   MakeChapterList;
   LoadChapter;
 
-  SelectBook(Book.title, IsNewTestament(Verse.book));
-  ChapterBox.ItemIndex := Verse.Chapter - 1;
+  SelectBook(Book.title, IsNewTestament(CurrVerse.book));
+  ChapterBox.ItemIndex := CurrVerse.Chapter - 1;
 
-  if select then MemoBible.SelectParagraph(Verse.Number);
+  if select then MemoBible.SelectParagraph(CurrVerse.Number);
   Repaint;
 end;
 
@@ -1210,8 +1207,8 @@ begin
   if IdleMessage = 'HideCursor' then HideCursor;
   {$endif}
   {$ifdef linux}
-  if IdleMessage = 'GotoVerse(CurrVerse,True)'  then GotoVerse(CurrVerse,True);
-  if IdleMessage = 'GotoVerse(CurrVerse,False)' then GotoVerse(CurrVerse,False);
+  if IdleMessage = 'GoToCurrVerse(True)'  then GoToCurrVerse(True);
+  if IdleMessage = 'GoToCurrVerse(False)' then GoToCurrVerse(False);
   {$endif}
   IdleMessage := '';
 end;
@@ -1500,7 +1497,7 @@ begin
   IniFile := TIniFile.Create(ConfigFile);
 
   CurrentBible := IniFile.ReadString('Application', 'CurrentBible', Bibles.GetDefaultBible);
-  Tools.SetCurrent(CurrentBible);
+  Tools.SetCurrBible(CurrentBible);
 
   Height := IniFile.ReadInteger('Window', 'Height', Screen.Height - 220);
   Width := IniFile.ReadInteger('Window', 'Width', Screen.Width - 450);

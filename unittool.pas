@@ -16,7 +16,7 @@ type
     class function Get_Strong(number: string = ''): string;
     class function Get_Footnote(marker: string = ''): string;
     class function Get_Verses: string;
-    class procedure SetCurrent(Value: string);
+    class procedure SetCurrBible(Value: string);
   end;
 
 var
@@ -223,7 +223,7 @@ begin
   Result += quote + '<br> ';
 end;
 
-class procedure Tools.SetCurrent(Value: string);
+class procedure Tools.SetCurrBible(Value: string);
 var
   Bible : TBible;
 begin
