@@ -20,13 +20,21 @@ type
 
   TContentArray = array of TContent;
 
+  TBook = class
+    title   : string;
+    abbr    : string;
+    number  : integer;
+    id      : integer;
+    sorting : integer;
+  end;
+
   TBibleAlias = record
     bible, book, chapter, verse, text, books, number, name, abbr : string;
   end;
 
   TBible = class(TModule)
   private
-    Books : TBooks;
+    Books : TFPGList<TBook>;
     z : TBibleAlias;
     function RankContents(const Contents: TContentArray): TContentArray;
     function ExtractFootnotes(s: string; marker: string): string;
@@ -129,7 +137,7 @@ const
 constructor TBible.Create(FilePath: string; new: boolean = false);
 begin
   inherited Create(filePath, new);
-  Books := TBooks.Create;
+  Books := TFPGList<TBook>.Create;
   if format = mybible then z := mybibleAlias else z := unboundAlias;
   if connected and not TableExists(z.bible) then connected := false;
 end;

@@ -5,6 +5,10 @@ interface
 uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, UnitBible, UnitLib;
 
 type
+  TCopyOptions = record
+    cvAbbreviate, cvEnumerated, cvGuillemets, cvParentheses, cvEnd : boolean;
+  end;
+
   Tools = class
   public
     class function Get_Chapter: string;
@@ -23,6 +27,7 @@ var
   Bibles : TBibles;
   CurrBible : TBible;
   CurrVerse : TVerse;
+  Options : TCopyOptions;
 
 implementation
 

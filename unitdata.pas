@@ -3,7 +3,7 @@ unit UnitData;
 interface
 
 uses
-  Classes, Fgl, SysUtils, Graphics, FileUtil, IniFiles, Zipper, UnitLib;
+  Classes, SysUtils, Graphics, FileUtil, IniFiles, Zipper, UnitLib;
 
 const
   ApplicationName = 'Unbound Bible';
@@ -26,25 +26,7 @@ type
     from, till : integer;
   end;
 
-type
-  TBook = class
-  public
-    title   : string;
-    abbr    : string;
-    number  : integer;
-    id      : integer;
-    sorting : integer;
-  end;
-
-  TBooks = TFPGList<TBook>;
-
-  TCopyOptions = record
-    cvAbbreviate, cvEnumerated, cvGuillemets, cvParentheses, cvEnd : boolean;
-  end;
-
-var
-  Options : TCopyOptions;
-
+const
   BibleHubArray : array [1..66] of string = (
     'genesis','exodus','leviticus','numbers','deuteronomy','joshua','judges','ruth','1_samuel','2_samuel',
     '1_kings','2_kings','1_chronicles','2_chronicles','ezra','nehemiah','esther','job','psalms','proverbs',

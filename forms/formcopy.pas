@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls, UnboundMemo, UnitData;
+  StdCtrls, ExtCtrls, UnboundMemo, UnitTools;
 
 type
 
@@ -35,7 +35,7 @@ var
 
 implementation
 
-uses UnitTools, UnitLocal;
+uses UnitData, UnitLocal;
 
 const
   cgAbbreviate  = 0;
