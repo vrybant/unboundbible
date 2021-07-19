@@ -28,9 +28,6 @@ const
     'james','1_peter','2_peter','1_john','2_john','3_john','jude','revelation'
     );
 
-const
-  AcuteChar = #$CC#$81;
-
 procedure CreateDataDirectory;
 function ConfigFile: string;
 function DataPath: string;

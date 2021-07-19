@@ -107,6 +107,9 @@ const
   Slash = DirectorySeparator;
   LineBreaker = {$ifdef windows}#13{$else}#10{$endif};
 
+const
+  AcuteChar = #$CC#$81;
+
 implementation
 
 var DarkTheme : boolean = False;
