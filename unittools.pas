@@ -9,19 +9,21 @@ type
     cvAbbreviate, cvEnumerated, cvGuillemets, cvParentheses, cvEnd : boolean;
   end;
 
-  Tools = class
-    class function Get_Chapter: string;
-    class function Get_Search(st: string; out count: integer): string;
-    class function Get_Compare: string;
-    class function Get_Reference(out info: string): string;
-    class function Get_Commentary: string;
-    class function Get_Dictionary(st: string = ''): string;
-    class function Get_Strong(number: string = ''): string;
-    class function Get_Footnote(marker: string = ''): string;
-    class function Get_Verses: string;
-    class procedure SetCurrBible(Value: string);
-    class procedure SaveConfig;
-    class procedure ReadConfig;
+  TTools = class
+    constructor Create;
+    destructor Destroy; override;
+    function Get_Chapter: string;
+    function Get_Search(st: string; out count: integer): string;
+    function Get_Compare: string;
+    function Get_Reference(out info: string): string;
+    function Get_Commentary: string;
+    function Get_Dictionary(st: string = ''): string;
+    function Get_Strong(number: string = ''): string;
+    function Get_Footnote(marker: string = ''): string;
+    function Get_Verses: string;
+    procedure SetCurrBible(Value: string);
+    procedure SaveConfig;
+    procedure ReadConfig;
   end;
 
 var
@@ -30,13 +32,28 @@ var
   CurrVerse : TVerse;
   Options : TCopyOptions;
   DefaultFont: TFont;
+  Tools : TTools;
 
 implementation
 
 uses
   FormSearch, UnitUtils, UnitLocal, UnitModule, UnitReference, UnitCommentary, UnitDictionary;
 
-class function Tools.Get_Chapter: string;
+constructor TTools.Create;
+begin
+  DefaultFont := TFont.Create;
+  Bibles := TBibles.Create;
+  Tools.ReadConfig;
+end;
+
+destructor TTools.Destroy;
+begin
+  Tools.SaveConfig;
+  Bibles.Free;
+  DefaultFont.Free;
+end;
+
+function TTools.Get_Chapter: string;
 var
   Strings : TStringArray;
   i : integer;
@@ -81,7 +98,7 @@ begin
   for item in List do Highlight(s, item, Options);
 end;
 
-class function Tools.Get_Search(st: string; out count: integer): string;
+function TTools.Get_Search(st: string; out count: integer): string;
 var
   ContentArray : TContentArray;
   content : TContent;
@@ -103,7 +120,7 @@ begin
     end;
 end;
 
-class function Tools.Get_Compare: string;
+function TTools.Get_Compare: string;
 var
   Bible : TBible;
   s : string;
@@ -119,7 +136,7 @@ begin
       end;
 end;
 
-class function Tools.Get_Reference(out info: string): string;
+function TTools.Get_Reference(out info: string): string;
 var
   Verses : TVerseArray;
   item : TVerse;
@@ -136,7 +153,7 @@ begin
     end;
 end;
 
-class function Tools.Get_Commentary: string;
+function TTools.Get_Commentary: string;
 var
   Commentary : TCommentary;
   Strings : TStringArray;
@@ -155,7 +172,7 @@ begin
     end;
 end;
 
-class function Tools.Get_Dictionary(st: string = ''): string;
+function TTools.Get_Dictionary(st: string = ''): string;
 var
   Dictionary : TDictionary;
   Strings : TStringArray;
@@ -175,19 +192,19 @@ begin
     end;
 end;
 
-class function Tools.Get_Strong(number: string = ''): string;
+function TTools.Get_Strong(number: string = ''): string;
 begin
   Result := Dictionaries.GetStrong(CurrVerse, CurrBible.language, number);
 end;
 
-class function Tools.Get_Footnote(marker: string = ''): string;
+function TTools.Get_Footnote(marker: string = ''): string;
 begin
   if CurrBible.format = mybible
     then Result := Commentaries.GetFootnote(CurrBible.fileName, CurrVerse, marker)
     else Result := CurrBible.GetFootnote(CurrVerse, marker);
 end;
 
-class function Tools.Get_Verses: string;
+function TTools.Get_Verses: string;
 var
   Book : TBook;
   List : TStringArray;
@@ -230,7 +247,7 @@ begin
   Result += quote + '<br> ';
 end;
 
-class procedure Tools.SetCurrBible(Value: string);
+procedure TTools.SetCurrBible(Value: string);
 var
   Bible : TBible;
 begin
@@ -247,7 +264,7 @@ begin
   if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
 end;
 
-class procedure Tools.SaveConfig;
+procedure TTools.SaveConfig;
 var IniFile: TIniFile;
 begin
   IniFile := TIniFile.Create(ConfigFile);
@@ -263,7 +280,7 @@ begin
   IniFile.Free;
 end;
 
-class procedure Tools.ReadConfig;
+procedure TTools.ReadConfig;
 var
   IniFile: TIniFile;
   Version: string;
@@ -286,13 +303,9 @@ begin
 end;
 
 initialization
-  DefaultFont := TFont.Create;
-  Bibles := TBibles.Create;
-  Tools.ReadConfig;
+  Tools := TTools.Create;
 
 finalization
-  Tools.SaveConfig;
-  Bibles.Free;
-  DefaultFont.Free;
+  Tools.Free;
 
 end.
