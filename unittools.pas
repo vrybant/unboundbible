@@ -10,7 +10,6 @@ type
   end;
 
   Tools = class
-  public
     class function Get_Chapter: string;
     class function Get_Search(st: string; out count: integer): string;
     class function Get_Compare: string;
