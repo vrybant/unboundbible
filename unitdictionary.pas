@@ -3,7 +3,7 @@ unit UnitDictionary;
 interface
 
 uses
-  Classes, Fgl, SysUtils, UnitModule, UnitData, UnitLib;
+  Classes, Fgl, SysUtils, UnitModule, UnitBible, UnitData, UnitLib;
 
 type
   TDictionaryAlias = record

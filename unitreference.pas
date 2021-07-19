@@ -3,7 +3,7 @@ unit UnitReference;
 interface
 
 uses
-  Classes, Fgl, SysUtils, UnitModule, UnitData, UnitLib;
+  Classes, Fgl, SysUtils, UnitModule, UnitBible, UnitData, UnitTool, UnitLib;
 
 type
   TReferenceAlias = record

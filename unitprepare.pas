@@ -3,7 +3,7 @@ unit UnitPrepare;
 interface
 
 uses
-  Classes, SysUtils, UnitData, UnitLib;
+  Classes, SysUtils, UnitModule, UnitData, UnitLib;
 
 function Coercion(s: string; format: TFileFormat; nt: boolean): string;
 function Preparation(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;

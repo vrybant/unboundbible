@@ -6,7 +6,7 @@ uses
   Classes, Fgl, SysUtils, LazFileUtils, LazUTF8, Forms, Controls, Graphics, Dialogs,
   StdCtrls, Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
   ClipBrd, StdActns, Buttons, PrintersDlgs, Types, RichMemo, UnboundMemo,
-  UnitData, UnitLib;
+  UnitBible, UnitData, UnitLib;
 
 type
   TStatuses = TFPGMap<integer, string>;
@@ -282,7 +282,7 @@ implementation
 uses
   {$ifdef windows} UmParseWin, {$endif}
   FormAbout, FormNotify, FormSearch, FormCompare, UnitTool, UnitLocal, FormCopy, FormShelf,
-  UnitBible, UnitCommentary, UnitDictionary;
+  UnitCommentary, UnitDictionary;
 
 const
   apBible        = 0; // active page
