@@ -15,7 +15,6 @@ const
 
 var
   ApplicationUpdate : boolean = false;
-  DefaultFont: TFont;
 
 procedure CreateDataDirectory;
 function ConfigFile: string;
@@ -165,12 +164,8 @@ begin
 end;
 
 initialization
-  DefaultFont := TFont.Create;
   UnzipDefaultsFiles;
   RemoveOldFiles;
-
-finalization
-  DefaultFont.Free;
 
 end.
 

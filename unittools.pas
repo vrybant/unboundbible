@@ -30,6 +30,7 @@ var
   CurrBible : TBible = nil;
   CurrVerse : TVerse;
   Options : TCopyOptions;
+  DefaultFont: TFont;
 
 implementation
 
@@ -286,11 +287,13 @@ begin
 end;
 
 initialization
+  DefaultFont := TFont.Create;
   Bibles := TBibles.Create;
   Tools.ReadConfig;
 
 finalization
   Tools.SaveConfig;
   Bibles.Free;
+  DefaultFont.Free;
 
 end.
