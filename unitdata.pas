@@ -17,6 +17,20 @@ var
   ApplicationUpdate : boolean = false;
   DefaultFont: TFont;
 
+procedure CreateDataDirectory;
+function ConfigFile: string;
+function DataPath: string;
+function GetDatabaseList: TStringArray;
+function HomeURL: string;
+function DownloadsURL: string;
+function IssueURL: string;
+function DonateURL: string;
+function GetBibleHubURL(book : integer): string;
+
+implementation
+
+uses UnitTools, UnitLocal;
+
 const
   BibleHubArray : array [1..66] of string = (
     'genesis','exodus','leviticus','numbers','deuteronomy','joshua','judges','ruth','1_samuel','2_samuel',
@@ -27,19 +41,6 @@ const
     'colossians','1_thessalonians','2_thessalonians','1_timothy','2_timothy','titus','philemon','hebrews',
     'james','1_peter','2_peter','1_john','2_john','3_john','jude','revelation'
     );
-
-procedure CreateDataDirectory;
-function ConfigFile: string;
-function DataPath: string;
-function GetDatabaseList: TStringArray;
-function HomeURL: string;
-function DownloadsURL: string;
-function IssueURL: string;
-function DonateURL: string;
-
-implementation
-
-uses UnitTools, UnitLocal;
 
 function DataPath: string;
 begin
@@ -154,6 +155,13 @@ begin
   {$ifdef windows} Result := LocalAppDataPath + ApplicationName + Slash; {$endif}
   {$ifdef unix} Result := GetAppConfigDir(False); {$endif}
   Result += 'config.ini';
+end;
+
+function GetBibleHubURL(book: integer): string;
+begin
+  if not (book in [1..66]) then Exit('');
+  Result := 'http://biblehub.com/interlinear/' + BibleHubArray[CurrVerse.book] + '/';
+  Result += ToStr(CurrVerse.chapter) + '-' + ToStr(CurrVerse.number) + '.htm';
 end;
 
 procedure SaveConfig;

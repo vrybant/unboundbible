@@ -621,12 +621,11 @@ begin
 end;
 
 procedure TMainForm.CmdInterline(Sender: TObject);
-var s : string;
+var path : string;
 begin
-  if not (CurrVerse.book in [1..66]) then Exit;
-  s := BibleHubArray[CurrVerse.book];
-  s := s + '/' +  ToStr(CurrVerse.chapter) + '-' + ToStr(CurrVerse.number) + '.htm';
-  OpenURL('http://biblehub.com/interlinear/' + s);
+  path := GetBibleHubURL(CurrVerse.book);
+  if path <> '' then OpenURL(path);
+  output(path);
 end;
 
 procedure TMainForm.CmdEdit(Sender: TObject);
