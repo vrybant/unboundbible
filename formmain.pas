@@ -1282,7 +1282,6 @@ var
   l : boolean;
 begin
   l := BookBox.ItemIndex < 0;
-  BookBox.Font.Assign(Font);
   BookBox.BiDiMode := bdLeftToRight;
   if CurrBible.RightToLeft then BookBox.BiDiMode := bdRightToLeft;
   BookBox.Items.AddStrings(CurrBible.GetTitles, True);
@@ -1297,7 +1296,6 @@ var
 begin
   n := CurrBible.ChaptersCount(CurrVerse);
   if ChapterBox.Items.Count = n then Exit;
-  ChapterBox.Font.Assign(Font);
 
   ChapterBox.Items.BeginUpdate;
   ChapterBox.Items.Clear;

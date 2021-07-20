@@ -251,10 +251,6 @@ object MainForm: TMainForm
     Align = alLeft
     ClientHeight = 327
     ClientWidth = 195
-    Font.CharSet = GREEK_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -9
-    ParentFont = False
     TabOrder = 1
     object ComboBox: TComboBox
       Left = 5
@@ -284,11 +280,8 @@ object MainForm: TMainForm
       BorderSpacing.Top = 4
       BorderSpacing.Right = 4
       BorderSpacing.Bottom = 4
-      Font.Color = clWindowText
-      Font.Height = -13
       ItemHeight = 0
       OnClick = BookBoxClick
-      ParentFont = False
       ScrollWidth = 132
       TabOrder = 0
     end
@@ -301,11 +294,8 @@ object MainForm: TMainForm
       BorderSpacing.Top = 4
       BorderSpacing.Right = 4
       BorderSpacing.Bottom = 4
-      Font.Color = clWindowText
-      Font.Height = -15
       ItemHeight = 0
       OnClick = ChapterBoxClick
-      ParentFont = False
       ScrollWidth = 43
       TabOrder = 1
     end
