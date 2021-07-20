@@ -116,11 +116,5 @@ begin
   inherited Destroy;
 end;
 
-initialization
-  Localization := TLocalization.Create;
-
-finalization
-  Localization.Free;
-
 end.
 

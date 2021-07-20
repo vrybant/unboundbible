@@ -311,6 +311,7 @@ object MainForm: TMainForm
     Top = 359
     Width = 937
     Panels = <>
+    ParentFont = False
     ParentShowHint = False
     ShowHint = True
   end

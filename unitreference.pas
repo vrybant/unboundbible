@@ -29,9 +29,6 @@ type
     destructor Destroy; override;
   end;
 
-var
-  References : TReferences;
-
 implementation
 
 const
@@ -190,11 +187,5 @@ begin
   for Reference in Self do Reference.Free;
   inherited Destroy;
 end;
-
-initialization
-  References := TReferences.Create;
-
-finalization
-  References.Free;
 
 end.

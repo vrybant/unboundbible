@@ -60,7 +60,7 @@ var
   Bible : TBible;
 begin
   CheckListBox.Clear;
-  for Bible in Bibles do
+  for Bible in Tools.Bibles do
     begin
       CheckListBox.Items.Add(Bible.Name);
       CheckListBox.Checked[CheckListBox.Count-1] := Bible.Compare;
@@ -71,8 +71,8 @@ procedure TCompareForm.ListBoxToBibles;
 var
   Bible : TBible;
 begin
-  for Bible in Bibles do
-    Bible.Compare := CheckListBox.Checked[Bibles.IndexOf(Bible)];
+  for Bible in Tools.Bibles do
+    Bible.Compare := CheckListBox.Checked[Tools.Bibles.IndexOf(Bible)];
 end;
 
 end.

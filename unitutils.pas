@@ -15,6 +15,7 @@ const
 
 var
   ApplicationUpdate : boolean = false;
+  DefaultFont: TFont;
 
 procedure CreateDataDirectory;
 function ConfigFile: string;
@@ -24,11 +25,11 @@ function HomeURL: string;
 function DownloadsURL: string;
 function IssueURL: string;
 function DonateURL: string;
-function BibleHubURL(book : integer): string;
+function BibleHubURL(book, chapter, number: integer): string;
 
 implementation
 
-uses UnitTools, UnitLocal;
+uses UnitLocal;
 
 const
   BibleHubArray : array [1..66] of string = (
@@ -104,11 +105,11 @@ begin
   Result += 'config.ini';
 end;
 
-function BibleHubURL(book: integer): string;
+function BibleHubURL(book, chapter, number: integer): string;
 begin
   if not (book in [1..66]) then Exit('');
-  Result := 'http://biblehub.com/interlinear/' + BibleHubArray[CurrVerse.book] + '/';
-  Result += ToStr(CurrVerse.chapter) + '-' + ToStr(CurrVerse.number) + '.htm';
+  Result := 'http://biblehub.com/interlinear/' + BibleHubArray[book] + '/';
+  Result += ToStr(chapter) + '-' + ToStr(number) + '.htm';
 end;
 
 procedure RemoveOldFiles;

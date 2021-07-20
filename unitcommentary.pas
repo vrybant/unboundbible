@@ -30,9 +30,6 @@ type
     destructor Destroy; override;
   end;
 
-var
-  Commentaries : TCommentaries;
-
 implementation
 
 const
@@ -218,11 +215,5 @@ begin
   for Commentary in Self do Commentary.Free;
   inherited Destroy;
 end;
-
-initialization
-  Commentaries := TCommentaries.Create;
-
-finalization
-  Commentaries.Free;
 
 end.

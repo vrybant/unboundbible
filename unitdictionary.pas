@@ -31,9 +31,6 @@ type
     destructor Destroy; override;
   end;
 
-var
-  Dictionaries : TDictionaries;
-
 implementation
 
 const
@@ -208,11 +205,5 @@ begin
   for Dictionary in Self do Dictionary.Free;
   inherited Destroy;
 end;
-
-initialization
-  Dictionaries := TDictionaries.Create;
-
-finalization
-  Dictionaries.Free;
 
 end.

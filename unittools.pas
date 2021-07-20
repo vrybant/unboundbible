@@ -2,7 +2,8 @@ unit UnitTools;
 
 interface
 
-uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, IniFiles, UnitBible, UnitLib;
+uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, IniFiles, UnitLib,
+  UnitBible, UnitCommentary, UnitDictionary, UnitReference;
 
 type
   TCopyOptions = record
@@ -10,43 +11,57 @@ type
   end;
 
   TTools = class
-    constructor Create;
-    destructor Destroy; override;
-    function Get_Chapter: string;
-    function Get_Search(st: string; out count: integer): string;
-    function Get_Compare: string;
-    function Get_Reference(out info: string): string;
-    function Get_Commentary: string;
-    function Get_Dictionary(st: string = ''): string;
-    function Get_Strong(number: string = ''): string;
-    function Get_Footnote(marker: string = ''): string;
-    function Get_Verses: string;
-    procedure SetCurrBible(Value: string);
-    procedure SaveConfig;
-    procedure ReadConfig;
+      Bibles : TBibles;
+      Commentaries : TCommentaries;
+      Dictionaries : TDictionaries;
+      References : TReferences;
+    public
+      constructor Create;
+      destructor Destroy; override;
+      function Get_Chapter: string;
+      function Get_Search(st: string; out count: integer): string;
+      function Get_Compare: string;
+      function Get_Reference(out info: string): string;
+      function Get_Commentary: string;
+      function Get_Dictionary(st: string = ''): string;
+      function Get_Strong(number: string = ''): string;
+      function Get_Footnote(marker: string = ''): string;
+      function Get_Verses: string;
+      function Get_BiblesNames: TStringArray;
+      procedure SetCurrBible(Value: string);
+    private
+      procedure SaveConfig;
+      procedure ReadConfig;
   end;
 
 var
   CurrBible : TBible = nil;
   CurrVerse : TVerse;
   Options : TCopyOptions;
-  DefaultFont: TFont;
   Tools : TTools;
 
 implementation
 
 uses
-  FormSearch, UnitUtils, UnitLocal, UnitModule, UnitReference, UnitCommentary, UnitDictionary;
+  FormSearch, UnitUtils, UnitModule;
 
 constructor TTools.Create;
 begin
   DefaultFont := TFont.Create;
+  Bibles := TBibles.Create;
+  Commentaries := TCommentaries.Create;
+  Dictionaries := TDictionaries.Create;
+  References := TReferences.Create;
   ReadConfig;
 end;
 
 destructor TTools.Destroy;
 begin
-  SaveConfig;
+//  SaveConfig;
+  References.Free;
+  Dictionaries.Free;
+  Commentaries.Free;
+  Bibles.Free;
   DefaultFont.Free;
 end;
 
@@ -244,6 +259,12 @@ begin
   Result += quote + '<br> ';
 end;
 
+function TTools.Get_BiblesNames: TStringArray;
+begin
+  Result := Bibles.GetNames;
+end;
+
+
 procedure TTools.SetCurrBible(Value: string);
 var
   Bible : TBible;
@@ -266,9 +287,8 @@ var IniFile: TIniFile;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
-  IniFile.WriteString('Application', 'Version', ApplicationVersion);
-  IniFile.WriteString('Application', 'FontName', DefaultFont.Name);
-  IniFile.WriteInteger('Application', 'FontSize', DefaultFont.Size);
+  IniFile.WriteString ('Application', 'Version', ApplicationVersion);
+  IniFile.WriteString ('Application', 'CurrentBible', CurrBible.name);
   IniFile.WriteInteger('Verse', 'Book', CurrVerse.book);
   IniFile.WriteInteger('Verse', 'Chapter', CurrVerse.chapter);
   IniFile.WriteInteger('Verse', 'Number', CurrVerse.number);
@@ -281,28 +301,21 @@ procedure TTools.ReadConfig;
 var
   IniFile: TIniFile;
   Version: string;
-const
-  DefaultFontName = {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
-  DefaultFontSize = 12;
+  CurrentBible : string;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
   Version := IniFile.ReadString('Application', 'Version', '');
   ApplicationUpdate := ApplicationVersion <> Version;
-  DefaultFont.Name := IniFile.ReadString('Application', 'FontName', DefaultFontName);
-  DefaultFont.Size := IniFile.ReadInteger('Application', 'FontSize', DefaultFontSize);
-  CurrVerse.book := IniFile.ReadInteger('Verse', 'Book', 0);
+  CurrentBible := IniFile.ReadString('Application', 'CurrentBible', Bibles.GetDefaultBible);
+  SetCurrBible(CurrentBible);
+
+  CurrVerse.book    := IniFile.ReadInteger('Verse', 'Book',    0);
   CurrVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);
-  CurrVerse.number := IniFile.ReadInteger('Verse', 'Number', 0);
-  CurrVerse.count := IniFile.ReadInteger('Verse', 'Count', 0);
+  CurrVerse.number  := IniFile.ReadInteger('Verse', 'Number',  0);
+  CurrVerse.count   := IniFile.ReadInteger('Verse', 'Count',   0);
 
   IniFile.Free;
 end;
-
-initialization
-  Tools := TTools.Create;
-
-finalization
-  Tools.Free;
 
 end.

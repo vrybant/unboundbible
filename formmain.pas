@@ -302,11 +302,14 @@ const
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Caption := ApplicationName + ' ' + ApplicationVersion;
-
   RecentList := [];
+
+  Localization := TLocalization.Create;
   Statuses := TStatuses.Create;
+
   SaveDialog.InitialDir := DocumentsPath;
   NoteFileName := Untitled;
+
   ReadConfig;
   LoadComboBox;
   MakeBookList;
@@ -349,6 +352,7 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   SaveConfig;
   Statuses.Free;
+  Localization.Free;
 end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
@@ -623,7 +627,7 @@ end;
 procedure TMainForm.CmdInterline(Sender: TObject);
 var path : string;
 begin
-  path := BibleHubURL(CurrVerse.book);
+  path := BibleHubURL(CurrVerse.book, CurrVerse.chapter, CurrVerse.number);
   if path <> '' then OpenURL(path);
 end;
 
@@ -685,7 +689,7 @@ procedure TMainForm.CmdCommentaries(Sender: TObject);
 var
   Response : integer;
 begin
-  if Commentaries.FootnotesOnly then
+  if Tools.Commentaries.FootnotesOnly then
     begin
       Response := QuestionDlg(T('Commentaries'),
         T('You don''t have any commentary modules.'), mtCustom,
@@ -705,7 +709,7 @@ end;
 
 procedure TMainForm.CmdDictionaries(Sender: TObject);
 begin
-  if Dictionaries.EmbeddedOnly then
+  if Tools.Dictionaries.EmbeddedOnly then
     begin
       if QuestionDlg(T('Dictionaries'),
         T('You don''t have any dictionary modules.'), mtCustom,
@@ -876,14 +880,16 @@ end;
 
 procedure TMainForm.LoadComboBox;
 var
-  Bible : TBible;
+  List : TStringArray;
+  item : string;
 begin
   ComboBox.Items.Clear;
+  List := Tools.Get_BiblesNames;
 
-  for Bible in Bibles do
+  for item in List do
     begin
-      ComboBox.Items.Add(Bible.Name);
-      if Bible = CurrBible then ComboBox.ItemIndex := ComboBox.Items.Count - 1;
+      ComboBox.Items.Add(item);
+      if item = CurrBible.name then ComboBox.ItemIndex := ComboBox.Items.Count - 1;
     end;
 end;
 
@@ -1472,8 +1478,9 @@ begin
                                else IniFile.WriteString('Window', 'State', 'Normal');
 
   IniFile.WriteInteger('Window', 'Splitter', PanelLeft.Width);
-  IniFile.WriteString('Application', 'CurrentBible', CurrBible.name);
-  IniFile.WriteString('Application', 'Interface', Localization.id);
+  IniFile.WriteString ('Application', 'Interface', Localization.id);
+  IniFile.WriteString ('Application', 'FontName', DefaultFont.Name);
+  IniFile.WriteInteger('Application', 'FontSize', DefaultFont.Size);
 //IniFile.WriteBool('Application', 'Donate', DonateVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
   IniFile.WriteBool('Options', 'Enumerated', Options.cvEnumerated);
@@ -1491,13 +1498,12 @@ end;
 procedure TMainForm.ReadConfig;
 var
   IniFile: TIniFile;
-  CurrentBible : string;
   i, max: integer;
+const
+  DefaultFontName = {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
+  DefaultFontSize = 12;
 begin
   IniFile := TIniFile.Create(ConfigFile);
-
-  CurrentBible := IniFile.ReadString('Application', 'CurrentBible', Bibles.GetDefaultBible);
-  Tools.SetCurrBible(CurrentBible);
 
   Height := IniFile.ReadInteger('Window', 'Height', Screen.Height - 220);
   Width := IniFile.ReadInteger('Window', 'Width', Screen.Width - 450);
@@ -1506,6 +1512,8 @@ begin
 
   PanelLeft.Width := IniFile.ReadInteger('Window', 'Splitter', 270);
   Localization.id := IniFile.ReadString('Application', 'Interface', Localization.DefaultID);
+  DefaultFont.Name := IniFile.ReadString ('Application', 'FontName', DefaultFontName);
+  DefaultFont.Size := IniFile.ReadInteger('Application', 'FontSize', DefaultFontSize);
 //DonateVisited := IniFile.ReadBool('Application', 'Donate', False);
   Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
   Options.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);

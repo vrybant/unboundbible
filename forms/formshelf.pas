@@ -128,10 +128,10 @@ begin
   Modules.Add(nil); // titles
   StringGrid.RowCount := 1;
 
-  for Module in Bibles       do InsertRow(Module);
-  for Module in Commentaries do InsertRow(Module);
-  for Module in Dictionaries do InsertRow(Module);
-  for Module in References   do InsertRow(Module);
+  for Module in Tools.Bibles       do InsertRow(Module);
+  for Module in Tools.Commentaries do InsertRow(Module);
+  for Module in Tools.Dictionaries do InsertRow(Module);
+  for Module in Tools.References   do InsertRow(Module);
 end;
 
 procedure TShelfForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
@@ -162,10 +162,10 @@ end;
 
 procedure TShelfForm.DeleteModule(Module: TModule);
 begin
- if Module.ClassType = TBible      then Bibles      .DeleteItem(Module as TBible      );
- if Module.ClassType = TCommentary then Commentaries.DeleteItem(Module as TCommentary );
- if Module.ClassType = TDictionary then Dictionaries.DeleteItem(Module as TDictionary );
- if Module.ClassType = TReference  then References  .DeleteItem(Module as TReference  );
+ if Module.ClassType = TBible      then Tools.Bibles      .DeleteItem(Module as TBible      );
+ if Module.ClassType = TCommentary then Tools.Commentaries.DeleteItem(Module as TCommentary );
+ if Module.ClassType = TDictionary then Tools.Dictionaries.DeleteItem(Module as TDictionary );
+ if Module.ClassType = TReference  then Tools.References  .DeleteItem(Module as TReference  );
 end;
 
 procedure TShelfForm.ToolButtonDeleteClick(Sender: TObject);
