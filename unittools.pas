@@ -11,27 +11,27 @@ type
   end;
 
   TTools = class
-      Bibles : TBibles;
-      Commentaries : TCommentaries;
-      Dictionaries : TDictionaries;
-      References : TReferences;
-    public
-      constructor Create;
-      destructor Destroy; override;
-      function Get_Chapter: string;
-      function Get_Search(st: string; out count: integer): string;
-      function Get_Compare: string;
-      function Get_Reference(out info: string): string;
-      function Get_Commentary: string;
-      function Get_Dictionary(st: string = ''): string;
-      function Get_Strong(number: string = ''): string;
-      function Get_Footnote(marker: string = ''): string;
-      function Get_Verses: string;
-      function Get_BiblesNames: TStringArray;
-      procedure SetCurrBible(Value: string);
-    private
-      procedure SaveConfig;
-      procedure ReadConfig;
+    Bibles : TBibles;
+    Commentaries : TCommentaries;
+    Dictionaries : TDictionaries;
+    References : TReferences;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    function Get_Chapter: string;
+    function Get_Search(st: string; out count: integer): string;
+    function Get_Compare: string;
+    function Get_Reference(out info: string): string;
+    function Get_Commentary: string;
+    function Get_Dictionary(st: string = ''): string;
+    function Get_Strong(number: string = ''): string;
+    function Get_Footnote(marker: string = ''): string;
+    function Get_Verses: string;
+    function Get_BiblesNames: TStringArray;
+    procedure SetCurrBible(Value: string);
+  private
+    procedure SaveConfig;
+    procedure ReadConfig;
   end;
 
 var
