@@ -203,6 +203,7 @@ type
     procedure CmdStyle2(Sender: TObject);
     procedure CmdModules(Sender: TObject);
 
+    procedure AssignFont;
     procedure ComboBoxChange(Sender: TObject);
     procedure ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
     procedure EditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -312,6 +313,7 @@ begin
   NoteFileName := Untitled;
 
   ReadConfig;
+  AssignFont;
   LoadComboBox;
   MakeBookList;
   if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
@@ -417,6 +419,16 @@ begin
       if (Point.x <= 0) or (Point.x >= UnboundMemo.Width  - 30) or
          (Point.y <= 0) or (Point.y >= UnboundMemo.Height - 30) then NotifyForm.Close;
     end;
+end;
+
+procedure TMainForm.AssignFont;
+begin
+  MemoBible.Font.Assign(Font);
+  MemoSearch.Font.Assign(Font);
+  MemoCompare.Font.Assign(Font);
+  MemoReference.Font.Assign(Font);
+  MemoCommentary.Font.Assign(Font);
+  MemoDictionary.Font.Assign(Font);
 end;
 
 procedure TMainForm.Localize;
@@ -663,6 +675,7 @@ procedure TMainForm.CmdCopyAs(Sender: TObject);
 begin
   // saving selection because of strange bug in the gtk2's richmemo
   {$ifdef linux} MemoBible.SaveSelection; {$endif}
+  CopyForm.Memo.Font.Assign(Font);
   CopyForm.ShowModal;
   {$ifdef linux} MemoBible.RestoreSelection; {$endif}
 end;
@@ -1204,6 +1217,7 @@ begin
   if FontDialog.Execute then
     begin
       Font.Assign(FontDialog.Font);
+      AssignFont;
       MakeBookList;
       MakeChapterList;
       LoadChapter;
@@ -1312,7 +1326,6 @@ end;
 
 procedure TMainForm.LoadChapter;
 begin
-  MemoBible.Font.Assign(Font);
   MemoBible.LoadText(Tools.Get_Chapter, true);
   SelectPage(apBible);
 end;
@@ -1339,9 +1352,7 @@ begin
   if count > max then text := T('This search returned too many results.') + ' ' +
                               T('Please narrow your search.');
 
-  MemoSearch.Font.Assign(Font);
   MemoSearch.LoadText(text);
-
   Cursor := crArrow;
   SelectPage(apSearch);
   UpdateStatus(ToStr(count) + ' ' + T('verses found'));
@@ -1352,7 +1363,6 @@ var text : string;
 begin
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br> ';
   text += Tools.Get_Compare;
-  MemoCompare.Font.Assign(Font);
   MemoCompare.LoadText(text);
   SelectPage(apCompare);
 end;
@@ -1365,7 +1375,6 @@ begin
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
   data := Tools.Get_Reference(info);
   if data.isEmpty then text += T('Сross-references not found.') else text += data;
-  MemoReference.Font.Assign(Font);
   MemoReference.LoadText(text);
   SelectPage(apReferences);
   UpdateStatus(info);
@@ -1381,7 +1390,6 @@ begin
 
   if data.isEmpty then text += T('Commentaries not found.') + '<br><br>';
 
-  MemoCommentary.Font.Assign(Font);
   MemoCommentary.LoadHtml(text);
   SelectPage(apCommentaries);
 end;
@@ -1403,7 +1411,6 @@ begin
 
   if s.isEmpty then text := T('Please enter your query in the search bar.');
 
-  MemoDictionary.Font.Assign(Font);
   MemoDictionary.LoadHtml(text);
   SelectPage(apDictionaries);
 end;
