@@ -15,7 +15,6 @@ const
 
 var
   ApplicationUpdate : boolean = false;
-  DefaultFont: TFont;
 
 procedure CreateDataDirectory;
 function ConfigFile: string;

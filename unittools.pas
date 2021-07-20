@@ -47,7 +47,6 @@ uses
 
 constructor TTools.Create;
 begin
-  DefaultFont := TFont.Create;
   Bibles := TBibles.Create;
   Commentaries := TCommentaries.Create;
   Dictionaries := TDictionaries.Create;
@@ -62,7 +61,6 @@ begin
   Dictionaries.Free;
   Commentaries.Free;
   Bibles.Free;
-  DefaultFont.Free;
 end;
 
 function TTools.Get_Chapter: string;

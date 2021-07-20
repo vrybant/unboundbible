@@ -325,7 +325,7 @@ begin
 
   NoteFileName := Untitled;
   MemoNotes.Lines.Clear;
-  MemoNotes.Font.Size := DefaultFont.Size;
+  MemoNotes.Font.Size := Font.Size;
 //ToolButtonDonate.Visible := not DonateVisited;
   IdleMessage := '';
 
@@ -1198,16 +1198,16 @@ end;
 
 procedure TMainForm.CmdOptions(Sender: TObject);
 begin
-  FontDialog.Font.Assign(DefaultFont);
+  FontDialog.Font.Assign(Font);
   if FontDialog.Execute then
-  begin
-    DefaultFont.Assign(FontDialog.Font);
-    MakeBookList;
-    MakeChapterList;
-    LoadChapter;
-    FormPaint(self);
-    Invalidate;
-  end;
+    begin
+      Font.Assign(FontDialog.Font);
+      MakeBookList;
+      MakeChapterList;
+      LoadChapter;
+      FormPaint(self);
+      Invalidate;
+    end;
 end;
 
 procedure TMainForm.IdleTimerTimer(Sender: TObject);
@@ -1280,7 +1280,7 @@ var
   l : boolean;
 begin
   l := BookBox.ItemIndex < 0;
-  BookBox.Font.Assign(DefaultFont);
+  BookBox.Font.Assign(Font);
   BookBox.BiDiMode := bdLeftToRight;
   if CurrBible.RightToLeft then BookBox.BiDiMode := bdRightToLeft;
   BookBox.Items.AddStrings(CurrBible.GetTitles, True);
@@ -1295,7 +1295,7 @@ var
 begin
   n := CurrBible.ChaptersCount(CurrVerse);
   if ChapterBox.Items.Count = n then Exit;
-  ChapterBox.Font.Assign(DefaultFont);
+  ChapterBox.Font.Assign(Font);
 
   ChapterBox.Items.BeginUpdate;
   ChapterBox.Items.Clear;
@@ -1312,7 +1312,7 @@ end;
 
 procedure TMainForm.LoadChapter;
 begin
-  MemoBible.Font.Assign(DefaultFont);
+  MemoBible.Font.Assign(Font);
   MemoBible.LoadText(Tools.Get_Chapter, true);
   SelectPage(apBible);
 end;
@@ -1339,7 +1339,7 @@ begin
   if count > max then text := T('This search returned too many results.') + ' ' +
                               T('Please narrow your search.');
 
-  MemoSearch.Font.Assign(DefaultFont);
+  MemoSearch.Font.Assign(Font);
   MemoSearch.LoadText(text);
 
   Cursor := crArrow;
@@ -1352,7 +1352,7 @@ var text : string;
 begin
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br> ';
   text += Tools.Get_Compare;
-  MemoCompare.Font.Assign(DefaultFont);
+  MemoCompare.Font.Assign(Font);
   MemoCompare.LoadText(text);
   SelectPage(apCompare);
 end;
@@ -1365,7 +1365,7 @@ begin
   text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
   data := Tools.Get_Reference(info);
   if data.isEmpty then text += T('Сross-references not found.') else text += data;
-  MemoReference.Font.Assign(DefaultFont);
+  MemoReference.Font.Assign(Font);
   MemoReference.LoadText(text);
   SelectPage(apReferences);
   UpdateStatus(info);
@@ -1381,7 +1381,7 @@ begin
 
   if data.isEmpty then text += T('Commentaries not found.') + '<br><br>';
 
-  MemoCommentary.Font.Assign(DefaultFont);
+  MemoCommentary.Font.Assign(Font);
   MemoCommentary.LoadHtml(text);
   SelectPage(apCommentaries);
 end;
@@ -1403,7 +1403,7 @@ begin
 
   if s.isEmpty then text := T('Please enter your query in the search bar.');
 
-  MemoDictionary.Font.Assign(DefaultFont);
+  MemoDictionary.Font.Assign(Font);
   MemoDictionary.LoadHtml(text);
   SelectPage(apDictionaries);
 end;
@@ -1435,7 +1435,7 @@ end;
 {$ifdef windows}
 procedure TMainForm.VersesToClipboard;
 begin
-  RichTextToClipboard(ParseWin(Tools.Get_Verses, DefaultFont), RemoveTags(Tools.Get_Verses));
+  RichTextToClipboard(ParseWin(Tools.Get_Verses, Font), RemoveTags(Tools.Get_Verses));
 end;
 {$endif}
 
@@ -1446,7 +1446,7 @@ var
 begin
   MemoPreview := TUnboundMemo.Create(self);
   MemoPreview.Parent := MainForm;
-  MemoPreview.Font.Assign(DefaultFont);
+  MemoPreview.Font.Assign(Font);
   MemoPreview.LoadText(Tools.Get_Verses);
   MemoPreview.SelectAll;
   MemoPreview.CopyToClipboard;
@@ -1482,8 +1482,8 @@ begin
 
   IniFile.WriteInteger('Window', 'Splitter', PanelLeft.Width);
   IniFile.WriteString ('Application', 'Interface', Localization.id);
-  IniFile.WriteString ('Application', 'FontName', DefaultFont.Name);
-  IniFile.WriteInteger('Application', 'FontSize', DefaultFont.Size);
+  IniFile.WriteString ('Application', 'FontName', Font.Name);
+  IniFile.WriteInteger('Application', 'FontSize', Font.Size);
 //IniFile.WriteBool('Application', 'Donate', DonateVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
   IniFile.WriteBool('Options', 'Enumerated', Options.cvEnumerated);
@@ -1504,7 +1504,6 @@ var
   i, max: integer;
 const
   DefaultFontName = {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
-  DefaultFontSize = 12;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
@@ -1515,8 +1514,8 @@ begin
 
   PanelLeft.Width := IniFile.ReadInteger('Window', 'Splitter', 270);
   Localization.id := IniFile.ReadString('Application', 'Interface', Localization.DefaultID);
-  DefaultFont.Name := IniFile.ReadString ('Application', 'FontName', DefaultFontName);
-  DefaultFont.Size := IniFile.ReadInteger('Application', 'FontSize', DefaultFontSize);
+  Font.Name := IniFile.ReadString ('Application', 'FontName', DefaultFontName);
+  Font.Size := IniFile.ReadInteger('Application', 'FontSize', Font.Size);
 //DonateVisited := IniFile.ReadBool('Application', 'Donate', False);
   Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
   Options.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);

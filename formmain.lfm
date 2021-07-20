@@ -8,6 +8,11 @@ object MainForm: TMainForm
   ClientWidth = 937
   Constraints.MinHeight = 400
   Constraints.MinWidth = 600
+  Font.Color = clBlack
+  Font.Height = -16
+  Font.Name = 'Tahoma'
+  Font.Pitch = fpVariable
+  Font.Quality = fqDraft
   Menu = MainMenu
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery

@@ -35,7 +35,7 @@ var
 
 implementation
 
-uses UnitUtils, UnitLocal;
+uses FormMain, UnitUtils, UnitLocal;
 
 const
   cgAbbreviate  = 0;
@@ -65,7 +65,7 @@ end;
 
 procedure TCopyForm.FormActivate(Sender: TObject);
 begin
-  Memo.Font.Assign(DefaultFont);
+  Memo.Font.Assign(MainForm.Font);
 
   {$ifdef linux}
     ButtonCancel.Top := 255;
