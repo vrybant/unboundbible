@@ -330,6 +330,8 @@ begin
   IdleMessage := '';
 
   {$ifdef linux}
+    Font.Name := 'default';
+    Font.Size := 11;
     StandardToolBar.ParentColor := True;
     ToolPanel.Color := clForm;
     ActionFilePrint.Visible := False;
@@ -1502,8 +1504,6 @@ procedure TMainForm.ReadConfig;
 var
   IniFile: TIniFile;
   i, max: integer;
-const
-  DefaultFontName = {$ifdef windows} 'Tahoma' {$else} 'default' {$endif};
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
@@ -1514,7 +1514,7 @@ begin
 
   PanelLeft.Width := IniFile.ReadInteger('Window', 'Splitter', 270);
   Localization.id := IniFile.ReadString('Application', 'Interface', Localization.DefaultID);
-  Font.Name := IniFile.ReadString ('Application', 'FontName', DefaultFontName);
+  Font.Name := IniFile.ReadString ('Application', 'FontName', Font.Name);
   Font.Size := IniFile.ReadInteger('Application', 'FontSize', Font.Size);
 //DonateVisited := IniFile.ReadBool('Application', 'Donate', False);
   Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
