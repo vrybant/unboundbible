@@ -329,6 +329,14 @@ begin
 //ToolButtonDonate.Visible := not DonateVisited;
   IdleMessage := '';
 
+  {$ifdef windows}
+    TabSheetSearch    .TabVisible := False;
+    TabSheetReference .TabVisible := False;
+    TabSheetCommentary.TabVisible := False;
+    TabSheetDictionary.TabVisible := False;
+    IdleTimer.Interval := 50;
+  {$endif}
+
   {$ifdef linux}
     Font.Name := 'default';
     Font.Size := 11;
@@ -338,14 +346,6 @@ begin
     ActionEditUndo.Visible := False;
     ActionBullets.Visible := False;
     ToolSeparator6.Visible := False;
-  {$endif}
-
-  {$ifdef windows}
-    TabSheetSearch    .TabVisible := False;
-    TabSheetReference .TabVisible := False;
-    TabSheetCommentary.TabVisible := False;
-    TabSheetDictionary.TabVisible := False;
-    IdleTimer.Interval := 50;
   {$endif}
 
   UpdateActionImage;
