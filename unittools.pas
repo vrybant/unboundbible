@@ -57,7 +57,7 @@ end;
 
 destructor TTools.Destroy;
 begin
-//  SaveConfig;
+  SaveConfig;
   References.Free;
   Dictionaries.Free;
   Commentaries.Free;

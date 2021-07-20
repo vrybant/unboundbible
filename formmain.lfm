@@ -9,12 +9,12 @@ object MainForm: TMainForm
   Constraints.MinHeight = 400
   Constraints.MinWidth = 600
   Menu = MainMenu
-  OnActivate = FormActivate
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
+  OnShow = FormShow
   LCLVersion = '2.0.10.0'
   object StandardToolBar: TToolBar
     Left = 0

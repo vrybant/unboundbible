@@ -206,12 +206,12 @@ type
     procedure ComboBoxChange(Sender: TObject);
     procedure ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
     procedure EditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure FormActivate(Sender: TObject);
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormDestroy(Sender: TObject);
     procedure IdleTimerTimer(Sender: TObject);
     procedure BookBoxClick(Sender: TObject);
     procedure ChapterBoxClick(Sender: TObject);
@@ -235,6 +235,7 @@ type
     Statuses: TStatuses;
 //  DonateVisited: boolean;
     IdleMessage : string;
+    showed : boolean;
     function UnboundMemo: TUnboundMemo;
     function CheckFileSave: boolean;
     function SelectBible(name: string): boolean;
@@ -270,7 +271,6 @@ type
     procedure VersesToClipboard;
     procedure ShowPopup;
     procedure Localize;
-  public
     procedure LocalizeApplication;
   end;
 
@@ -301,11 +301,12 @@ const
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  Caption := ApplicationName + ' ' + ApplicationVersion;
-  RecentList := [];
-
   Localization := TLocalization.Create;
   Statuses := TStatuses.Create;
+
+  Caption := ApplicationName + ' ' + ApplicationVersion;
+  RecentList := [];
+  showed := False;
 
   SaveDialog.InitialDir := DocumentsPath;
   NoteFileName := Untitled;
@@ -317,7 +318,7 @@ begin
   UpdateStatus(CurrBible.Info);
 
   // LoadChapter; // RichMemo doesn't load from Stream,
-                  // so we call it from FormActivate
+                  // so we call it from FormShow
 
   LangMenuInit;
   RecentMenuInit;
@@ -355,10 +356,11 @@ begin
   Localization.Free;
 end;
 
-procedure TMainForm.FormActivate(Sender: TObject);
+procedure TMainForm.FormShow(Sender: TObject);
 begin
-  if ChapterBox.Items.Count = 0 then // first time
+  if not showed then // first time
     begin
+      LocalizeApplication;
       {$ifdef linux}
         TabSheetSearch    .TabVisible := False;
         TabSheetReference .TabVisible := False;
@@ -366,6 +368,7 @@ begin
         TabSheetDictionary.TabVisible := False;
       {$endif}
       ShowCurrVerse(CurrVerse.number > 1);
+      showed := True;
     end;
 
   {$ifdef windows} IdleMessage := 'HideCursor'; {$endif}

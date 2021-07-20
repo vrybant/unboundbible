@@ -24,7 +24,6 @@ begin
   Application.CreateForm(TCompareForm, CompareForm);
   Application.CreateForm(TCopyForm,    CopyForm);
   Application.CreateForm(TShelfForm,   ShelfForm);
-  MainForm.LocalizeApplication;
   Application.Run;
 
   Tools.Free;
