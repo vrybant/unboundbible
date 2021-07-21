@@ -10,12 +10,10 @@ uses
 {$R *.res}
 
 begin
-  Tools := TTools.Create;
+  if Tools.Bibles.IsEmpty then Exit;
 
   Application.Title := {$ifdef windows} 'Unbound Bible' {$else} 'unboundbible' {$endif};
   Application.Initialize;
-
-  if Tools.Bibles.IsEmpty then Exit;
 
   Application.CreateForm(TMainForm,    MainForm);
   Application.CreateForm(TAboutBox,    AboutBox);
@@ -24,8 +22,7 @@ begin
   Application.CreateForm(TCompareForm, CompareForm);
   Application.CreateForm(TCopyForm,    CopyForm);
   Application.CreateForm(TShelfForm,   ShelfForm);
-  Application.Run;
 
-  Tools.Free;
+  Application.Run;
 end.
 

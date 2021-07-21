@@ -337,4 +337,12 @@ begin
   IniFile.Free;
 end;
 
+initialization
+  RemoveOldFiles;
+  UnzipDefaultsFiles;
+  Tools := TTools.Create;
+
+finalization
+  Tools.Free;
+
 end.

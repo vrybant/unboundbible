@@ -16,7 +16,6 @@ const
 var
   ApplicationUpdate : boolean = false;
 
-procedure CreateDataDirectory;
 function ConfigFile: string;
 function DataPath: string;
 function GetDatabaseList: TStringArray;
@@ -25,6 +24,10 @@ function DownloadsURL: string;
 function IssueURL: string;
 function DonateURL: string;
 function BibleHubURL(book, chapter, number: integer): string;
+
+procedure CreateDataDirectory;
+procedure RemoveOldFiles;
+procedure UnzipDefaultsFiles;
 
 implementation
 
@@ -44,11 +47,6 @@ const
 function DataPath: string;
 begin
   Result := GetUserDir + ApplicationName;
-end;
-
-procedure CreateDataDirectory;
-begin
-  if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
 end;
 
 function GetDatabaseList: TStringArray;
@@ -111,6 +109,11 @@ begin
   Result += ToStr(chapter) + '-' + ToStr(number) + '.htm';
 end;
 
+procedure CreateDataDirectory;
+begin
+  if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
+end;
+
 procedure RemoveOldFiles;
 var
   f, t : string;
@@ -162,10 +165,6 @@ begin
 
   UnZipper.Free;
 end;
-
-initialization
-  RemoveOldFiles;
-  UnzipDefaultsFiles;
 
 end.
 
