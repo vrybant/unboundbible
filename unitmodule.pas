@@ -58,8 +58,8 @@ type
     procedure Delete;
     destructor Destroy; override;
   private
-    function unbound2mybible(id: integer): integer;
-    function mybible2unbound(id: integer): integer;
+    class function unbound2mybible(id: integer): integer;
+    class function mybible2unbound(id: integer): integer;
     procedure OpenDatabase;
   end;
 
@@ -109,7 +109,7 @@ begin
 
   ext := ExtractFileExt(FilePath);
   if (ext = '.mybible') or (ext = '.bbli') then format := mysword;
-  if (ext = '.SQLite3') then format := mysword;
+  if (ext = '.SQLite3') then format := mybible;
 
   {$ifdef zeos}
     Connection := TZConnection.Create(nil);
@@ -160,13 +160,13 @@ begin
   Result := n in [40..76];
 end;
 
-function TModule.unbound2mybible(id: integer): integer;
+class function TModule.unbound2mybible(id: integer): integer;
 begin
   Result := id;
   if id in [1..Length(myBibleArray)] then Result := myBibleArray[id];
 end;
 
-function TModule.mybible2unbound(id: integer): integer;
+class function TModule.mybible2unbound(id: integer): integer;
 var i : integer;
 begin
   Result := id;
