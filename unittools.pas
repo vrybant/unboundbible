@@ -3,7 +3,7 @@ unit UnitTools;
 interface
 
 uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, IniFiles, UnitLib,
-  UnitBible, UnitCommentary, UnitDictionary, UnitReference;
+  UnitModule, UnitBible, UnitCommentary, UnitDictionary, UnitReference;
 
 type
   TCopyOptions = record
@@ -14,6 +14,7 @@ type
     Bibles : TBibles;
     Commentaries : TCommentaries;
     Dictionaries : TDictionaries;
+  private
     References : TReferences;
   public
     constructor Create;
@@ -29,6 +30,8 @@ type
     function Get_Verses: string;
     function Get_BiblesNames: TStringArray;
     procedure SetCurrBible(Value: string);
+    procedure Get_Modules(const Modules: TModules);
+    procedure DeleteModule(const Module: TModule);
   private
     procedure SaveConfig;
     procedure ReadConfig;
@@ -43,7 +46,7 @@ var
 implementation
 
 uses
-  FormSearch, UnitUtils, UnitModule;
+  FormSearch, UnitUtils;
 
 constructor TTools.Create;
 begin
@@ -278,6 +281,24 @@ begin
 
   CurrBible.LoadDatabase;
   if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
+end;
+
+procedure TTools.Get_Modules(const Modules: TModules);
+var
+  Module: TModule;
+begin
+  for Module in Bibles       do Modules.Add(Module);
+  for Module in Commentaries do Modules.Add(Module);
+  for Module in Dictionaries do Modules.Add(Module);
+  for Module in References   do Modules.Add(Module);
+end;
+
+procedure TTools.DeleteModule(const Module: TModule);
+begin
+ if Module.ClassType = TBible      then Bibles      .DeleteItem(Module as TBible      );
+ if Module.ClassType = TCommentary then Commentaries.DeleteItem(Module as TCommentary );
+ if Module.ClassType = TDictionary then Dictionaries.DeleteItem(Module as TDictionary );
+ if Module.ClassType = TReference  then References  .DeleteItem(Module as TReference  );
 end;
 
 procedure TTools.SaveConfig;

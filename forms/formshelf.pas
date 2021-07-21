@@ -40,7 +40,6 @@ type
     Modules : TModules;
     {$ifdef windows} MemoWidth : integer; {$endif}
     procedure LoadGrid;
-    procedure DeleteModule(Module: TModule);
   public
     procedure Localize;
   end;
@@ -110,28 +109,25 @@ procedure TShelfForm.LoadGrid;
 var
   Module: TModule;
 
-  procedure InsertRow(Module: TModule);
+  procedure Insert(const Module: TModule);
   var
     List : TStringArray = [];
   begin
+    if Module = nil then Exit;
     SetLength(List,clsMax);
 
     List[clName] := ' ' + Module.Name;
     List[clLang] := Module.language;
 
     StringGrid.InsertRowWithValues(StringGrid.RowCount, List);
-    Modules.Add(Module);
   end;
 
 begin
   Modules.Clear;
   Modules.Add(nil); // titles
+  Tools.Get_Modules(Modules);
   StringGrid.RowCount := 1;
-
-  for Module in Tools.Bibles       do InsertRow(Module);
-  for Module in Tools.Commentaries do InsertRow(Module);
-  for Module in Tools.Dictionaries do InsertRow(Module);
-  for Module in Tools.References   do InsertRow(Module);
+  for Module in Modules do Insert(Module);
 end;
 
 procedure TShelfForm.StringGridSelection(Sender: TObject; aCol, aRow: Integer);
@@ -160,14 +156,6 @@ begin
   LabelTest.Visible := False;
 end;
 
-procedure TShelfForm.DeleteModule(Module: TModule);
-begin
- if Module.ClassType = TBible      then Tools.Bibles      .DeleteItem(Module as TBible      );
- if Module.ClassType = TCommentary then Tools.Commentaries.DeleteItem(Module as TCommentary );
- if Module.ClassType = TDictionary then Tools.Dictionaries.DeleteItem(Module as TDictionary );
- if Module.ClassType = TReference  then Tools.References  .DeleteItem(Module as TReference  );
-end;
-
 procedure TShelfForm.ToolButtonDeleteClick(Sender: TObject);
 begin
   if QuestionDlg(' ' + T('Confirmation'),
@@ -175,7 +163,7 @@ begin
       Modules[StringGrid.Row].name + LineBreaker, mtWarning,
         [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) = idYes then
           begin
-            DeleteModule(Modules[StringGrid.Row]);
+            Tools.DeleteModule(Modules[StringGrid.Row]);
             Modules.Delete(StringGrid.Row);
             StringGrid.DeleteRow(StringGrid.Row);
             StringGridSelection(Sender, StringGrid.Col, StringGrid.Row);
