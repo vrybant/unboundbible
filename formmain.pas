@@ -823,18 +823,17 @@ end;
 procedure TMainForm.BookBoxClick(Sender: TObject);
 var
   Book : TBook;
-  s : string;
+  name : string;
 begin
   if BookBox.Count = 0 then Exit;
-  s := BookBox.Items[BookBox.ItemIndex];
+  name := BookBox.Items[BookBox.ItemIndex];
 
-  Book := CurrBible.BookByName(s);
+  Book := CurrBible.BookByName(name);
   if not Assigned(Book) then Exit;
 
   CurrVerse := minVerse;
   CurrVerse.Book := Book.Number;
 
-  ChapterBox.ItemIndex := 0;
   MakeChapterList;
   LoadChapter;
 end;
@@ -902,7 +901,7 @@ var
   item : string;
 begin
   ComboBox.Items.Clear;
-  List := Tools.Get_BiblesNames;
+  List := Tools.Bibles.GetNames;
 
   for item in List do
     begin
@@ -1308,12 +1307,10 @@ procedure TMainForm.MakeChapterList;
 var
   n, i: integer;
 begin
-  n := CurrBible.ChaptersCount(CurrVerse);
-  if ChapterBox.Items.Count = n then Exit;
-
   ChapterBox.Items.BeginUpdate;
   ChapterBox.Items.Clear;
 
+  n := CurrBible.ChaptersCount(CurrVerse);
   for i := 1 to n do ChapterBox.Items.Add(ToStr(i));
 
   ChapterBox.ItemIndex := 0;
