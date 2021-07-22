@@ -17,6 +17,7 @@ type
   TContent = record
     verse : TVerse;
     text : string;
+    procedure Init;
   end;
 
   TContentArray = array of TContent;
@@ -146,6 +147,12 @@ const
    chapter := 1;
    number  := 1;
    count   := 1;
+ end;
+
+ procedure TContent.Init;
+ begin
+   verse.Init;
+   text := '';
  end;
 
 //=================================================================================================
@@ -457,7 +464,7 @@ begin
 
       for i:=Low(Contents) to High(Contents) do
         begin
-          Contents[i].verse.Init;
+          Contents[i].Init;
           try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
           try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
@@ -495,7 +502,7 @@ begin
 
       for i:=Low(Result) to High(Result) do
         begin
-          Result[i].verse.Init;
+          Result[i].Init;
           try Result[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
           try Result[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
