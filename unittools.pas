@@ -28,7 +28,6 @@ type
     function Get_Strong(number: string = ''): string;
     function Get_Footnote(marker: string = ''): string;
     function Get_Verses: string;
-    function Get_BiblesNames: TStringArray;
     procedure SetCurrBible(Value: string);
     procedure Get_Modules(const Modules: TModules);
     procedure DeleteModule(const Module: TModule);
@@ -259,12 +258,6 @@ begin
 
   Result += quote + '<br> ';
 end;
-
-function TTools.Get_BiblesNames: TStringArray;
-begin
-  Result := Bibles.GetNames;
-end;
-
 
 procedure TTools.SetCurrBible(Value: string);
 var
