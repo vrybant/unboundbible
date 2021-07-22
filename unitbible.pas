@@ -9,6 +9,7 @@ uses
 type
   TVerse = record
     book, chapter, number, count : integer;
+    procedure Init;
   end;
 
   TVerseArray = array of TVerse;
@@ -90,9 +91,6 @@ type
     procedure DeleteItem(Item: TBible);
   end;
 
-const
-  minVerse : TVerse = (book: 1; chapter : 1; number : 1; count : 1);
-
 implementation
 
 uses UnitSQLiteEx;
@@ -139,6 +137,16 @@ const
     'Luke','John','Acts','Rom.','1 Cor.','2 Cor.','Gal.','Eph.','Phil.','Col.','1 Thess.','2 Thess.','1 Tim.',
     '2 Tim.','Titus','Philem.','Heb.','James','1 Pet.','2 Pet.','1 John','2 John','3 John','Jude','Rev.'
     );
+
+//=================================================================================================
+
+ procedure TVerse.Init;
+ begin
+   book    := 1;
+   chapter := 1;
+   number  := 1;
+   count   := 1;
+ end;
 
 //=================================================================================================
 //                                           TBible
@@ -247,7 +255,7 @@ end;
 
 function TBible.FirstVerse: TVerse;
 begin
-  Result := minVerse;
+  Result.Init;
   if Books.Count > 0 then Result.book := Books[0].number;
 end;
 
@@ -449,7 +457,7 @@ begin
 
       for i:=Low(Contents) to High(Contents) do
         begin
-          Contents[i].verse := minVerse;
+          Contents[i].verse.Init;
           try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
           try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
@@ -487,7 +495,7 @@ begin
 
       for i:=Low(Result) to High(Result) do
         begin
-          Result[i].verse := minVerse;
+          Result[i].verse.Init;
           try Result[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
           try Result[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;

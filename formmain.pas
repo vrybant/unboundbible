@@ -831,7 +831,7 @@ begin
   Book := CurrBible.BookByName(name);
   if not Assigned(Book) then Exit;
 
-  CurrVerse := minVerse;
+  CurrVerse.Init;
   CurrVerse.Book := Book.Number;
 
   MakeChapterList;
