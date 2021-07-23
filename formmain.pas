@@ -1470,6 +1470,7 @@ end;
 procedure TMainForm.VersesToClipboard;
 var
   MemoPreview : TUnboundMemo;
+  MemoCopy    : TMemo;
 begin
   MemoPreview := TUnboundMemo.Create(self);
   MemoPreview.Parent := MainForm;
@@ -1479,6 +1480,17 @@ begin
   MemoPreview.CopyToClipboard;
   MemoPreview.Visible := false;
   MemoPreview.FreeOnRelease;
+  if Options.cvCopyNoFormat then
+     begin
+      MemoCopy := TMemo.Create(self);
+      MemoCopy.Parent := MainForm;
+      MemoCopy.Visible:= false;
+      MemoCopy.Clear;
+      MemoCopy.PasteFromClipboard;
+      MemoCopy.SelectAll;
+      MemoCopy.CopyToClipboard;
+      MemoCopy.FreeOnRelease;
+    end;
 end;
 {$endif}
 
