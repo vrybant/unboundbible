@@ -16,12 +16,15 @@ type
   TMainForm = class(TForm)
     Edit: TEdit;
     IdleTimer: TIdleTimer;
+    HistoryBox: TListBox;
     miIssue: TMenuItem;
     miDonate: TMenuItem;
     MenuItem2: TMenuItem;
     miRrefx: TMenuItem;
     miDictionaries: TMenuItem;
     N7: TMenuItem;
+    Panel1: TPanel;
+    Panel2: TPanel;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
     FontDialogNotes: TFontDialog;
@@ -83,6 +86,7 @@ type
     Ruler: TPanel;
     PanelLeft: TPanel;
     Splitter: TSplitter;
+    Splitter1: TSplitter;
     StatusBar: TStatusBar;
     Images: TImageList;
 
@@ -273,6 +277,7 @@ type
     procedure ShowPopup;
     procedure Localize;
     procedure LocalizeApplication;
+    procedure AddToHistory();
   end;
 
 var
@@ -519,6 +524,15 @@ begin
   AboutBox   .Localize;
   CopyForm   .Localize;
   ShelfForm  .Localize;
+end;
+
+procedure TMainForm.AddToHistory();
+var
+  link:string;
+begin
+  link := CurrBible.VerseToStr(CurrVerse, not Options.cvAbbreviate);
+  if link.isEmpty then exit;
+  HistoryBox.Items.Add(link);
 end;
 
 //-------------------------------------------------------------------------------------------------
@@ -1325,6 +1339,7 @@ procedure TMainForm.LoadChapter;
 begin
   MemoBible.LoadText(Tools.Get_Chapter, true);
   SelectPage(apBible);
+  //AddToHistory();
 end;
 
 procedure TMainForm.LoadSearch(s: string);
