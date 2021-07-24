@@ -3,10 +3,10 @@ unit FormMain;
 interface
 
 uses
-  Classes, Fgl, SysUtils, LazFileUtils, LazUTF8, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType, LCLProc, ActnList,
-  ClipBrd, StdActns, Buttons, PrintersDlgs, Types, RichMemo, UnboundMemo,
-  UnitUtils, UnitLib;
+  Classes, Fgl, SysUtils, LazFileUtils, LazUTF8, Forms, Controls, Graphics,
+  Dialogs, StdCtrls, Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType,
+  LCLProc, ActnList, ClipBrd, StdActns, Buttons, IniPropStorage, PrintersDlgs,
+  Types, RichMemo, UnboundMemo, UnitUtils, UnitLib;
 
 type
   TStatuses = TFPGMap<integer, string>;
@@ -24,7 +24,6 @@ type
     miDictionaries: TMenuItem;
     N7: TMenuItem;
     Panel1: TPanel;
-    Panel2: TPanel;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
     FontDialogNotes: TFontDialog;
@@ -217,6 +216,7 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormDestroy(Sender: TObject);
+    procedure HistoryBoxClick(Sender: TObject);
     procedure IdleTimerTimer(Sender: TObject);
     procedure BookBoxClick(Sender: TObject);
     procedure ChapterBoxClick(Sender: TObject);
@@ -234,6 +234,7 @@ type
     procedure RadioButtonClick(Sender: TObject);
     procedure ToolButtonDonateClick(Sender: TObject);
     procedure ToolButtonSearchClick(Sender: TObject);
+
   private
     NoteFileName: string;
     RecentList: TStringArray;
@@ -277,7 +278,7 @@ type
     procedure ShowPopup;
     procedure Localize;
     procedure LocalizeApplication;
-    procedure AddToHistory();
+    procedure AddToHistory(Sender: TObject);
   end;
 
 var
@@ -364,6 +365,36 @@ begin
   Statuses.Free;
   Localization.Free;
 end;
+
+procedure TMainForm.HistoryBoxClick(Sender: TObject);
+var
+  Verse : TVerse;
+  bibleName , link: string;
+  tmpStringList : TStringList;
+begin
+  tmpStringList := TStringList.Create;
+  tmpStringList.Delimiter:='@';
+  tmpStringList.StrictDelimiter:= True;
+  tmpStringList.DelimitedText := HistoryBox.GetSelectedText;
+  if tmpStringList.Count <> 2 then begin tmpStringList.Free; exit; end;
+
+  link := tmpStringList.Strings[0];
+  bibleName := tmpStringList.Strings[1];
+
+  Tools.SetCurrBible(bibleName) ;
+
+  tmpStringList.Free;
+
+  Verse := CurrBible.SrtToVerse(link);
+      if not CurrBible.GoodLink(Verse) then Exit;
+      CurrVerse := Verse;
+      ShowCurrVerse(True);
+      SelectBible(bibleName);
+      UpdateStatus(CurrBible.Info);
+
+
+end;
+
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
@@ -524,15 +555,6 @@ begin
   AboutBox   .Localize;
   CopyForm   .Localize;
   ShelfForm  .Localize;
-end;
-
-procedure TMainForm.AddToHistory();
-var
-  link:string;
-begin
-  link := CurrBible.VerseToStr(CurrVerse, not Options.cvAbbreviate);
-  if link.isEmpty then exit;
-  HistoryBox.Items.Add(link);
 end;
 
 //-------------------------------------------------------------------------------------------------
@@ -874,6 +896,7 @@ begin
     begin
       CurrVerse.Number := MemoBible.ParagraphStart;
       CurrVerse.Count  := MemoBible.ParagraphCount;
+      AddToHistory(Sender);
     end;
 
   if Memo.hyperlink.isEmpty then Exit;
@@ -989,6 +1012,7 @@ begin
 
   MakeChapterList;
   LoadChapter;
+
 
   SelectBook(Book.title, TModule.IsNewTestament(CurrVerse.book));
   ChapterBox.ItemIndex := CurrVerse.Chapter - 1;
@@ -1304,6 +1328,27 @@ begin
   if SearchForm.ShowAtPos(Pos) = mrOk then LoadSearch(Edit.Text);
 end;
 
+procedure TMainForm.AddToHistory(Sender:TObject);
+var
+  link : string;
+  Bible : TBible;
+  s : string;
+begin
+  if Sender = HistoryBox then exit;
+  link := '';
+  s := CurrBible.VerseToStr(CurrVerse, true);
+  if s.isEmpty then exit;
+  link += s + '@' + CurrBible.name;
+  if (HistoryBox.Count <> 0) and (link = HistoryBox.Items.Strings[HistoryBox.Count-1]) then exit;
+  HistoryBox.Items.Add(link);
+  if HistoryBox.Count > 30 then
+    begin
+      HistoryBox.Items.Delete(0);
+    end;
+
+end;
+
+
 procedure TMainForm.MakeBookList;
 var
   l : boolean;
@@ -1339,7 +1384,7 @@ procedure TMainForm.LoadChapter;
 begin
   MemoBible.LoadText(Tools.Get_Chapter, true);
   SelectPage(apBible);
-  //AddToHistory();
+
 end;
 
 procedure TMainForm.LoadSearch(s: string);
@@ -1520,6 +1565,7 @@ procedure TMainForm.SaveConfig;
 var
   IniFile: TIniFile;
   item : string;
+  i: Integer;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
@@ -1550,6 +1596,11 @@ begin
 
   for item in RecentList do
     IniFile.WriteString('Recent', 'File_' + RecentList.IndexOf(item).ToString, item);
+
+  IniFile.WriteInteger('History', 'Count', HistoryBox.Count);
+  for i:=0 to HistoryBox.Count-1 do
+    IniFile.WriteString('History', 'Link_' + inttostr(i), HistoryBox.Items.Strings[i]);
+
 
   IniFile.Free;
 end;
@@ -1582,6 +1633,11 @@ begin
 
   for i := 0 to Max - 1 do
     RecentList.Add(IniFile.ReadString('Recent', 'File_' + ToStr(i), ''));
+
+  Max := IniFile.ReadInteger('History', 'Count', 0);
+
+  for i := 0 to Max - 1 do
+    HistoryBox.Items.add(IniFile.ReadString('History', 'Link_' + ToStr(i), ''));
 
   IniFile.Free;
 end;
