@@ -1,24 +1,23 @@
 object CopyForm: TCopyForm
   Left = 738
-  Height = 482
+  Height = 319
   Top = 302
-  Width = 836
+  Width = 557
   BorderStyle = bsDialog
   Caption = 'Copy Verses'
-  ClientHeight = 482
-  ClientWidth = 836
-  DesignTimePPI = 144
+  ClientHeight = 319
+  ClientWidth = 557
   OnActivate = FormActivate
   OnClose = FormClose
   Position = poScreenCenter
   LCLVersion = '2.0.12.0'
   object Memo: TUnboundMemo
     Cursor = crArrow
-    Left = 12
-    Height = 270
-    Top = 12
-    Width = 808
-    Font.Height = -24
+    Left = 8
+    Height = 180
+    Top = 8
+    Width = 539
+    Font.Height = -16
     Font.Name = 'Tahoma'
     HideSelection = True
     ParentFont = False
@@ -28,24 +27,31 @@ object CopyForm: TCopyForm
     ZoomFactor = 1
   end
   object ButtonCopy: TButton
-    Left = 685
-    Height = 35
-    Top = 320
-    Width = 135
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 457
+    Height = 27
+    Top = 227
+    Width = 90
+    Anchors = [akRight, akBottom]
     AutoSize = True
+    BorderSpacing.Right = 10
+    BorderSpacing.Bottom = 65
     Caption = 'Copy'
-    Constraints.MaxWidth = 135
-    Constraints.MinWidth = 135
+    Constraints.MaxWidth = 90
+    Constraints.MinWidth = 90
     ModalResult = 1
     OnClick = ButtonCopyClick
     ParentFont = False
     TabOrder = 1
   end
   object CheckGroup: TCheckGroup
-    Left = 12
-    Height = 180
-    Top = 288
-    Width = 660
+    Left = 8
+    Height = 120
+    Top = 192
+    Width = 440
     AutoFill = True
     Caption = ' Options '
     ChildSizing.LeftRightSpacing = 6
@@ -56,8 +62,8 @@ object CopyForm: TCopyForm
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 2
-    ClientHeight = 150
-    ClientWidth = 656
+    ClientHeight = 101
+    ClientWidth = 436
     Columns = 2
     Items.Strings = (
       'Abbreviate book names'
@@ -76,23 +82,37 @@ object CopyForm: TCopyForm
     }
   end
   object ButtonCancel: TButton
-    Left = 685
-    Height = 35
-    Top = 404
-    Width = 135
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 457
+    Height = 27
+    Top = 267
+    Width = 90
+    Anchors = [akRight, akBottom]
     AutoSize = True
+    BorderSpacing.Right = 10
+    BorderSpacing.Bottom = 25
     Caption = 'Cancel'
-    Constraints.MaxWidth = 135
-    Constraints.MinWidth = 135
+    Constraints.MaxWidth = 90
+    Constraints.MinWidth = 90
     ModalResult = 2
     ParentFont = False
     TabOrder = 3
   end
   object CheckBox: TCheckBox
-    Left = 536
-    Height = 29
-    Top = 432
-    Width = 115
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 464
+    Height = 21
+    Top = 199
+    Width = 83
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 10
+    BorderSpacing.Bottom = 99
     Caption = 'Set default'
     ParentFont = False
     TabOrder = 4
