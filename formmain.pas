@@ -385,7 +385,6 @@ begin
   link := tmpStringList.Strings[0];
   bibleName := tmpStringList.Strings[1];
   MainForm.Caption:= tmpStringList.Strings[0] + '@' + tmpStringList.Strings[1] ;
-                     //  + '@' + tmpStringList.Strings[2];
 
   Tools.SetCurrBible(bibleName) ;
 
