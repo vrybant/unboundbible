@@ -14,6 +14,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ClearHistory: TButton;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
     HistoryBox: TListBox;
@@ -24,6 +25,8 @@ type
     miDictionaries: TMenuItem;
     N7: TMenuItem;
     Panel1: TPanel;
+    Panel2: TPanel;
+    Panel3: TPanel;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
     FontDialogNotes: TFontDialog;
@@ -183,6 +186,7 @@ type
     ToolSeparator5: TToolButton;
     ToolSeparator6: TToolButton;
 
+    procedure ClearHistoryClick(Sender: TObject);
     procedure CmdReference(Sender: TObject);
     procedure CmdCommentaries(Sender: TObject);
     procedure CmdDictionaries(Sender: TObject);
@@ -376,10 +380,12 @@ begin
   tmpStringList.Delimiter:='@';
   tmpStringList.StrictDelimiter:= True;
   tmpStringList.DelimitedText := HistoryBox.GetSelectedText;
-  if tmpStringList.Count <> 2 then begin tmpStringList.Free; exit; end;
+  if tmpStringList.Count < 2 then begin tmpStringList.Free; exit; end;
 
   link := tmpStringList.Strings[0];
   bibleName := tmpStringList.Strings[1];
+  MainForm.Caption:= tmpStringList.Strings[0] + '@' + tmpStringList.Strings[1] ;
+                     //  + '@' + tmpStringList.Strings[2];
 
   Tools.SetCurrBible(bibleName) ;
 
@@ -394,7 +400,6 @@ begin
 
 
 end;
-
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
@@ -466,6 +471,8 @@ begin
   MemoCommentary.Font.Assign(Font);
   MemoDictionary.Font.Assign(Font);
 end;
+
+
 
 procedure TMainForm.Localize;
 begin
@@ -737,6 +744,11 @@ end;
 procedure TMainForm.CmdReference(Sender: TObject);
 begin
   LoadReference;
+end;
+
+procedure TMainForm.ClearHistoryClick(Sender: TObject);
+begin
+  HistoryBox.Clear;
 end;
 
 procedure TMainForm.CmdCommentaries(Sender: TObject);
@@ -1328,22 +1340,36 @@ begin
   if SearchForm.ShowAtPos(Pos) = mrOk then LoadSearch(Edit.Text);
 end;
 
+
 procedure TMainForm.AddToHistory(Sender:TObject);
 var
   link : string;
   Bible : TBible;
   s : string;
+  sl :TStringList;
+  dt: TDateTime;
+  LinksHistoryLength : integer = 30;
 begin
   if Sender = HistoryBox then exit;
   link := '';
   s := CurrBible.VerseToStr(CurrVerse, true);
   if s.isEmpty then exit;
   link += s + '@' + CurrBible.name;
-  if (HistoryBox.Count <> 0) and (link = HistoryBox.Items.Strings[HistoryBox.Count-1]) then exit;
-  HistoryBox.Items.Add(link);
-  if HistoryBox.Count > 30 then
+  if (HistoryBox.Count <> 0) and (link = HistoryBox.Items.Strings[0]) then exit;
+  HistoryBox.Items.AddObject(link,TObject(Now));
+
+  sl := TStringList.Create;
+  try
+    sl.Assign(HistoryBox.Items);
+    sl.CustomSort(CompareDatesDesc);
+    HistoryBox.Items.Assign(sl);
+  finally
+    sl.Free;
+  end;
+
+  if HistoryBox.Count > LinksHistoryLength then
     begin
-      HistoryBox.Items.Delete(0);
+      HistoryBox.Items.Delete(LinksHistoryLength);
     end;
 
 end;
@@ -1599,7 +1625,8 @@ begin
 
   IniFile.WriteInteger('History', 'Count', HistoryBox.Count);
   for i:=0 to HistoryBox.Count-1 do
-    IniFile.WriteString('History', 'Link_' + inttostr(i), HistoryBox.Items.Strings[i]);
+    IniFile.WriteString('History', 'Link_' + inttostr(i), HistoryBox.Items.Strings[i]
+         +'@'+ DateTimeToStr(TDateTime(HistoryBox.Items.Objects[i])) );
 
 
   IniFile.Free;
@@ -1609,6 +1636,8 @@ procedure TMainForm.ReadConfig;
 var
   IniFile: TIniFile;
   i, max: integer;
+  ht: String;
+  sl: TStringList;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
@@ -1636,8 +1665,18 @@ begin
 
   Max := IniFile.ReadInteger('History', 'Count', 0);
 
+  sl := TStringList.Create;
+  sl.Delimiter:= '@';
+  sl.StrictDelimiter:= True;
   for i := 0 to Max - 1 do
-    HistoryBox.Items.add(IniFile.ReadString('History', 'Link_' + ToStr(i), ''));
+    begin
+       sl.DelimitedText := IniFile.ReadString('History', 'Link_' + ToStr(i), '');
+       if sl.Count >2 then
+          HistoryBox.Items.AddObject(sl[0]+'@'+sl[1], TObject(StrToDateTime(sl[2])))
+       else if sl.Count > 1
+               then HistoryBox.Items.add(sl[0]+'@'+sl[1]);
+    end;
+   sl.Free;
 
   IniFile.Free;
 end;

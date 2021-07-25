@@ -24,6 +24,7 @@ function DownloadsURL: string;
 function IssueURL: string;
 function DonateURL: string;
 function BibleHubURL(book, chapter, number: integer): string;
+function CompareDatesDesc(List: TStringList; Index1, Index2: Integer): Integer;
 
 procedure CreateDataDirectory;
 procedure RemoveOldFiles;
@@ -164,6 +165,16 @@ begin
     end;
 
   UnZipper.Free;
+end;
+
+function CompareDatesDesc(List: TStringList; Index1, Index2: Integer): Integer;
+begin
+   if TDateTime(List.Objects[Index1]) > TDateTime(List.Objects[Index2]) then
+     Result := -1
+   else if TDateTime(List.Objects[Index1]) < TDateTime(List.Objects[Index2]) then
+     Result := 1
+   else
+     Result := 0;
 end;
 
 end.
