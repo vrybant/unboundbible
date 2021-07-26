@@ -5,8 +5,8 @@ interface
 uses
   Classes, Fgl, SysUtils, LazFileUtils, LazUTF8, Forms, Controls, Graphics,
   Dialogs, StdCtrls, Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType,
-  LCLProc, ActnList, ClipBrd, StdActns, Buttons, IniPropStorage, PrintersDlgs,
-  Types, RichMemo, UnboundMemo, UnitUtils, UnitLib;
+  LCLProc, ActnList, ClipBrd, StdActns, Buttons, IniPropStorage, Spin,
+  PrintersDlgs, Types, RichMemo, UnboundMemo, UnitUtils, UnitLib;
 
 type
   TStatuses = TFPGMap<integer, string>;
@@ -18,6 +18,7 @@ type
     Edit: TEdit;
     IdleTimer: TIdleTimer;
     HistoryBox: TListBox;
+    Label1: TLabel;
     miIssue: TMenuItem;
     miDonate: TMenuItem;
     MenuItem2: TMenuItem;
@@ -87,6 +88,7 @@ type
     BookBox: TListBox;
     Ruler: TPanel;
     PanelLeft: TPanel;
+    HistoryLengthEdit: TSpinEdit;
     Splitter: TSplitter;
     Splitter1: TSplitter;
     StatusBar: TStatusBar;
@@ -747,7 +749,8 @@ end;
 
 procedure TMainForm.ClearHistoryClick(Sender: TObject);
 begin
-  HistoryBox.Clear;
+  if QuestionDlg('Purge history','Sure to purge history?',mtWarning,[mrYes, mrCancel, 'IsDefault'],'')=mrYes then
+    HistoryBox.Clear;
 end;
 
 procedure TMainForm.CmdCommentaries(Sender: TObject);
@@ -1347,7 +1350,7 @@ var
   s : string;
   sl :TStringList;
   dt: TDateTime;
-  LinksHistoryLength : integer = 30;
+  i: Integer;
 begin
   if Sender = HistoryBox then exit;
   link := '';
@@ -1366,9 +1369,10 @@ begin
     sl.Free;
   end;
 
-  if HistoryBox.Count > LinksHistoryLength then
+  if HistoryBox.Count + 1 > HistoryLengthEdit.Value then
     begin
-      HistoryBox.Items.Delete(LinksHistoryLength);
+      for i:= 0 to HistoryBox.Count - HistoryLengthEdit.Value do
+          HistoryBox.Items.Delete(HistoryBox.Count - 1);
     end;
 
 end;
@@ -1627,6 +1631,7 @@ begin
     IniFile.WriteString('History', 'Link_' + inttostr(i), HistoryBox.Items.Strings[i]
          +'@'+ DateTimeToStr(TDateTime(HistoryBox.Items.Objects[i])) );
 
+    IniFile.WriteInteger('History', 'Length', HistoryLengthEdit.Value);
 
   IniFile.Free;
 end;
@@ -1676,6 +1681,9 @@ begin
                then HistoryBox.Items.add(sl[0]+'@'+sl[1]);
     end;
    sl.Free;
+
+   HistoryLengthEdit.Value := IniFile.ReadInteger('History', 'Length', HistoryLengthEdit.Value);
+
 
   IniFile.Free;
 end;
