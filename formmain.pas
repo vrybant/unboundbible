@@ -628,10 +628,21 @@ begin
 end;
 
 procedure TMainForm.EditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+var
+  Verse: TVerse;
 begin
   if Key = VK_RETURN then
-    if PageControl.ActivePageIndex = apDictionaries then LoadDictionary(Edit.Text)
+    begin
+    Verse := CurrBible.SrtToVerse(trim(Edit.Text));
+      if CurrBible.GoodLink(Verse) then
+        begin
+          CurrVerse := Verse;
+          ShowCurrVerse(True)
+        end
+    else if PageControl.ActivePageIndex = apDictionaries then LoadDictionary(Edit.Text)
       else LoadSearch(Edit.Text);
+    end;
+
 end;
 
 procedure TMainForm.CmdCompare(Sender: TObject);
