@@ -77,22 +77,22 @@ end;
 
 function HomeURL: string;
 begin
-  Result := 'http://vladimirrybant.org/' + ru;
+  Result := 'https://unboundbible.net/' + ru;
 end;
 
 function DownloadsURL: string;
 begin
-  Result := 'http://vladimirrybant.org/goto/ubdownload' + ru + '.php';
+  Result := 'https://unboundbible.net/goto/ubdownload' + ru + '.php';
 end;
 
 function IssueURL: string;
 begin
-  Result := 'http://vladimirrybant.org/goto/contact' + ru + '.php'
+  Result := 'https://unboundbible.net/goto/contact' + ru + '.php'
 end;
 
 function DonateURL: string;
 begin
-  Result := 'http://vladimirrybant.org/goto/donate' + ru + '.php'
+  Result := 'https://unboundbible.net/goto/donate' + ru + '.php'
 end;
 
 function ConfigFile: string;
