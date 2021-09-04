@@ -58,6 +58,8 @@ type
       const TextUTF8: String; DstStart, DstLen: Integer); override;
     class function LoadRichText(const AWinControl: TWinControl; Source: TStream): Boolean; override;
     class function SaveRichText(const AWinControl: TWinControl; Dest: TStream): Boolean; override;
+
+    class procedure SetTransparentBackground(const AWinControl: TWinControl; ATransparent: Boolean); override;
   end;
 
 implementation
@@ -696,6 +698,18 @@ begin
   end;
 
   Result:=true;
+end;
+
+class procedure TCocoaWSCustomRichMemo.SetTransparentBackground(
+  const AWinControl: TWinControl; ATransparent: Boolean);
+var
+  txt : TCocoaTextView;
+begin
+  txt:=MemoTextView(AWinControl);
+  if not Assigned(txt) then Exit;
+
+  txt.setDrawsBackground(not ATransparent);
+  txt.enclosingScrollView.setDrawsBackground(not ATransparent);
 end;
 
 end.

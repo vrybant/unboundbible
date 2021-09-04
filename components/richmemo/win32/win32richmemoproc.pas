@@ -758,7 +758,7 @@ type
     pfnCallback : EDITSTREAMCALLBACK;
   end;
   
-{$IF FPC_FULLVERSION>=30301}
+{$IF FPC_FULLVERSION>=30202}
 function RTFLoadCallback(dwCookie:DWORD_PTR; pbBuff:LPBYTE; cb:LONG; var pcb:LONG):DWORD; stdcall;
 {$ELSE}
 function RTFLoadCallback(dwCookie:PDWORD; pbBuff:LPBYTE; cb:LONG; var pcb:LONG):DWORD; stdcall;
@@ -786,7 +786,7 @@ begin
   Result := cbs.dwError = 0;
 end;
 
-{$IF FPC_FULLVERSION>=30301}
+{$IF FPC_FULLVERSION>=30202}
 function RTFSaveCallback(dwCookie:DWORD_PTR; pbBuff:LPBYTE; cb:LONG; var pcb:LONG):DWORD; stdcall;
 {$ELSE}
 function RTFSaveCallback(dwCookie:PDWORD; pbBuff:LPBYTE; cb:LONG; var pcb:LONG):DWORD; stdcall;
