@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 362
-  Height = 603
-  Top = 227
-  Width = 1406
+  Left = 652
+  Height = 676
+  Top = 564
+  Width = 1544
   Caption = 'Unbound Bible'
-  ClientHeight = 573
-  ClientWidth = 1406
+  ClientHeight = 646
+  ClientWidth = 1544
   Constraints.MinHeight = 600
   Constraints.MinWidth = 900
   DesignTimePPI = 144
@@ -26,7 +26,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 44
     Top = 0
-    Width = 1406
+    Width = 1544
     AutoSize = True
     BorderWidth = 2
     ButtonHeight = 42
@@ -43,7 +43,7 @@ object MainForm: TMainForm
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 3
+    TabOrder = 2
     Wrapable = False
     object ToolSeparator2: TToolButton
       Left = 398
@@ -221,7 +221,7 @@ object MainForm: TMainForm
       Left = 1018
       Height = 42
       Top = 0
-      Width = 339
+      Width = 345
       BevelOuter = bvNone
       Color = clWindow
       Font.Color = clBlack
@@ -234,7 +234,7 @@ object MainForm: TMainForm
       TabOrder = 0
     end
     object ToolButtonSearch: TToolButton
-      Left = 1357
+      Left = 1363
       Hint = 'Search'
       Top = 0
       Caption = 'Search...'
@@ -258,12 +258,12 @@ object MainForm: TMainForm
   end
   object PanelLeft: TPanel
     Left = 0
-    Height = 490
+    Height = 563
     Top = 47
-    Width = 292
+    Width = 496
     Align = alLeft
-    ClientHeight = 490
-    ClientWidth = 292
+    ClientHeight = 563
+    ClientWidth = 496
     Font.Color = clBlack
     Font.Height = -24
     Font.Name = 'Tahoma'
@@ -275,7 +275,7 @@ object MainForm: TMainForm
       Left = 7
       Height = 36
       Top = 1
-      Width = 278
+      Width = 482
       Align = alTop
       BorderSpacing.Left = 6
       BorderSpacing.Right = 6
@@ -287,13 +287,13 @@ object MainForm: TMainForm
       OnDrawItem = ComboBoxDrawItem
       ParentFont = False
       Style = csDropDownList
-      TabOrder = 2
+      TabOrder = 0
     end
     object BookBox: TListBox
       Left = 7
-      Height = 440
+      Height = 513
       Top = 43
-      Width = 204
+      Width = 408
       Align = alClient
       BorderSpacing.Left = 6
       BorderSpacing.Top = 6
@@ -307,12 +307,12 @@ object MainForm: TMainForm
       ItemHeight = 0
       OnClick = BookBoxClick
       ParentFont = False
-      ScrollWidth = 132
-      TabOrder = 0
+      ScrollWidth = 270
+      TabOrder = 1
     end
     object ChapterBox: TListBox
-      Left = 217
-      Height = 440
+      Left = 421
+      Height = 513
       Top = 43
       Width = 68
       Align = alRight
@@ -328,256 +328,24 @@ object MainForm: TMainForm
       OnClick = ChapterBoxClick
       ParentFont = False
       ScrollWidth = 43
-      TabOrder = 1
+      TabOrder = 2
     end
   end
   object StatusBar: TStatusBar
     Left = 0
     Height = 36
-    Top = 537
-    Width = 1406
+    Top = 610
+    Width = 1544
     Panels = <>
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
   end
-  object PageControl: TPageControl
-    Left = 300
-    Height = 490
-    Top = 47
-    Width = 1106
-    ActivePage = TabSheetSearch
-    Align = alClient
-    Font.Color = clWindowText
-    Font.Height = -20
-    ParentFont = False
-    TabIndex = 1
-    TabOrder = 2
-    OnChange = PageControlChange
-    object TabSheetBible: TTabSheet
-      Caption = 'Bible'
-      ClientHeight = 449
-      ClientWidth = 1098
-      Font.Color = clWindowText
-      Font.Height = -18
-      ParentFont = False
-      object MemoBible: TUnboundMemo
-        Cursor = crArrow
-        Left = 0
-        Height = 449
-        Top = 0
-        Width = 1098
-        Align = alClient
-        Font.Color = clWindowText
-        Font.Height = -24
-        Font.Name = 'Tahoma'
-        HideSelection = False
-        OnContextPopup = MemoContextPopup
-        OnMouseLeave = MemoMouseLeave
-        OnMouseUp = MemoMouseUp
-        OnSelectionChange = MemoSelectionChange
-        ParentFont = False
-        ReadOnly = True
-        ScrollBars = ssBoth
-        TabOrder = 0
-        ZoomFactor = 1
-        Linkable = True
-        Paragraphic = True
-      end
-    end
-    object TabSheetSearch: TTabSheet
-      Caption = 'Search'
-      ClientHeight = 449
-      ClientWidth = 1098
-      Font.Color = clWindowText
-      Font.Height = -20
-      ImageIndex = 1
-      ParentFont = False
-      object MemoSearch: TUnboundMemo
-        Cursor = crArrow
-        Left = 0
-        Height = 449
-        Top = 0
-        Width = 1098
-        Align = alClient
-        Font.Color = clWindowText
-        Font.Height = -24
-        Font.Name = 'Tahoma'
-        HideSelection = False
-        OnContextPopup = MemoContextPopup
-        OnMouseLeave = MemoMouseLeave
-        OnMouseUp = MemoMouseUp
-        OnSelectionChange = MemoSelectionChange
-        ParentFont = False
-        ReadOnly = True
-        ScrollBars = ssBoth
-        TabOrder = 0
-        ZoomFactor = 1
-        Linkable = True
-      end
-    end
-    object TabSheetCompare: TTabSheet
-      Caption = 'Compare'
-      ClientHeight = 298
-      ClientWidth = 727
-      Font.Color = clWindowText
-      Font.Height = -18
-      ImageIndex = 3
-      ParentFont = False
-      object MemoCompare: TUnboundMemo
-        Cursor = crArrow
-        Left = 0
-        Height = 296
-        Top = 0
-        Width = 675
-        Align = alClient
-        Font.Color = clWindowText
-        Font.Height = -24
-        Font.Name = 'Tahoma'
-        HideSelection = False
-        OnContextPopup = MemoContextPopup
-        OnMouseLeave = MemoMouseLeave
-        OnMouseUp = MemoMouseUp
-        OnSelectionChange = MemoSelectionChange
-        ParentFont = False
-        ReadOnly = True
-        ScrollBars = ssBoth
-        TabOrder = 0
-        ZoomFactor = 1
-        Linkable = True
-      end
-    end
-    object TabSheetReference: TTabSheet
-      Caption = 'Сross-References'
-      ClientHeight = 298
-      ClientWidth = 727
-      Font.Color = clWindowText
-      Font.Height = -20
-      ParentFont = False
-      object MemoReference: TUnboundMemo
-        Cursor = crArrow
-        Left = 0
-        Height = 296
-        Top = 0
-        Width = 729
-        Align = alClient
-        Font.Color = clWindowText
-        Font.Height = -24
-        Font.Name = 'Tahoma'
-        HideSelection = False
-        OnContextPopup = MemoContextPopup
-        OnMouseLeave = MemoMouseLeave
-        OnMouseUp = MemoMouseUp
-        OnSelectionChange = MemoSelectionChange
-        ParentFont = False
-        ReadOnly = True
-        ScrollBars = ssBoth
-        TabOrder = 0
-        ZoomFactor = 1
-        Linkable = True
-      end
-    end
-    object TabSheetCommentary: TTabSheet
-      Caption = 'Commentaries'
-      ClientHeight = 298
-      ClientWidth = 727
-      Font.Color = clWindowText
-      Font.Height = -20
-      ParentFont = False
-      object MemoCommentary: TUnboundMemo
-        Cursor = crArrow
-        Left = 0
-        Height = 296
-        Top = 0
-        Width = 729
-        Align = alClient
-        Font.Color = clWindowText
-        Font.Height = -24
-        Font.Name = 'Tahoma'
-        HideSelection = False
-        OnContextPopup = MemoContextPopup
-        OnMouseLeave = MemoMouseLeave
-        OnMouseUp = MemoMouseUp
-        OnSelectionChange = MemoSelectionChange
-        ParentFont = False
-        ReadOnly = True
-        ScrollBars = ssBoth
-        TabOrder = 0
-        ZoomFactor = 1
-        Linkable = True
-      end
-    end
-    object TabSheetDictionary: TTabSheet
-      Caption = 'Dictionaries'
-      ClientHeight = 298
-      ClientWidth = 727
-      Font.Color = clWindowText
-      Font.Height = -20
-      ParentFont = False
-      object MemoDictionary: TUnboundMemo
-        Cursor = crArrow
-        Left = 0
-        Height = 296
-        Top = 0
-        Width = 729
-        Align = alClient
-        Font.Color = clWindowText
-        Font.Height = -24
-        Font.Name = 'Tahoma'
-        HideSelection = False
-        OnContextPopup = MemoContextPopup
-        OnMouseLeave = MemoMouseLeave
-        OnMouseUp = MemoMouseUp
-        OnSelectionChange = MemoSelectionChange
-        ParentFont = False
-        ReadOnly = True
-        ScrollBars = ssBoth
-        TabOrder = 0
-        ZoomFactor = 1
-        Linkable = True
-      end
-    end
-    object TabSheetNotes: TTabSheet
-      Caption = 'Notes'
-      ClientHeight = 298
-      ClientWidth = 727
-      Font.Color = clWindowText
-      Font.Height = -20
-      ImageIndex = 2
-      ParentFont = False
-      object MemoNotes: TUnboundMemo
-        Cursor = crArrow
-        Left = 0
-        Height = 296
-        Top = 0
-        Width = 675
-        Align = alClient
-        Font.Color = clWindowText
-        Font.Height = -24
-        Font.Name = 'Tahoma'
-        HideSelection = False
-        OnContextPopup = MemoContextPopup
-        OnMouseUp = MemoMouseUp
-        OnSelectionChange = MemoSelectionChange
-        ParentFont = False
-        ScrollBars = ssBoth
-        TabOrder = 0
-        ZoomFactor = 1
-        Linkable = True
-      end
-    end
-  end
-  object Splitter: TSplitter
-    Left = 292
-    Height = 490
-    Top = 47
-    Width = 8
-  end
   object Ruler: TPanel
     Left = 0
     Height = 3
     Top = 44
-    Width = 1406
+    Width = 1544
     Align = alTop
     Alignment = taLeftJustify
     BevelOuter = bvNone
@@ -590,10 +358,10 @@ object MainForm: TMainForm
     TabOrder = 0
   end
   object Edit: TEdit
-    Left = 1044
+    Left = 1008
     Height = 33
     Top = 4
-    Width = 225
+    Width = 156
     AutoSize = False
     Color = clWhite
     DoubleBuffered = True
@@ -601,7 +369,360 @@ object MainForm: TMainForm
     OnKeyDown = EditKeyDown
     ParentDoubleBuffered = False
     ParentFont = False
-    TabOrder = 6
+    TabOrder = 4
+  end
+  object Panel1: TPanel
+    Left = 504
+    Height = 563
+    Top = 47
+    Width = 1040
+    Align = alClient
+    Caption = 'Panel1'
+    ClientHeight = 563
+    ClientWidth = 1040
+    Font.Color = clBlack
+    Font.Height = -24
+    Font.Name = 'Tahoma'
+    Font.Pitch = fpVariable
+    Font.Quality = fqDraft
+    ParentFont = False
+    TabOrder = 5
+    object PageControl: TPageControl
+      Left = 1
+      Height = 561
+      Top = 1
+      Width = 759
+      ActivePage = TabSheetCommentary
+      Align = alClient
+      Font.Color = clWindowText
+      Font.Height = -20
+      ParentFont = False
+      TabIndex = 4
+      TabOrder = 0
+      OnChange = PageControlChange
+      object TabSheetBible: TTabSheet
+        Caption = 'Bible'
+        ClientHeight = 305
+        ClientWidth = 510
+        Font.Color = clWindowText
+        Font.Height = -18
+        ParentFont = False
+        object MemoBible: TUnboundMemo
+          Cursor = crArrow
+          Left = 0
+          Height = 307
+          Top = 0
+          Width = 210
+          Align = alClient
+          Font.Color = clWindowText
+          Font.Height = -24
+          Font.Name = 'Tahoma'
+          HideSelection = False
+          OnContextPopup = MemoContextPopup
+          OnMouseLeave = MemoMouseLeave
+          OnMouseUp = MemoMouseUp
+          OnSelectionChange = MemoSelectionChange
+          ParentFont = False
+          ReadOnly = True
+          ScrollBars = ssBoth
+          TabOrder = 0
+          ZoomFactor = 1
+          Linkable = True
+          Paragraphic = True
+        end
+      end
+      object TabSheetSearch: TTabSheet
+        Caption = 'Search'
+        ClientHeight = 305
+        ClientWidth = 510
+        Font.Color = clWindowText
+        Font.Height = -20
+        ImageIndex = 1
+        ParentFont = False
+        object MemoSearch: TUnboundMemo
+          Cursor = crArrow
+          Left = 0
+          Height = 307
+          Top = 0
+          Width = 687
+          Align = alClient
+          Font.Color = clWindowText
+          Font.Height = -24
+          Font.Name = 'Tahoma'
+          HideSelection = False
+          OnContextPopup = MemoContextPopup
+          OnMouseLeave = MemoMouseLeave
+          OnMouseUp = MemoMouseUp
+          OnSelectionChange = MemoSelectionChange
+          ParentFont = False
+          ReadOnly = True
+          ScrollBars = ssBoth
+          TabOrder = 0
+          ZoomFactor = 1
+          Linkable = True
+        end
+      end
+      object TabSheetCompare: TTabSheet
+        Caption = 'Compare'
+        ClientHeight = 305
+        ClientWidth = 510
+        Font.Color = clWindowText
+        Font.Height = -18
+        ImageIndex = 3
+        ParentFont = False
+        object MemoCompare: TUnboundMemo
+          Cursor = crArrow
+          Left = 0
+          Height = 305
+          Top = 0
+          Width = 680
+          Align = alClient
+          Font.Color = clWindowText
+          Font.Height = -24
+          Font.Name = 'Tahoma'
+          HideSelection = False
+          OnContextPopup = MemoContextPopup
+          OnMouseLeave = MemoMouseLeave
+          OnMouseUp = MemoMouseUp
+          OnSelectionChange = MemoSelectionChange
+          ParentFont = False
+          ReadOnly = True
+          ScrollBars = ssBoth
+          TabOrder = 0
+          ZoomFactor = 1
+          Linkable = True
+        end
+      end
+      object TabSheetReference: TTabSheet
+        Caption = 'Сross-References'
+        ClientHeight = 305
+        ClientWidth = 510
+        Font.Color = clWindowText
+        Font.Height = -20
+        ParentFont = False
+        object MemoReference: TUnboundMemo
+          Cursor = crArrow
+          Left = 0
+          Height = 305
+          Top = 0
+          Width = 492
+          Align = alClient
+          Font.Color = clWindowText
+          Font.Height = -24
+          Font.Name = 'Tahoma'
+          HideSelection = False
+          OnContextPopup = MemoContextPopup
+          OnMouseLeave = MemoMouseLeave
+          OnMouseUp = MemoMouseUp
+          OnSelectionChange = MemoSelectionChange
+          ParentFont = False
+          ReadOnly = True
+          ScrollBars = ssBoth
+          TabOrder = 0
+          ZoomFactor = 1
+          Linkable = True
+        end
+      end
+      object TabSheetCommentary: TTabSheet
+        Caption = 'Commentaries'
+        ClientHeight = 520
+        ClientWidth = 751
+        Font.Color = clWindowText
+        Font.Height = -20
+        ParentFont = False
+        object MemoCommentary: TUnboundMemo
+          Cursor = crArrow
+          Left = 0
+          Height = 520
+          Top = 0
+          Width = 751
+          Align = alClient
+          Font.Color = clWindowText
+          Font.Height = -24
+          Font.Name = 'Tahoma'
+          HideSelection = False
+          OnContextPopup = MemoContextPopup
+          OnMouseLeave = MemoMouseLeave
+          OnMouseUp = MemoMouseUp
+          OnSelectionChange = MemoSelectionChange
+          ParentFont = False
+          ReadOnly = True
+          ScrollBars = ssBoth
+          TabOrder = 0
+          ZoomFactor = 1
+          Linkable = True
+        end
+      end
+      object TabSheetDictionary: TTabSheet
+        Caption = 'Dictionaries'
+        ClientHeight = 305
+        ClientWidth = 510
+        Font.Color = clWindowText
+        Font.Height = -20
+        ParentFont = False
+        object MemoDictionary: TUnboundMemo
+          Cursor = crArrow
+          Left = 0
+          Height = 296
+          Top = 0
+          Width = 729
+          Align = alClient
+          Font.Color = clWindowText
+          Font.Height = -24
+          Font.Name = 'Tahoma'
+          HideSelection = False
+          OnContextPopup = MemoContextPopup
+          OnMouseLeave = MemoMouseLeave
+          OnMouseUp = MemoMouseUp
+          OnSelectionChange = MemoSelectionChange
+          ParentFont = False
+          ReadOnly = True
+          ScrollBars = ssBoth
+          TabOrder = 0
+          ZoomFactor = 1
+          Linkable = True
+        end
+      end
+      object TabSheetNotes: TTabSheet
+        Caption = 'Notes'
+        ClientHeight = 305
+        ClientWidth = 510
+        Font.Color = clWindowText
+        Font.Height = -20
+        ImageIndex = 2
+        ParentFont = False
+        object MemoNotes: TUnboundMemo
+          Cursor = crArrow
+          Left = 0
+          Height = 296
+          Top = 0
+          Width = 675
+          Align = alClient
+          Font.Color = clWindowText
+          Font.Height = -24
+          Font.Name = 'Tahoma'
+          HideSelection = False
+          OnContextPopup = MemoContextPopup
+          OnMouseUp = MemoMouseUp
+          OnSelectionChange = MemoSelectionChange
+          ParentFont = False
+          ScrollBars = ssBoth
+          TabOrder = 0
+          ZoomFactor = 1
+          Linkable = True
+        end
+      end
+    end
+    object Splitter: TSplitter
+      Left = 760
+      Height = 561
+      Top = 1
+      Width = 8
+      Align = alRight
+      Beveled = True
+      MinSize = 100
+      ResizeAnchor = akRight
+    end
+    object Panel2: TPanel
+      Left = 768
+      Height = 561
+      Top = 1
+      Width = 271
+      Align = alRight
+      Caption = 'Panel2'
+      ClientHeight = 561
+      ClientWidth = 271
+      Font.Color = clBlack
+      Font.Height = -24
+      Font.Name = 'Tahoma'
+      Font.Pitch = fpVariable
+      Font.Quality = fqDraft
+      ParentFont = False
+      TabOrder = 2
+      object HistoryBox: TListBox
+        Left = 1
+        Height = 445
+        Top = 1
+        Width = 269
+        Align = alClient
+        Font.CharSet = RUSSIAN_CHARSET
+        Font.Color = clBlack
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        Font.Pitch = fpVariable
+        Font.Quality = fqDraft
+        ItemHeight = 0
+        OnClick = HistoryBoxClick
+        ParentShowHint = False
+        ParentFont = False
+        ScrollWidth = 166
+        ShowHint = True
+        TabOrder = 0
+      end
+      object Panel3: TPanel
+        Left = 1
+        Height = 114
+        Top = 446
+        Width = 269
+        Align = alBottom
+        ClientHeight = 114
+        ClientWidth = 269
+        Font.Color = clBlack
+        Font.Height = -24
+        Font.Name = 'Tahoma'
+        Font.Pitch = fpVariable
+        Font.Quality = fqDraft
+        ParentFont = False
+        TabOrder = 1
+        object ClearHistory: TButton
+          Left = 16
+          Height = 38
+          Top = 64
+          Width = 144
+          Caption = 'Purge history'
+          Font.Color = clBlack
+          Font.Height = -20
+          Font.Name = 'Tahoma'
+          Font.Pitch = fpVariable
+          Font.Quality = fqDraft
+          OnClick = ClearHistoryClick
+          ParentFont = False
+          TabOrder = 0
+        end
+        object HistoryLengthEdit: TSpinEdit
+          Left = 120
+          Height = 32
+          Top = 13
+          Width = 88
+          Alignment = taRightJustify
+          Font.Color = clBlack
+          Font.Height = -20
+          Font.Name = 'Tahoma'
+          Font.Pitch = fpVariable
+          Font.Quality = fqDraft
+          Increment = 10
+          MaxValue = 1000
+          MinValue = 10
+          ParentFont = False
+          TabOrder = 1
+          Value = 50
+        end
+        object Label1: TLabel
+          Left = 16
+          Height = 29
+          Top = 16
+          Width = 80
+          Caption = 'Length:'
+          ParentColor = False
+        end
+      end
+    end
+  end
+  object Splitter1: TSplitter
+    Left = 496
+    Height = 563
+    Top = 47
+    Width = 8
   end
   object MainMenu: TMainMenu
     Images = Images
