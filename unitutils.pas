@@ -169,11 +169,13 @@ end;
 
 function CompareDatesDesc(List: TStringList; Index1, Index2: Integer): Integer;
 begin
+  {$ifdef CPU64}
    if TDateTime(List.Objects[Index1]) > TDateTime(List.Objects[Index2]) then
      Result := -1
    else if TDateTime(List.Objects[Index1]) < TDateTime(List.Objects[Index2]) then
      Result := 1
    else
+  {$endif}
      Result := 0;
 end;
 

@@ -1369,8 +1369,11 @@ begin
   if s.isEmpty then exit;
   link += s + '@' + CurrBible.name;
   if (HistoryBox.Count <> 0) and (link = HistoryBox.Items.Strings[0]) then exit;
-  HistoryBox.Items.AddObject(link,TObject(Now));
-
+  {$ifdef CPU64}
+  HistoryBox.Items.AddObject(link, TObject(Now)); // Error (32-bit OS): Illegal type conversion
+  {$else}
+  HistoryBox.Items.Add(link);
+  {$endif}
   sl := TStringList.Create;
   try
     sl.Assign(HistoryBox.Items);
@@ -1638,10 +1641,11 @@ begin
     IniFile.WriteString('Recent', 'File_' + RecentList.IndexOf(item).ToString, item);
 
   IniFile.WriteInteger('History', 'Count', HistoryBox.Count);
+  {$ifdef CPU64}
   for i:=0 to HistoryBox.Count-1 do
     IniFile.WriteString('History', 'Link_' + inttostr(i), HistoryBox.Items.Strings[i]
          +'@'+ DateTimeToStr(TDateTime(HistoryBox.Items.Objects[i])) );
-
+  {$endif}
     IniFile.WriteInteger('History', 'Length', HistoryLengthEdit.Value);
 
   IniFile.Free;
@@ -1683,6 +1687,7 @@ begin
   sl := TStringList.Create;
   sl.Delimiter:= '@';
   sl.StrictDelimiter:= True;
+  {$ifdef CPU64}
   for i := 0 to Max - 1 do
     begin
        sl.DelimitedText := IniFile.ReadString('History', 'Link_' + ToStr(i), '');
@@ -1691,7 +1696,8 @@ begin
        else if sl.Count > 1
                then HistoryBox.Items.add(sl[0]+'@'+sl[1]);
     end;
-   sl.Free;
+  {$endif}
+  sl.Free;
 
    HistoryLengthEdit.Value := IniFile.ReadInteger('History', 'Length', HistoryLengthEdit.Value);
 
