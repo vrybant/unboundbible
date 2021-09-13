@@ -15,7 +15,7 @@ object ShelfForm: TShelfForm
   ParentFont = True
   PopupMenu = PopupMenu
   Position = poScreenCenter
-  LCLVersion = '2.0.10.0'
+  LCLVersion = '2.0.12.0'
   object StandardToolBar: TToolBar
     Left = 0
     Height = 30
@@ -59,14 +59,22 @@ object ShelfForm: TShelfForm
     Top = 32
     Width = 606
     AutoFillColumns = True
-    ColCount = 2
+    ColCount = 3
     ColumnClickSorts = True
     Columns = <    
+      item
+        ButtonStyle = cbsCheckboxColumn
+        MaxSize = 30
+        SizePriority = 0
+        Title.Alignment = taCenter
+        Title.Caption = '⭐️'
+        Width = 30
+      end    
       item
         ButtonStyle = cbsNone
         Title.Alignment = taCenter
         Title.Caption = 'Title'
-        Width = 562
+        Width = 532
       end    
       item
         Alignment = taCenter
@@ -83,10 +91,14 @@ object ShelfForm: TShelfForm
     RowCount = 4
     ShowHint = True
     TabOrder = 0
+    OnCheckboxToggled = StringGridCheckboxToggled
     OnGetCellHint = StringGridGetCellHint
+    OnGetCheckboxState = StringGridGetCheckboxState
     OnSelection = StringGridSelection
+    OnSetCheckboxState = StringGridSetCheckboxState
     ColWidths = (
-      562
+      30
+      532
       40
     )
   end

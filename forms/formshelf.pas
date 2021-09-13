@@ -31,8 +31,14 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure StringGridCheckboxToggled(sender: TObject; aCol, aRow: Integer;
+      aState: TCheckboxState);
+    procedure StringGridGetCheckboxState(Sender: TObject; ACol, ARow: Integer;
+      var Value: TCheckboxState);
     procedure StringGridSelection(Sender: TObject; aCol, aRow: Integer);
     procedure StringGridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
+    procedure StringGridSetCheckboxState(Sender: TObject; ACol, ARow: Integer;
+      const Value: TCheckboxState);
     procedure ToolButtonDeleteClick(Sender: TObject);
     procedure ToolButtonDownloadClick(Sender: TObject);
     procedure ToolButtonFolderClick(Sender: TObject);
@@ -55,9 +61,10 @@ uses
 {$R *.lfm}
 
 const
-  clName = 0;
-  clLang = 1;
-  clsMax = 2;
+  clFavr = 0;
+  clName = 1;
+  clLang = 2;
+  clsMax = 3;
 
 procedure TShelfForm.Localize;
 begin
@@ -103,6 +110,26 @@ procedure TShelfForm.FormShow(Sender: TObject);
 begin
   LoadGrid;
   StringGridSelection(Self, StringGrid.Col, StringGrid.Row);
+end;
+
+procedure TShelfForm.StringGridCheckboxToggled(sender: TObject; aCol,
+  aRow: Integer; aState: TCheckboxState);
+begin
+  if (aRow > 0) and (aCol = 0) then
+    StringGrid.Cells[aCol, aRow] := iif(aState = cbChecked, '*', '');
+end;
+
+procedure TShelfForm.StringGridGetCheckboxState(Sender: TObject; aCol,
+  aRow: Integer; var Value: TCheckboxState);
+begin
+  if (aRow > 0) and (aCol = 0) then
+    Value := iif(StringGrid.Cells[aCol, aRow] = '*', cbChecked, cbUnchecked);
+end;
+
+procedure TShelfForm.StringGridSetCheckboxState(Sender: TObject; ACol,
+  ARow: Integer; const Value: TCheckboxState);
+begin
+  //
 end;
 
 procedure TShelfForm.LoadGrid;

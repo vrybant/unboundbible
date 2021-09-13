@@ -63,7 +63,7 @@ begin
   for Bible in Tools.Bibles do
     begin
       CheckListBox.Items.Add(Bible.Name);
-      CheckListBox.Checked[CheckListBox.Count-1] := Bible.Compare;
+      CheckListBox.Checked[CheckListBox.Count-1] := Bible.favorite;
     end;
 end;
 
@@ -72,7 +72,7 @@ var
   Bible : TBible;
 begin
   for Bible in Tools.Bibles do
-    Bible.Compare := CheckListBox.Checked[Tools.Bibles.IndexOf(Bible)];
+    Bible.favorite := CheckListBox.Checked[Tools.Bibles.IndexOf(Bible)];
 end;
 
 end.

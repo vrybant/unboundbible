@@ -46,6 +46,7 @@ type
     interlinear  : boolean;
     default_     : boolean;
     accented     : boolean;
+    favorite     : boolean;
   public
     constructor Create(FilePath: string; new: boolean = false);
     procedure CommitTransaction;
@@ -105,6 +106,7 @@ begin
   interlinear  := false;
   default_     := false;
   accented     := false;
+  favorite     := false;
   format       := unbound;
 
   ext := ExtractFileExt(FilePath);

@@ -140,7 +140,7 @@ begin
   Result := '';
 
   for Bible in Bibles do
-    if Bible.compare then
+    if Bible.favorite then
       begin
         s := ''.Join(' ', Bible.GetRange(CurrVerse));
         if s.isEmpty then Continue;
