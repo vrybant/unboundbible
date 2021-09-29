@@ -88,6 +88,7 @@ begin
   CheckBox.Checked:= False;
 
   LoadText;
+  ButtonCopy.SetFocus;
 end;
 
 procedure TCopyForm.LoadText;
