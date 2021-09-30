@@ -374,32 +374,25 @@ end;
 
 procedure TMainForm.HistoryBoxClick(Sender: TObject);
 var
+  List : TStringArray;
   Verse : TVerse;
-  bibleName , link: string;
-  tmpStringList : TStringList;
+  bibleName, link : string;
 begin
-  tmpStringList := TStringList.Create;
-  tmpStringList.Delimiter:='@';
-  tmpStringList.StrictDelimiter:= True;
-  tmpStringList.DelimitedText := HistoryBox.GetSelectedText;
-  if tmpStringList.Count < 2 then begin tmpStringList.Free; exit; end;
+  List := HistoryBox.GetSelectedText.Split('~');
+  if List.Count < 2 then Exit;
 
-  link := tmpStringList.Strings[0];
-  bibleName := tmpStringList.Strings[1];
-  MainForm.Caption:= tmpStringList.Strings[0] + '@' + tmpStringList.Strings[1] ;
+  link := List[0];
+  bibleName := List[1].Trim;
+  MainForm.Caption:= link + '~' + bibleName;
 
   Tools.SetCurrBible(bibleName) ;
 
-  tmpStringList.Free;
-
   Verse := CurrBible.SrtToVerse(link);
-      if not CurrBible.GoodLink(Verse) then Exit;
-      CurrVerse := Verse;
-      ShowCurrVerse(True);
-      SelectBible(bibleName);
-      UpdateStatus(CurrBible.Info);
-
-
+  if not CurrBible.GoodLink(Verse) then Exit;
+  CurrVerse := Verse;
+  ShowCurrVerse(True);
+  SelectBible(bibleName);
+  UpdateStatus(CurrBible.Info);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -1353,44 +1346,23 @@ begin
   if SearchForm.ShowAtPos(Pos) = mrOk then LoadSearch(Edit.Text);
 end;
 
-
 procedure TMainForm.AddToHistory(Sender:TObject);
 var
-  link : string;
-  Bible : TBible;
+  link : string = '';
   s : string;
-  sl :TStringList;
-  dt: TDateTime;
-  i: Integer;
+  i : integer;
 begin
-  if Sender = HistoryBox then exit;
-  link := '';
+  if Sender = HistoryBox then Exit;
   s := CurrBible.VerseToStr(CurrVerse, true);
-  if s.isEmpty then exit;
-  link += s + '@' + CurrBible.name;
-  if (HistoryBox.Count <> 0) and (link = HistoryBox.Items.Strings[0]) then exit;
-  {$ifdef CPU64}
-  HistoryBox.Items.AddObject(link, TObject(Now)); // Error (32-bit OS): Illegal type conversion
-  {$else}
-  HistoryBox.Items.Add(link);
-  {$endif}
-  sl := TStringList.Create;
-  try
-    sl.Assign(HistoryBox.Items);
-    sl.CustomSort(CompareDatesDesc);
-    HistoryBox.Items.Assign(sl);
-  finally
-    sl.Free;
-  end;
+  if s.isEmpty then Exit;
+  link += s + ' ~ ' + CurrBible.name;
+  if (HistoryBox.Count <> 0) and (link = HistoryBox.Items.Strings[0]) then Exit;
+  HistoryBox.Items.Insert(0,link);
 
   if HistoryBox.Count + 1 > HistoryLengthEdit.Value then
-    begin
-      for i:= 0 to HistoryBox.Count - HistoryLengthEdit.Value do
-          HistoryBox.Items.Delete(HistoryBox.Count - 1);
-    end;
-
+    for i:= 0 to HistoryBox.Count - HistoryLengthEdit.Value do
+        HistoryBox.Items.Delete(HistoryBox.Count - 1);
 end;
-
 
 procedure TMainForm.MakeBookList;
 var
@@ -1608,7 +1580,7 @@ procedure TMainForm.SaveConfig;
 var
   IniFile: TIniFile;
   item : string;
-  i: Integer;
+  i: integer;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
@@ -1640,23 +1612,19 @@ begin
   for item in RecentList do
     IniFile.WriteString('Recent', 'File_' + RecentList.IndexOf(item).ToString, item);
 
-  IniFile.WriteInteger('History', 'Count', HistoryBox.Count);
-  {$ifdef CPU64}
+  IniFile.WriteInteger('History',  'Count', HistoryBox.Count);
+  IniFile.WriteInteger('History', 'Length', HistoryLengthEdit.Value);
+
   for i:=0 to HistoryBox.Count-1 do
-    IniFile.WriteString('History', 'Link_' + inttostr(i), HistoryBox.Items.Strings[i]
-         +'@'+ DateTimeToStr(TDateTime(HistoryBox.Items.Objects[i])) );
-  {$endif}
-    IniFile.WriteInteger('History', 'Length', HistoryLengthEdit.Value);
+    IniFile.WriteString('History', 'Link_' + i.ToString, HistoryBox.Items.Strings[i]);
 
   IniFile.Free;
 end;
 
 procedure TMainForm.ReadConfig;
 var
-  IniFile: TIniFile;
-  i, max: integer;
-  ht: String;
-  sl: TStringList;
+  IniFile : TIniFile;
+  i, Count : integer;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
@@ -1677,30 +1645,15 @@ begin
   Options.cvEnd := IniFile.ReadBool('Options', 'End', False);
   Options.cvNewLine := IniFile.ReadBool('Options', 'NewLine', False);
   Options.cvCopyNoFormat := IniFile.ReadBool('Options', 'CopyNoFormat', False);
-  Max := IniFile.ReadInteger('Recent', 'Count', RecentList.Count);
 
-  for i := 0 to Max - 1 do
+  Count := IniFile.ReadInteger('Recent', 'Count', RecentList.Count);
+  for i := 0 to Count - 1 do
     RecentList.Add(IniFile.ReadString('Recent', 'File_' + ToStr(i), ''));
 
-  Max := IniFile.ReadInteger('History', 'Count', 0);
-
-  sl := TStringList.Create;
-  sl.Delimiter:= '@';
-  sl.StrictDelimiter:= True;
-  {$ifdef CPU64}
-  for i := 0 to Max - 1 do
-    begin
-       sl.DelimitedText := IniFile.ReadString('History', 'Link_' + ToStr(i), '');
-       if sl.Count >2 then
-          HistoryBox.Items.AddObject(sl[0]+'@'+sl[1], TObject(StrToDateTime(sl[2])))
-       else if sl.Count > 1
-               then HistoryBox.Items.add(sl[0]+'@'+sl[1]);
-    end;
-  {$endif}
-  sl.Free;
-
-   HistoryLengthEdit.Value := IniFile.ReadInteger('History', 'Length', HistoryLengthEdit.Value);
-
+  Count := IniFile.ReadInteger('History', 'Count', 0);
+  for i := 0 to Count - 1 do
+    HistoryBox.Items.Add(IniFile.ReadString('History', 'Link_' + ToStr(i), ''));
+  HistoryLengthEdit.Value := IniFile.ReadInteger('History', 'Length', HistoryLengthEdit.Value);
 
   IniFile.Free;
 end;
