@@ -31,7 +31,7 @@ object ShelfForm: TShelfForm
     ParentColor = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 4
+    TabOrder = 3
     Wrapable = False
     object ToolButtonDownload: TToolButton
       Left = 4
@@ -53,55 +53,6 @@ object ShelfForm: TShelfForm
       OnClick = ToolButtonDeleteClick
     end
   end
-  object StringGrid: TStringGrid
-    Left = 7
-    Height = 287
-    Top = 32
-    Width = 606
-    AutoFillColumns = True
-    ColCount = 3
-    ColumnClickSorts = True
-    Columns = <    
-      item
-        ButtonStyle = cbsCheckboxColumn
-        MaxSize = 30
-        SizePriority = 0
-        Title.Alignment = taCenter
-        Title.Caption = '⭐️'
-        Width = 30
-      end    
-      item
-        ButtonStyle = cbsNone
-        Title.Alignment = taCenter
-        Title.Caption = 'Title'
-        Width = 532
-      end    
-      item
-        Alignment = taCenter
-        ButtonStyle = cbsNone
-        SizePriority = 0
-        Title.Alignment = taCenter
-        Title.Caption = '🌎'
-        Width = 40
-      end>
-    DefaultDrawing = False
-    FixedCols = 0
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goTabs, goRowSelect, goSmoothScroll, goCellHints]
-    ParentShowHint = False
-    RowCount = 4
-    ShowHint = True
-    TabOrder = 0
-    OnCheckboxToggled = StringGridCheckboxToggled
-    OnGetCellHint = StringGridGetCellHint
-    OnGetCheckboxState = StringGridGetCheckboxState
-    OnSelection = StringGridSelection
-    OnSetCheckboxState = StringGridSetCheckboxState
-    ColWidths = (
-      30
-      532
-      40
-    )
-  end
   object ButtonClose: TButton
     Left = 517
     Height = 25
@@ -109,7 +60,7 @@ object ShelfForm: TShelfForm
     Width = 88
     Caption = 'Close'
     ModalResult = 1
-    TabOrder = 1
+    TabOrder = 0
   end
   object Panel: TPanel
     Left = 8
@@ -120,7 +71,7 @@ object ShelfForm: TShelfForm
     BevelOuter = bvLowered
     ClientHeight = 115
     ClientWidth = 496
-    TabOrder = 2
+    TabOrder = 1
     object LabelFile: TLabel
       Left = 13
       Height = 15
@@ -147,7 +98,7 @@ object ShelfForm: TShelfForm
     ParentColor = True
     ReadOnly = True
     ScrollBars = ssVertical
-    TabOrder = 3
+    TabOrder = 2
   end
   object LabelTest: TLabel
     Left = 7
@@ -157,6 +108,76 @@ object ShelfForm: TShelfForm
     Caption = 'LabelTest'
     ParentColor = False
     Visible = False
+  end
+  object PageControl: TPageControl
+    Left = 7
+    Height = 280
+    Top = 40
+    Width = 601
+    ActivePage = TabSheetBibles
+    TabIndex = 0
+    TabOrder = 4
+    object TabSheetBibles: TTabSheet
+      Caption = 'Bibles'
+      ClientHeight = 252
+      ClientWidth = 593
+      object StringGrid: TStringGrid
+        Left = 0
+        Height = 252
+        Top = 0
+        Width = 593
+        Align = alClient
+        AutoFillColumns = True
+        ColCount = 3
+        ColumnClickSorts = True
+        Columns = <        
+          item
+            ButtonStyle = cbsCheckboxColumn
+            MaxSize = 30
+            SizePriority = 0
+            Title.Alignment = taCenter
+            Title.Caption = '⭐️'
+            Width = 30
+          end        
+          item
+            ButtonStyle = cbsNone
+            Title.Alignment = taCenter
+            Title.Caption = 'Title'
+            Width = 519
+          end        
+          item
+            Alignment = taCenter
+            ButtonStyle = cbsNone
+            SizePriority = 0
+            Title.Alignment = taCenter
+            Title.Caption = '🌎'
+            Width = 40
+          end>
+        DefaultDrawing = False
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goTabs, goRowSelect, goSmoothScroll, goCellHints]
+        ParentShowHint = False
+        RowCount = 4
+        ShowHint = True
+        TabOrder = 0
+        OnCheckboxToggled = StringGridCheckboxToggled
+        OnGetCellHint = StringGridGetCellHint
+        OnGetCheckboxState = StringGridGetCheckboxState
+        OnSelection = StringGridSelection
+        OnSetCheckboxState = StringGridSetCheckboxState
+        ColWidths = (
+          30
+          519
+          40
+        )
+      end
+    end
+    object TabSheetCommentaries: TTabSheet
+      Caption = 'Commentaries'
+    end
+    object TabSheetDictionaries: TTabSheet
+      Caption = 'Dictionaries'
+    end
   end
   object PopupMenu: TPopupMenu
     Left = 296

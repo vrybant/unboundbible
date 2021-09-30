@@ -13,7 +13,7 @@ object NotifyForm: TNotifyForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
-  LCLVersion = '2.0.0.4'
+  LCLVersion = '2.0.12.0'
   object Title: TLabel
     Left = 5
     Height = 15
@@ -31,6 +31,7 @@ object NotifyForm: TNotifyForm
     Top = 32
     Width = 285
     Font.Height = -12
+    Font.Name = 'Tahoma'
     HideSelection = False
     Lines.Strings = (
       'Memo'
@@ -41,12 +42,13 @@ object NotifyForm: TNotifyForm
     ReadOnly = True
     ScrollBars = ssAutoVertical
     TabOrder = 0
+    TabStop = False
     ZoomFactor = 1
   end
   object PopupMenu: TPopupMenu
     OnPopup = PopupMenuPopup
-    left = 144
-    top = 16
+    Left = 144
+    Top = 16
     object miCopy: TMenuItem
       Caption = 'Copy'
       OnClick = miCopyClick

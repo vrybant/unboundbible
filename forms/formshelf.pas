@@ -16,11 +16,15 @@ type
     LabelFilename: TLabel;
     LabelTest: TLabel;
     Memo: TMemo;
+    PageControl: TPageControl;
     Panel: TPanel;
     StandardToolBar: TToolBar;
     PopupMenu: TPopupMenu;
     MenuItemDelete: TMenuItem;
     StringGrid: TStringGrid;
+    TabSheetBibles: TTabSheet;
+    TabSheetCommentaries: TTabSheet;
+    TabSheetDictionaries: TTabSheet;
     ToolButtonDownload: TToolButton;
     ToolButtonFolder: TToolButton;
     ToolButtonDelete: TToolButton;
@@ -31,14 +35,11 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure StringGridCheckboxToggled(sender: TObject; aCol, aRow: Integer;
-      aState: TCheckboxState);
-    procedure StringGridGetCheckboxState(Sender: TObject; ACol, ARow: Integer;
-      var Value: TCheckboxState);
+    procedure StringGridCheckboxToggled(sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
+    procedure StringGridGetCheckboxState(Sender: TObject; ACol, ARow: Integer; var Value: TCheckboxState);
     procedure StringGridSelection(Sender: TObject; aCol, aRow: Integer);
     procedure StringGridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
-    procedure StringGridSetCheckboxState(Sender: TObject; ACol, ARow: Integer;
-      const Value: TCheckboxState);
+    procedure StringGridSetCheckboxState(Sender: TObject; ACol, ARow: Integer; const Value: TCheckboxState);
     procedure ToolButtonDeleteClick(Sender: TObject);
     procedure ToolButtonDownloadClick(Sender: TObject);
     procedure ToolButtonFolderClick(Sender: TObject);
@@ -143,6 +144,7 @@ var
     if Module = nil then Exit;
     SetLength(List,clsMax);
 
+    List[clFavr] := iif(Module.favorite,'*','');
     List[clName] := ' ' + Module.Name;
     List[clLang] := Module.language;
 

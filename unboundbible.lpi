@@ -139,7 +139,9 @@
       <Unit15>
         <Filename Value="forms\formnotify.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="NotifyForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormNotify"/>
       </Unit15>
       <Unit16>
