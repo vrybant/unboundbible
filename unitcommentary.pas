@@ -3,7 +3,7 @@ unit UnitCommentary;
 interface
 
 uses
-  Classes, Fgl, SysUtils, UnitModule, UnitBible, UnitUtils, UnitLib;
+  Classes, Fgl, SysUtils, IniFiles, UnitModule, UnitBible, UnitUtils, UnitLib;
 
 type
   TCommentaryAlias = record
@@ -22,6 +22,8 @@ type
   TCommentaries = class(TFPGList<TCommentary>)
   private
     procedure Load;
+    procedure SavePrivates;
+    procedure ReadPrivates;
   public
     constructor Create;
     function GetFootnote(module: string; Verse: TVerse; marker: string): string;
@@ -156,6 +158,7 @@ begin
   inherited;
   Load;
   Sort(Comparison);
+  ReadPrivates;
 end;
 
 procedure TCommentaries.Load;
@@ -208,10 +211,31 @@ begin
   Delete(IndexOf(Item));
 end;
 
+procedure TCommentaries.SavePrivates;
+var
+  IniFile : TIniFile;
+  Commentary : TCommentary;
+begin
+  IniFile := TIniFile.Create(ConfigFile);
+  for Commentary in Self do Commentary.SavePrivate(IniFile);
+  IniFile.Free;
+end;
+
+procedure TCommentaries.ReadPrivates;
+var
+  IniFile : TIniFile;
+  Commentary : TCommentary;
+begin
+  IniFile := TIniFile.Create(ConfigFile);
+  for Commentary in Self do Commentary.ReadPrivate(IniFile);
+  IniFile.Free;
+end;
+
 destructor TCommentaries.Destroy;
 var
   Commentary : TCommentary;
 begin
+  SavePrivates;
   for Commentary in Self do Commentary.Free;
   inherited Destroy;
 end;

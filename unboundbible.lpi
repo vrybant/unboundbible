@@ -51,7 +51,7 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="18">
+    <Units Count="17">
       <Unit0>
         <Filename Value="unboundbible.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -145,21 +145,13 @@
         <UnitName Value="FormNotify"/>
       </Unit15>
       <Unit16>
-        <Filename Value="forms\formcompare.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="CompareForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="FormCompare"/>
-      </Unit16>
-      <Unit17>
         <Filename Value="forms\formshelf.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ShelfForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormShelf"/>
-      </Unit17>
+      </Unit16>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

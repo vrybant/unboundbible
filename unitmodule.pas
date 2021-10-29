@@ -7,7 +7,7 @@ unit UnitModule;
 interface
 
 uses
-  Classes, Fgl, SysUtils, Dialogs, Graphics, ClipBrd, LazUtf8, DB, SQLdb,
+  Classes, Fgl, SysUtils, Dialogs, Graphics, ClipBrd, LazUtf8, IniFiles, DB, SQLdb,
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
   UnitLib;
 
@@ -49,6 +49,7 @@ type
     favorite     : boolean;
   public
     constructor Create(FilePath: string; new: boolean = false);
+    destructor Destroy; override;
     procedure CommitTransaction;
     procedure CreateTables;
     class function IsNewTestament(n: integer): boolean;
@@ -57,7 +58,8 @@ type
     function TableExists(table: string): boolean;
     procedure InsertDetails;
     procedure Delete;
-    destructor Destroy; override;
+    procedure SavePrivate(const IniFile: TIniFile);
+    procedure ReadPrivate(const IniFile: TIniFile);
   private
     class function unbound2mybible(id: integer): integer;
     class function mybible2unbound(id: integer): integer;
@@ -309,6 +311,16 @@ begin
   finally
     Query.Close;
   end;
+end;
+
+procedure TModule.SavePrivate(const IniFile : TIniFile);
+begin
+  IniFile.WriteBool(FileName, 'Favorite', favorite);
+end;
+
+procedure TModule.ReadPrivate(const IniFile : TIniFile);
+begin
+  favorite := IniFile.ReadBool(FileName, 'Favorite', True);
 end;
 
 end.

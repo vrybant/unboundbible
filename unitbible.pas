@@ -69,8 +69,6 @@ type
     function GetTitles: TStringArray;
     function  ChaptersCount(Verse: TVerse): integer;
     function  GetFootnote(Verse: TVerse; marker: string): string;
-    procedure SavePrivate(const IniFile: TIniFile);
-    procedure ReadPrivate(const IniFile: TIniFile);
     procedure InsertContent(Content : TContentArray);
     procedure Extract;
     destructor Destroy; override;
@@ -604,16 +602,6 @@ begin
   Result := '';
   Range := GetRange(Verse, false);
   if not Range.IsEmpty then Result := ExtractFootnotes(Range[0], marker);
-end;
-
-procedure TBible.SavePrivate(const IniFile : TIniFile);
-begin
-  IniFile.WriteBool(FileName, 'Favorite', favorite);
-end;
-
-procedure TBible.ReadPrivate(const IniFile : TIniFile);
-begin
-  favorite := IniFile.ReadBool(FileName, 'Favorite', True);
 end;
 
 procedure TBible.InsertContent(Content : TContentArray);

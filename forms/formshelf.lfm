@@ -8,8 +8,8 @@ object ShelfForm: TShelfForm
   ClientHeight = 450
   ClientWidth = 620
   Color = clBtnFace
+  OnClose = FormClose
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   OnPaint = FormPaint
   OnShow = FormShow
   ParentFont = True
@@ -114,14 +114,14 @@ object ShelfForm: TShelfForm
     Height = 280
     Top = 40
     Width = 601
-    ActivePage = TabSheetBibles
+    ActivePage = BiblesSheet
     TabIndex = 0
     TabOrder = 4
-    object TabSheetBibles: TTabSheet
+    object BiblesSheet: TTabSheet
       Caption = 'Bibles'
       ClientHeight = 252
       ClientWidth = 593
-      object StringGrid: TStringGrid
+      object BiblesGrid: TStringGrid
         Left = 0
         Height = 252
         Top = 0
@@ -160,11 +160,10 @@ object ShelfForm: TShelfForm
         RowCount = 4
         ShowHint = True
         TabOrder = 0
-        OnCheckboxToggled = StringGridCheckboxToggled
-        OnGetCellHint = StringGridGetCellHint
-        OnGetCheckboxState = StringGridGetCheckboxState
-        OnSelection = StringGridSelection
-        OnSetCheckboxState = StringGridSetCheckboxState
+        OnCheckboxToggled = BiblesGridCheckboxToggled
+        OnGetCellHint = BiblesGridGetCellHint
+        OnGetCheckboxState = BiblesGridGetCheckboxState
+        OnSelection = GridSelection
         ColWidths = (
           30
           519
@@ -172,11 +171,111 @@ object ShelfForm: TShelfForm
         )
       end
     end
-    object TabSheetCommentaries: TTabSheet
+    object CommentariesSheet: TTabSheet
       Caption = 'Commentaries'
+      ClientHeight = 252
+      ClientWidth = 593
+      object CommentariesGrid: TStringGrid
+        Left = 0
+        Height = 252
+        Top = 0
+        Width = 593
+        Align = alClient
+        AutoFillColumns = True
+        ColCount = 3
+        ColumnClickSorts = True
+        Columns = <        
+          item
+            ButtonStyle = cbsCheckboxColumn
+            MaxSize = 30
+            SizePriority = 0
+            Title.Alignment = taCenter
+            Title.Caption = '⭐️'
+            Width = 30
+          end        
+          item
+            ButtonStyle = cbsNone
+            Title.Alignment = taCenter
+            Title.Caption = 'Title'
+            Width = 519
+          end        
+          item
+            Alignment = taCenter
+            ButtonStyle = cbsNone
+            SizePriority = 0
+            Title.Alignment = taCenter
+            Title.Caption = '🌎'
+            Width = 40
+          end>
+        DefaultDrawing = False
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goTabs, goRowSelect, goSmoothScroll, goCellHints]
+        ParentShowHint = False
+        RowCount = 4
+        ShowHint = True
+        TabOrder = 0
+        OnCheckboxToggled = CommentariesGridCheckboxToggled
+        OnGetCellHint = BiblesGridGetCellHint
+        OnGetCheckboxState = CommentariesGridGetCheckboxState
+        OnSelection = GridSelection
+        ColWidths = (
+          30
+          519
+          40
+        )
+      end
     end
-    object TabSheetDictionaries: TTabSheet
+    object DictionariesSheet: TTabSheet
       Caption = 'Dictionaries'
+      ClientHeight = 252
+      ClientWidth = 593
+      object DictionariesGrid: TStringGrid
+        Left = 0
+        Height = 252
+        Top = 0
+        Width = 593
+        Align = alClient
+        AutoFillColumns = True
+        ColCount = 3
+        ColumnClickSorts = True
+        Columns = <        
+          item
+            ButtonStyle = cbsCheckboxColumn
+            MaxSize = 30
+            SizePriority = 0
+            Title.Alignment = taCenter
+            Title.Caption = '⭐️'
+            Width = 30
+          end        
+          item
+            ButtonStyle = cbsNone
+            Title.Alignment = taCenter
+            Title.Caption = 'Title'
+            Width = 519
+          end        
+          item
+            Alignment = taCenter
+            ButtonStyle = cbsNone
+            SizePriority = 0
+            Title.Alignment = taCenter
+            Title.Caption = '🌎'
+            Width = 40
+          end>
+        DefaultDrawing = False
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goTabs, goRowSelect, goSmoothScroll, goCellHints]
+        ParentShowHint = False
+        RowCount = 4
+        ShowHint = True
+        TabOrder = 0
+        OnGetCheckboxState = DictionariesGridGetCheckboxState
+        OnSelection = GridSelection
+        ColWidths = (
+          30
+          519
+          40
+        )
+      end
     end
   end
   object PopupMenu: TPopupMenu

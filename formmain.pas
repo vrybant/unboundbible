@@ -5,8 +5,8 @@ interface
 uses
   Classes, Fgl, SysUtils, LazFileUtils, LazUTF8, Forms, Controls, Graphics,
   Dialogs, StdCtrls, Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType,
-  LCLProc, ActnList, ClipBrd, StdActns, Buttons, IniPropStorage, Spin,
-  PrintersDlgs, Types, RichMemo, UnboundMemo, UnitUtils, UnitLib;
+  LCLProc, ActnList, ClipBrd, StdActns, Buttons, Spin, PrintersDlgs,
+  RichMemo, UnboundMemo, UnitUtils, UnitLib;
 
 type
   TStatuses = TFPGMap<integer, string>;
@@ -161,9 +161,8 @@ type
     ToolButtonBullets: TToolButton;
     ToolButtonCenter: TToolButton;
     ToolButtonCommentary: TToolButton;
-    ToolButtonFavorites: TToolButton;
     ToolButtonCopy: TToolButton;
-    ToolButtonCopyright: TToolButton;
+    ToolButtonShelf: TToolButton;
     ToolButtonCut: TToolButton;
     ToolButtonDictionary: TToolButton;
     ToolButtonFont: TToolButton;
@@ -294,7 +293,7 @@ implementation
 
 uses
   {$ifdef windows} UmParseWin, {$endif}
-  FormAbout, FormNotify, FormSearch, FormCompare, UnitTools, UnitLocal, FormCopy, FormShelf,
+  FormAbout, FormNotify, FormSearch, UnitTools, UnitLocal, FormCopy, FormShelf,
   UnitModule, UnitBible, UnitCommentary, UnitDictionary;
 
 const
@@ -532,7 +531,7 @@ begin
   ToolButtonPaste.Hint := T('Paste');
   ToolButtonUndo.Hint := T('Undo');
 
-  ToolButtonFavorites.Hint := T('Compare');
+  ToolButtonShelf.Hint := T('Modules');
   ToolButtonReference.Hint := T('Cross-References');
   ToolButtonCommentary.Hint := T('Commentaries');
   ToolButtonDictionary.Hint := T('Dictionaries');
@@ -552,7 +551,7 @@ procedure TMainForm.LocalizeApplication;
 begin
   MainForm   .Localize;
   SearchForm .Localize;
-  CompareForm.Localize;
+  ShelfForm  .Localize;
   AboutBox   .Localize;
   CopyForm   .Localize;
   ShelfForm  .Localize;
@@ -684,8 +683,6 @@ end;
 
 procedure TMainForm.CmdCompare(Sender: TObject);
 begin
-  if Sender <> PageControl then
-    if CompareForm.ShowModal <> mrOk then Exit;
   LoadCompare;
 end;
 

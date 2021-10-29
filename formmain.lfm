@@ -45,14 +45,14 @@ object MainForm: TMainForm
     TabOrder = 2
     Wrapable = False
     object ToolSeparator2: TToolButton
-      Left = 266
+      Left = 238
       Height = 28
       Top = 0
       Caption = 'ToolSeparator2'
       Style = tbsDivider
     end
     object ToolButtonNew: TToolButton
-      Left = 154
+      Left = 126
       Top = 0
       HelpType = htKeyword
       Action = ActionFileNew
@@ -60,68 +60,61 @@ object MainForm: TMainForm
       ShowCaption = False
     end
     object ToolButtonOpen: TToolButton
-      Left = 182
+      Left = 154
       Top = 0
       Action = ActionFileOpen
       Enabled = False
     end
     object ToolButtonSave: TToolButton
-      Left = 210
+      Left = 182
       Top = 0
       Action = ActionFileSave
       Enabled = False
     end
     object ToolButtonPrint: TToolButton
-      Left = 238
+      Left = 210
       Top = 0
       Action = ActionFilePrint
       Enabled = False
       Visible = False
     end
     object ToolSeparator3: TToolButton
-      Left = 149
+      Left = 121
       Height = 28
       Top = 0
       ImageIndex = 3
       Style = tbsDivider
     end
     object ToolButtonCut: TToolButton
-      Left = 271
+      Left = 243
       Top = 0
       Action = ActionEditCut
     end
     object ToolButtonCopy: TToolButton
-      Left = 299
+      Left = 271
       Top = 0
       Action = ActionEditCopy
     end
     object ToolButtonPaste: TToolButton
-      Left = 355
+      Left = 327
       Top = 0
       Action = ActionEditPaste
     end
     object ToolButtonUndo: TToolButton
-      Left = 383
+      Left = 355
       Top = 0
       Action = ActionEditUndo
     end
     object ToolSeparator5: TToolButton
-      Left = 556
+      Left = 528
       Height = 28
       Top = 0
       Caption = 'ToolSeparator5'
       ImageIndex = 15
       Style = tbsDivider
     end
-    object ToolButtonFavorites: TToolButton
-      Left = 37
-      Top = 0
-      Action = ActionCompare
-      ParentShowHint = False
-      ShowHint = True
-    end
     object ToolSeparator6: TToolButton
-      Left = 645
+      Left = 617
       Height = 28
       Top = 0
       Caption = 'ToolSeparator6'
@@ -130,31 +123,31 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButtonBold: TToolButton
-      Left = 444
+      Left = 416
       Top = 0
       Action = ActionBold
       Style = tbsCheck
     end
     object ToolButtonItalic: TToolButton
-      Left = 472
+      Left = 444
       Top = 0
       Action = ActionItalic
       Style = tbsCheck
     end
     object ToolButtonUnderline: TToolButton
-      Left = 500
+      Left = 472
       Top = 0
       Action = ActionUnderline
       Style = tbsCheck
     end
     object ToolButtonLink: TToolButton
-      Left = 528
+      Left = 500
       Top = 0
       Action = ActionLink
       Style = tbsCheck
     end
     object ToolButtonLeft: TToolButton
-      Left = 561
+      Left = 533
       Top = 0
       Action = ActionLeft
       Grouped = True
@@ -162,7 +155,7 @@ object MainForm: TMainForm
     end
     object ToolButtonCenter: TToolButton
       Tag = 2
-      Left = 589
+      Left = 561
       Top = 0
       Action = ActionCenter
       Grouped = True
@@ -170,54 +163,53 @@ object MainForm: TMainForm
     end
     object ToolButtonRight: TToolButton
       Tag = 1
-      Left = 617
+      Left = 589
       Top = 0
       Action = ActionRight
       Grouped = True
       Style = tbsCheck
     end
     object ToolButtonBullets: TToolButton
-      Left = 650
+      Left = 622
       Top = 0
       Action = ActionBullets
       Style = tbsCheck
     end
     object ToolButtonFont: TToolButton
-      Left = 416
+      Left = 388
       Top = 0
       Action = ActionFont
     end
     object ToolButtonVerses: TToolButton
-      Left = 327
+      Left = 299
       Top = 0
       Action = ActionCopyVerses
       ParentShowHint = False
       ShowHint = True
     end
     object ToolSeparator4: TToolButton
-      Left = 411
+      Left = 383
       Height = 28
       Top = 0
       Style = tbsDivider
     end
     object ToolButtonCommentary: TToolButton
-      Left = 93
+      Left = 65
       Top = 0
       Action = ActionCommentaries
     end
-    object ToolButtonCopyright: TToolButton
+    object ToolButtonShelf: TToolButton
       Left = 4
       Top = 0
       Action = ActionModules
-      Visible = False
     end
     object ToolButtonDictionary: TToolButton
-      Left = 121
+      Left = 93
       Top = 0
       Action = ActionDictionaries
     end
     object ToolPanel: TPanel
-      Left = 678
+      Left = 650
       Height = 28
       Top = 0
       Width = 230
@@ -233,7 +225,7 @@ object MainForm: TMainForm
       TabOrder = 0
     end
     object ToolButtonSearch: TToolButton
-      Left = 908
+      Left = 880
       Hint = 'Search'
       Top = 0
       Caption = 'Search...'
@@ -241,7 +233,7 @@ object MainForm: TMainForm
       OnClick = ToolButtonSearchClick
     end
     object ToolButtonReference: TToolButton
-      Left = 65
+      Left = 37
       Hint = 'Сross References'
       Top = 0
       Action = ActionReference
@@ -638,6 +630,7 @@ object MainForm: TMainForm
       Font.Quality = fqDraft
       ParentFont = False
       TabOrder = 2
+      Visible = False
       object HistoryBox: TListBox
         Left = 1
         Height = 296
@@ -2689,6 +2682,7 @@ object MainForm: TMainForm
     object ActionModules: TAction
       Category = 'Tools'
       Caption = 'ActionModules'
+      ImageIndex = 11
       OnExecute = cmdModules
     end
   end
