@@ -33,8 +33,7 @@ type
     ButtonClose: TButton;
     procedure ButtonDownloadsClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
-    procedure DictionariesGridGetCheckboxState(Sender: TObject; ACol,
-      ARow: Integer; var Value: TCheckboxState);
+    procedure DictionariesGridGetCheckboxState(Sender: TObject; ACol, ARow: Integer; var Value: TCheckboxState);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -174,7 +173,6 @@ var
   Module: TModule;
 begin
   if aRow < 1 then Exit;
-  if Tools.Bibles.Count < 1 then Exit; // ?
 
   if Sender = BiblesGrid       then Module := Tools.Bibles[aRow-1];
   if Sender = CommentariesGrid then Module := Tools.Commentaries[aRow-1];
