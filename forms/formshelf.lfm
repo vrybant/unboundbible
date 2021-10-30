@@ -160,9 +160,9 @@ object ShelfForm: TShelfForm
         RowCount = 4
         ShowHint = True
         TabOrder = 0
-        OnCheckboxToggled = BiblesGridCheckboxToggled
+        OnCheckboxToggled = GridCheckboxToggled
         OnGetCellHint = BiblesGridGetCellHint
-        OnGetCheckboxState = BiblesGridGetCheckboxState
+        OnGetCheckboxState = GridGetCheckboxState
         OnSelection = GridSelection
         ColWidths = (
           30
@@ -214,9 +214,9 @@ object ShelfForm: TShelfForm
         RowCount = 4
         ShowHint = True
         TabOrder = 0
-        OnCheckboxToggled = CommentariesGridCheckboxToggled
+        OnCheckboxToggled = GridCheckboxToggled
         OnGetCellHint = BiblesGridGetCellHint
-        OnGetCheckboxState = CommentariesGridGetCheckboxState
+        OnGetCheckboxState = GridGetCheckboxState
         OnSelection = GridSelection
         ColWidths = (
           30

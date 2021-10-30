@@ -33,18 +33,14 @@ type
     ButtonClose: TButton;
     procedure ButtonDownloadsClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
-    procedure CommentariesGridCheckboxToggled(sender: TObject; aCol,
-      aRow: Integer; aState: TCheckboxState);
-    procedure CommentariesGridGetCheckboxState(Sender: TObject; ACol,
-      ARow: Integer; var Value: TCheckboxState);
     procedure DictionariesGridGetCheckboxState(Sender: TObject; ACol,
       ARow: Integer; var Value: TCheckboxState);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure BiblesGridCheckboxToggled(sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
-    procedure BiblesGridGetCheckboxState(Sender: TObject; ACol, ARow: Integer; var Value: TCheckboxState);
+    procedure GridCheckboxToggled(sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
+    procedure GridGetCheckboxState(Sender: TObject; ACol, ARow: Integer; var Value: TCheckboxState);
     procedure GridSelection(Sender: TObject; aCol, aRow: Integer);
     procedure BiblesGridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
     procedure ToolButtonDeleteClick(Sender: TObject);
@@ -110,25 +106,17 @@ end;
 procedure TShelfForm.FormShow(Sender: TObject);
 begin
   LoadGrids;
-  GridSelection(Self, BiblesGrid.Col, BiblesGrid.Row);
+  GridSelection(BiblesGrid, 1, 1);
 end;
 
 //-------------------------------------------------------------------------------------------------
 //                                     CheckboxStates
 //-------------------------------------------------------------------------------------------------
 
-procedure TShelfForm.BiblesGridGetCheckboxState(Sender: TObject; aCol,
-  aRow: Integer; var Value: TCheckboxState);
+procedure TShelfForm.GridGetCheckboxState(Sender: TObject; aCol, aRow: Integer; var Value: TCheckboxState);
 begin
   if (aRow > 0) and (aCol = 0) then
-    Value := iif(BiblesGrid.Cells[aCol, aRow] = '*', cbChecked, cbUnchecked);
-end;
-
-procedure TShelfForm.CommentariesGridGetCheckboxState(Sender: TObject; ACol,
-  ARow: Integer; var Value: TCheckboxState);
-begin
-  if (aRow > 0) and (aCol = 0) then
-    Value := iif(CommentariesGrid.Cells[aCol, aRow] = '*', cbChecked, cbUnchecked);
+    Value := iif((Sender as TStringGrid).Cells[aCol, aRow] = '*', cbChecked, cbUnchecked);
 end;
 
 procedure TShelfForm.DictionariesGridGetCheckboxState(Sender: TObject; ACol,
@@ -141,23 +129,13 @@ end;
 //                                       Actions
 //-------------------------------------------------------------------------------------------------
 
-procedure TShelfForm.BiblesGridCheckboxToggled(Sender: TObject; aCol,
-  aRow: Integer; aState: TCheckboxState);
+procedure TShelfForm.GridCheckboxToggled(Sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
 begin
   if (aRow > 0) and (aCol = 0) then
     begin
-      BiblesGrid.Cells[aCol, aRow]  := iif(aState = cbChecked, '*', '');
-      Tools.Bibles[aRow-1].favorite := iif(aState = cbChecked, true, false);
-    end;
-end;
-
-procedure TShelfForm.CommentariesGridCheckboxToggled(sender: TObject; aCol,
-  aRow: Integer; aState: TCheckboxState);
-begin
-  if (aRow > 0) and (aCol = 0) then
-    begin
-      CommentariesGrid.Cells[aCol, aRow]  := iif(aState = cbChecked, '*', '');
-      Tools.Commentaries[aRow-1].favorite := iif(aState = cbChecked, true, false);
+      (Sender as TStringGrid).Cells[aCol, aRow] := iif(aState = cbChecked, '*', '');
+      if Sender = BiblesGrid then Tools.Bibles[aRow-1].favorite := aState = cbChecked;
+      if Sender = CommentariesGrid then Tools.Commentaries[aRow-1].favorite := aState = cbChecked;
     end;
 end;
 
@@ -192,17 +170,23 @@ begin
 end;
 
 procedure TShelfForm.GridSelection(Sender: TObject; aCol, aRow: Integer);
+var
+  Module: TModule;
 begin
-  if Sender <> BiblesGrid then Exit;
-  if Tools.Bibles.Count <= 1 then Exit; // ?
+  if aRow < 1 then Exit;
+  if Tools.Bibles.Count < 1 then Exit; // ?
+
+  if Sender = BiblesGrid       then Module := Tools.Bibles[aRow-1];
+  if Sender = CommentariesGrid then Module := Tools.Commentaries[aRow-1];
+  if Sender = DictionariesGrid then Module := Tools.Dictionaries[aRow-1];
 
   ToolButtonDelete.Enabled := CurrBible.name <> (Sender as TStringGrid).Cells[clName, aRow].TrimLeft;
-  LabelFilename.Caption := Tools.Bibles[aRow-1].fileName;
+  LabelFilename.Caption := Module.fileName;
   LabelFile.Visible := LabelFilename.Caption <> '';
   Memo.Clear;
   Memo.ScrollBars := ssAutoVertical;
-  if Length(Tools.Bibles[aRow-1].info) < 400 then Memo.ScrollBars := ssNone;
-  Memo.Lines.Add(Tools.Bibles[aRow-1].info);
+  if Length(Module.info) < 400 then Memo.ScrollBars := ssNone;
+  Memo.Lines.Add(Module.info);
   Memo.SelStart := 1;
 end;
 
