@@ -110,7 +110,7 @@ object ShelfForm: TShelfForm
     Visible = False
   end
   object PageControl: TPageControl
-    Left = 7
+    Left = 4
     Height = 280
     Top = 40
     Width = 601
@@ -161,7 +161,7 @@ object ShelfForm: TShelfForm
         ShowHint = True
         TabOrder = 0
         OnCheckboxToggled = GridCheckboxToggled
-        OnGetCellHint = BiblesGridGetCellHint
+        OnGetCellHint = GridGetCellHint
         OnGetCheckboxState = GridGetCheckboxState
         OnSelection = GridSelection
         ColWidths = (
@@ -215,7 +215,7 @@ object ShelfForm: TShelfForm
         ShowHint = True
         TabOrder = 0
         OnCheckboxToggled = GridCheckboxToggled
-        OnGetCellHint = BiblesGridGetCellHint
+        OnGetCellHint = GridGetCellHint
         OnGetCheckboxState = GridGetCheckboxState
         OnSelection = GridSelection
         ColWidths = (
@@ -245,13 +245,14 @@ object ShelfForm: TShelfForm
             SizePriority = 0
             Title.Alignment = taCenter
             Title.Caption = '⭐️'
-            Width = 30
+            Width = 0
+            Visible = False
           end        
           item
             ButtonStyle = cbsNone
             Title.Alignment = taCenter
             Title.Caption = 'Title'
-            Width = 519
+            Width = 549
           end        
           item
             Alignment = taCenter
@@ -268,11 +269,11 @@ object ShelfForm: TShelfForm
         RowCount = 4
         ShowHint = True
         TabOrder = 0
-        OnGetCheckboxState = DictionariesGridGetCheckboxState
+        OnGetCellHint = GridGetCellHint
         OnSelection = GridSelection
         ColWidths = (
-          30
-          519
+          0
+          549
           40
         )
       end

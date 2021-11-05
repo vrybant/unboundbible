@@ -33,7 +33,6 @@ type
     ButtonClose: TButton;
     procedure ButtonDownloadsClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
-    procedure DictionariesGridGetCheckboxState(Sender: TObject; ACol, ARow: Integer; var Value: TCheckboxState);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -41,7 +40,7 @@ type
     procedure GridCheckboxToggled(sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
     procedure GridGetCheckboxState(Sender: TObject; ACol, ARow: Integer; var Value: TCheckboxState);
     procedure GridSelection(Sender: TObject; aCol, aRow: Integer);
-    procedure BiblesGridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
+    procedure GridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
     procedure ToolButtonDeleteClick(Sender: TObject);
     procedure ToolButtonDownloadClick(Sender: TObject);
     procedure ToolButtonFolderClick(Sender: TObject);
@@ -118,12 +117,6 @@ begin
     Value := iif((Sender as TStringGrid).Cells[aCol, aRow] = '*', cbChecked, cbUnchecked);
 end;
 
-procedure TShelfForm.DictionariesGridGetCheckboxState(Sender: TObject; ACol,
-  ARow: Integer; var Value: TCheckboxState);
-begin
-  Value := cbUnchecked;
-end;
-
 //-------------------------------------------------------------------------------------------------
 //                                       Actions
 //-------------------------------------------------------------------------------------------------
@@ -188,16 +181,15 @@ begin
   Memo.SelStart := 1;
 end;
 
-procedure TShelfForm.BiblesGridGetCellHint(Sender: TObject; aCol,
-  aRow: Integer; var HintText: String);
+procedure TShelfForm.GridGetCellHint(Sender: TObject; aCol, aRow: Integer; var HintText: String);
 const
   delta = {$ifdef windows} 4 {$else} 6 {$endif};
 begin
   HintText := '';
   LabelTest.Visible := True;
-  LabelTest.Caption := BiblesGrid.Cells[aCol, aRow];
-  if LabelTest.Width > BiblesGrid.Columns[aCol].Width - delta then
-    HintText := BiblesGrid.Cells[aCol, aRow];
+  LabelTest.Caption := (Sender as TStringGrid).Cells[aCol, aRow];
+  if LabelTest.Width > (Sender as TStringGrid).Columns[aCol].Width - delta then
+    HintText := (Sender as TStringGrid).Cells[aCol, aRow];
   LabelTest.Visible := False;
 end;
 
