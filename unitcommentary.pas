@@ -6,13 +6,13 @@ uses
   Classes, Fgl, SysUtils, IniFiles, UnitModule, UnitBible, UnitUtils, UnitLib;
 
 type
-  TCommentaryAliases = record
+  TCommentaryAlias = record
     commentary, id, book, chapter, fromverse, toverse, data : string;
   end;
 
   TCommentary = class(TModule)
   private
-    z : TCommentaryAliases;
+    z : TCommentaryAlias;
   public
     constructor Create(filePath: string);
     function GetData(Verse: TVerse): TStringArray;
@@ -35,7 +35,7 @@ type
 implementation
 
 const
-  unboundAliases : TCommentaryAliases = (
+  unboundAlias : TCommentaryAlias = (
     commentary : 'commentary';
     id         : 'id';
     book       : 'book';
@@ -45,7 +45,7 @@ const
     data       : 'data';
     );
 
-  mybibleAliases : TCommentaryAliases = (
+  mybibleAlias : TCommentaryAlias = (
     commentary : 'commentaries';
     id         : 'id';
     book       : 'book_number';
@@ -64,8 +64,8 @@ const
 constructor TCommentary.Create(filePath: string);
 begin
   inherited Create(filePath);
-  z := unboundAliases;
-  if format = mybible then z := mybibleAliases;
+  z := unboundAlias;
+  if format = mybible then z := mybibleAlias;
   if connected and not TableExists(z.commentary) then connected := false;
 end;
 

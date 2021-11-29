@@ -30,7 +30,7 @@ type
     sorting : integer;
   end;
 
-  TBibleAliases = record
+  TBibleAlias = record
     bible, book, chapter, verse, text, books, number, name, abbr : string;
   end;
 
@@ -46,7 +46,7 @@ type
   TBible = class(TModule)
   private
     Books : TFPGList<TBook>;
-    z : TBibleAliases;
+    z : TBibleAlias;
     function RankContents(const Contents: TContentArray): TContentArray;
     function ExtractFootnotes(s: string; marker: string): string;
     procedure LoadUnboundDatabase;
@@ -94,7 +94,7 @@ implementation
 uses UnitSQLiteEx;
 
 const
-  unboundAliases : TBibleAliases = (
+  unboundAlias : TBibleAlias = (
     bible   : 'Bible';
     book    : 'Book';
     chapter : 'Chapter';
@@ -106,7 +106,7 @@ const
     abbr    : 'Abbreviation';
     );
 
-  mybibleAliases : TBibleAliases = (
+  mybibleAlias : TBibleAlias = (
     bible   : 'verses';
     book    : 'book_number';
     chapter : 'chapter';
@@ -160,7 +160,7 @@ constructor TBible.Create(FilePath: string; new: boolean = false);
 begin
   inherited Create(filePath, new);
   Books := TFPGList<TBook>.Create;
-  if format = mybible then z := mybibleAliases else z := unboundAliases;
+  if format = mybible then z := mybibleAlias else z := unboundAlias;
   if connected and not TableExists(z.bible) then connected := false;
 end;
 

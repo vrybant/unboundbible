@@ -6,13 +6,13 @@ uses
   Classes, Fgl, SysUtils, UnitModule, UnitBible, UnitUtils, UnitLib;
 
 type
-  TDictionaryAliases = record
+  TDictionaryAlias = record
     dictionary, word, data, id, book, chapter, fromverse, toverse : string;
   end;
 
   TDictionary = class(TModule)
   private
-    z : TDictionaryAliases;
+    z : TDictionaryAlias;
     function GetStrongData(number: string): string;
   public
     constructor Create(filePath: string);
@@ -34,7 +34,7 @@ type
 implementation
 
 const
-  unboundAliases : TDictionaryAliases = (
+  unboundAlias : TDictionaryAlias = (
     dictionary : 'Dictionary';
     word       : 'Word';
     data       : 'Data';
@@ -45,7 +45,7 @@ const
     toverse    : '';
     );
 
-  mybibleAliases : TDictionaryAliases = (
+  mybibleAlias : TDictionaryAlias = (
     dictionary : 'dictionary';
     word       : 'topic';
     data       : 'definition';
@@ -63,8 +63,8 @@ const
 constructor TDictionary.Create(filePath: string);
 begin
   inherited Create(filePath);
-  z := unboundAliases;
-  if format = mybible then z := mybibleAliases;
+  z := unboundAlias;
+  if format = mybible then z := mybibleAlias;
   if connected and not TableExists(z.dictionary) then connected := false;
 end;
 
