@@ -6,13 +6,13 @@ uses
   Classes, Fgl, SysUtils, UnitModule, UnitBible, UnitUtils, UnitLib;
 
 type
-  TReferenceAlias = record
+  TReferenceAliases = record
     xreferences, book, chapter, verse, xbook, xchapter, xfromverse, xtoverse, votes : string;
   end;
 
   TReference = class(TModule)
   private
-    z : TReferenceAlias;
+    z : TReferenceAliases;
     function GetData(Verse: TVerse): TVerseArray;
   public
     constructor Create(filePath: string);
@@ -32,7 +32,7 @@ type
 implementation
 
 const
-  unboundAlias : TReferenceAlias = (
+  unboundAliases : TReferenceAliases = (
       xreferences : 'xreferences';
       book        : 'book';
       chapter     : 'chapter';
@@ -44,7 +44,7 @@ const
       votes       : 'votes';
      );
 
-    mybibleAlias : TReferenceAlias = (
+    mybibleAliases : TReferenceAliases = (
       xreferences : 'cross_references';
       book        : 'book';
       chapter     : 'chapter';
@@ -64,8 +64,8 @@ const
 constructor TReference.Create(filePath: string);
 begin
   inherited Create(filePath);
-  z := unboundAlias;
-  if format = mybible then z := mybibleAlias;
+  z := unboundAliases;
+  if format = mybible then z := mybibleAliases;
   if connected and not TableExists(z.xreferences ) then connected := false;
 end;
 
