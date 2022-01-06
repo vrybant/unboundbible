@@ -84,7 +84,6 @@ type
     constructor Create;
     destructor Destroy; override;
     function IsEmpty: boolean;
-    function GetNames: TStringArray;
     function GetDefaultBible: string;
     procedure DeleteItem(Item: TBible);
   end;
@@ -698,14 +697,6 @@ end;
 function TBibles.IsEmpty: boolean;
 begin
   Result := Count = 0;
-end;
-
-function TBibles.GetNames: TStringArray;
-var
-  Bible : TBible;
-begin
-  Result := [];
-  for Bible in Self do Result.Add(Bible.Name);
 end;
 
 function TBibles.GetDefaultBible: string;

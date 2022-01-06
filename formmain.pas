@@ -953,7 +953,7 @@ var
   item : string;
 begin
   ComboBox.Items.Clear;
-  List := Tools.Bibles.GetNames;
+  List := Tools.Get_BilesNames;
 
   for item in List do
     begin

@@ -20,6 +20,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    function Get_BilesNames: TStringArray;
     function Get_Chapter: string;
     function Get_Search(st: string; out count: integer): string;
     function Get_Compare: string;
@@ -55,7 +56,7 @@ begin
   Dictionaries := TDictionaries.Create;
   References := TReferences.Create;
   //
-  FavoriteMode := not True;
+  FavoriteMode := True;
   //
   ReadConfig;
 end;
@@ -67,6 +68,18 @@ begin
   Dictionaries.Free;
   Commentaries.Free;
   Bibles.Free;
+end;
+
+function TTools.Get_BilesNames: TStringArray;
+var
+  Bible : TBible;
+begin
+  Result := [];
+  for Bible in Bibles do
+    begin
+      if FavoriteMode and not Bible.favorite then Continue;
+      Result.Add(Bible.Name);
+    end;
 end;
 
 function TTools.Get_Chapter: string;
