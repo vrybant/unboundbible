@@ -123,12 +123,18 @@ end;
 
 procedure TShelfForm.GridCheckboxToggled(Sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
 begin
-  if (aRow > 0) and (aCol = 0) then
+  if (aCol <> 0) or (aRow <= 0) then Exit;
+
+  if Sender = CommentariesGrid then
+    Tools.Commentaries[aRow-1].favorite := aState = cbChecked;
+
+  if Sender = BiblesGrid then
     begin
-      (Sender as TStringGrid).Cells[aCol, aRow] := iif(aState = cbChecked, '*', '');
-      if Sender = BiblesGrid then Tools.Bibles[aRow-1].favorite := aState = cbChecked;
-      if Sender = CommentariesGrid then Tools.Commentaries[aRow-1].favorite := aState = cbChecked;
+      if CurrBible = Tools.Bibles[aRow-1] then aState := cbChecked;
+      Tools.Bibles[aRow-1].favorite := aState = cbChecked
     end;
+
+  (Sender as TStringGrid).Cells[aCol, aRow] := iif(aState = cbChecked, '*', '');
 end;
 
 //-------------------------------------------------------------------------------------------------
