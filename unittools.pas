@@ -14,6 +14,7 @@ type
     Bibles : TBibles;
     Commentaries : TCommentaries;
     Dictionaries : TDictionaries;
+    FavoriteMode : boolean;
   private
     References : TReferences;
   public
@@ -53,6 +54,9 @@ begin
   Commentaries := TCommentaries.Create;
   Dictionaries := TDictionaries.Create;
   References := TReferences.Create;
+  //
+  FavoriteMode := not True;
+  //
   ReadConfig;
 end;
 
@@ -140,12 +144,12 @@ begin
   Result := '';
 
   for Bible in Bibles do
-    if Bible.favorite then
-      begin
-        s := ''.Join(' ', Bible.GetRange(CurrVerse));
-        if s.isEmpty then Continue;
-        Result += '<br><l>' + Bible.Name + '</l><br>' + s + '<br>';
-      end;
+    begin
+      if FavoriteMode and not Bible.favorite then Continue;
+      s := ''.Join(' ', Bible.GetRange(CurrVerse));
+      if s.isEmpty then Continue;
+      Result += '<br><l>' + Bible.Name + '</l><br>' + s + '<br>';
+    end;
 end;
 
 function TTools.Get_Reference(out info: string): string;
@@ -176,6 +180,7 @@ begin
   for Commentary in Commentaries do
     begin
       if Commentary.footnotes then Continue;
+      if FavoriteMode and not Commentary.favorite then Continue;
       Strings := Commentary.GetData(CurrVerse);
       if Strings.IsEmpty then Continue;
       Result += '<h>' + Commentary.Name + '</h><br><br>';
