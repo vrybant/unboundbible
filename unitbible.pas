@@ -632,7 +632,7 @@ var
   Module : TBible;
   path : string;
 begin
-  path := DataPath + Slash + 'output.unbound';
+  path := DataPath + Slash + '_output.unbound';
 
   if FileExists(path) then DeleteFile(path);
   if FileExists(path) then Exit;

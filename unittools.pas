@@ -33,6 +33,7 @@ type
     procedure SetCurrBible(Value: string);
     procedure Get_Modules(const Modules: TModules);
     procedure DeleteModule(const Module: TModule);
+    procedure ExportModule(const Module: TModule);
   private
     procedure SaveConfig;
     procedure ReadConfig;
@@ -312,6 +313,11 @@ begin
  if Module.ClassType = TCommentary then Commentaries.DeleteItem(Module as TCommentary );
  if Module.ClassType = TDictionary then Dictionaries.DeleteItem(Module as TDictionary );
  if Module.ClassType = TReference  then References  .DeleteItem(Module as TReference  );
+end;
+
+procedure TTools.ExportModule(const Module: TModule);
+begin
+ if Module.ClassType = TBible then output('Export ' + Module.fileName);
 end;
 
 procedure TTools.SaveConfig;

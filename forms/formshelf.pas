@@ -11,6 +11,7 @@ type
   { TShelfForm }
 
   TShelfForm = class(TForm)
+    ButtonExport: TButton;
     Images: TImageList;
     LabelFile: TLabel;
     LabelFilename: TLabel;
@@ -32,8 +33,8 @@ type
     ToolButtonDelete: TToolButton;
     ButtonClose: TButton;
     procedure ButtonDownloadsClick(Sender: TObject);
+    procedure ButtonExportClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -45,8 +46,10 @@ type
     procedure ToolButtonDownloadClick(Sender: TObject);
     procedure ToolButtonFolderClick(Sender: TObject);
   private
+    CurrModule : TModule;
     {$ifdef windows} MemoWidth : integer; {$endif}
     procedure LoadGrids;
+    procedure ShowDetails;
   public
     procedure Localize;
   end;
@@ -60,6 +63,11 @@ uses
   UnitTools, UnitUtils, UnitLocal, UnitBible, UnitCommentary, UnitDictionary, UnitReference;
 
 {$R *.lfm}
+
+const
+     apBible        = 0; // active page
+{%H-}apCommentaries = 1;
+{%H-}apDictionaries = 2;
 
 const
   clFavr = 0;
@@ -81,6 +89,7 @@ end;
 
 procedure TShelfForm.FormCreate(Sender: TObject);
 begin
+  CurrModule := nil;
   Application.HintPause := 1;
   LabelFilename.Caption := '';
   {$ifdef windows} MemoWidth := Memo.Width; {$endif}
@@ -167,24 +176,29 @@ begin
   for Module in Tools.Dictionaries do Insert(DictionariesGrid, Module);
 end;
 
-procedure TShelfForm.GridSelection(Sender: TObject; aCol, aRow: Integer);
-var
-  Module: TModule;
+procedure TShelfForm.ShowDetails;
 begin
-  if aRow < 1 then Exit;
-
-  if Sender = BiblesGrid       then Module := Tools.Bibles[aRow-1];
-  if Sender = CommentariesGrid then Module := Tools.Commentaries[aRow-1];
-  if Sender = DictionariesGrid then Module := Tools.Dictionaries[aRow-1];
-
-  ToolButtonDelete.Enabled := CurrBible.name <> (Sender as TStringGrid).Cells[clName, aRow].TrimLeft;
-  LabelFilename.Caption := Module.fileName;
+  LabelFilename.Caption := CurrModule.fileName;
   LabelFile.Visible := LabelFilename.Caption <> '';
   Memo.Clear;
   Memo.ScrollBars := ssAutoVertical;
-  if Length(Module.info) < 400 then Memo.ScrollBars := ssNone;
-  Memo.Lines.Add(Module.info);
+  if Length(CurrModule.info) < 400 then Memo.ScrollBars := ssNone;
+  Memo.Lines.Add(CurrModule.info);
   Memo.SelStart := 1;
+end;
+
+procedure TShelfForm.GridSelection(Sender: TObject; aCol, aRow: Integer);
+begin
+  if aRow < 1 then Exit;
+
+  if Sender = BiblesGrid       then CurrModule := Tools.Bibles[aRow-1];
+  if Sender = CommentariesGrid then CurrModule := Tools.Commentaries[aRow-1];
+  if Sender = DictionariesGrid then CurrModule := Tools.Dictionaries[aRow-1];
+
+  ShowDetails;
+
+  ToolButtonDelete.Enabled := CurrBible.name <> (Sender as TStringGrid).Cells[clName, aRow].TrimLeft;
+  ButtonExport.Enabled := ExtractFileExt(CurrModule.fileName) <> '.unbound';
 end;
 
 procedure TShelfForm.GridGetCellHint(Sender: TObject; aCol, aRow: Integer; var HintText: String);
@@ -230,14 +244,20 @@ begin
   OpenFolder(DataPath);
 end;
 
-procedure TShelfForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-  output('Close')
-end;
-
 procedure TShelfForm.ButtonDownloadsClick(Sender: TObject);
 begin
   OpenURL(DownloadsURL);
+end;
+
+procedure TShelfForm.ButtonExportClick(Sender: TObject);
+begin
+  if PageControl.ActivePageIndex = apBible then
+    begin
+      (CurrModule as TBible).Extract;
+      // Tools.ExportModule(CurrModule);
+      QuestionDlg(' ', 'Module ' + CurrModule.fileName + ' has been extracted.',
+        mtInformation, [mrOK, T('OK'), 'IsDefault'], 0);
+    end;
 end;
 
 end.

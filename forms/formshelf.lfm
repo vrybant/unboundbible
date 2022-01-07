@@ -1,14 +1,13 @@
 object ShelfForm: TShelfForm
-  Left = 508
+  Left = 576
   Height = 450
-  Top = 290
+  Top = 264
   Width = 620
   BorderStyle = bsDialog
   Caption = ' Modules'
   ClientHeight = 450
   ClientWidth = 620
   Color = clBtnFace
-  OnClose = FormClose
   OnCreate = FormCreate
   OnPaint = FormPaint
   OnShow = FormShow
@@ -197,7 +196,7 @@ object ShelfForm: TShelfForm
             ButtonStyle = cbsNone
             Title.Alignment = taCenter
             Title.Caption = 'Title'
-            Width = 519
+            Width = 502
           end        
           item
             Alignment = taCenter
@@ -220,7 +219,7 @@ object ShelfForm: TShelfForm
         OnSelection = GridSelection
         ColWidths = (
           30
-          519
+          502
           40
         )
       end
@@ -252,7 +251,7 @@ object ShelfForm: TShelfForm
             ButtonStyle = cbsNone
             Title.Alignment = taCenter
             Title.Caption = 'Title'
-            Width = 549
+            Width = 532
           end        
           item
             Alignment = taCenter
@@ -273,11 +272,20 @@ object ShelfForm: TShelfForm
         OnSelection = GridSelection
         ColWidths = (
           0
-          549
+          532
           40
         )
       end
     end
+  end
+  object ButtonExport: TButton
+    Left = 517
+    Height = 25
+    Top = 376
+    Width = 88
+    Caption = 'Export'
+    OnClick = ButtonExportClick
+    TabOrder = 5
   end
   object PopupMenu: TPopupMenu
     Left = 296
