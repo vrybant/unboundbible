@@ -51,7 +51,7 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="18">
       <Unit0>
         <Filename Value="unboundbible.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -115,43 +115,48 @@
         <UnitName Value="UnitLocal"/>
       </Unit11>
       <Unit12>
+        <Filename Value="unitconvert.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitConvert"/>
+      </Unit12>
+      <Unit13>
         <Filename Value="forms\formabout.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AboutBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormAbout"/>
-      </Unit12>
-      <Unit13>
+      </Unit13>
+      <Unit14>
         <Filename Value="forms\formcopy.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="CopyForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormCopy"/>
-      </Unit13>
-      <Unit14>
+      </Unit14>
+      <Unit15>
         <Filename Value="forms\formsearch.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <UnitName Value="FormSearch"/>
-      </Unit14>
-      <Unit15>
+      </Unit15>
+      <Unit16>
         <Filename Value="forms\formnotify.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="NotifyForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormNotify"/>
-      </Unit15>
-      <Unit16>
+      </Unit16>
+      <Unit17>
         <Filename Value="forms\formshelf.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ShelfForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormShelf"/>
-      </Unit16>
+      </Unit17>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

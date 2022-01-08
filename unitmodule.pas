@@ -51,7 +51,6 @@ type
     constructor Create(FilePath: string; new: boolean = false);
     destructor Destroy; override;
     procedure CommitTransaction;
-    procedure CreateTables;
     class function IsNewTestament(n: integer): boolean;
     function EncodeID(id: integer): integer;
     function DecodeID(id: integer): integer;
@@ -214,17 +213,6 @@ begin
   Connection.Free;
   inherited Destroy;
 end;
-
-procedure TModule.CreateTables;
-begin
-  try
-    Connection.ExecuteDirect('CREATE TABLE "Details" '+
-      '("Title" TEXT,"Abbreviation" TEXT,"Information" TEXT,"Language" TEXT);');
-    CommitTransaction;
-  except
-    //
-  end;
- end;
 
 procedure TModule.OpenDatabase;
 var
