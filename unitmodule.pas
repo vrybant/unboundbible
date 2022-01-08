@@ -55,7 +55,6 @@ type
     function EncodeID(id: integer): integer;
     function DecodeID(id: integer): integer;
     function TableExists(table: string): boolean;
-    procedure InsertDetails;
     procedure Delete;
     procedure SavePrivate(const IniFile: TIniFile);
     procedure ReadPrivate(const IniFile: TIniFile);
@@ -280,25 +279,6 @@ begin
       info := RemoveTags(info);
       accented := language = 'ru';
     end;
-end;
-
-procedure TModule.InsertDetails;
-begin
-  try
-    try
-      Query.SQL.Text := 'INSERT INTO Details VALUES (:t,:a,:i,:l);';
-      Query.ParamByName('t').AsString := name;
-      Query.ParamByName('a').AsString := abbreviation;
-      Query.ParamByName('i').AsString := info;
-      Query.ParamByName('l').AsString := language;
-      Query.ExecSQL;
-      CommitTransaction;
-    except
-      //
-    end;
-  finally
-    Query.Close;
-  end;
 end;
 
 procedure TModule.SavePrivate(const IniFile : TIniFile);
