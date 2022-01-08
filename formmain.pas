@@ -14,6 +14,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ActionFavorites: TAction;
     ClearHistory: TButton;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
@@ -156,6 +157,7 @@ type
     pmSeparator2: TMenuItem;
 
     StandardToolBar: TToolBar;
+    ToolButtonFavorites: TToolButton;
     ToolPanel: TPanel;
     ToolButtonBold: TToolButton;
     ToolButtonBullets: TToolButton;
@@ -187,6 +189,7 @@ type
     ToolSeparator5: TToolButton;
     ToolSeparator6: TToolButton;
 
+    procedure CmdFavoritesExecute(Sender: TObject);
     procedure ClearHistoryClick(Sender: TObject);
     procedure CmdReference(Sender: TObject);
     procedure CmdCommentaries(Sender: TObject);
@@ -752,6 +755,11 @@ procedure TMainForm.ClearHistoryClick(Sender: TObject);
 begin
   if QuestionDlg('Purge history','Sure to purge history?',mtWarning,[mrYes, mrCancel, 'IsDefault'],'')=mrYes then
     HistoryBox.Clear;
+end;
+
+procedure TMainForm.CmdFavoritesExecute(Sender: TObject);
+begin
+  Tools.FavoriteMode := not Tools.FavoriteMode;
 end;
 
 procedure TMainForm.CmdCommentaries(Sender: TObject);

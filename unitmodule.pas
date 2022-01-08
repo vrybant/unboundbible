@@ -218,8 +218,8 @@ end;
 procedure TModule.CreateTables;
 begin
   try
-    Connection.ExecuteDirect('CREATE TABLE "Details"'+
-        '("Title" TEXT,"Abbreviation" TEXT,"Information" TEXT,"Language" TEXT);');
+    Connection.ExecuteDirect('CREATE TABLE "Details" '+
+      '("Title" TEXT,"Abbreviation" TEXT,"Information" TEXT,"Language" TEXT);');
     CommitTransaction;
   except
     //
