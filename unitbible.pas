@@ -49,11 +49,14 @@ type
     z : TBibleAlias;
     function RankContents(const Contents: TContentArray): TContentArray;
     function ExtractFootnotes(s: string; marker: string): string;
+    function GetAll: TContentArray;
     procedure LoadUnboundDatabase;
     procedure LoadMyswordDatabase;
+    procedure CreateTables;
+    procedure InsertContent(Content : TContentArray);
+    procedure InsertBooks(Books: TFPGList<TBook>);
   public
     constructor Create(FilePath: string; new: boolean = false);
-    procedure CreateTables;
     procedure LoadDatabase;
     function FirstVerse: TVerse;
     function BookByNum(n: integer): TBook;
@@ -64,13 +67,11 @@ type
     function GetRange(Verse: TVerse; prepare: boolean=true): TStringArray;
     function GoodLink(Verse: TVerse): boolean;
     function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
-    function GetAll: TContentArray;
     procedure ShowTags;
     function GetTitles: TStringArray;
     function  ChaptersCount(Verse: TVerse): integer;
     function  GetFootnote(Verse: TVerse; marker: string): string;
-    procedure InsertContent(Content : TContentArray);
-    procedure Extract;
+    procedure Convert;
     destructor Destroy; override;
   end;
 
@@ -162,18 +163,6 @@ begin
   if format = mybible then z := mybibleAlias else z := unboundAlias;
   if connected and not TableExists(z.bible) then connected := false;
 end;
-
-procedure TBible.CreateTables;
-begin
-  inherited;
-  try
-    Connection.ExecuteDirect('CREATE TABLE "Bible"'+
-        '("Book" INT, "Chapter" INT, "Verse" INT, "Scripture" TEXT);');
-    CommitTransaction;
-  except
-    //
-  end;
- end;
 
 function BookComparison(const Item1: TBook; const Item2: TBook): integer;
 begin
@@ -603,6 +592,31 @@ begin
   if not Range.IsEmpty then Result := ExtractFootnotes(Range[0], marker);
 end;
 
+destructor TBible.Destroy;
+var
+  Book : TBook;
+begin
+  for Book in Books do Book.Free;
+  Books.Free;
+  inherited Destroy;
+end;
+
+//-------------------------------------------------------------------------------------------------
+//                                           Converter
+//-------------------------------------------------------------------------------------------------
+
+procedure TBible.CreateTables;
+begin
+  inherited;
+  try
+    Connection.ExecuteDirect('CREATE TABLE "Bible"'+
+        '("Book" INT, "Chapter" INT, "Verse" INT, "Scripture" TEXT);');
+    CommitTransaction;
+  except
+    //
+  end;
+ end;
+
 procedure TBible.InsertContent(Content : TContentArray);
 var
   line : TContent;
@@ -627,12 +641,37 @@ begin
   end;
 end;
 
-procedure TBible.Extract;
+procedure TBible.InsertBooks(Books: TFPGList<TBook>);
+var
+  Book : TBook;
+begin
+  try
+    try
+      for Book in Books do
+        begin
+          Query.SQL.Text := 'INSERT INTO Books VALUES (:n,:t,:a);';
+          Query.ParamByName('n').AsInteger := Book.number;
+          Query.ParamByName('t').AsString  := Book.title;
+          Query.ParamByName('a').AsString  := Book.abbr;
+          Query.ExecSQL;
+        end;
+      CommitTransaction;
+    except
+      //
+    end;
+  finally
+    Query.Close;
+  end;
+end;
+
+procedure TBible.Convert;
 var
   Module : TBible;
   path : string;
 begin
-  path := DataPath + Slash + '_output.unbound';
+  LoadDatabase;
+
+  path := DataPath + Slash + '_output.bbl.unbound';
 
   if FileExists(path) then DeleteFile(path);
   if FileExists(path) then Exit;
@@ -647,16 +686,9 @@ begin
 
   Module.InsertDetails;
   Module.InsertContent(GetAll);
-  Module.Free;
-end;
+  Module.InsertBooks(Books);
 
-destructor TBible.Destroy;
-var
-  Book : TBook;
-begin
-  for Book in Books do Book.Free;
-  Books.Free;
-  inherited Destroy;
+  Module.Free;
 end;
 
 //=================================================================================================
