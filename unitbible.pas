@@ -488,10 +488,13 @@ begin
           try Result[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
           try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
           try Result[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
-
           Result[i].verse.book := DecodeID(Result[i].verse.book);
-          nt := IsNewTestament(Result[i].verse.book);
-          Result[i].text := Coercion(Result[i].text, format, nt);
+
+          if format <> unbound then
+            begin
+              nt := IsNewTestament(Result[i].verse.book);
+              Result[i].text := ConvertTags(Result[i].text, format, nt);
+            end;
 
           Query.Next;
         end;
