@@ -32,6 +32,7 @@ type
     copyright    : string;
     info         : string;
     language     : string;
+    numbering    : string;
     fileType     : string;
     {-}
     RightToLeft  : boolean;
@@ -47,6 +48,8 @@ type
     default_     : boolean;
     accented     : boolean;
     favorite     : boolean;
+    {-}
+    modified     : TDate;
   public
     constructor Create(FilePath: string; new: boolean = false);
     destructor Destroy; override;
@@ -96,6 +99,7 @@ begin
   abbreviation := '';
   copyright    := '';
   language     := 'en';
+  numbering    := 'en';
   filetype     := '';
   connected    := false;
   loaded       := false;
@@ -253,17 +257,19 @@ begin
             try key   := Query.FieldByName('name' ).AsString; except end;
             try value := Query.FieldByName('value').AsString; except end;
 
-            if key = 'description'    then name        := value;
-            if key = 'detailed_info'  then info        := value;
-            if key = 'language'       then language    := value;
-            if key = 'strong_numbers' then strong      := ToBoolean(value);
-            if key = 'is_strong'      then strong      := ToBoolean(value);
-            if key = 'is_footnotes'   then footnotes   := ToBoolean(value);
-            if key = 'interlinear'    then interlinear := ToBoolean(value);
+            if key = 'description'       then name        := value;
+            if key = 'detailed_info'     then info        := value;
+            if key = 'language'          then language    := value;
+            if key = 'russian_numbering' then numbering   := value;
+            if key = 'strong_numbers'    then strong      := ToBoolean(value);
+            if key = 'is_strong'         then strong      := ToBoolean(value);
+            if key = 'is_footnotes'      then footnotes   := ToBoolean(value);
+            if key = 'interlinear'       then interlinear := ToBoolean(value);
 
             Query.Next;
           end;
 
+        if ToBoolean(numbering) then numbering := 'ru';
         connected := true;
       except
         //

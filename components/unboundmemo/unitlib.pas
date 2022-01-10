@@ -46,7 +46,7 @@ procedure CutStr(var s: string; StartSt, EndSt: string);
 procedure RemoveDoubleSpaces(var s: string);
 function RemoveTags(s: string): string;
 function RemoveLineBreaker(s: string): string;
-function iif(condition: boolean; trueResult, falseResult: variant): variant;
+function iif(const condition: boolean; trueResult, falseResult: variant): variant;
 
 // unicode
 
@@ -293,7 +293,7 @@ begin
   Result := s;
 end;
 
-function iif(condition: boolean; trueResult, falseResult: variant): variant;
+function iif(const condition: boolean; trueResult, falseResult: variant): variant;
 begin
   if condition then Result := trueResult else Result := falseResult;
 end;

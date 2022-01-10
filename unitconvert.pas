@@ -31,10 +31,13 @@ implementation
 //=================================================================================================
 
 procedure TModuleConverter.CreateTables;
+var
+  n : string = '';
 begin
+  if numbering = 'ru' then n := ',"Numbering" TEXT';
   try
     Connection.ExecuteDirect('CREATE TABLE "Details" '+
-      '("Title" TEXT,"Abbreviation" TEXT,"Information" TEXT,"Language" TEXT);');
+      '("Title" TEXT,"Abbreviation" TEXT,"Information" TEXT,"Language" TEXT' + n + ');');
     CommitTransaction;
   except
     //
@@ -42,14 +45,18 @@ begin
  end;
 
 procedure TModuleConverter.InsertDetails;
+var
+  n : string = '';
 begin
+  if numbering = 'ru' then n := ',:n';
   try
     try
-      Query.SQL.Text := 'INSERT INTO Details VALUES (:t,:a,:i,:l);';
+      Query.SQL.Text := 'INSERT INTO Details VALUES (:t,:a,:i,:l' + n + ');';
       Query.ParamByName('t').AsString := name;
       Query.ParamByName('a').AsString := abbreviation;
       Query.ParamByName('i').AsString := info;
       Query.ParamByName('l').AsString := language;
+      if n <> '' then Query.ParamByName('n').AsString := numbering;
       Query.ExecSQL;
       CommitTransaction;
     except
@@ -132,19 +139,20 @@ var
 begin
   LoadDatabase;
 
-  path := DataPath + Slash + '_output.bbl.unbound';
+  path := DataPath + Slash + '_' + filename + '.unbound';
 
   if FileExists(path) then DeleteFile(path);
   if FileExists(path) then Exit;
 
   Module := TBible.Create(path, true);
-  Module.CreateTables;
 
   Module.name := name;
   Module.abbreviation := abbreviation;
   Module.info := info;
   Module.language := language;
+  Module.numbering := numbering;
 
+  Module.CreateTables;
   Module.InsertDetails;
   Module.InsertBooks(Books);
   Module.InsertContent(GetAll);
