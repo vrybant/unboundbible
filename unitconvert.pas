@@ -10,6 +10,7 @@ uses
 type
   TModuleConverter = type Helper for TModule
   private
+    procedure AssignTo(Module: TModule);
     procedure CreateTables;
     procedure InsertDetails;
   end;
@@ -29,6 +30,15 @@ implementation
 //=================================================================================================
 //                                       TModuleConverter
 //=================================================================================================
+
+procedure TModuleConverter.AssignTo(Module: TModule);
+begin
+  Module.name := name;
+  Module.abbreviation := abbreviation;
+  Module.info := info;
+  Module.language := language;
+  Module.numbering := numbering;
+end;
 
 procedure TModuleConverter.CreateTables;
 var
@@ -145,12 +155,7 @@ begin
   if FileExists(path) then Exit;
 
   Module := TBible.Create(path, true);
-
-  Module.name := name;
-  Module.abbreviation := abbreviation;
-  Module.info := info;
-  Module.language := language;
-  Module.numbering := numbering;
+  AssignTo(Module);
 
   Module.CreateTables;
   Module.InsertDetails;
