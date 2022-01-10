@@ -34,6 +34,7 @@ type
     language     : string;
     numbering    : string;
     fileType     : string;
+    modified     : string;
     {-}
     RightToLeft  : boolean;
     fontName     : TFontName;
@@ -48,8 +49,6 @@ type
     default_     : boolean;
     accented     : boolean;
     favorite     : boolean;
-    {-}
-    modified     : TDate;
   public
     constructor Create(FilePath: string; new: boolean = false);
     destructor Destroy; override;
@@ -101,6 +100,7 @@ begin
   language     := 'en';
   numbering    := 'en';
   filetype     := '';
+  modified     := '';
   connected    := false;
   loaded       := false;
   RightToLeft  := false;

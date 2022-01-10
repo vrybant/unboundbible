@@ -38,6 +38,7 @@ begin
   Module.info := info;
   Module.language := language;
   Module.numbering := numbering;
+  Module.modified := modified;
 end;
 
 procedure TModuleConverter.CreateTables;
@@ -46,8 +47,9 @@ var
 begin
   if numbering = 'ru' then n := ',"Numbering" TEXT';
   try
-    Connection.ExecuteDirect('CREATE TABLE "Details" '+
-      '("Title" TEXT,"Abbreviation" TEXT,"Information" TEXT,"Language" TEXT' + n + ');');
+    Connection.ExecuteDirect('CREATE TABLE "Details" ' +
+      '("Title" TEXT,"Abbreviation" TEXT,"Information" TEXT,"Language" TEXT'
+      + n + ',"Modified" TEXT);');
     CommitTransaction;
   except
     //
@@ -61,12 +63,13 @@ begin
   if numbering = 'ru' then n := ',:n';
   try
     try
-      Query.SQL.Text := 'INSERT INTO Details VALUES (:t,:a,:i,:l' + n + ');';
+      Query.SQL.Text := 'INSERT INTO Details VALUES (:t,:a,:i,:l' + n + ',:m);';
       Query.ParamByName('t').AsString := name;
       Query.ParamByName('a').AsString := abbreviation;
       Query.ParamByName('i').AsString := info;
       Query.ParamByName('l').AsString := language;
       if n <> '' then Query.ParamByName('n').AsString := numbering;
+      Query.ParamByName('m').AsString := modified;
       Query.ExecSQL;
       CommitTransaction;
     except
@@ -155,7 +158,9 @@ begin
   if FileExists(path) then Exit;
 
   Module := TBible.Create(path, true);
+
   AssignTo(Module);
+  Module.modified := FormatDateTime('dd/mm/yyyy', Now);
 
   Module.CreateTables;
   Module.InsertDetails;
