@@ -6,7 +6,7 @@ uses
   Classes, SysUtils, UnitModule, UnitLib;
 
 function ConvertTags(s: string; format: TFileFormat; nt: boolean): string;
-function Preparation(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
+function Prepare(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
 
 implementation
 
@@ -135,7 +135,7 @@ begin
   Result := Trim(s);
 end;
 
-function Preparation(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
+function Prepare(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
 begin
   if format <> unbound then s := ConvertTags(s, format, nt);
 
