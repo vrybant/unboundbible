@@ -151,11 +151,10 @@ end;
 //   custem : <RF>This is a translators' note<Rf>
 // extended : <RF q=a>This is a translators' note with link a<Rf>
 
-function GetMyswordFootnotes(s: string; extended: boolean): TStringArray;
+function GetMyswordFootnotes(s: string): TStringArray;
 var
   List : TStringArray;
-  item : string;
-  marker : string = '#';
+  item, marker : string;
   r : string = '';
   l : boolean = false;
 begin
@@ -171,14 +170,17 @@ begin
 
       if l then r += item;
 
-      if Prefix(iif(extended,'<RF q=','<RF>'),item) then
+      if Prefix('<RF',item) then
         begin
-          if extended then
+          marker := '#';
+
+          if Prefix('<RF q=',item) then
             begin
               marker := item;
               Replace(marker,'<RF q=','');
               Replace(marker,'>','');
             end;
+
           r := marker + '[~~~]';
           l := true;
         end;
@@ -198,7 +200,7 @@ begin
   for item in Contents do
     if item.text.Contains('<RF') then
       begin
-        Footnotes := GetMyswordFootnotes(item.text, false);
+        Footnotes := GetMyswordFootnotes(item.text);
 
         if Length(Footnotes) < 2 then Continue; // TEMP
 
