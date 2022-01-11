@@ -619,8 +619,6 @@ begin
   for f in List do
     if f.Contains('.bbl.') or f.Contains('.SQLite3') then
       begin
-        if f.Contains('_') then Continue; // TEMP
-
         if f.Contains('.dictionary.') or f.Contains('.commentaries.') then Continue;
         if f.Contains('.crossreferences.') then Continue;
         Bible := TBible.Create(f);

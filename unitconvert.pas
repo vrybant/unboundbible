@@ -19,13 +19,16 @@ type
   TBibleConverter = type Helper for TBible
   private
     procedure CreateTables;
-    procedure InsertContent(Content : TContentArray);
+    procedure InsertContent(const Contents : TContentArray);
     procedure InsertBooks(Books: TFPGList<TBook>);
+    function GetFootnotes(const Contents : TContentArray): TContentArray;
   public
     procedure Convert;
   end;
 
 implementation
+
+uses UnitPrepare;
 
 //=================================================================================================
 //                                       TModuleConverter
@@ -121,19 +124,19 @@ begin
   end;
 end;
 
-procedure TBibleConverter.InsertContent(Content : TContentArray);
+procedure TBibleConverter.InsertContent(const Contents : TContentArray);
 var
-  line : TContent;
+  item : TContent;
 begin
   try
     try
-      for line in Content do
+      for item in Contents do
         begin
           Query.SQL.Text := 'INSERT INTO Bible VALUES (:b,:c,:v,:s);';
-          Query.ParamByName('b').AsInteger := line.verse.book;
-          Query.ParamByName('c').AsInteger := line.verse.chapter;
-          Query.ParamByName('v').AsInteger := line.verse.number;
-          Query.ParamByName('s').AsString  := line.text;
+          Query.ParamByName('b').AsInteger := item.verse.book;
+          Query.ParamByName('c').AsInteger := item.verse.chapter;
+          Query.ParamByName('v').AsInteger := item.verse.number;
+          Query.ParamByName('s').AsString  := item.text;
           Query.ExecSQL;
         end;
       CommitTransaction;
@@ -145,6 +148,77 @@ begin
   end;
 end;
 
+//   custem : <RF>This is a translators' note<Rf>
+// extended : <RF q=a>This is a translators' note with link a<Rf>
+
+function GetMyswordFootnotes(s: string; extended: boolean): TStringArray;
+var
+  List : TStringArray;
+  item : string;
+  marker : string = '#';
+  r : string = '';
+  l : boolean = false;
+begin
+  Result := [];
+  List := XmlToList(s);
+  for item in List do
+    begin
+      if item = '<Rf>' then
+        begin
+          if l then Result.Add(Trim(r));
+          l := false;
+        end;
+
+      if l then r += item;
+
+      if Prefix(iif(extended,'<RF q=','<RF>'),item) then
+        begin
+          if extended then
+            begin
+              marker := item;
+              Replace(marker,'<RF q=','');
+              Replace(marker,'>','');
+            end;
+          r := marker + '[~~~]';
+          l := true;
+        end;
+    end;
+end;
+
+function TBibleConverter.GetFootnotes(const Contents : TContentArray): TContentArray;
+var
+  List : TStringArray;
+  Footnotes : TStringArray;
+  item : TContent;
+  footnote : string;
+  k : integer = 0;
+begin
+  SetLength(Result, Length(Contents));
+
+  for item in Contents do
+    if item.text.Contains('<RF') then
+      begin
+        Footnotes := GetMyswordFootnotes(item.text, false);
+
+        if Length(Footnotes) < 2 then Continue; // TEMP
+
+        output(item.text);
+        for footnote in Footnotes do
+          begin
+            output(footnote);
+            {
+            Result[k] := item;
+            List := ExtractMyswordFootnote(item.text, marker);
+            Result[k].text := ''.Join('#',List);
+            output(marker + '-' + Result[k].text);
+            inc(k);
+            }
+          end;
+      end;
+
+  SetLength(Result, k);
+end;
+
 procedure TBibleConverter.Convert;
 var
   Module : TBible;
@@ -152,7 +226,7 @@ var
 begin
   LoadDatabase;
 
-  path := DataPath + Slash + '_' + filename + '.unbound';
+  path := DataPath + Slash + '_' + filename + '._unbound';
 
   if FileExists(path) then DeleteFile(path);
   if FileExists(path) then Exit;
@@ -166,6 +240,7 @@ begin
   Module.InsertDetails;
   Module.InsertBooks(Books);
   Module.InsertContent(GetAll);
+  Module.GetFootnotes(GetAll(true));
 
   Module.Free;
 end;
