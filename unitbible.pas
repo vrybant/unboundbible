@@ -48,7 +48,7 @@ type
   private
     z : TBibleAlias;
     function RankContents(const Contents: TContentArray): TContentArray;
-    function ExtractFootnotes(s: string; marker: string): string;
+    function ExtractMyswordFootnote(s: string; marker: string): TStringArray;
     procedure LoadUnboundDatabase;
     procedure LoadMyswordDatabase;
   public
@@ -60,14 +60,15 @@ type
     function VerseToStr(Verse: TVerse; full: boolean): string;
     function SrtToVerse(link : string): TVerse;
     function GetChapter(Verse: TVerse): TStringArray;
-    function GetRange(Verse: TVerse; preparation: boolean=true): TStringArray;
-    function GetAll: TContentArray;
+    function GetRange(Verse: TVerse; raw: boolean = false): TStringArray;
+    function GetAll(raw: boolean = false): TContentArray;
     function GoodLink(Verse: TVerse): boolean;
     function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     procedure ShowTags;
     function GetTitles: TStringArray;
-    function  ChaptersCount(Verse: TVerse): integer;
-    function  GetFootnote(Verse: TVerse; marker: string): string;
+    function ChaptersCount(Verse: TVerse): integer;
+    function GetUnboundFootnote(Verse: TVerse; marker: string): string;
+    function GetMyswordFootnote(Verse: TVerse; marker: string): string;
     destructor Destroy; override;
   end;
 
@@ -336,11 +337,9 @@ function TBible.GetChapter(Verse: TVerse): TStringArray;
 var
   id : integer;
   line : string;
-  nt : boolean;
 begin
   Result := [];
   id := EncodeID(Verse.book);
-  nt := IsNewTestament(Verse.book);
 
   try
     try
@@ -350,7 +349,7 @@ begin
       while not Query.Eof do
         try
           line := Query.FieldByName(z.text).AsString;
-          line := Prepare(line, format, nt, false);
+          line := Prepare(line, format, false);
           Result.Add(line);
         finally
           Query.Next;
@@ -363,7 +362,7 @@ begin
   end;
 end;
 
-function TBible.GetRange(Verse: TVerse; preparation: boolean=true): TStringArray;
+function TBible.GetRange(Verse: TVerse; raw: boolean = false): TStringArray;
 var
   id : integer;
   line : string;
@@ -383,7 +382,7 @@ begin
       while not Query.Eof do
         try
           line := Query.FieldByName(z.text).AsString;
-          if preparation then line := Prepare(line, format, nt);
+          if not raw then line := Prepare(line, format, nt);
           Result.Add(line);
         finally
           Query.Next;
@@ -465,9 +464,8 @@ begin
   Result := RankContents(Contents);
 end;
 
-function TBible.GetAll: TContentArray;
+function TBible.GetAll(raw: boolean = false): TContentArray;
 var
-  nt : boolean;
   i : integer;
 begin
   Result := [];
@@ -490,11 +488,8 @@ begin
           try Result[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
           Result[i].verse.book := DecodeID(Result[i].verse.book);
 
-          if format <> unbound then
-            begin
-              nt := IsNewTestament(Result[i].verse.book);
-              Result[i].text := ConvertTags(Result[i].text, format, nt);
-            end;
+          if not raw and (format <> unbound) then
+            Result[i].text := ConvertTags(Result[i].text, format);
 
           Query.Next;
         end;
@@ -554,41 +549,37 @@ begin
   end;
 end;
 
-function TBible.ExtractFootnotes(s: string; marker: string): string;
+function TBible.GetUnboundFootnote(Verse: TVerse; marker: string): string;
+begin
+  Result := ''; // TO-DO
+end;
+
+function TBible.ExtractMyswordFootnote(s: string; marker: string): TStringArray;
 var
-  tag : string;
+  tag : string = '<RF>';
   x : integer;
 begin
-  Result := '';
-
-  if format = mysword then
-    begin
-      Replace(s,'<RF' , '<f' );
-      Replace(s,'<Rf>','</f>');
-    end;
-
-  if Prefix('✻',marker) then tag := '<f>'
-                        else tag := '<f q=' + marker + '>';
+  Result := [];
+  if not Prefix('✻',marker) then tag := '<RF q=' + marker + '>';
 
   while s.Contains(tag) do
     begin
       x := Pos(tag,s);
       x := x + Length(tag);
       s := Copy(s, x, Length(s));
-      x := Pos('</f>',s); if x = 0 then Break;
-      Result := Result + Copy(s,1,x-1) + '<br>';
+      x := Pos('<Rf>',s); if x = 0 then Break;
+      Result.Add(Copy(s,1,x-1));
     end;
-
-  Result := Trim(Result);
 end;
 
-function TBible.GetFootnote(Verse: TVerse; marker: string): string;
+function TBible.GetMyswordFootnote(Verse: TVerse; marker: string): string;
 var
-  Range : TStringArray;
+  Range, List : TStringArray;
 begin
-  Result := '';
-  Range := GetRange(Verse, false);
-  if not Range.IsEmpty then Result := ExtractFootnotes(Range[0], marker);
+  Range := GetRange(Verse, true);
+  if Range.IsEmpty then Exit('');
+  List := ExtractMyswordFootnote(Range[0], marker);
+  Result := ''.Join('<br>', List);
 end;
 
 destructor TBible.Destroy;
@@ -628,6 +619,8 @@ begin
   for f in List do
     if f.Contains('.bbl.') or f.Contains('.SQLite3') then
       begin
+        if f.Contains('_') then Continue; // TEMP
+
         if f.Contains('.dictionary.') or f.Contains('.commentaries.') then Continue;
         if f.Contains('.crossreferences.') then Continue;
         Bible := TBible.Create(f);

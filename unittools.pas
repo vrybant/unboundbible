@@ -230,9 +230,14 @@ end;
 
 function TTools.Get_Footnote(marker: string = ''): string;
 begin
-  if CurrBible.format = mybible
-    then Result := Commentaries.GetFootnote(CurrBible.fileName, CurrVerse, marker)
-    else Result := CurrBible.GetFootnote(CurrVerse, marker);
+  if CurrBible.format = unbound then
+    Result := CurrBible.GetUnboundFootnote(CurrVerse, marker);
+
+  if CurrBible.format = mysword then
+    Result := CurrBible.GetMyswordFootnote(CurrVerse, marker);
+
+  if CurrBible.format = mybible then
+    Result := Commentaries.GetFootnote(CurrBible.fileName, CurrVerse, marker)
 end;
 
 function TTools.Get_Verses: string;

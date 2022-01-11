@@ -5,8 +5,8 @@ interface
 uses
   Classes, SysUtils, UnitModule, UnitLib;
 
-function ConvertTags(s: string; format: TFileFormat; nt: boolean): string;
-function Prepare(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
+function ConvertTags(s: string; format: TFileFormat): string;
+function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 
 implementation
 
@@ -125,7 +125,7 @@ begin
   s := ''.Join('',List);
 end;
 
-function ConvertTags(s: string; format: TFileFormat; nt: boolean): string;
+function ConvertTags(s: string; format: TFileFormat): string;
 begin
   if format = mysword then ReplaceMyswordTags(s);
   if format = mybible then ReplaceMybibleTags(s);
@@ -135,9 +135,9 @@ begin
   Result := Trim(s);
 end;
 
-function Prepare(s: string; format: TFileFormat; nt: boolean; purge: boolean = true): string;
+function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 begin
-  if format <> unbound then s := ConvertTags(s, format, nt);
+  if format <> unbound then s := ConvertTags(s, format);
 
   if purge then CutStr(s,'<f>','</f>');
   CutStr(s,'<h>','</h>');
