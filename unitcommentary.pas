@@ -16,7 +16,7 @@ type
   public
     constructor Create(filePath: string);
     function GetData(Verse: TVerse): TStringArray;
-    function GetFootnote(Verse: TVerse; marker: string): string;
+    function GetMybibleFootnote(Verse: TVerse; marker: string): string;
   end;
 
   TCommentaries = class(TFPGList<TCommentary>)
@@ -26,7 +26,7 @@ type
     procedure ReadPrivates;
   public
     constructor Create;
-    function GetFootnote(module: string; Verse: TVerse; marker: string): string;
+    function GetMybibleFootnote(module: string; Verse: TVerse; marker: string): string;
     function FootnotesOnly: boolean;
     procedure DeleteItem(Item: TCommentary);
     destructor Destroy; override;
@@ -114,7 +114,7 @@ begin
   end;
 end;
 
-function TCommentary.GetFootnote(Verse: TVerse; marker: string): string;
+function TCommentary.GetMybibleFootnote(Verse: TVerse; marker: string): string;
 var
   id : integer;
 begin
@@ -177,7 +177,7 @@ begin
       end;
 end;
 
-function TCommentaries.GetFootnote(module: string; Verse: TVerse; marker: string): string;
+function TCommentaries.GetMybibleFootnote(module: string; Verse: TVerse; marker: string): string;
 var
   Commentary : TCommentary;
   name : string;
@@ -191,7 +191,7 @@ begin
     begin
       if not Commentary.footnotes then Continue;
       if not Prefix(name, Commentary.filename) then Continue;
-      Result := Commentary.GetFootnote(Verse, marker);
+      Result := Commentary.GetMybibleFootnote(Verse, marker);
     end;
 end;
 

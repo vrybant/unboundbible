@@ -237,7 +237,7 @@ begin
     Result := CurrBible.GetMyswordFootnote(CurrVerse, marker);
 
   if CurrBible.format = mybible then
-    Result := Commentaries.GetFootnote(CurrBible.fileName, CurrVerse, marker)
+    Result := Commentaries.GetMybibleFootnote(CurrBible.fileName, CurrVerse, marker)
 end;
 
 function TTools.Get_Verses: string;
