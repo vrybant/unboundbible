@@ -957,13 +957,10 @@ end;
 
 procedure TMainForm.LoadComboBox;
 var
-  List : TStringArray;
   item : string;
 begin
   ComboBox.Items.Clear;
-  List := Tools.Get_BilesNames;
-
-  for item in List do
+  for item in Tools.Get_BilesNames do
     begin
       ComboBox.Items.Add(item);
       if item = CurrBible.name then ComboBox.ItemIndex := ComboBox.Items.Count - 1;

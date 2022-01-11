@@ -503,21 +503,15 @@ end;
 
 procedure TBible.ShowTags;
 var
-  Contents : TContentArray;
   Content : TContent;
-  List : TStringArray;
   item : string;
   r : string = '';
 begin
-  Contents := GetAll;
-  for Content in Contents do
-    begin
-      List := XmlToList(Content.text);
-      for item in List do
-        if Prefix('<', item) then
-          if not Prefix('<W', item) then
-            if not r.Contains(item) then r += item;
-    end;
+  for Content in GetAll do
+    for item in XmlToList(Content.text) do
+      if Prefix('<', item) then
+        if not Prefix('<W', item) then
+          if not r.Contains(item) then r += item;
 end;
 
 function TBible.GetTitles: TStringArray;
@@ -611,12 +605,9 @@ end;
 procedure TBibles.Load;
 var
   Bible : TBible;
-  List : TStringArray;
   f : string;
 begin
-  List := GetDatabaseList;
-
-  for f in List do
+  for f in GetDatabaseList do
     if f.Contains('.bbl.') or f.Contains('.SQLite3') then
       begin
         if f.Contains('.dictionary.') or f.Contains('.commentaries.') then Continue;

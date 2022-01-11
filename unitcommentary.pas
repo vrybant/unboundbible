@@ -164,12 +164,9 @@ end;
 procedure TCommentaries.Load;
 var
   Item : TCommentary;
-  List : TStringArray;
   f : string;
 begin
-  List := GetDatabaseList;
-
-  for f in List do
+  for f in GetDatabaseList do
     if f.Contains('.cmt.') or f.Contains('.commentaries.') then
       begin
         Item := TCommentary.Create(f);

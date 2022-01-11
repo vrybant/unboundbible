@@ -153,14 +153,12 @@ end;
 
 function GetMyswordFootnotes(s: string): TStringArray;
 var
-  List : TStringArray;
   item, marker : string;
   r : string = '';
   l : boolean = false;
 begin
   Result := [];
-  List := XmlToList(s);
-  for item in List do
+  for item in XmlToList(s) do
     begin
       if item = '<Rf>' then
         begin
@@ -204,10 +202,10 @@ begin
 
         if Length(Footnotes) < 2 then Continue; // TEMP
 
-        output(item.text);
+//      output(item.text);
         for footnote in Footnotes do
           begin
-            output(footnote);
+//          output(footnote);
             {
             Result[k] := item;
             List := ExtractMyswordFootnote(item.text, marker);

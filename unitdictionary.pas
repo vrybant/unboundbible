@@ -139,12 +139,9 @@ end;
 procedure TDictionaries.Load;
 var
   Item : TDictionary;
-  List : TStringArray;
   f : string;
 begin
-  List := GetDatabaseList;
-
-  for f in List do
+  for f in GetDatabaseList do
     if f.Contains('.dct.') or f.Contains('.dictionary.') then
       begin
         Item := TDictionary.Create(f);

@@ -51,14 +51,12 @@ constructor TLocalization.Create;
 var
   IniFile: TIniFile;
   Item : TLocal;
-  List : TStringArray;
   f : string;
 begin
   inherited;
   LocalFile := nil;
-  List := GetFileList(SharePath + LangDirectory, '*.lng');
 
-  for f in List do
+  for f in GetFileList(SharePath + LangDirectory, '*.lng') do
     begin
       if Length(ExtractOnlyName(f)) = 2 then Continue; // remove old files
       Item := TLocal.Create;
