@@ -139,7 +139,7 @@ var
   Item : TReference;
   f : string;
 begin
-  for f in GetDatabaseList do
+  for f in DatabaseList do
     if f.Contains('.xrefs.') then
       begin
         Item := TReference.Create(f);

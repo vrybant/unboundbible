@@ -607,7 +607,7 @@ var
   Bible : TBible;
   f : string;
 begin
-  for f in GetDatabaseList do
+  for f in DatabaseList do
     if f.Contains('.bbl.') or f.Contains('.SQLite3') then
       begin
         if f.Contains('.dictionary.') or f.Contains('.commentaries.') then Continue;

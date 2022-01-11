@@ -166,7 +166,7 @@ var
   Item : TCommentary;
   f : string;
 begin
-  for f in GetDatabaseList do
+  for f in DatabaseList do
     if f.Contains('.cmt.') or f.Contains('.commentaries.') then
       begin
         Item := TCommentary.Create(f);

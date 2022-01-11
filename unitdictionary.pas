@@ -141,7 +141,7 @@ var
   Item : TDictionary;
   f : string;
 begin
-  for f in GetDatabaseList do
+  for f in DatabaseList do
     if f.Contains('.dct.') or f.Contains('.dictionary.') then
       begin
         Item := TDictionary.Create(f);

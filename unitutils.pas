@@ -18,7 +18,7 @@ var
 
 function ConfigFile: string;
 function DataPath: string;
-function GetDatabaseList: TStringArray;
+function DatabaseList: TStringArray;
 function HomeURL: string;
 function DownloadsURL: string;
 function IssueURL: string;
@@ -49,7 +49,7 @@ begin
   Result := GetUserDir + ApplicationName;
 end;
 
-function GetDatabaseList: TStringArray;
+function DatabaseList: TStringArray;
 var
   s, item : string;
 const
