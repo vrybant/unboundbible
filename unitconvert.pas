@@ -188,7 +188,8 @@ end;
 
 function ExtractMyswordFootnotes(s: string): TStringArray;
 var
-  item, marker : string;
+  item : string;
+  marker : string = '';
   r : string = '';
   l : boolean = false;
 begin
@@ -197,7 +198,8 @@ begin
     begin
       if item = '<Rf>' then
         begin
-          if l then Result.Add(Trim(r));
+          if l then Result.Add(marker + delimiter + Trim(r));
+          r := '';
           l := false;
         end;
 
@@ -206,11 +208,8 @@ begin
       if Prefix('<RF',item) then
         begin
           marker := '#';
-
           if Prefix('<RF q=',item) then
             marker := item.Replace('<RF q=','').Replace('>','');
-
-          r := marker + delimiter;
           l := true;
         end;
     end;
