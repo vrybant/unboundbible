@@ -210,7 +210,7 @@ begin
           if Prefix('<RF q=',item) then
             marker := item.Replace('<RF q=','').Replace('>','');
 
-          r := marker + '~';
+          r := marker + delimiter;
           l := true;
         end;
     end;
@@ -224,7 +224,7 @@ var
   s : string;
   k : integer = 0;
 begin
-  SetLength(Result, Length(Contents)); // ?
+  SetLength(Result, Length(Contents));
 
   for Content in Contents do
     if Content.text.Contains('<RF') then
@@ -232,9 +232,9 @@ begin
 
         for s in ExtractMyswordFootnotes(Content.text) do
           begin
-            List := s.Split('~');
+            List := s.Split(delimiter);
 
-            Footnote.verse := Content.verse;
+            Footnote.verse  := Content.verse;
             Footnote.marker := List[0];
             Footnote.text   := List[1];
 
