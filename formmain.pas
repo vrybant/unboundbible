@@ -1418,10 +1418,7 @@ begin
   text := Tools.Get_Search(s, count);
 
   if count = 0 then
-    begin
-      text := T('You search for % produced no results.');
-      Replace(text,'%',DoubleQuotedStr(s));
-    end;
+    text := T('You search for % produced no results.').Replace('%',DoubleQuotedStr(s));
 
   if count > max then text := T('This search returned too many results.') + ' ' +
                               T('Please narrow your search.');
@@ -1478,12 +1475,10 @@ begin
   text += data;
 
   if data.IsEmpty and not s.IsEmpty then
-    begin
-      text += T('You search for % produced no results.') + '<br><br>';
-      Replace(text,'%',DoubleQuotedStr(s));
-    end;
+    text += T('You search for % produced no results.').Replace('%',DoubleQuotedStr(s));
 
   if s.isEmpty then text := T('Please enter your query in the search bar.');
+  text += '<br><br>';
 
   MemoDictionary.LoadHtml(text);
   SelectPage(apDictionaries);
