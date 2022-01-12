@@ -1319,7 +1319,7 @@ begin
   pmSeparator.Visible := ActionLookup.Visible;
 
   if not ActionLookup.Visible then Exit;
-  s := DoubleQuotedStr( Trim(UnboundMemo.SelText) );
+  s := DoubleQuoted( Trim(UnboundMemo.SelText) );
 
   pmSearchfor.Caption := StringReplace( T('Search for %'),'%',s,[]);
   pmLookup   .Caption := StringReplace( T('Look Up %')   ,'%',s,[]);
@@ -1418,7 +1418,7 @@ begin
   text := Tools.Get_Search(s, count);
 
   if count = 0 then
-    text := T('You search for % produced no results.').Replace('%',DoubleQuotedStr(s));
+    text := T('You search for % produced no results.').Replace('%',DoubleQuoted(s));
 
   if count > max then text := T('This search returned too many results.') + ' ' +
                               T('Please narrow your search.');
@@ -1475,7 +1475,7 @@ begin
   text += data;
 
   if data.IsEmpty and not s.IsEmpty then
-    text += T('You search for % produced no results.').Replace('%',DoubleQuotedStr(s));
+    text += T('You search for % produced no results.').Replace('%',DoubleQuoted(s));
 
   if s.isEmpty then text := T('Please enter your query in the search bar.');
   text += '<br><br>';

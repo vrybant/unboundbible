@@ -38,7 +38,7 @@ function ToInt(s: string): integer;
 function ToStr(value: variant): string;
 function ToBoolean(s: string): boolean;
 function Capitalize(st: string): string;
-function DoubleQuotedStr(s: string): string;
+function DoubleQuoted(s: string): string;
 function CleanString(s: string): string;
 function StringPos(subst: string; s: string): TIntegerArray;
 procedure Replace(var s: string; const oldPattern, newPattern: string);
@@ -234,7 +234,7 @@ begin
   Result := st;
 end;
 
-function DoubleQuotedStr(s: string): string;
+function DoubleQuoted(s: string): string;
 begin
   Result := '"' + s + '"';
 end;
