@@ -151,7 +151,7 @@ end;
 //   custem : <RF>This is a translators' note<Rf>
 // extended : <RF q=a>This is a translators' note with link a<Rf>
 
-function GetMyswordFootnotes(s: string): TStringArray;
+function ExtractMyswordFootnotes(s: string): TStringArray;
 var
   item, marker : string;
   r : string = '';
@@ -173,11 +173,7 @@ begin
           marker := '#';
 
           if Prefix('<RF q=',item) then
-            begin
-              marker := item;
-              Replace(marker,'<RF q=','');
-              Replace(marker,'>','');
-            end;
+            marker := item.Replace('<RF q=','').Replace('>','');
 
           r := marker + '[~~~]';
           l := true;
@@ -187,7 +183,6 @@ end;
 
 function TBibleConverter.GetFootnotes(const Contents : TContentArray): TContentArray;
 var
-  List : TStringArray;
   Footnotes : TStringArray;
   item : TContent;
   footnote : string;
@@ -198,19 +193,18 @@ begin
   for item in Contents do
     if item.text.Contains('<RF') then
       begin
-        Footnotes := GetMyswordFootnotes(item.text);
+        Footnotes := ExtractMyswordFootnotes(item.text);
 
         if Length(Footnotes) < 2 then Continue; // TEMP
 
-//      output(item.text);
+        output('~');
+        output(item.text);
         for footnote in Footnotes do
           begin
-//          output(footnote);
+            output(footnote);
             {
             Result[k] := item;
-            List := ExtractMyswordFootnote(item.text, marker);
             Result[k].text := ''.Join('#',List);
-            output(marker + '-' + Result[k].text);
             inc(k);
             }
           end;

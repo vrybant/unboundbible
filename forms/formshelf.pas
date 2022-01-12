@@ -255,9 +255,8 @@ begin
   if PageControl.ActivePageIndex = apBible then
     begin
       (CurrModule as TBible).Convert;
-      // Tools.ExportModule(CurrModule);
-      QuestionDlg(' ', 'Module ' + CurrModule.fileName + ' has been extracted.',
-        mtInformation, [mrOK, T('OK'), 'IsDefault'], 0);
+//      QuestionDlg(' ', 'Module ' + CurrModule.fileName + ' has been extracted.',
+//        mtInformation, [mrOK, T('OK'), 'IsDefault'], 0);
     end;
 end;
 

@@ -136,14 +136,14 @@ end;
 
 procedure TReferences.Load;
 var
-  Item : TReference;
+  Reference : TReference;
   f : string;
 begin
   for f in DatabaseList do
     if f.Contains('.xrefs.') then
       begin
-        Item := TReference.Create(f);
-        if Item.connected then Add(Item) else Item.Free;
+        Reference := TReference.Create(f);
+        if Reference.connected then Add(Reference) else Reference.Free;
       end;
 end;
 
