@@ -8,6 +8,14 @@ uses
   Classes, Fgl, SysUtils, UnitModule, UnitBible, UnitUtils, UnitLib;
 
 type
+  TFootnote = record
+    verse : TVerse;
+    text : string;
+    marker : string;
+  end;
+
+  TFootnoteArray = array of TFootnote;
+
   TModuleConverter = type Helper for TModule
   private
     procedure AssignTo(Module: TModule);
@@ -15,13 +23,13 @@ type
     procedure InsertDetails;
   end;
 
-type
   TBibleConverter = type Helper for TBible
   private
     procedure CreateTables;
-    procedure InsertContent(const Contents : TContentArray);
+    procedure InsertContents(const Contents : TContentArray);
     procedure InsertBooks(Books: TFPGList<TBook>);
-    function GetFootnotes(const Contents : TContentArray): TContentArray;
+    procedure InsertFootnotes(const Footnotes : TFootnoteArray);
+    function GetFootnotes(const Contents : TContentArray): TFootnoteArray;
   public
     procedure Convert;
   end;
@@ -95,6 +103,8 @@ begin
         '("Book" INT, "Chapter" INT, "Verse" INT, "Scripture" TEXT);');
     Connection.ExecuteDirect('CREATE TABLE "Books"'+
         '("Number" INT, "Name" TEXT, "Abbreviation" TEXT);');
+    Connection.ExecuteDirect('CREATE TABLE "Footnotes"'+
+        '("Book" INT, "Chapter" INT, "Verse" INT, "Marker" TEXT, "Text" TEXT);');
     CommitTransaction;
   except
     //
@@ -124,7 +134,7 @@ begin
   end;
 end;
 
-procedure TBibleConverter.InsertContent(const Contents : TContentArray);
+procedure TBibleConverter.InsertContents(const Contents : TContentArray);
 var
   item : TContent;
 begin
@@ -137,6 +147,31 @@ begin
           Query.ParamByName('c').AsInteger := item.verse.chapter;
           Query.ParamByName('v').AsInteger := item.verse.number;
           Query.ParamByName('s').AsString  := item.text;
+          Query.ExecSQL;
+        end;
+      CommitTransaction;
+    except
+      //
+    end;
+  finally
+    Query.Close;
+  end;
+end;
+
+procedure TBibleConverter.InsertFootnotes(const Footnotes : TFootnoteArray);
+var
+  item : TFootnote;
+begin
+  try
+    try
+      for item in Footnotes do
+        begin
+          Query.SQL.Text := 'INSERT INTO Footnotes VALUES (:b,:c,:v,:m,:t);';
+          Query.ParamByName('b').AsInteger := item.verse.book;
+          Query.ParamByName('c').AsInteger := item.verse.chapter;
+          Query.ParamByName('v').AsInteger := item.verse.number;
+          Query.ParamByName('m').AsString  := item.marker;
+          Query.ParamByName('t').AsString  := item.text;
           Query.ExecSQL;
         end;
       CommitTransaction;
@@ -175,39 +210,38 @@ begin
           if Prefix('<RF q=',item) then
             marker := item.Replace('<RF q=','').Replace('>','');
 
-          r := marker + '[~~~]';
+          r := marker + '~';
           l := true;
         end;
     end;
 end;
 
-function TBibleConverter.GetFootnotes(const Contents : TContentArray): TContentArray;
+function TBibleConverter.GetFootnotes(const Contents : TContentArray): TFootnoteArray;
 var
-  Footnotes : TStringArray;
-  item : TContent;
-  footnote : string;
+  Footnote : TFootnote;
+  List : TStringArray;
+  Content : TContent;
+  s : string;
   k : integer = 0;
 begin
-  SetLength(Result, Length(Contents));
+  SetLength(Result, Length(Contents)); // ?
 
-  for item in Contents do
-    if item.text.Contains('<RF') then
+  for Content in Contents do
+    if Content.text.Contains('<RF') then
       begin
-        Footnotes := ExtractMyswordFootnotes(item.text);
 
-        if Length(Footnotes) < 2 then Continue; // TEMP
-
-        output('~');
-        output(item.text);
-        for footnote in Footnotes do
+        for s in ExtractMyswordFootnotes(Content.text) do
           begin
-            output(footnote);
-            {
-            Result[k] := item;
-            Result[k].text := ''.Join('#',List);
+            List := s.Split('~');
+
+            Footnote.verse := Content.verse;
+            Footnote.marker := List[0];
+            Footnote.text   := List[1];
+
+            Result[k] := Footnote;
             inc(k);
-            }
           end;
+
       end;
 
   SetLength(Result, k);
@@ -233,8 +267,8 @@ begin
   Module.CreateTables;
   Module.InsertDetails;
   Module.InsertBooks(Books);
-  Module.InsertContent(GetAll);
-  Module.GetFootnotes(GetAll(true));
+  Module.InsertContents(GetAll);
+  Module.InsertFootnotes( Module.GetFootnotes(GetAll(true)) );
 
   Module.Free;
 end;
