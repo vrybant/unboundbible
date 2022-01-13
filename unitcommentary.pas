@@ -181,7 +181,6 @@ var
 begin
   Result := '';
   if Count = 0 then Exit;
-  if marker = '❉' then marker := '*';
   name := ExtractOnlyName(module);
 
   for Commentary in Self do

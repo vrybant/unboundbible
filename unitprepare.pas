@@ -73,7 +73,7 @@ end;
 
 procedure CutFootnotes(var s: string);
 begin
-  Replace(s, '<f>','<f>✻[~');
+  Replace(s, '<f>','<f>**[~');
   Replace(s,'</f>','~]</f>');
    CutStr(s,'[~','~]');
 end;

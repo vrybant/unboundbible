@@ -583,7 +583,7 @@ begin
   Range := GetRange(Verse, true);
   if Range.IsEmpty then Exit('');
 
-  if not Prefix('✻',marker) then tag := '<RF q=' + marker + '>';
+  if not Prefix('**',marker) then tag := '<RF q=' + marker + '>';
 
   s := Range[0];
   while s.Contains(tag) do

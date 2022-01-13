@@ -183,9 +183,6 @@ begin
   end;
 end;
 
-//   custem : <RF>This is a translators' note<Rf>
-// extended : <RF q=a>This is a translators' note with link a<Rf>
-
 function ExtractMyswordFootnotes(s: string): TStringArray;
 var
   item : string;
@@ -207,7 +204,7 @@ begin
 
       if Prefix('<RF',item) then
         begin
-          marker := '✻';
+          marker := '**';
           if Prefix('<RF q=',item) then
             marker := item.Replace('<RF q=','').Replace('>','');
           l := true;
