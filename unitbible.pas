@@ -51,6 +51,8 @@ type
     function ExtractMyswordFootnote(s: string; marker: string): TStringArray;
     procedure LoadUnboundDatabase;
     procedure LoadMyswordDatabase;
+    function GetUnboundFootnote(Verse: TVerse; marker: string): string;
+    function GetMyswordFootnote(Verse: TVerse; marker: string): string;
   public
     constructor Create(FilePath: string; new: boolean = false);
     procedure LoadDatabase;
@@ -67,8 +69,7 @@ type
     procedure ShowTags;
     function GetTitles: TStringArray;
     function ChaptersCount(Verse: TVerse): integer;
-    function GetUnboundFootnote(Verse: TVerse; marker: string): string;
-    function GetMyswordFootnote(Verse: TVerse; marker: string): string;
+    function GetFootnote(Verse: TVerse; marker: string): string;
     destructor Destroy; override;
   end;
 
@@ -545,7 +546,19 @@ end;
 
 function TBible.GetUnboundFootnote(Verse: TVerse; marker: string): string;
 begin
-  Result := ''; // TO-DO
+  Result := '';
+  try
+    try
+      Query.SQL.Text := 'SELECT * FROM Footnotes WHERE Book = ' + ToStr(Verse.book) +
+        ' AND Chapter = ' + ToStr(Verse.chapter) + ' AND Marker = "' + marker + '" ';
+      Query.Open;
+      try Result := Query.FieldByName('Text').AsString; except end;
+    except
+      //
+    end;
+  finally
+    Query.Close;
+  end;
 end;
 
 function TBible.ExtractMyswordFootnote(s: string; marker: string): TStringArray;
@@ -574,6 +587,16 @@ begin
   if Range.IsEmpty then Exit('');
   List := ExtractMyswordFootnote(Range[0], marker);
   Result := ''.Join('<br>', List);
+end;
+
+function TBible.GetFootnote(Verse: TVerse; marker: string): string;
+begin
+  marker := marker.Replace('[','').Replace(']','');
+//if marker = '❉' then marker := '#';
+//marker := '#';
+
+  if format = unbound then Result := GetUnboundFootnote(Verse, marker);
+  if format = mysword then Result := GetMyswordFootnote(Verse, marker);
 end;
 
 destructor TBible.Destroy;
