@@ -53,7 +53,7 @@ begin
   s := ''.Join('',List).Trim;
 end;
 
-procedure ExtractMarkers(var s: string);
+procedure ExtractMyswordMarkers(var s: string);
 var
   List : TStringArray;
   marker : string;
@@ -66,24 +66,27 @@ begin
         marker := List[i];
         Replace(marker,'<q=','');
         Replace(marker,'>' ,'');
-        List[i] := marker + ' [~';
+        List[i] := '[' + marker + '][~';
       end;
   s := ''.Join('',List);
 end;
 
-procedure CutFootnotes(var s: string);
+procedure CutMyswordFootnotes(var s: string);
 begin
-  Replace(s, '<f>','<f>**[~');
-  Replace(s,'</f>','~]</f>');
-   CutStr(s,'[~','~]');
-end;
+  if s.Contains('<f>') then
+    begin
+      Replace(s, '<f>','<f>[*][~');
+      Replace(s,'</f>','~]</f>');
+       CutStr(s,'[~','~]');
+    end;
 
-procedure CutFootnotesEx(var s: string);
-begin
-  Replace(s, '<f ','<f><'  );
-  Replace(s,'</f>','~]</f>');
-  ExtractMarkers(s);
-  CutStr(s,'[~','~]');
+  if s.Contains('<f ') then
+    begin
+      Replace(s, '<f ','<f><'  );
+      Replace(s,'</f>','~]</f>');
+      ExtractMyswordMarkers(s);
+      CutStr(s,'[~','~]');
+    end;
 end;
 
 procedure ReplaceMyswordTags(var s: string);
@@ -91,8 +94,7 @@ var i : integer;
 begin
   MyswordStrongsToUnbound(s);
   for i:=1 to Max do Replace(s, TagsDictionary[i,1], TagsDictionary[i,2]);
-  if s.Contains('<f>') then CutFootnotes(s);
-  if s.Contains('<f ') then CutFootnotesEx(s);
+  CutMyswordFootnotes(s);
   Replace(s,'¶','');
 end;
 
