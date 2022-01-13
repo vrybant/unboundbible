@@ -141,6 +141,7 @@ procedure TBibleConverter.InsertFootnotes(const Footnotes : TFootnoteArray);
 var
   Item : TFootnote;
 begin
+  if Length(Footnotes) = 0 then Exit;
   try
     Connection.ExecuteDirect('CREATE TABLE "Footnotes"'+
       '("Book" INT, "Chapter" INT, "Verse" INT, "Marker" TEXT, "Text" TEXT);');
@@ -205,21 +206,18 @@ begin
 
   for Content in Contents do
     if Content.text.Contains('<RF') then
-      begin
+      for s in ExtractMyswordFootnotes(Content.text) do
+        begin
+          List := s.Split(delimiter);
+          if Length(List) < 2 then Continue;
 
-        for s in ExtractMyswordFootnotes(Content.text) do
-          begin
-            List := s.Split(delimiter);
+          Footnote.verse  := Content.verse;
+          Footnote.marker := List[0];
+          Footnote.text   := List[1];
 
-            Footnote.verse  := Content.verse;
-            Footnote.marker := List[0];
-            Footnote.text   := List[1];
-
-            Result[k] := Footnote;
-            inc(k);
-          end;
-
-      end;
+          Result[k] := Footnote;
+          inc(k);
+        end;
 
   SetLength(Result, k);
 end;
