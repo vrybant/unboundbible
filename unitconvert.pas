@@ -250,7 +250,7 @@ var
 begin
   LoadDatabase;
 
-  path := DataPath + Slash + '_' + filename + '._unbound';
+  path := DataPath + Slash + '_' + filename + '.unbound';
 
   if FileExists(path) then DeleteFile(path);
   if FileExists(path) then Exit;

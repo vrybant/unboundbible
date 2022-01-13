@@ -76,6 +76,7 @@ type
   TBibles = class(TFPGList<TBible>)
   private
     procedure Load;
+    procedure CheckDoubleNames;
     procedure SavePrivates;
     procedure ReadPrivates;
   public
@@ -626,6 +627,7 @@ constructor TBibles.Create;
 begin
   inherited;
   Load;
+  CheckDoubleNames;
   Sort(Comparison);
   ReadPrivates;
 end;
@@ -643,6 +645,18 @@ begin
         Bible := TBible.Create(f);
         if Bible.connected then Add(Bible) else Bible.Free;
     end;
+end;
+
+procedure TBibles.CheckDoubleNames;
+var
+  Bible, Item : TBible;
+begin
+  for Bible in Self do
+    for Item in Self do
+      begin
+        if Item.fileName = Bible.fileName then Continue;
+        if Item.name = Bible.name then Item.name += '*';
+      end;
 end;
 
 function TBibles.IsEmpty: boolean;
