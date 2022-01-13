@@ -48,7 +48,7 @@ type
   private
     z : TBibleAlias;
     function RankContents(const Contents: TContentArray): TContentArray;
-    function ExtractMyswordFootnote(s: string; marker: string): TStringArray;
+    function ExtractMyswordFootnote(s: string; marker: string): string;
     procedure LoadUnboundDatabase;
     procedure LoadMyswordDatabase;
     function GetUnboundFootnote(Verse: TVerse; marker: string): string;
@@ -545,28 +545,40 @@ begin
 end;
 
 function TBible.GetUnboundFootnote(Verse: TVerse; marker: string): string;
+var
+  List : TStringArray = [];
 begin
-  Result := '';
   try
     try
-      Query.SQL.Text := 'SELECT * FROM Footnotes WHERE Book = ' + ToStr(Verse.book) +
-        ' AND Chapter = ' + ToStr(Verse.chapter) + ' AND Marker = "' + marker + '" ';
+      Query.SQL.Text := 'SELECT * FROM Footnotes'
+        + ' WHERE Book = '  + ToStr(Verse.book)
+        + ' AND Chapter = ' + ToStr(Verse.chapter)
+        + ' AND Verse = '   + ToStr(Verse.number)
+        + ' AND Marker = "' + marker + '" ';
+
       Query.Open;
-      try Result := Query.FieldByName('Text').AsString; except end;
+      while not Query.Eof do
+        try
+          List.Add( Query.FieldByName('Text').AsString );
+        finally
+          Query.Next;
+        end;
     except
       //
     end;
   finally
     Query.Close;
   end;
+
+  Result := ''.Join('<br>', List);
 end;
 
-function TBible.ExtractMyswordFootnote(s: string; marker: string): TStringArray;
+function TBible.ExtractMyswordFootnote(s: string; marker: string): string;
 var
+  List : TStringArray = [];
   tag : string = '<RF>';
   x : integer;
 begin
-  Result := [];
   if not Prefix('✻',marker) then tag := '<RF q=' + marker + '>';
 
   while s.Contains(tag) do
@@ -575,26 +587,23 @@ begin
       x := x + Length(tag);
       s := Copy(s, x, Length(s));
       x := Pos('<Rf>',s); if x = 0 then Break;
-      Result.Add(Copy(s,1,x-1));
+      List.Add(Copy(s,1,x-1));
     end;
+
+  Result := ''.Join('<br>', List);
 end;
 
 function TBible.GetMyswordFootnote(Verse: TVerse; marker: string): string;
 var
-  Range, List : TStringArray;
+  Range : TStringArray;
 begin
   Range := GetRange(Verse, true);
   if Range.IsEmpty then Exit('');
-  List := ExtractMyswordFootnote(Range[0], marker);
-  Result := ''.Join('<br>', List);
+  Result := ExtractMyswordFootnote(Range[0], marker);
 end;
 
 function TBible.GetFootnote(Verse: TVerse; marker: string): string;
 begin
-  marker := marker.Replace('[','').Replace(']','');
-//if marker = '❉' then marker := '#';
-//marker := '#';
-
   if format = unbound then Result := GetUnboundFootnote(Verse, marker);
   if format = mysword then Result := GetMyswordFootnote(Verse, marker);
 end;

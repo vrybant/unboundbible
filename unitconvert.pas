@@ -207,7 +207,7 @@ begin
 
       if Prefix('<RF',item) then
         begin
-          marker := '#';
+          marker := '✻';
           if Prefix('<RF q=',item) then
             marker := item.Replace('<RF q=','').Replace('>','');
           l := true;
