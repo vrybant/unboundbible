@@ -19,13 +19,11 @@ type
   TModuleConverter = type Helper for TModule
   private
     procedure AssignTo(Module: TModule);
-    procedure CreateTables;
     procedure InsertDetails;
   end;
 
   TBibleConverter = type Helper for TBible
   private
-    procedure CreateTables;
     procedure InsertContents(const Contents : TContentArray);
     procedure InsertBooks(Books: TFPGList<TBook>);
     procedure InsertFootnotes(const Footnotes : TFootnoteArray);
@@ -52,27 +50,20 @@ begin
   Module.modified := modified;
 end;
 
-procedure TModuleConverter.CreateTables;
+procedure TModuleConverter.InsertDetails;
 var
-  n : string = '';
+  num : string = '';
+    n : string = '';
 begin
-  if numbering = 'ru' then n := ',"Numbering" TEXT';
+  if numbering = 'ru' then
+    begin
+      num := ',"Numbering" TEXT';
+      n := ',:n';
+    end;
   try
     Connection.ExecuteDirect('CREATE TABLE "Details" ' +
       '("Title" TEXT,"Abbreviation" TEXT,"Information" TEXT,"Language" TEXT'
-      + n + ',"Modified" TEXT);');
-    CommitTransaction;
-  except
-    //
-  end;
- end;
-
-procedure TModuleConverter.InsertDetails;
-var
-  n : string = '';
-begin
-  if numbering = 'ru' then n := ',:n';
-  try
+      + num + ',"Modified" TEXT);');
     try
       Query.SQL.Text := 'INSERT INTO Details VALUES (:t,:a,:i,:l' + n + ',:m);';
       Query.ParamByName('t').AsString := name;
@@ -95,27 +86,13 @@ end;
 //                                        TBibleConverter
 //=================================================================================================
 
-procedure TBibleConverter.CreateTables;
-begin
-  inherited;
-  try
-    Connection.ExecuteDirect('CREATE TABLE "Bible"'+
-        '("Book" INT, "Chapter" INT, "Verse" INT, "Scripture" TEXT);');
-    Connection.ExecuteDirect('CREATE TABLE "Books"'+
-        '("Number" INT, "Name" TEXT, "Abbreviation" TEXT);');
-    Connection.ExecuteDirect('CREATE TABLE "Footnotes"'+
-        '("Book" INT, "Chapter" INT, "Verse" INT, "Marker" TEXT, "Text" TEXT);');
-    CommitTransaction;
-  except
-    //
-  end;
- end;
-
 procedure TBibleConverter.InsertBooks(Books: TFPGList<TBook>);
 var
   Book : TBook;
 begin
   try
+    Connection.ExecuteDirect('CREATE TABLE "Books"'+
+      '("Number" INT, "Name" TEXT, "Abbreviation" TEXT);');
     try
       for Book in Books do
         begin
@@ -136,17 +113,19 @@ end;
 
 procedure TBibleConverter.InsertContents(const Contents : TContentArray);
 var
-  item : TContent;
+  Item : TContent;
 begin
   try
+    Connection.ExecuteDirect('CREATE TABLE "Bible"'+
+      '("Book" INT, "Chapter" INT, "Verse" INT, "Scripture" TEXT);');
     try
       for item in Contents do
         begin
           Query.SQL.Text := 'INSERT INTO Bible VALUES (:b,:c,:v,:s);';
-          Query.ParamByName('b').AsInteger := item.verse.book;
-          Query.ParamByName('c').AsInteger := item.verse.chapter;
-          Query.ParamByName('v').AsInteger := item.verse.number;
-          Query.ParamByName('s').AsString  := item.text;
+          Query.ParamByName('b').AsInteger := Item.verse.book;
+          Query.ParamByName('c').AsInteger := Item.verse.chapter;
+          Query.ParamByName('v').AsInteger := Item.verse.number;
+          Query.ParamByName('s').AsString  := Item.text;
           Query.ExecSQL;
         end;
       CommitTransaction;
@@ -160,18 +139,20 @@ end;
 
 procedure TBibleConverter.InsertFootnotes(const Footnotes : TFootnoteArray);
 var
-  item : TFootnote;
+  Item : TFootnote;
 begin
   try
+    Connection.ExecuteDirect('CREATE TABLE "Footnotes"'+
+      '("Book" INT, "Chapter" INT, "Verse" INT, "Marker" TEXT, "Text" TEXT);');
     try
-      for item in Footnotes do
+      for Item in Footnotes do
         begin
           Query.SQL.Text := 'INSERT INTO Footnotes VALUES (:b,:c,:v,:m,:t);';
-          Query.ParamByName('b').AsInteger := item.verse.book;
-          Query.ParamByName('c').AsInteger := item.verse.chapter;
-          Query.ParamByName('v').AsInteger := item.verse.number;
-          Query.ParamByName('m').AsString  := item.marker;
-          Query.ParamByName('t').AsString  := item.text;
+          Query.ParamByName('b').AsInteger := Item.verse.book;
+          Query.ParamByName('c').AsInteger := Item.verse.chapter;
+          Query.ParamByName('v').AsInteger := Item.verse.number;
+          Query.ParamByName('m').AsString  := Item.marker;
+          Query.ParamByName('t').AsString  := Item.text;
           Query.ExecSQL;
         end;
       CommitTransaction;
@@ -260,7 +241,6 @@ begin
   AssignTo(Module);
   Module.modified := FormatDateTime('dd/mm/yyyy', Now);
 
-  Module.CreateTables;
   Module.InsertDetails;
   Module.InsertBooks(Books);
   Module.InsertContents(GetAll);
