@@ -12,19 +12,18 @@ function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 implementation
 
 const
-  Max = 21;
+  Max = 20;
   TagsDictionary : array [1..Max,1..2] of string = (
     ('<FR>', '<J>'),('<Fr>','</J>'),
-    ('<-->', '<S>'),('<-->','</S>'), // strong
-    ('<-->', '<m>'),('<-->','</m>'), // morphology
-    ('<FI>', '<i>'),('<Fi>','</i>'), // italic
-    ('<FO>', '<t>'),('<Fo>','</t>'), // quote
-    ('<TS>', '<h>'),('<Ts>','</h>'), // title
-    ('<E>',  '<n>'),('<e>', '</n>'), // english translation
-    ('<T>',  '<n>'),('<t>', '</n>'), // translation
-    ('<X>',  '<m>'),('<x>', '</m>'), // transliteration
-    ('<RF>', '<f>'),('<RF ', '<f '), // footnote
-    ('<Rf>','</f>'));
+    ('<-->', '<S>'),('<-->','</S>'),  // strong
+    ('<-->', '<m>'),('<-->','</m>'),  // morphology
+    ('<FI>', '<i>'),('<Fi>','</i>'),  // italic
+    ('<FO>', '<t>'),('<Fo>','</t>'),  // quote
+    ('<TS>', '<h>'),('<Ts>','</h>'),  // title
+    ('<E>',  '<n>'),('<e>', '</n>'),  // english translation
+    ('<T>',  '<n>'),('<t>', '</n>'),  // translation
+    ('<X>',  '<m>'),('<x>', '</m>'),  // transliteration
+    ('<RF>', '<f>'),('<Rf>','</f>')); // footnote
 
 procedure MyswordStrongsToUnbound(var s: string);
 var
@@ -32,9 +31,7 @@ var
   number : string;
   i : integer;
 begin
-  if not s.Contains('<W') then Exit;
   List := XmlToList(s);
-
   for i:=Low(List) to High(List) do
     if Prefix('<WH', List[i]) or Prefix('<WG', List[i]) then
       begin
@@ -54,15 +51,32 @@ begin
   s := ''.Join('',List).Trim;
 end;
 
+procedure ModifyAsteriskFootnotes(var s: string);
+var
+  List : TStringArray;
+  marker : string = '';
+  i : integer;
+begin
+  List := XmlToList(s);
+  for i:=Low(List) to High(List) do
+    if List[i] = '<RF>' then
+      begin
+        marker += '*';
+        List[i] := List[i].Replace('<RF>','<RF q=' + marker + '>');
+      end;
+  s := ''.Join('',List);
+end;
+
 function ExtractMyswordFootnotes(s: string): TStringArray;
 var
   item : string;
   marker : string = '';
-  asterisks : string = '';
   r : string = '';
   l : boolean = false;
 begin
   Result := [];
+  ModifyAsteriskFootnotes(s);
+
   for item in XmlToList(s) do
     begin
       if item = '<Rf>' then
@@ -74,13 +88,6 @@ begin
 
       if l then r += item;
 
-      if item = '<RF>' then
-        begin
-          asterisks += '*';
-          marker := '[' + asterisks + ']';
-          l := true;
-        end;
-
       if Prefix('<RF q=',item) then
         begin
           marker := item.Replace('<RF q=','[').Replace('>',']');
@@ -89,53 +96,28 @@ begin
     end;
 end;
 
-procedure SetAsterisks(var s: string);
-var
-  List : TStringArray;
-  marker : string = '';
-  i : integer;
-begin
-  List := XmlToList(s);
-  for i:=Low(List) to High(List) do
-    if List[i] = '<f>' then
-      begin
-        marker += '*';
-        List[i] := List[i].Replace('<f>','<f q=' + marker + '>');
-      end;
-  s := ''.Join('',List);
-end;
-
-procedure ExtractMyswordMarkers(var s: string);
-var
-  List : TStringArray;
-  i : integer;
-begin
-  List := XmlToList(s);
-  for i:=Low(List) to High(List) do
-    if Prefix('<q=', List[i]) then
-      List[i] := List[i].Replace('<q=','[').Replace('>' ,'][~');
-  s := ''.Join('',List);
-end;
-
 procedure CutMyswordFootnotes(var s: string);
+var
+  List : TStringArray;
+  i : integer;
 begin
-  if s.Contains('<f>') then SetAsterisks(s);
+  if s.Contains('<RF>') then ModifyAsteriskFootnotes(s);
 
-  if s.Contains('<f ') then
-    begin
-      Replace(s, '<f ','<f><'  );
-      Replace(s,'</f>','~]</f>');
-      ExtractMyswordMarkers(s);
-      CutStr(s,'[~','~]');
-    end;
+  List := XmlToList(s);
+  for i:=Low(List) to High(List) do
+    if Prefix('<RF q=',List[i]) then
+      List[i] := List[i].Replace('>' ,']</f>[~').Replace('<RF q=','<f>[');
+
+  s := ''.Join('',List).Replace('<Rf>','~]');
+  CutStr(s,'[~','~]');
 end;
 
 procedure ReplaceMyswordTags(var s: string);
 var i : integer;
 begin
-  MyswordStrongsToUnbound(s);
+  if s.Contains('<W' ) then MyswordStrongsToUnbound(s);
+  if s.Contains('<RF') then CutMyswordFootnotes(s);
   for i:=1 to Max do Replace(s, TagsDictionary[i,1], TagsDictionary[i,2]);
-  CutMyswordFootnotes(s);
   Replace(s,'¶','');
 end;
 
