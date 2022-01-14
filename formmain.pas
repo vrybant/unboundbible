@@ -1102,7 +1102,7 @@ var
   MenuItem : TMenuItem;
   item : string;
 begin
-  miRecent.Enabled := RecentList.Count > 0;
+  miRecent.Enabled := not RecentList.IsEmpty;
   miRecent.Clear;
 
   for item in RecentList.Reverse do

@@ -16,16 +16,13 @@ type
 
 type
   TStringArrayHelper = type Helper for TStringArray
-  private
-    function GetCount: integer;
-    procedure  SetCount(Value: integer);
   public
     function IsEmpty: Boolean;
     procedure Add(const Value: string);
     procedure Delete(index: integer);
+    function Count: integer;
     function IndexOf(const s: string): integer;
     function Reverse: TStringArray;
-    property Count: integer read GetCount write SetCount;
   end;
 
 // string's functions
@@ -116,23 +113,18 @@ var DarkTheme : boolean = False;
 
 function TStringArrayHelper.IsEmpty: Boolean;
 begin
-  Result := Length(Self) = 0;
+  Result := Count = 0;
 end;
 
-procedure TStringArrayHelper.SetCount(Value: integer);
-begin
-  SetLength(Self, Value);
-end;
-
-function TStringArrayHelper.GetCount: integer;
+function TStringArrayHelper.Count: integer;
 begin
   Result := Length(Self);
 end;
 
 procedure TStringArrayHelper.Add(const Value: string);
 begin
-  SetLength(Self, Length(Self)+1);
-  Self[Length(Self)-1] := Value;
+  SetLength(Self, Count+1);
+  Self[Count-1] := Value;
 end;
 
 procedure TStringArrayHelper.Delete(index: integer);
