@@ -27,7 +27,7 @@ type
     procedure InsertContents(const Contents : TContentArray);
     procedure InsertBooks(Books: TFPGList<TBook>);
     procedure InsertFootnotes(const Footnotes : TFootnoteArray);
-    function GetFootnotes(const Contents : TContentArray): TFootnoteArray;
+    function GetMyswordFootnotes(const Contents : TContentArray): TFootnoteArray;
   public
     procedure Convert;
   end;
@@ -165,36 +165,7 @@ begin
   end;
 end;
 
-function ExtractMyswordFootnotes(s: string): TStringArray;
-var
-  item : string;
-  marker : string = '';
-  r : string = '';
-  l : boolean = false;
-begin
-  Result := [];
-  for item in XmlToList(s) do
-    begin
-      if item = '<Rf>' then
-        begin
-          if l then Result.Add(marker + delimiter + Trim(r));
-          r := '';
-          l := false;
-        end;
-
-      if l then r += item;
-
-      if Prefix('<RF',item) then
-        begin
-          marker := '[*]';
-          if Prefix('<RF q=',item) then
-            marker := item.Replace('<RF q=','[').Replace('>',']');
-          l := true;
-        end;
-    end;
-end;
-
-function TBibleConverter.GetFootnotes(const Contents : TContentArray): TFootnoteArray;
+function TBibleConverter.GetMyswordFootnotes(const Contents : TContentArray): TFootnoteArray;
 var
   Footnote : TFootnote;
   List : TStringArray;
@@ -242,7 +213,7 @@ begin
   Module.InsertDetails;
   Module.InsertBooks(Books);
   Module.InsertContents(GetAll);
-  Module.InsertFootnotes( Module.GetFootnotes(GetAll(true)) );
+  Module.InsertFootnotes( Module.GetMyswordFootnotes(GetAll(true)) );
 
   Module.Free;
 end;

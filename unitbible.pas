@@ -576,28 +576,15 @@ end;
 function TBible.GetMyswordFootnote(Verse: TVerse; marker: string): string;
 var
   Range : TStringArray;
-  List : TStringArray = [];
-  tag : string = '<RF>';
   s : string;
-  x : integer;
 begin
+  Result := '';
   Range := GetRange(Verse, true);
-  if Range.IsEmpty then Exit('');
+  if Range.IsEmpty then Exit;
 
-  marker := marker.Replace('[','').Replace(']','');
-  if not Prefix('*',marker) then tag := '<RF q=' + marker + '>';
-
-  s := Range[0];
-  while s.Contains(tag) do
-    begin
-      x := Pos(tag,s);
-      x := x + Length(tag);
-      s := Copy(s, x, Length(s));
-      x := Pos('<Rf>',s); if x = 0 then Break;
-      List.Add( Trim(Copy(s,1,x-1)) );
-    end;
-
-  Result := ''.Join('<br>', List);
+  for s in ExtractMyswordFootnotes(Range[0]) do
+    if Prefix(marker + delimiter, s) then
+      Result := s.Replace(marker + delimiter,'');
 end;
 
 function TBible.GetFootnote(Verse: TVerse; marker: string): string;

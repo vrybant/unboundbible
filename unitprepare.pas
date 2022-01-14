@@ -5,6 +5,7 @@ interface
 uses
   Classes, SysUtils, UnitModule, UnitLib;
 
+function ExtractMyswordFootnotes(s: string): TStringArray;
 function ConvertTags(s: string; format: TFileFormat): string;
 function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 
@@ -53,32 +54,72 @@ begin
   s := ''.Join('',List).Trim;
 end;
 
+function ExtractMyswordFootnotes(s: string): TStringArray;
+var
+  item : string;
+  marker : string = '';
+  asterisks : string = '';
+  r : string = '';
+  l : boolean = false;
+begin
+  Result := [];
+  for item in XmlToList(s) do
+    begin
+      if item = '<Rf>' then
+        begin
+          if l then Result.Add(marker + delimiter + Trim(r));
+          r := '';
+          l := false;
+        end;
+
+      if l then r += item;
+
+      if item = '<RF>' then
+        begin
+          asterisks += '*';
+          marker := '[' + asterisks + ']';
+          l := true;
+        end;
+
+      if Prefix('<RF q=',item) then
+        begin
+          marker := item.Replace('<RF q=','[').Replace('>',']');
+          l := true;
+        end;
+    end;
+end;
+
+procedure SetAsterisks(var s: string);
+var
+  List : TStringArray;
+  marker : string = '';
+  i : integer;
+begin
+  List := XmlToList(s);
+  for i:=Low(List) to High(List) do
+    if List[i] = '<f>' then
+      begin
+        marker += '*';
+        List[i] := List[i].Replace('<f>','<f q=' + marker + '>');
+      end;
+  s := ''.Join('',List);
+end;
+
 procedure ExtractMyswordMarkers(var s: string);
 var
   List : TStringArray;
-  marker : string;
   i : integer;
 begin
   List := XmlToList(s);
   for i:=Low(List) to High(List) do
     if Prefix('<q=', List[i]) then
-      begin
-        marker := List[i];
-        Replace(marker,'<q=','');
-        Replace(marker,'>' ,'');
-        List[i] := '[' + marker + '][~';
-      end;
+      List[i] := List[i].Replace('<q=','[').Replace('>' ,'][~');
   s := ''.Join('',List);
 end;
 
 procedure CutMyswordFootnotes(var s: string);
 begin
-  if s.Contains('<f>') then
-    begin
-      Replace(s, '<f>','<f>[*][~');
-      Replace(s,'</f>','~]</f>');
-       CutStr(s,'[~','~]');
-    end;
+  if s.Contains('<f>') then SetAsterisks(s);
 
   if s.Contains('<f ') then
     begin
