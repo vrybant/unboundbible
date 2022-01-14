@@ -81,7 +81,7 @@ begin
     begin
       if item = '<Rf>' then
         begin
-          if l then Result.Add(marker + delimiter + Trim(r));
+          if l then Result.Add(marker + #0 + Trim(r));
           r := '';
           l := false;
         end;

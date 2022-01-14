@@ -583,8 +583,8 @@ begin
   if Range.IsEmpty then Exit;
 
   for s in ExtractMyswordFootnotes(Range[0]) do
-    if Prefix(marker + delimiter, s) then
-      Result := s.Replace(marker + delimiter,'');
+    if Prefix(marker + #0, s) then
+      Result := s.Replace(marker + #0,'');
 end;
 
 function TBible.GetFootnote(Verse: TVerse; marker: string): string;

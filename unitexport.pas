@@ -179,7 +179,7 @@ begin
     if Content.text.Contains('<RF') then
       for s in ExtractMyswordFootnotes(Content.text) do
         begin
-          List := s.Split(delimiter);
+          List := s.Split(#0);
           if Length(List) < 2 then Continue;
 
           Footnote.verse  := Content.verse;
