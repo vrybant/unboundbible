@@ -60,7 +60,7 @@ var
 implementation
 
 uses
-  UnitConvert, UnitTools, UnitUtils, UnitLocal, UnitBible, UnitCommentary,
+  UnitExport, UnitTools, UnitUtils, UnitLocal, UnitBible, UnitCommentary,
     UnitDictionary, UnitReference;
 
 {$R *.lfm}

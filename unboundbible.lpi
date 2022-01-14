@@ -95,9 +95,9 @@
         <UnitName Value="UnitDictionary"/>
       </Unit7>
       <Unit8>
-        <Filename Value="unitprepare.pas"/>
+        <Filename Value="unitconvert.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitPrepare"/>
+        <UnitName Value="UnitConvert"/>
       </Unit8>
       <Unit9>
         <Filename Value="unitbible.pas"/>
@@ -115,9 +115,9 @@
         <UnitName Value="UnitLocal"/>
       </Unit11>
       <Unit12>
-        <Filename Value="unitconvert.pas"/>
+        <Filename Value="unitexport.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitConvert"/>
+        <UnitName Value="UnitExport"/>
       </Unit12>
       <Unit13>
         <Filename Value="forms\formabout.pas"/>

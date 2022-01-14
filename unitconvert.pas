@@ -1,221 +1,193 @@
 unit UnitConvert;
 
-{$modeswitch typehelpers}
-
 interface
 
 uses
-  Classes, Fgl, SysUtils, UnitModule, UnitBible, UnitUtils, UnitLib;
+  Classes, SysUtils, UnitModule, UnitLib;
 
-type
-  TFootnote = record
-    verse : TVerse;
-    text : string;
-    marker : string;
-  end;
-
-  TFootnoteArray = array of TFootnote;
-
-  TModuleConverter = type Helper for TModule
-  private
-    procedure AssignTo(Module: TModule);
-    procedure InsertDetails;
-  end;
-
-  TBibleConverter = type Helper for TBible
-  private
-    procedure InsertContents(const Contents : TContentArray);
-    procedure InsertBooks(Books: TFPGList<TBook>);
-    procedure InsertFootnotes(const Footnotes : TFootnoteArray);
-    function GetMyswordFootnotes(const Contents : TContentArray): TFootnoteArray;
-  public
-    procedure Convert;
-  end;
+function ExtractMyswordFootnotes(s: string): TStringArray;
+function ConvertTags(s: string; format: TFileFormat): string;
+function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
 
 implementation
 
-uses UnitPrepare;
+const
+  Max = 21;
+  TagsDictionary : array [1..Max,1..2] of string = (
+    ('<FR>', '<J>'),('<Fr>','</J>'),
+    ('<-->', '<S>'),('<-->','</S>'), // strong
+    ('<-->', '<m>'),('<-->','</m>'), // morphology
+    ('<FI>', '<i>'),('<Fi>','</i>'), // italic
+    ('<FO>', '<t>'),('<Fo>','</t>'), // quote
+    ('<TS>', '<h>'),('<Ts>','</h>'), // title
+    ('<E>',  '<n>'),('<e>', '</n>'), // english translation
+    ('<T>',  '<n>'),('<t>', '</n>'), // translation
+    ('<X>',  '<m>'),('<x>', '</m>'), // transliteration
+    ('<RF>', '<f>'),('<RF ', '<f '), // footnote
+    ('<Rf>','</f>'));
 
-//=================================================================================================
-//                                       TModuleConverter
-//=================================================================================================
-
-procedure TModuleConverter.AssignTo(Module: TModule);
-begin
-  Module.name := name;
-  Module.abbreviation := abbreviation;
-  Module.info := info;
-  Module.language := language;
-  Module.numbering := numbering;
-  Module.modified := modified;
-end;
-
-procedure TModuleConverter.InsertDetails;
+procedure MyswordStrongsToUnbound(var s: string);
 var
-  num : string = '';
-    n : string = '';
-begin
-  if numbering = 'ru' then
-    begin
-      num := ',"Numbering" TEXT';
-      n := ',:n';
-    end;
-  try
-    Connection.ExecuteDirect('CREATE TABLE "Details" ' +
-      '("Title" TEXT,"Abbreviation" TEXT,"Information" TEXT,"Language" TEXT'
-      + num + ',"Modified" TEXT);');
-    try
-      Query.SQL.Text := 'INSERT INTO Details VALUES (:t,:a,:i,:l' + n + ',:m);';
-      Query.ParamByName('t').AsString := name;
-      Query.ParamByName('a').AsString := abbreviation;
-      Query.ParamByName('i').AsString := info;
-      Query.ParamByName('l').AsString := language;
-      if n <> '' then Query.ParamByName('n').AsString := numbering;
-      Query.ParamByName('m').AsString := modified;
-      Query.ExecSQL;
-      CommitTransaction;
-    except
-      //
-    end;
-  finally
-    Query.Close;
-  end;
-end;
-
-//=================================================================================================
-//                                        TBibleConverter
-//=================================================================================================
-
-procedure TBibleConverter.InsertBooks(Books: TFPGList<TBook>);
-var
-  Book : TBook;
-begin
-  try
-    Connection.ExecuteDirect('CREATE TABLE "Books"'+
-      '("Number" INT, "Name" TEXT, "Abbreviation" TEXT);');
-    try
-      for Book in Books do
-        begin
-          Query.SQL.Text := 'INSERT INTO Books VALUES (:n,:t,:a);';
-          Query.ParamByName('n').AsInteger := Book.number;
-          Query.ParamByName('t').AsString  := Book.title;
-          Query.ParamByName('a').AsString  := Book.abbr;
-          Query.ExecSQL;
-        end;
-      CommitTransaction;
-    except
-      //
-    end;
-  finally
-    Query.Close;
-  end;
-end;
-
-procedure TBibleConverter.InsertContents(const Contents : TContentArray);
-var
-  Item : TContent;
-begin
-  try
-    Connection.ExecuteDirect('CREATE TABLE "Bible"'+
-      '("Book" INT, "Chapter" INT, "Verse" INT, "Scripture" TEXT);');
-    try
-      for item in Contents do
-        begin
-          Query.SQL.Text := 'INSERT INTO Bible VALUES (:b,:c,:v,:s);';
-          Query.ParamByName('b').AsInteger := Item.verse.book;
-          Query.ParamByName('c').AsInteger := Item.verse.chapter;
-          Query.ParamByName('v').AsInteger := Item.verse.number;
-          Query.ParamByName('s').AsString  := Item.text;
-          Query.ExecSQL;
-        end;
-      CommitTransaction;
-    except
-      //
-    end;
-  finally
-    Query.Close;
-  end;
-end;
-
-procedure TBibleConverter.InsertFootnotes(const Footnotes : TFootnoteArray);
-var
-  Item : TFootnote;
-begin
-  if Length(Footnotes) = 0 then Exit;
-  try
-    Connection.ExecuteDirect('CREATE TABLE "Footnotes"'+
-      '("Book" INT, "Chapter" INT, "Verse" INT, "Marker" TEXT, "Text" TEXT);');
-    try
-      for Item in Footnotes do
-        begin
-          Query.SQL.Text := 'INSERT INTO Footnotes VALUES (:b,:c,:v,:m,:t);';
-          Query.ParamByName('b').AsInteger := Item.verse.book;
-          Query.ParamByName('c').AsInteger := Item.verse.chapter;
-          Query.ParamByName('v').AsInteger := Item.verse.number;
-          Query.ParamByName('m').AsString  := Item.marker;
-          Query.ParamByName('t').AsString  := Item.text;
-          Query.ExecSQL;
-        end;
-      CommitTransaction;
-    except
-      //
-    end;
-  finally
-    Query.Close;
-  end;
-end;
-
-function TBibleConverter.GetMyswordFootnotes(const Contents : TContentArray): TFootnoteArray;
-var
-  Footnote : TFootnote;
   List : TStringArray;
-  Content : TContent;
-  s : string;
-  k : integer = 0;
+  number : string;
+  i : integer;
 begin
-  SetLength(Result, Length(Contents));
+  if not s.Contains('<W') then Exit;
+  List := XmlToList(s);
 
-  for Content in Contents do
-    if Content.text.Contains('<RF') then
-      for s in ExtractMyswordFootnotes(Content.text) do
-        begin
-          List := s.Split(delimiter);
-          if Length(List) < 2 then Continue;
+  for i:=Low(List) to High(List) do
+    if Prefix('<WH', List[i]) or Prefix('<WG', List[i]) then
+      begin
+        number := List[i];
+        Replace(number,'<W','');
+        Replace(number,'>' ,'');
+        List[i] := '<S>' + number + '</S>';
+      end
+    else if Prefix('<WT', List[i]) then
+      begin
+        number := List[i];
+        Replace(number,'<WT','');
+        Replace(number,'>' ,'');
+        List[i] := '<m>' + number + '</m>';
+      end;
 
-          Footnote.verse  := Content.verse;
-          Footnote.marker := List[0];
-          Footnote.text   := List[1];
-
-          Result[k] := Footnote;
-          inc(k);
-        end;
-
-  SetLength(Result, k);
+  s := ''.Join('',List).Trim;
 end;
 
-procedure TBibleConverter.Convert;
+function ExtractMyswordFootnotes(s: string): TStringArray;
 var
-  Module : TBible;
-  path : string;
+  item : string;
+  marker : string = '';
+  asterisks : string = '';
+  r : string = '';
+  l : boolean = false;
 begin
-  LoadDatabase;
+  Result := [];
+  for item in XmlToList(s) do
+    begin
+      if item = '<Rf>' then
+        begin
+          if l then Result.Add(marker + delimiter + Trim(r));
+          r := '';
+          l := false;
+        end;
 
-  path := DataPath + Slash + '_' + filename + '.unbound';
+      if l then r += item;
 
-  if FileExists(path) then DeleteFile(path);
-  if FileExists(path) then Exit;
+      if item = '<RF>' then
+        begin
+          asterisks += '*';
+          marker := '[' + asterisks + ']';
+          l := true;
+        end;
 
-  Module := TBible.Create(path, true);
+      if Prefix('<RF q=',item) then
+        begin
+          marker := item.Replace('<RF q=','[').Replace('>',']');
+          l := true;
+        end;
+    end;
+end;
 
-  AssignTo(Module);
-  Module.modified := FormatDateTime('dd/mm/yyyy', Now);
+procedure SetAsterisks(var s: string);
+var
+  List : TStringArray;
+  marker : string = '';
+  i : integer;
+begin
+  List := XmlToList(s);
+  for i:=Low(List) to High(List) do
+    if List[i] = '<f>' then
+      begin
+        marker += '*';
+        List[i] := List[i].Replace('<f>','<f q=' + marker + '>');
+      end;
+  s := ''.Join('',List);
+end;
 
-  Module.InsertDetails;
-  Module.InsertBooks(Books);
-  Module.InsertContents(GetAll);
-  Module.InsertFootnotes( Module.GetMyswordFootnotes(GetAll(true)) );
+procedure ExtractMyswordMarkers(var s: string);
+var
+  List : TStringArray;
+  i : integer;
+begin
+  List := XmlToList(s);
+  for i:=Low(List) to High(List) do
+    if Prefix('<q=', List[i]) then
+      List[i] := List[i].Replace('<q=','[').Replace('>' ,'][~');
+  s := ''.Join('',List);
+end;
 
-  Module.Free;
+procedure CutMyswordFootnotes(var s: string);
+begin
+  if s.Contains('<f>') then SetAsterisks(s);
+
+  if s.Contains('<f ') then
+    begin
+      Replace(s, '<f ','<f><'  );
+      Replace(s,'</f>','~]</f>');
+      ExtractMyswordMarkers(s);
+      CutStr(s,'[~','~]');
+    end;
+end;
+
+procedure ReplaceMyswordTags(var s: string);
+var i : integer;
+begin
+  MyswordStrongsToUnbound(s);
+  for i:=1 to Max do Replace(s, TagsDictionary[i,1], TagsDictionary[i,2]);
+  CutMyswordFootnotes(s);
+  Replace(s,'¶','');
+end;
+
+procedure ReplaceMybibleTags(var s: string);
+begin
+  Replace(s, '<t>', ' ');
+  Replace(s,'</t>', ' ');
+  Replace(s,'<pb/>',' ');
+  Replace(s,'<br/>',' ');
+end;
+
+function EnabledTag(tag: string): boolean;
+var i : integer;
+begin
+  for i:=1 to Max do if Prefix(TagsDictionary[i,2], tag) then Exit(True);
+  Result := False;
+end;
+
+procedure CleanUnabledTags(var s: string);
+var
+  List : TStringArray;
+  i : integer;
+begin
+  List := XmlToList(s);
+
+  for i:=Low(List) to High(List) do
+    if Prefix('<', List[i]) then
+      if not EnabledTag(List[i]) then List[i] := '';
+
+  s := ''.Join('',List);
+end;
+
+function ConvertTags(s: string; format: TFileFormat): string;
+begin
+  if format = mysword then ReplaceMyswordTags(s);
+  if format = mybible then ReplaceMybibleTags(s);
+
+  CleanUnabledTags(s);
+  RemoveDoubleSpaces(s);
+  Result := Trim(s);
+end;
+
+function Prepare(s: string; format: TFileFormat; purge: boolean = true): string;
+begin
+  if format <> unbound then s := ConvertTags(s, format);
+
+  if purge then CutStr(s,'<f>','</f>');
+  CutStr(s,'<h>','</h>');
+
+  Replace(s,'><', {$ifdef linux} '>  <' {$else} '> <' {$endif} );
+  Result := s;
 end;
 
 end.
+
