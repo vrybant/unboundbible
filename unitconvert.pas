@@ -75,6 +75,7 @@ var
   l : boolean = false;
 begin
   Result := [];
+  if s.Contains('<RF ') then Replace(s,'<RF q=*>','<RF>'); // OpenGNT
   if s.Contains('<RF>') then ModifyAsteriskFootnotes(s);
 
   for item in XmlToList(s) do

@@ -579,12 +579,13 @@ var
   s : string;
 begin
   Result := '';
+  marker += #0;
+
   Range := GetRange(Verse, true);
   if Range.IsEmpty then Exit;
 
   for s in ExtractMyswordFootnotes(Range[0]) do
-    if Prefix(marker + #0, s) then
-      Result := s.Replace(marker + #0,'');
+    if Prefix(marker, s) then Result := s.Replace(marker,'');
 end;
 
 function TBible.GetFootnote(Verse: TVerse; marker: string): string;

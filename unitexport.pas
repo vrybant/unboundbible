@@ -16,9 +16,13 @@ type
 
   TFootnoteArray = array of TFootnote;
 
+  TFootnoteArrayHelper = type Helper for TFootnoteArray
+    procedure Add(const Value: TFootnote);
+  end;
+
   TModuleExporter = type Helper for TModule
   private
-    procedure AssignTo(Module: TModule);
+    procedure Assign(Module: TModule);
     procedure InsertDetails;
   end;
 
@@ -36,18 +40,24 @@ implementation
 
 uses UnitConvert;
 
+procedure TFootnoteArrayHelper.Add(const Value: TFootnote);
+begin
+  SetLength(Self, Length(Self)+1);
+  Self[Length(Self)-1] := Value;
+end;
+
 //=================================================================================================
 //                                        TModuleExporter
 //=================================================================================================
 
-procedure TModuleExporter.AssignTo(Module: TModule);
+procedure TModuleExporter.Assign(Module: TModule);
 begin
-  Module.name := name;
-  Module.abbreviation := abbreviation;
-  Module.info := info;
-  Module.language := language;
-  Module.numbering := numbering;
-  Module.modified := modified;
+  name         := Module.name;
+  abbreviation := Module.abbreviation;
+  info         := Module.info;
+  language     := Module.language;
+  numbering    := Module.numbering;
+  modified     := Module.modified;
 end;
 
 procedure TModuleExporter.InsertDetails;
@@ -171,9 +181,8 @@ var
   List : TStringArray;
   Content : TContent;
   s : string;
-  k : integer = 0;
 begin
-  SetLength(Result, Length(Contents));
+  Result := [];
 
   for Content in Contents do
     if Content.text.Contains('<RF') then
@@ -186,15 +195,13 @@ begin
           Footnote.marker := List[0];
           Footnote.text   := List[1];
 
-          Result[k] := Footnote;
-          inc(k);
+          Result.Add(Footnote);
         end;
-
-  SetLength(Result, k);
 end;
 
 procedure TBibleExporter.Exporting;
 var
+  Footnotes : TFootnoteArray;
   Module : TBible;
   path : string;
 begin
@@ -206,15 +213,13 @@ begin
   if FileExists(path) then Exit;
 
   Module := TBible.Create(path, true);
-
-  AssignTo(Module);
+  Module.Assign(Self);
   Module.modified := FormatDateTime('dd/mm/yyyy', Now);
-
   Module.InsertDetails;
   Module.InsertBooks(Books);
   Module.InsertContents(GetAll);
-  Module.InsertFootnotes( Module.GetMyswordFootnotes(GetAll(true)) );
-
+  Footnotes := GetMyswordFootnotes(GetAll(true));
+  Module.InsertFootnotes(Footnotes);
   Module.Free;
 end;
 
