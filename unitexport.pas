@@ -16,20 +16,20 @@ type
 
   TFootnoteArray = array of TFootnote;
 
-  TModuleConverter = type Helper for TModule
+  TModuleExporter = type Helper for TModule
   private
     procedure AssignTo(Module: TModule);
     procedure InsertDetails;
   end;
 
-  TBibleConverter = type Helper for TBible
+  TBibleExporter = type Helper for TBible
   private
     procedure InsertContents(const Contents : TContentArray);
     procedure InsertBooks(Books: TFPGList<TBook>);
     procedure InsertFootnotes(const Footnotes : TFootnoteArray);
     function GetMyswordFootnotes(const Contents : TContentArray): TFootnoteArray;
   public
-    procedure Convert;
+    procedure Exporting;
   end;
 
 implementation
@@ -37,10 +37,10 @@ implementation
 uses UnitConvert;
 
 //=================================================================================================
-//                                       TModuleConverter
+//                                        TModuleExporter
 //=================================================================================================
 
-procedure TModuleConverter.AssignTo(Module: TModule);
+procedure TModuleExporter.AssignTo(Module: TModule);
 begin
   Module.name := name;
   Module.abbreviation := abbreviation;
@@ -50,7 +50,7 @@ begin
   Module.modified := modified;
 end;
 
-procedure TModuleConverter.InsertDetails;
+procedure TModuleExporter.InsertDetails;
 var
   num : string = '';
     n : string = '';
@@ -83,10 +83,10 @@ begin
 end;
 
 //=================================================================================================
-//                                        TBibleConverter
+//                                         TBibleExporter
 //=================================================================================================
 
-procedure TBibleConverter.InsertBooks(Books: TFPGList<TBook>);
+procedure TBibleExporter.InsertBooks(Books: TFPGList<TBook>);
 var
   Book : TBook;
 begin
@@ -111,7 +111,7 @@ begin
   end;
 end;
 
-procedure TBibleConverter.InsertContents(const Contents : TContentArray);
+procedure TBibleExporter.InsertContents(const Contents : TContentArray);
 var
   Item : TContent;
 begin
@@ -137,7 +137,7 @@ begin
   end;
 end;
 
-procedure TBibleConverter.InsertFootnotes(const Footnotes : TFootnoteArray);
+procedure TBibleExporter.InsertFootnotes(const Footnotes : TFootnoteArray);
 var
   Item : TFootnote;
 begin
@@ -165,7 +165,7 @@ begin
   end;
 end;
 
-function TBibleConverter.GetMyswordFootnotes(const Contents : TContentArray): TFootnoteArray;
+function TBibleExporter.GetMyswordFootnotes(const Contents : TContentArray): TFootnoteArray;
 var
   Footnote : TFootnote;
   List : TStringArray;
@@ -193,7 +193,7 @@ begin
   SetLength(Result, k);
 end;
 
-procedure TBibleConverter.Convert;
+procedure TBibleExporter.Exporting;
 var
   Module : TBible;
   path : string;
