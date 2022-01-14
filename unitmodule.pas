@@ -48,6 +48,7 @@ type
     interlinear  : boolean;
     default_     : boolean;
     accented     : boolean;
+    encryption   : boolean;
     favorite     : boolean;
   public
     constructor Create(FilePath: string; new: boolean = false);
@@ -110,6 +111,7 @@ begin
   interlinear  := false;
   default_     := false;
   accented     := false;
+  encryption   := false;
   favorite     := false;
   format       := unbound;
 
@@ -153,6 +155,8 @@ begin
   end;
 
   if not new then OpenDatabase;
+  if encryption then connected := false;
+
 //output(FilePath);
 end;
 
@@ -236,6 +240,7 @@ begin
         try strong       := Query.FieldByName('Strong'      ).AsBoolean; except end;
         try embedded     := Query.FieldByName('Embedded'    ).AsBoolean; except end;
         try interlinear  := Query.FieldByName('Interlinear' ).AsBoolean; except end;
+        try encryption   := Query.FieldByName('Encryption'  ).AsBoolean; except end;
         try default_     := Query.FieldByName('Default'     ).AsBoolean; except end;
 
         connected := true;
