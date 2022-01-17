@@ -21,9 +21,12 @@ type
     procedure InsertFootnotes(const Footnotes: TFootnoteArray);
     function GetMyswordFootnotes(const Contents: TContentArray): TFootnoteArray;
     function GetFootnotes: TFootnoteArray;
-  public
-    procedure Exporting;
   end;
+
+  TToolsExporter = type Helper for TTools
+    public
+      procedure Exporting(Source: TModule);
+    end;
 
 implementation
 
@@ -188,26 +191,31 @@ begin
   if format = mybible then Result := Tools.Commentaries.GetMybibleFootnotes(fileName);
 end;
 
-procedure TBibleExporter.Exporting;
+//=================================================================================================
+//                                        TToolsExporter
+//=================================================================================================
+
+procedure TToolsExporter.Exporting(Source: TModule);
 var
-  Module : TBible;
+  Module, Bible : TBible;
   path : string;
 begin
-  LoadDatabase;
+  Module := (Source as TBible);
+  Module.LoadDatabase;
 
-  path := DataPath + Slash + '_' + filename + '.unbound';
+  path := DataPath + Slash + '_' + Module.filename + '.unbound';
 
   if FileExists(path) then DeleteFile(path);
   if FileExists(path) then Exit;
 
-  Module := TBible.Create(path, true);
-  Module.Assign(Self);
-  Module.modified := FormatDateTime('dd/mm/yyyy', Now);
-  Module.InsertDetails;
-  Module.InsertBooks(Books);
-  Module.InsertContents(GetAll);
-  Module.InsertFootnotes(GetFootnotes);
-  Module.Free;
+  Bible := TBible.Create(path, true);
+  Bible.Assign(Source);
+  Bible.modified := FormatDateTime('dd/mm/yyyy', Now);
+  Bible.InsertDetails;
+  Bible.InsertBooks(Module.Books);
+  Bible.InsertContents(Module.GetAll);
+  Bible.InsertFootnotes(Module.GetFootnotes);
+  Bible.Free;
 end;
 
 end.

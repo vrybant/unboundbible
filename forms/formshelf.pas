@@ -254,9 +254,9 @@ procedure TShelfForm.ButtonExportClick(Sender: TObject);
 begin
   if PageControl.ActivePageIndex = apBible then
     begin
-      (CurrModule as TBible).Exporting;
-//      QuestionDlg(' ', 'Module ' + CurrModule.fileName + ' has been extracted.',
-//        mtInformation, [mrOK, T('OK'), 'IsDefault'], 0);
+      Tools.Exporting(CurrModule);
+      QuestionDlg(' ', 'Module ' + CurrModule.fileName + ' has been extracted.',
+        mtInformation, [mrOK, T('OK'), 'IsDefault'], 0);
     end;
 end;
 
