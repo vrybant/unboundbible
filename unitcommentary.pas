@@ -1,13 +1,28 @@
 unit UnitCommentary;
 
+{$modeswitch typehelpers}
+
 interface
 
 uses
   Classes, Fgl, SysUtils, IniFiles, UnitModule, UnitBible, UnitUtils, UnitLib;
 
 type
+  TFootnote = record
+    verse : TVerse;
+    text : string;
+    marker : string;
+    procedure Init;
+  end;
+
+  TFootnoteArray = array of TFootnote;
+
+  TFootnoteArrayHelper = type Helper for TFootnoteArray
+    procedure Add(const Value: TFootnote);
+  end;
+
   TCommentaryAlias = record
-    commentary, id, book, chapter, fromverse, toverse, data : string;
+    commentary, id, book, chapter, fromverse, toverse, marker, data : string;
   end;
 
   TCommentary = class(TModule)
@@ -17,16 +32,19 @@ type
     constructor Create(filePath: string);
     function GetData(Verse: TVerse): TStringArray;
     function GetMybibleFootnote(Verse: TVerse; marker: string): string;
+    function GetMybibleFootnotes: TFootnoteArray;
   end;
 
   TCommentaries = class(TFPGList<TCommentary>)
   private
     procedure Load;
+    function FindMybibleFootnotes(module: string): TCommentary;
     procedure SavePrivates;
     procedure ReadPrivates;
   public
     constructor Create;
     function GetMybibleFootnote(module: string; Verse: TVerse; marker: string): string;
+    function GetMybibleFootnotes(module: string): TFootnoteArray;
     function FootnotesOnly: boolean;
     procedure DeleteItem(Item: TCommentary);
     destructor Destroy; override;
@@ -42,6 +60,7 @@ const
     chapter    : 'chapter';
     fromverse  : 'fromverse';
     toverse    : 'toverse';
+    marker     : 'marker';
     data       : 'data';
     );
 
@@ -53,13 +72,27 @@ const
     fromverse  : 'verse_number_from';
 //  chapter    : 'chapter_number_to';
     toverse    : 'verse_number_to';
-//  marker     : 'marker';
+    marker     : 'marker';
     data       : 'text';
     );
 
-//========================================================================================
+
+procedure TFootnote.Init;
+begin
+  verse.Init;
+  marker := '';
+  text := '';
+end;
+
+procedure TFootnoteArrayHelper.Add(const Value: TFootnote);
+begin
+  SetLength(Self, Length(Self)+1);
+  Self[Length(Self)-1] := Value;
+end;
+
+//=================================================================================================
 //                                     TCommentary
-//========================================================================================
+//=================================================================================================
 
 constructor TCommentary.Create(filePath: string);
 begin
@@ -126,10 +159,43 @@ begin
       Query.SQL.Text := 'SELECT * FROM ' + z.commentary +
                  ' WHERE ' + z.book      + ' = ' + ToStr(id) +
                    ' AND ' + z.chapter   + ' = ' + ToStr(Verse.chapter) +
-                   ' AND ' + 'marker'    + ' ="' + marker    + '" ';
+                   ' AND ' + z.marker    + ' ="' + marker    + '" ';
 
       Query.Open;
       try Result := Query.FieldByName(z.data).AsString; except end;
+    except
+      //
+    end;
+  finally
+    Query.Close;
+  end;
+end;
+
+function TCommentary.GetMybibleFootnotes: TFootnoteArray;
+var
+  i : integer;
+begin
+  Result := [];
+
+  try
+    try
+      Query.SQL.Text := 'SELECT * FROM ' + z.commentary;
+      Query.Open;
+      Query.Last; // must be called before RecordCount
+      SetLength(Result, Query.RecordCount);
+      Query.First;
+
+      for i:=Low(Result) to High(Result) do
+        begin
+          Result[i].Init;
+          try Result[i].verse.book    := Query.FieldByName(z.book     ).AsInteger; except end;
+          try Result[i].verse.chapter := Query.FieldByName(z.chapter  ).AsInteger; except end;
+          try Result[i].verse.number  := Query.FieldByName(z.fromverse).AsInteger; except end;
+          try Result[i].marker        := Query.FieldByName(z.marker   ).AsString;  except end;
+          try Result[i].text          := Query.FieldByName(z.data     ).AsString;  except end;
+          Result[i].verse.book := DecodeID(Result[i].verse.book);
+          Query.Next;
+        end;
     except
       //
     end;
@@ -174,21 +240,33 @@ begin
       end;
 end;
 
-function TCommentaries.GetMybibleFootnote(module: string; Verse: TVerse; marker: string): string;
+function TCommentaries.FindMybibleFootnotes(module: string): TCommentary;
 var
   Commentary : TCommentary;
   name : string;
 begin
-  Result := '';
-  if Count = 0 then Exit;
+  Result := nil;
   name := ExtractOnlyName(module);
-
   for Commentary in Self do
-    begin
-      if not Commentary.footnotes then Continue;
-      if not Prefix(name, Commentary.filename) then Continue;
-      Result := Commentary.GetMybibleFootnote(Verse, marker);
-    end;
+    if Commentary.footnotes and Prefix(name, Commentary.filename) then Result := Commentary;
+end;
+
+function TCommentaries.GetMybibleFootnote(module: string; Verse: TVerse; marker: string): string;
+var
+  Commentary : TCommentary;
+begin
+  Result := '';
+  Commentary := FindMybibleFootnotes(module);
+  if Commentary <> nil then Result := Commentary.GetMybibleFootnote(Verse, marker);
+end;
+
+function TCommentaries.GetMybibleFootnotes(module: string): TFootnoteArray;
+var
+  Commentary : TCommentary;
+begin
+  Result := [];
+  Commentary := FindMybibleFootnotes(module);
+  if Commentary <> nil then Result := Commentary.GetMybibleFootnotes;
 end;
 
 function TCommentaries.FootnotesOnly: boolean;
