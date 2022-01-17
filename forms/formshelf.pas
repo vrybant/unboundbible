@@ -50,6 +50,7 @@ type
     CurrModule : TModule;
     {$ifdef windows} MemoWidth : integer; {$endif}
     procedure LoadGrids;
+    function ActiveGrid: TStringGrid;
     procedure ShowDetails;
   public
     procedure Localize;
@@ -175,13 +176,30 @@ begin
 
   for Module in Tools.Bibles       do Insert(BiblesGrid, Module);
   for Module in Tools.Dictionaries do Insert(DictionariesGrid, Module);
+
   for Module in Tools.Commentaries do
     if not (Module as TCommentary).footnotes then Insert(CommentariesGrid, Module);
 end;
 
+function TShelfForm.ActiveGrid: TStringGrid;
+begin
+  case PageControl.ActivePageIndex of
+    apBible        : Result := BiblesGrid;
+    apCommentaries : Result := CommentariesGrid;
+    apDictionaries : Result := DictionariesGrid;
+  end;
+end;
+
 procedure TShelfForm.ShowDetails;
 begin
-//if aRow < 1 then Exit;
+  if ActiveGrid.Row < 1 then
+    begin
+      CurrModule := nil;
+      LabelFile.Visible := false;
+      LabelFilename.Caption := '';
+      Memo.Clear;
+      Exit;
+    end;
 
   case PageControl.ActivePageIndex of
     apBible        : CurrModule := Tools.Bibles[BiblesGrid.Row-1];
