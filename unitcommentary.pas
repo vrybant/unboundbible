@@ -17,10 +17,6 @@ type
   TCommentaryArray = array of TCommentaryRec;
   TFootnotesArray = TCommentaryArray;
 
-  TCommentaryArrayHelper = type Helper for TCommentaryArray
-    procedure Add(const Value: TCommentaryRec);
-  end;
-
   TCommentaryAlias = record
     commentary, id, book, chapter, fromverse, toverse, marker, data : string;
   end;
@@ -88,12 +84,6 @@ begin
   toverse   := 0;
   marker    := '';
   data      := '';
-end;
-
-procedure TCommentaryArrayHelper.Add(const Value: TCommentaryRec);
-begin
-  SetLength(Self, Length(Self)+1);
-  Self[Length(Self)-1] := Value;
 end;
 
 //=================================================================================================

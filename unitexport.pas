@@ -25,28 +25,31 @@ type
     procedure Exporting(Source : TBible);
   end;
 
+  TFootnotesArrayHelper = type Helper for TFootnotesArray
+    procedure Add(const Value: TCommentaryRec);
+  end;
+
   TCommentaryExporter = type Helper for TCommentary
     procedure InsertData(const CommentaryArr : TCommentaryArray);
     procedure Exporting(Source : TCommentary);
   end;
 
   TDictionaryExporter = type Helper for TDictionary
-     procedure Exporting(Source : TDictionary);
-   end;
+    procedure Exporting(Source : TDictionary);
+  end;
 
   TToolsExporter = type Helper for TTools
-    public
-      procedure ExportBible(Source: TBible);
-      procedure ExportCommentary(Source: TCommentary);
-      procedure ExportDictionary(Source: TDictionary);
-    end;
+    procedure ExportBible(Source: TBible);
+    procedure ExportCommentary(Source: TCommentary);
+    procedure ExportDictionary(Source: TDictionary);
+  end;
 
 implementation
 
 uses UnitConvert;
 
 //=================================================================================================
-//                                        TModuleExporter
+//                                         Module
 //=================================================================================================
 
 procedure TModuleExporter.InsertDetails(Source: TModule);
@@ -82,7 +85,7 @@ begin
 end;
 
 //=================================================================================================
-//                                         TBibleExporter
+//                                         Bible
 //=================================================================================================
 
 procedure TBibleExporter.InsertBooks(Books: TFPGList<TBook>);
@@ -206,8 +209,14 @@ begin
 end;
 
 //=================================================================================================
-//                                      TTCommentaryExporter
+//                                      Commentary
 //=================================================================================================
+
+procedure TFootnotesArrayHelper.Add(const Value: TCommentaryRec);
+begin
+  SetLength(Self, Length(Self)+1);
+  Self[Length(Self)-1] := Value;
+end;
 
 procedure TCommentaryExporter.InsertData(const CommentaryArr : TCommentaryArray);
 var
@@ -245,7 +254,7 @@ begin
 end;
 
 //=================================================================================================
-//                                    TDictionaryExporter
+//                                        Dictionary
 //=================================================================================================
 
 procedure TDictionaryExporter.Exporting(Source : TDictionary);
@@ -254,7 +263,7 @@ begin
 end;
 
 //=================================================================================================
-//                                        TToolsExporter
+//                                           Tools
 //=================================================================================================
 
 procedure TToolsExporter.ExportBible(Source: TBible);
