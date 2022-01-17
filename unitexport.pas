@@ -5,21 +5,9 @@ unit UnitExport;
 interface
 
 uses
-  Classes, Fgl, SysUtils, UnitModule, UnitBible, UnitUtils, UnitLib;
+  Classes, Fgl, SysUtils, UnitModule, UnitBible, UnitCommentary, UnitTools, UnitUtils, UnitLib;
 
 type
-  TFootnote = record
-    verse : TVerse;
-    text : string;
-    marker : string;
-  end;
-
-  TFootnoteArray = array of TFootnote;
-
-  TFootnoteArrayHelper = type Helper for TFootnoteArray
-    procedure Add(const Value: TFootnote);
-  end;
-
   TModuleExporter = type Helper for TModule
   private
     procedure Assign(Module: TModule);
@@ -28,10 +16,11 @@ type
 
   TBibleExporter = type Helper for TBible
   private
-    procedure InsertContents(const Contents : TContentArray);
+    procedure InsertContents(const Contents: TContentArray);
     procedure InsertBooks(Books: TFPGList<TBook>);
-    procedure InsertFootnotes(const Footnotes : TFootnoteArray);
-    function GetMyswordFootnotes(const Contents : TContentArray): TFootnoteArray;
+    procedure InsertFootnotes(const Footnotes: TFootnoteArray);
+    function GetMyswordFootnotes(const Contents: TContentArray): TFootnoteArray;
+    function GetFootnotes: TFootnoteArray;
   public
     procedure Exporting;
   end;
@@ -39,12 +28,6 @@ type
 implementation
 
 uses UnitConvert;
-
-procedure TFootnoteArrayHelper.Add(const Value: TFootnote);
-begin
-  SetLength(Self, Length(Self)+1);
-  Self[Length(Self)-1] := Value;
-end;
 
 //=================================================================================================
 //                                        TModuleExporter
@@ -199,9 +182,14 @@ begin
         end;
 end;
 
+function TBibleExporter.GetFootnotes: TFootnoteArray;
+begin
+  if format = mysword then Result := GetMyswordFootnotes(GetAll(true));
+  if format = mybible then Result := Tools.Commentaries.GetMybibleFootnotes(fileName);
+end;
+
 procedure TBibleExporter.Exporting;
 var
-  Footnotes : TFootnoteArray;
   Module : TBible;
   path : string;
 begin
@@ -218,8 +206,7 @@ begin
   Module.InsertDetails;
   Module.InsertBooks(Books);
   Module.InsertContents(GetAll);
-  Footnotes := GetMyswordFootnotes(GetAll(true));
-  Module.InsertFootnotes(Footnotes);
+  Module.InsertFootnotes(GetFootnotes);
   Module.Free;
 end;
 
