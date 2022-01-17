@@ -116,6 +116,7 @@ object ShelfForm: TShelfForm
     ActivePage = BiblesSheet
     TabIndex = 0
     TabOrder = 4
+    OnChange = PageControlChange
     object BiblesSheet: TTabSheet
       Caption = 'Bibles'
       ClientHeight = 252

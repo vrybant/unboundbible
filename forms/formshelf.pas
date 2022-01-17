@@ -42,6 +42,7 @@ type
     procedure GridGetCheckboxState(Sender: TObject; ACol, ARow: Integer; var Value: TCheckboxState);
     procedure GridSelection(Sender: TObject; aCol, aRow: Integer);
     procedure GridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
+    procedure PageControlChange(Sender: TObject);
     procedure ToolButtonDeleteClick(Sender: TObject);
     procedure ToolButtonDownloadClick(Sender: TObject);
     procedure ToolButtonFolderClick(Sender: TObject);
@@ -180,6 +181,14 @@ end;
 
 procedure TShelfForm.ShowDetails;
 begin
+//if aRow < 1 then Exit;
+
+  case PageControl.ActivePageIndex of
+    apBible        : CurrModule := Tools.Bibles[BiblesGrid.Row-1];
+    apCommentaries : CurrModule := Tools.Commentaries[CommentariesGrid.Row-1];
+    apDictionaries : CurrModule := Tools.Dictionaries[DictionariesGrid.Row-1];
+  end;
+
   LabelFilename.Caption := CurrModule.fileName;
   LabelFile.Visible := LabelFilename.Caption <> '';
   Memo.Clear;
@@ -187,20 +196,14 @@ begin
   if Length(CurrModule.info) < 400 then Memo.ScrollBars := ssNone;
   Memo.Lines.Add(CurrModule.info);
   Memo.SelStart := 1;
+
+  ToolButtonDelete.Enabled := CurrBible <> CurrModule;
+  ButtonExport.Enabled := ExtractFileExt(CurrModule.fileName) <> '.unbound';
 end;
 
 procedure TShelfForm.GridSelection(Sender: TObject; aCol, aRow: Integer);
 begin
-  if aRow < 1 then Exit;
-
-  if Sender = BiblesGrid       then CurrModule := Tools.Bibles[aRow-1];
-  if Sender = CommentariesGrid then CurrModule := Tools.Commentaries[aRow-1];
-  if Sender = DictionariesGrid then CurrModule := Tools.Dictionaries[aRow-1];
-
   ShowDetails;
-
-  ToolButtonDelete.Enabled := CurrBible.name <> (Sender as TStringGrid).Cells[clName, aRow].TrimLeft;
-  ButtonExport.Enabled := ExtractFileExt(CurrModule.fileName) <> '.unbound';
 end;
 
 procedure TShelfForm.GridGetCellHint(Sender: TObject; aCol, aRow: Integer; var HintText: String);
@@ -213,6 +216,11 @@ begin
   if LabelTest.Width > (Sender as TStringGrid).Columns[aCol].Width - delta then
     HintText := (Sender as TStringGrid).Cells[aCol, aRow];
   LabelTest.Visible := False;
+end;
+
+procedure TShelfForm.PageControlChange(Sender: TObject);
+begin
+  ShowDetails;
 end;
 
 procedure TShelfForm.ToolButtonDeleteClick(Sender: TObject);
