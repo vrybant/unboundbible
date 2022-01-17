@@ -23,14 +23,6 @@ type
     function GetFootnotes: TFootnoteArray;
   end;
 
-  TCommentaryExporter = type Helper for TCommentary
-    function GetMybibleFootnotes: TFootnoteArray;
-  end;
-
-  TCommentariesExporter = type Helper for TCommentaries
-    function GetMybibleFootnotes(module: string): TFootnoteArray;
-  end;
-
   TToolsExporter = type Helper for TTools
     public
       procedure Exporting(Source: TModule);
@@ -197,52 +189,6 @@ function TBibleExporter.GetFootnotes: TFootnoteArray;
 begin
   if format = mysword then Result := GetMyswordFootnotes(GetAll(true));
   if format = mybible then Result := Tools.Commentaries.GetMybibleFootnotes(fileName);
-end;
-
-//=================================================================================================
-//                                      TTCommentaryExporter
-//=================================================================================================
-
-function TCommentaryExporter.GetMybibleFootnotes: TFootnoteArray;
-var
-  i : integer;
-begin
-  Result := [];
-
-  try
-    try
-      Query.SQL.Text := 'SELECT * FROM commentary';
-      Query.Open;
-      Query.Last; // must be called before RecordCount
-      SetLength(Result, Query.RecordCount);
-      Query.First;
-
-      for i:=Low(Result) to High(Result) do
-        begin
-          Result[i].Init;
-          try Result[i].verse.book    := Query.FieldByName('book_number'        ).AsInteger; except end;
-          try Result[i].verse.chapter := Query.FieldByName('chapter_number_from').AsInteger; except end;
-          try Result[i].verse.number  := Query.FieldByName('verse_number_from'  ).AsInteger; except end;
-          try Result[i].marker        := Query.FieldByName('marker'             ).AsString;  except end;
-          try Result[i].text          := Query.FieldByName('text'               ).AsString;  except end;
-          Result[i].verse.book := DecodeID(Result[i].verse.book);
-          Query.Next;
-        end;
-    except
-      //
-    end;
-  finally
-    Query.Close;
-  end;
-end;
-
-function TCommentariesExporter.GetMybibleFootnotes(module: string): TFootnoteArray;
-var
-  Commentary : TCommentary;
-begin
-  Result := [];
-  Commentary := FindMybibleFootnotes(module);
-  if Commentary <> nil then Result := Commentary.GetMybibleFootnotes;
 end;
 
 //=================================================================================================

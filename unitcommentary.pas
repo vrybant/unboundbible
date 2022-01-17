@@ -32,17 +32,19 @@ type
     constructor Create(filePath: string);
     function GetData(Verse: TVerse): TStringArray;
     function GetMybibleFootnote(Verse: TVerse; marker: string): string;
+    function GetMybibleFootnotes: TFootnoteArray;
   end;
 
   TCommentaries = class(TFPGList<TCommentary>)
   private
     procedure Load;
+    function FindMybibleFootnotes(module: string): TCommentary;
     procedure SavePrivates;
     procedure ReadPrivates;
   public
     constructor Create;
-    function FindMybibleFootnotes(module: string): TCommentary;
     function GetMybibleFootnote(module: string; Verse: TVerse; marker: string): string;
+    function GetMybibleFootnotes(module: string): TFootnoteArray;
     function FootnotesOnly: boolean;
     procedure DeleteItem(Item: TCommentary);
     destructor Destroy; override;
@@ -169,6 +171,39 @@ begin
   end;
 end;
 
+function TCommentary.GetMybibleFootnotes: TFootnoteArray;
+var
+  i : integer;
+begin
+  Result := [];
+
+  try
+    try
+      Query.SQL.Text := 'SELECT * FROM ' + z.commentary;
+      Query.Open;
+      Query.Last; // must be called before RecordCount
+      SetLength(Result, Query.RecordCount);
+      Query.First;
+
+      for i:=Low(Result) to High(Result) do
+        begin
+          Result[i].Init;
+          try Result[i].verse.book    := Query.FieldByName(z.book     ).AsInteger; except end;
+          try Result[i].verse.chapter := Query.FieldByName(z.chapter  ).AsInteger; except end;
+          try Result[i].verse.number  := Query.FieldByName(z.fromverse).AsInteger; except end;
+          try Result[i].marker        := Query.FieldByName(z.marker   ).AsString;  except end;
+          try Result[i].text          := Query.FieldByName(z.data     ).AsString;  except end;
+          Result[i].verse.book := DecodeID(Result[i].verse.book);
+          Query.Next;
+        end;
+    except
+      //
+    end;
+  finally
+    Query.Close;
+  end;
+end;
+
 //=================================================================================================
 //                                         TCommentaries
 //=================================================================================================
@@ -223,6 +258,15 @@ begin
   Result := '';
   Commentary := FindMybibleFootnotes(module);
   if Commentary <> nil then Result := Commentary.GetMybibleFootnote(Verse, marker);
+end;
+
+function TCommentaries.GetMybibleFootnotes(module: string): TFootnoteArray;
+var
+  Commentary : TCommentary;
+begin
+  Result := [];
+  Commentary := FindMybibleFootnotes(module);
+  if Commentary <> nil then Result := Commentary.GetMybibleFootnotes;
 end;
 
 function TCommentaries.FootnotesOnly: boolean;
