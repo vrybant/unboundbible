@@ -6,8 +6,15 @@ uses
   Classes, Fgl, SysUtils, UnitModule, UnitBible, UnitUtils, UnitLib;
 
 type
+  TDictionaryRec = record
+    word, data : string;
+    procedure Init;
+  end;
+
+  TDictionaryArray = array of TDictionaryRec;
+
   TDictionaryAlias = record
-    dictionary, word, data, id, book, chapter, fromverse, toverse : string;
+    dictionary, word, data : string;
   end;
 
   TDictionary = class(TModule)
@@ -38,26 +45,26 @@ const
     dictionary : 'Dictionary';
     word       : 'Word';
     data       : 'Data';
-    id         : '';
-    book       : '';
-    chapter    : '';
-    fromverse  : '';
-    toverse    : '';
     );
 
   mybibleAlias : TDictionaryAlias = (
     dictionary : 'dictionary';
     word       : 'topic';
     data       : 'definition';
-    id         : '';
-    book       : '';
-    chapter    : '';
-    fromverse  : '';
-    toverse    : '';
   );
 
 //========================================================================================
-//                                     TDictionary
+//                                   TDictionaryRec
+//========================================================================================
+
+procedure TDictionaryRec.Init;
+begin
+  word := '';
+  data := '';
+end;
+
+//========================================================================================
+//                                      TDictionary
 //========================================================================================
 
 constructor TDictionary.Create(filePath: string);

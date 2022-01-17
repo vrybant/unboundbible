@@ -8,17 +8,18 @@ uses
   Classes, Fgl, SysUtils, IniFiles, UnitModule, UnitBible, UnitUtils, UnitLib;
 
 type
-  TFootnote = record
-    verse : TVerse;
-    text : string;
+  TCommentaryRec = record
+    book, chapter, fromverse, toverse : integer;
     marker : string;
+    data : string;
     procedure Init;
   end;
 
-  TFootnoteArray = array of TFootnote;
+  TCommentaryArray = array of TCommentaryRec;
+  TFootnotesArray = TCommentaryArray;
 
-  TFootnoteArrayHelper = type Helper for TFootnoteArray
-    procedure Add(const Value: TFootnote);
+  TCommentaryArrayHelper = type Helper for TCommentaryArray
+    procedure Add(const Value: TCommentaryRec);
   end;
 
   TCommentaryAlias = record
@@ -32,19 +33,19 @@ type
     constructor Create(filePath: string);
     function GetData(Verse: TVerse): TStringArray;
     function GetMybibleFootnote(Verse: TVerse; marker: string): string;
-    function GetMybibleFootnotes: TFootnoteArray;
+    function GetAll: TCommentaryArray;
   end;
 
   TCommentaries = class(TFPGList<TCommentary>)
   private
     procedure Load;
-    function FindMybibleFootnotes(module: string): TCommentary;
+    function FindCommentary(module: string; footnotes: boolean = true): TCommentary;
     procedure SavePrivates;
     procedure ReadPrivates;
   public
     constructor Create;
     function GetMybibleFootnote(module: string; Verse: TVerse; marker: string): string;
-    function GetMybibleFootnotes(module: string): TFootnoteArray;
+    function GetAll(module: string): TCommentaryArray;
     function FootnotesOnly: boolean;
     procedure DeleteItem(Item: TCommentary);
     destructor Destroy; override;
@@ -54,7 +55,7 @@ implementation
 
 const
   unboundAlias : TCommentaryAlias = (
-    commentary : 'commentary';
+    commentary : 'Commentary';
     id         : 'id';
     book       : 'book';
     chapter    : 'chapter';
@@ -76,15 +77,21 @@ const
     data       : 'text';
     );
 
+//=================================================================================================
+//                                    TCommentaryRec
+//=================================================================================================
 
-procedure TFootnote.Init;
+procedure TCommentaryRec.Init;
 begin
-  verse.Init;
-  marker := '';
-  text := '';
+  book      := 0;
+  chapter   := 0;
+  fromverse := 0;
+  toverse   := 0;
+  marker    := '';
+  data      := '';
 end;
 
-procedure TFootnoteArrayHelper.Add(const Value: TFootnote);
+procedure TCommentaryArrayHelper.Add(const Value: TCommentaryRec);
 begin
   SetLength(Self, Length(Self)+1);
   Self[Length(Self)-1] := Value;
@@ -171,12 +178,11 @@ begin
   end;
 end;
 
-function TCommentary.GetMybibleFootnotes: TFootnoteArray;
+function TCommentary.GetAll: TCommentaryArray;
 var
   i : integer;
 begin
   Result := [];
-
   try
     try
       Query.SQL.Text := 'SELECT * FROM ' + z.commentary;
@@ -188,12 +194,13 @@ begin
       for i:=Low(Result) to High(Result) do
         begin
           Result[i].Init;
-          try Result[i].verse.book    := Query.FieldByName(z.book     ).AsInteger; except end;
-          try Result[i].verse.chapter := Query.FieldByName(z.chapter  ).AsInteger; except end;
-          try Result[i].verse.number  := Query.FieldByName(z.fromverse).AsInteger; except end;
-          try Result[i].marker        := Query.FieldByName(z.marker   ).AsString;  except end;
-          try Result[i].text          := Query.FieldByName(z.data     ).AsString;  except end;
-          Result[i].verse.book := DecodeID(Result[i].verse.book);
+          try Result[i].book      := Query.FieldByName(z.book     ).AsInteger; except end;
+          try Result[i].chapter   := Query.FieldByName(z.chapter  ).AsInteger; except end;
+          try Result[i].fromverse := Query.FieldByName(z.fromverse).AsInteger; except end;
+          try Result[i].toverse   := Query.FieldByName(z.toverse  ).AsInteger; except end;
+          try Result[i].marker    := Query.FieldByName(z.marker   ).AsString;  except end;
+          try Result[i].data      := Query.FieldByName(z.data     ).AsString;  except end;
+          Result[i].book := DecodeID(Result[i].book);
           Query.Next;
         end;
     except
@@ -240,7 +247,7 @@ begin
       end;
 end;
 
-function TCommentaries.FindMybibleFootnotes(module: string): TCommentary;
+function TCommentaries.FindCommentary(module: string; footnotes: boolean = true): TCommentary;
 var
   Commentary : TCommentary;
   name : string;
@@ -248,7 +255,7 @@ begin
   Result := nil;
   name := ExtractOnlyName(module);
   for Commentary in Self do
-    if Commentary.footnotes and Prefix(name, Commentary.filename) then Result := Commentary;
+    if footnotes and Prefix(name, Commentary.filename) then Result := Commentary;
 end;
 
 function TCommentaries.GetMybibleFootnote(module: string; Verse: TVerse; marker: string): string;
@@ -256,17 +263,17 @@ var
   Commentary : TCommentary;
 begin
   Result := '';
-  Commentary := FindMybibleFootnotes(module);
+  Commentary := FindCommentary(module);
   if Commentary <> nil then Result := Commentary.GetMybibleFootnote(Verse, marker);
 end;
 
-function TCommentaries.GetMybibleFootnotes(module: string): TFootnoteArray;
+function TCommentaries.GetAll(module: string): TCommentaryArray;
 var
   Commentary : TCommentary;
 begin
   Result := [];
-  Commentary := FindMybibleFootnotes(module);
-  if Commentary <> nil then Result := Commentary.GetMybibleFootnotes;
+  Commentary := FindCommentary(module, false);
+  if Commentary <> nil then Result := Commentary.GetAll;
 end;
 
 function TCommentaries.FootnotesOnly: boolean;

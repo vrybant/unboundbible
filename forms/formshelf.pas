@@ -173,8 +173,9 @@ begin
   DictionariesGrid.RowCount := 1;
 
   for Module in Tools.Bibles       do Insert(BiblesGrid, Module);
-  for Module in Tools.Commentaries do Insert(CommentariesGrid, Module);
   for Module in Tools.Dictionaries do Insert(DictionariesGrid, Module);
+  for Module in Tools.Commentaries do
+    if not (Module as TCommentary).footnotes then Insert(CommentariesGrid, Module);
 end;
 
 procedure TShelfForm.ShowDetails;
@@ -252,12 +253,15 @@ end;
 
 procedure TShelfForm.ButtonExportClick(Sender: TObject);
 begin
-  if PageControl.ActivePageIndex = apBible then
-    begin
-      Tools.Exporting(CurrModule);
-      QuestionDlg(' ', 'Module ' + CurrModule.fileName + ' has been extracted.',
-        mtInformation, [mrOK, T('OK'), 'IsDefault'], 0);
-    end;
+  case PageControl.ActivePageIndex of
+    apBible        : Tools.ExportBible(CurrModule as TBible);
+    apCommentaries : Tools.ExportCommentary(CurrModule as TCommentary);
+    apDictionaries : Tools.ExportDictionary(CurrModule as TDictionary);
+  end;
+
+  QuestionDlg(' ', 'Module ' + CurrModule.fileName + ' has been extracted.',
+    mtInformation, [mrOK, T('OK'), 'IsDefault'], 0);
+
 end;
 
 end.

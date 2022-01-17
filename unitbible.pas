@@ -53,7 +53,7 @@ type
     function GetUnboundFootnote(Verse: TVerse; marker: string): string;
     function GetMyswordFootnote(Verse: TVerse; marker: string): string;
   public
-    constructor Create(FilePath: string; new: boolean = false);
+    constructor Create(FilePath: string);
     procedure LoadDatabase;
     function FirstVerse: TVerse;
     function BookByNum(n: integer): TBook;
@@ -154,9 +154,9 @@ const
 //                                           TBible
 //=================================================================================================
 
-constructor TBible.Create(FilePath: string; new: boolean = false);
+constructor TBible.Create(FilePath: string);
 begin
-  inherited Create(filePath, new);
+  inherited Create(filePath);
   Books := TFPGList<TBook>.Create;
   if format = mybible then z := mybibleAlias else z := unboundAlias;
   if connected and not TableExists(z.bible) then connected := false;
