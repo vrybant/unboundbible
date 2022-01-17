@@ -167,18 +167,15 @@ end;
 
 function TTools.Get_Reference(out info: string): string;
 var
-  Verses : TVerseArray;
-  item : TVerse;
+  Item : TVerse;
   link : string;
 begin
   Result := '';
-  Verses := References.GetData(CurrVerse, CurrBible.language, info);
-
-  for item in Verses do
+  for Item in References.GetData(CurrVerse, CurrBible.language, info) do
     begin
-      link := CurrBible.VerseToStr(item, not Options.cvAbbreviate);
+      link := CurrBible.VerseToStr(Item, not Options.cvAbbreviate);
       if link.isEmpty then Continue;
-      Result += '<l>' + link + '</l> ' + ''.Join(' ', CurrBible.GetRange(item)) + '<br><br>';
+      Result += '<l>' + link + '</l> ' + ''.Join(' ', CurrBible.GetRange(Item)) + '<br><br>';
     end;
 end;
 

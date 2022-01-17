@@ -12,8 +12,6 @@ type
     procedure Init;
   end;
 
-  TVerseArray = array of TVerse;
-
   TContent = record
     verse : TVerse;
     text : string;

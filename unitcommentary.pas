@@ -10,8 +10,7 @@ uses
 type
   TCommentaryRec = record
     book, chapter, fromverse, toverse : integer;
-    marker : string;
-    data : string;
+    marker, data : string;
     procedure Init;
   end;
 

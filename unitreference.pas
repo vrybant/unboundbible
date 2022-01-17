@@ -6,6 +6,8 @@ uses
   Classes, Fgl, SysUtils, UnitModule, UnitBible, UnitUtils, UnitLib;
 
 type
+  TReferenceArray = array of TVerse;
+
   TReferenceAlias = record
     xreferences, book, chapter, verse, xbook, xchapter, xfromverse, xtoverse, votes : string;
   end;
@@ -13,7 +15,7 @@ type
   TReference = class(TModule)
   private
     z : TReferenceAlias;
-    function GetData(Verse: TVerse): TVerseArray;
+    function GetData(Verse: TVerse): TReferenceArray;
   public
     constructor Create(filePath: string);
   end;
@@ -24,7 +26,7 @@ type
     function ReferenceByLanguage(language: string): TReference;
   public
     constructor Create;
-    function GetData(Verse: TVerse; language: string; out info: string): TVerseArray;
+    function GetData(Verse: TVerse; language: string; out info: string): TReferenceArray;
     procedure DeleteItem(Item: TReference);
     destructor Destroy; override;
   end;
@@ -69,7 +71,7 @@ begin
   if connected and not TableExists(z.xreferences ) then connected := false;
 end;
 
-function TReference.GetData(Verse: TVerse): TVerseArray;
+function TReference.GetData(Verse: TVerse): TReferenceArray;
 var
   V : TVerse;
   v_from, v_to : string;
@@ -156,7 +158,7 @@ begin
     if Reference.language = language then Exit(Reference);
 end;
 
-function TReferences.GetData(Verse: TVerse; language: string; out info: string): TVerseArray;
+function TReferences.GetData(Verse: TVerse; language: string; out info: string): TReferenceArray;
 var
   Reference : TReference;
 begin
