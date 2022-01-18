@@ -11,6 +11,7 @@ type
   { TShelfForm }
 
   TShelfForm = class(TForm)
+    ButtonDelete: TButton;
     ButtonExport: TButton;
     Images: TImageList;
     LabelFile: TLabel;
@@ -19,7 +20,6 @@ type
     Memo: TMemo;
     PageControl: TPageControl;
     Panel: TPanel;
-    StandardToolBar: TToolBar;
     PopupMenu: TPopupMenu;
     MenuItemDelete: TMenuItem;
     BiblesGrid: TStringGrid;
@@ -28,10 +28,9 @@ type
     BiblesSheet: TTabSheet;
     CommentariesSheet: TTabSheet;
     DictionariesSheet: TTabSheet;
-    ToolButtonDownload: TToolButton;
-    ToolButtonFolder: TToolButton;
-    ToolButtonDelete: TToolButton;
+    ToggleBox1: TToggleBox;
     ButtonClose: TButton;
+    procedure ButtonDeleteClick(Sender: TObject);
     procedure ButtonDownloadsClick(Sender: TObject);
     procedure ButtonExportClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
@@ -43,9 +42,6 @@ type
     procedure GridSelection(Sender: TObject; aCol, aRow: Integer);
     procedure GridGetCellHint(Sender: TObject; aCol, ARow: Integer; var HintText: String);
     procedure PageControlChange(Sender: TObject);
-    procedure ToolButtonDeleteClick(Sender: TObject);
-    procedure ToolButtonDownloadClick(Sender: TObject);
-    procedure ToolButtonFolderClick(Sender: TObject);
   private
     CurrModule : TModule;
     {$ifdef windows} MemoWidth : integer; {$endif}
@@ -85,9 +81,7 @@ begin
   BiblesGrid.Columns[clName].Title.Caption := T('Title');
   LabelFile.Caption := T('File Name') + ' : ';
   ButtonClose.Caption := T('Close');
-  ToolButtonDownload.Hint := T('Download');
-  ToolButtonFolder.Hint := T('Folder');
-  ToolButtonDelete.Hint := T('Delete');
+  ButtonDelete.Hint := T('Delete');
 end;
 
 procedure TShelfForm.FormCreate(Sender: TObject);
@@ -215,7 +209,7 @@ begin
   Memo.Lines.Add(CurrModule.info);
   Memo.SelStart := 1;
 
-  ToolButtonDelete.Enabled := CurrBible <> CurrModule;
+  ButtonDelete.Enabled := CurrBible <> CurrModule;
   ButtonExport.Enabled := ExtractFileExt(CurrModule.fileName) <> '.unbound';
 end;
 
@@ -241,31 +235,6 @@ begin
   ShowDetails;
 end;
 
-procedure TShelfForm.ToolButtonDeleteClick(Sender: TObject);
-begin
-  //if QuestionDlg(' ' + T('Confirmation'),
-  //  T('Do you wish to delete this module?') + LineBreaker + LineBreaker +
-  //    Modules[BiblesGrid.Row].name + LineBreaker, mtWarning,
-  //      [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) = idYes then
-  //        begin
-  //          Tools.DeleteModule(Modules[BiblesGrid.Row]);
-  //          Modules.Delete(BiblesGrid.Row);
-  //          BiblesGrid.DeleteRow(BiblesGrid.Row);
-  //          GridSelection(Sender, BiblesGrid.Col, BiblesGrid.Row);
-  //        end;
-end;
-
-procedure TShelfForm.ToolButtonDownloadClick(Sender: TObject);
-begin
-  OpenURL(DownloadsURL);
-end;
-
-procedure TShelfForm.ToolButtonFolderClick(Sender: TObject);
-begin
-  CreateDataDirectory;
-  OpenFolder(DataPath);
-end;
-
 procedure TShelfForm.ButtonFolderClick(Sender: TObject);
 begin
   CreateDataDirectory;
@@ -275,6 +244,22 @@ end;
 procedure TShelfForm.ButtonDownloadsClick(Sender: TObject);
 begin
   OpenURL(DownloadsURL);
+end;
+
+procedure TShelfForm.ButtonDeleteClick(Sender: TObject);
+begin
+  (*
+  if QuestionDlg(' ' + T('Confirmation'),
+    T('Do you wish to delete this module?') + LineBreaker + LineBreaker +
+      Modules[BiblesGrid.Row].name + LineBreaker, mtWarning,
+        [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) = idYes then
+          begin
+            Tools.DeleteModule(Modules[BiblesGrid.Row]);
+            Modules.Delete(BiblesGrid.Row);
+            BiblesGrid.DeleteRow(BiblesGrid.Row);
+            GridSelection(Sender, BiblesGrid.Col, BiblesGrid.Row);
+          end;
+  *)
 end;
 
 procedure TShelfForm.ButtonExportClick(Sender: TObject);

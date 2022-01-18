@@ -1,11 +1,11 @@
 object ShelfForm: TShelfForm
   Left = 576
-  Height = 450
+  Height = 414
   Top = 264
   Width = 620
   BorderStyle = bsDialog
   Caption = ' Modules'
-  ClientHeight = 450
+  ClientHeight = 414
   ClientWidth = 620
   Color = clBtnFace
   OnCreate = FormCreate
@@ -15,117 +15,24 @@ object ShelfForm: TShelfForm
   PopupMenu = PopupMenu
   Position = poScreenCenter
   LCLVersion = '2.0.12.0'
-  object StandardToolBar: TToolBar
-    Left = 0
-    Height = 30
-    Top = 0
-    Width = 620
-    AutoSize = True
-    BorderWidth = 2
-    ButtonHeight = 28
-    ButtonWidth = 28
-    EdgeBorders = [ebBottom]
-    Images = Images
-    Indent = 4
-    ParentColor = False
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 3
-    Wrapable = False
-    object ToolButtonDownload: TToolButton
-      Left = 4
-      Top = 0
-      ImageIndex = 0
-      OnClick = ToolButtonDownloadClick
-    end
-    object ToolButtonFolder: TToolButton
-      Left = 32
-      Top = 0
-      Caption = 'ToolButtonFolder'
-      ImageIndex = 1
-      OnClick = ToolButtonFolderClick
-    end
-    object ToolButtonDelete: TToolButton
-      Left = 60
-      Top = 0
-      ImageIndex = 2
-      OnClick = ToolButtonDeleteClick
-    end
-  end
-  object ButtonClose: TButton
-    Left = 517
-    Height = 25
-    Top = 410
-    Width = 88
-    Caption = 'Close'
-    ModalResult = 1
-    TabOrder = 0
-  end
-  object Panel: TPanel
-    Left = 8
-    Height = 115
-    Top = 327
-    Width = 496
-    BevelInner = bvRaised
-    BevelOuter = bvLowered
-    ClientHeight = 115
-    ClientWidth = 496
-    TabOrder = 1
-    object LabelFile: TLabel
-      Left = 13
-      Height = 15
-      Top = 11
-      Width = 27
-      Caption = 'File : '
-      ParentColor = False
-    end
-    object LabelFilename: TLabel
-      Left = 41
-      Height = 15
-      Top = 11
-      Width = 46
-      Caption = 'filename'
-      ParentColor = False
-    end
-  end
-  object Memo: TMemo
-    Left = 21
-    Height = 78
-    Top = 360
-    Width = 480
-    BorderStyle = bsNone
-    ParentColor = True
-    ReadOnly = True
-    ScrollBars = ssVertical
-    TabOrder = 2
-  end
-  object LabelTest: TLabel
-    Left = 7
-    Height = 15
-    Top = 317
-    Width = 48
-    Caption = 'LabelTest'
-    ParentColor = False
-    Visible = False
-  end
   object PageControl: TPageControl
     Left = 4
     Height = 280
-    Top = 40
-    Width = 601
+    Top = 4
+    Width = 614
     ActivePage = BiblesSheet
     TabIndex = 0
-    TabOrder = 4
+    TabOrder = 0
     OnChange = PageControlChange
     object BiblesSheet: TTabSheet
       Caption = 'Bibles'
       ClientHeight = 252
-      ClientWidth = 593
+      ClientWidth = 606
       object BiblesGrid: TStringGrid
         Left = 0
         Height = 252
         Top = 0
-        Width = 593
+        Width = 606
         Align = alClient
         AutoFillColumns = True
         ColCount = 3
@@ -143,7 +50,7 @@ object ShelfForm: TShelfForm
             ButtonStyle = cbsNone
             Title.Alignment = taCenter
             Title.Caption = 'Title'
-            Width = 519
+            Width = 532
           end        
           item
             Alignment = taCenter
@@ -160,13 +67,14 @@ object ShelfForm: TShelfForm
         RowCount = 4
         ShowHint = True
         TabOrder = 0
+        TabStop = False
         OnCheckboxToggled = GridCheckboxToggled
         OnGetCellHint = GridGetCellHint
         OnGetCheckboxState = GridGetCheckboxState
         OnSelection = GridSelection
         ColWidths = (
           30
-          519
+          532
           40
         )
       end
@@ -279,14 +187,80 @@ object ShelfForm: TShelfForm
       end
     end
   end
-  object ButtonExport: TButton
+  object Panel: TPanel
+    Left = 8
+    Height = 115
+    Top = 291
+    Width = 496
+    BevelInner = bvRaised
+    BevelOuter = bvLowered
+    ClientHeight = 115
+    ClientWidth = 496
+    TabOrder = 1
+    object LabelFile: TLabel
+      Left = 13
+      Height = 15
+      Top = 11
+      Width = 27
+      Caption = 'File : '
+      ParentColor = False
+    end
+    object LabelFilename: TLabel
+      Left = 41
+      Height = 15
+      Top = 11
+      Width = 46
+      Caption = 'filename'
+      ParentColor = False
+    end
+  end
+  object Memo: TMemo
+    Left = 21
+    Height = 78
+    Top = 324
+    Width = 480
+    BorderStyle = bsNone
+    ParentColor = True
+    ReadOnly = True
+    ScrollBars = ssVertical
+    TabOrder = 5
+    TabStop = False
+  end
+  object LabelTest: TLabel
+    Left = 7
+    Height = 15
+    Top = 281
+    Width = 48
+    Caption = 'LabelTest'
+    ParentColor = False
+    Visible = False
+  end
+  object ButtonClose: TButton
     Left = 517
     Height = 25
     Top = 376
     Width = 88
+    Caption = 'Close'
+    ModalResult = 1
+    TabOrder = 4
+  end
+  object ButtonExport: TButton
+    Left = 517
+    Height = 25
+    Top = 337
+    Width = 88
     Caption = 'Export'
     OnClick = ButtonExportClick
-    TabOrder = 5
+    TabOrder = 2
+  end
+  object ButtonDelete: TButton
+    Left = 517
+    Height = 25
+    Top = 298
+    Width = 88
+    Caption = 'Delete'
+    OnClick = ButtonDeleteClick
+    TabOrder = 3
   end
   object PopupMenu: TPopupMenu
     Left = 296
