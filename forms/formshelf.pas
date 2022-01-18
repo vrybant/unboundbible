@@ -12,7 +12,7 @@ type
 
   TShelfForm = class(TForm)
     ButtonDelete: TButton;
-    ButtonExport: TButton;
+    ButtonConvert: TButton;
     Images: TImageList;
     LabelFile: TLabel;
     LabelFilename: TLabel;
@@ -20,8 +20,6 @@ type
     Memo: TMemo;
     PageControl: TPageControl;
     Panel: TPanel;
-    PopupMenu: TPopupMenu;
-    MenuItemDelete: TMenuItem;
     BiblesGrid: TStringGrid;
     CommentariesGrid: TStringGrid;
     DictionariesGrid: TStringGrid;
@@ -31,10 +29,10 @@ type
     ToggleBox1: TToggleBox;
     ButtonClose: TButton;
     procedure ButtonDeleteClick(Sender: TObject);
-    procedure ButtonDownloadsClick(Sender: TObject);
-    procedure ButtonExportClick(Sender: TObject);
+    procedure ButtonConvertClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure GridCheckboxToggled(sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
@@ -44,6 +42,7 @@ type
     procedure PageControlChange(Sender: TObject);
   private
     CurrModule : TModule;
+    ExpertMode : boolean;
     {$ifdef windows} MemoWidth : integer; {$endif}
     procedure LoadGrids;
     function ActiveGrid: TStringGrid;
@@ -64,12 +63,12 @@ uses
 {$R *.lfm}
 
 const
-     apBible        = 0; // active page
-{%H-}apCommentaries = 1;
-{%H-}apDictionaries = 2;
+  apBible        = 0; // active page
+  apCommentaries = 1;
+  apDictionaries = 2;
 
 const
-  clFavr = 0;
+  clFavr = 0; // column
   clName = 1;
   clLang = 2;
   clsMax = 3;
@@ -77,16 +76,17 @@ const
 procedure TShelfForm.Localize;
 begin
   Caption := ' ' + T('Modules');
-  MenuItemDelete.Caption := T('Delete');
   BiblesGrid.Columns[clName].Title.Caption := T('Title');
   LabelFile.Caption := T('File Name') + ' : ';
+  ButtonConvert.Caption := T('Download');
+  ButtonDelete.Caption := T('Delete');
   ButtonClose.Caption := T('Close');
-  ButtonDelete.Hint := T('Delete');
 end;
 
 procedure TShelfForm.FormCreate(Sender: TObject);
 begin
   CurrModule := nil;
+  ExpertMode := false;
   Application.HintPause := 1;
   LabelFilename.Caption := '';
   {$ifdef windows} MemoWidth := Memo.Width; {$endif}
@@ -95,22 +95,33 @@ begin
     BiblesGrid.Top := BiblesGrid.Top + 1;
     BiblesGrid.Height := BiblesGrid.Height - 1;
   {$endif}
-
-  PopupMenu.AutoPopup := False;
 end;
 
 procedure TShelfForm.FormPaint(Sender: TObject);
 begin
+  Caption := ' ' + T('Modules');
+  ButtonConvert.Caption := T('Download');
+
+  if ExpertMode then Caption := Caption + ' - ' + UpperCase(T('Expert Mode'));
+  if ExpertMode then ButtonConvert.Caption := T('Convert');
+
   LabelFilename.Left := LabelFile.Left + LabelFile.Width;
-  {$ifdef windows}
-    Memo.Width := MemoWidth - iif(Memo.ScrollBars = ssNone, 10, 0);
-  {$endif}
+  {$ifdef windows} Memo.Width := MemoWidth - iif(Memo.ScrollBars = ssNone, 10, 0); {$endif}
 end;
 
 procedure TShelfForm.FormShow(Sender: TObject);
 begin
   LoadGrids;
   GridSelection(BiblesGrid, 1, 1);
+end;
+
+procedure TShelfForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if (Key = VK_F8) and (Shift = []) then
+    begin
+      ExpertMode := not ExpertMode;
+      Repaint;
+    end;
 end;
 
 //-------------------------------------------------------------------------------------------------
@@ -210,7 +221,7 @@ begin
   Memo.SelStart := 1;
 
   ButtonDelete.Enabled := CurrBible <> CurrModule;
-  ButtonExport.Enabled := ExtractFileExt(CurrModule.fileName) <> '.unbound';
+  ButtonConvert.Enabled := ExtractFileExt(CurrModule.fileName) <> '.unbound';
 end;
 
 procedure TShelfForm.GridSelection(Sender: TObject; aCol, aRow: Integer);
@@ -241,11 +252,6 @@ begin
   OpenFolder(DataPath);
 end;
 
-procedure TShelfForm.ButtonDownloadsClick(Sender: TObject);
-begin
-  OpenURL(DownloadsURL);
-end;
-
 procedure TShelfForm.ButtonDeleteClick(Sender: TObject);
 begin
   (*
@@ -262,8 +268,14 @@ begin
   *)
 end;
 
-procedure TShelfForm.ButtonExportClick(Sender: TObject);
+procedure TShelfForm.ButtonConvertClick(Sender: TObject);
 begin
+  if not ExpertMode then
+    begin
+      OpenURL(DownloadsURL);
+      Exit;
+    end;
+
   case PageControl.ActivePageIndex of
     apBible        : Tools.ExportBible(CurrModule as TBible);
     apCommentaries : Tools.ExportCommentary(CurrModule as TCommentary);

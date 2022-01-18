@@ -8,11 +8,12 @@ object ShelfForm: TShelfForm
   ClientHeight = 414
   ClientWidth = 620
   Color = clBtnFace
+  KeyPreview = True
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnPaint = FormPaint
   OnShow = FormShow
   ParentFont = True
-  PopupMenu = PopupMenu
   Position = poScreenCenter
   LCLVersion = '2.0.12.0'
   object PageControl: TPageControl
@@ -82,12 +83,12 @@ object ShelfForm: TShelfForm
     object CommentariesSheet: TTabSheet
       Caption = 'Commentaries'
       ClientHeight = 252
-      ClientWidth = 593
+      ClientWidth = 606
       object CommentariesGrid: TStringGrid
         Left = 0
         Height = 252
         Top = 0
-        Width = 593
+        Width = 606
         Align = alClient
         AutoFillColumns = True
         ColCount = 3
@@ -105,7 +106,7 @@ object ShelfForm: TShelfForm
             ButtonStyle = cbsNone
             Title.Alignment = taCenter
             Title.Caption = 'Title'
-            Width = 502
+            Width = 515
           end        
           item
             Alignment = taCenter
@@ -122,13 +123,14 @@ object ShelfForm: TShelfForm
         RowCount = 4
         ShowHint = True
         TabOrder = 0
+        TabStop = False
         OnCheckboxToggled = GridCheckboxToggled
         OnGetCellHint = GridGetCellHint
         OnGetCheckboxState = GridGetCheckboxState
         OnSelection = GridSelection
         ColWidths = (
           30
-          502
+          515
           40
         )
       end
@@ -136,12 +138,12 @@ object ShelfForm: TShelfForm
     object DictionariesSheet: TTabSheet
       Caption = 'Dictionaries'
       ClientHeight = 252
-      ClientWidth = 593
+      ClientWidth = 606
       object DictionariesGrid: TStringGrid
         Left = 0
         Height = 252
         Top = 0
-        Width = 593
+        Width = 606
         Align = alClient
         AutoFillColumns = True
         ColCount = 3
@@ -160,7 +162,7 @@ object ShelfForm: TShelfForm
             ButtonStyle = cbsNone
             Title.Alignment = taCenter
             Title.Caption = 'Title'
-            Width = 532
+            Width = 545
           end        
           item
             Alignment = taCenter
@@ -177,11 +179,12 @@ object ShelfForm: TShelfForm
         RowCount = 4
         ShowHint = True
         TabOrder = 0
+        TabStop = False
         OnGetCellHint = GridGetCellHint
         OnSelection = GridSelection
         ColWidths = (
           0
-          532
+          545
           40
         )
       end
@@ -235,44 +238,36 @@ object ShelfForm: TShelfForm
     ParentColor = False
     Visible = False
   end
-  object ButtonClose: TButton
-    Left = 517
-    Height = 25
-    Top = 376
-    Width = 88
-    Caption = 'Close'
-    ModalResult = 1
-    TabOrder = 4
-  end
-  object ButtonExport: TButton
-    Left = 517
-    Height = 25
-    Top = 337
-    Width = 88
-    Caption = 'Export'
-    OnClick = ButtonExportClick
+  object ButtonConvert: TButton
+    Left = 516
+    Height = 26
+    Top = 296
+    Width = 90
+    Caption = 'Convert'
+    OnClick = ButtonConvertClick
     TabOrder = 2
   end
   object ButtonDelete: TButton
-    Left = 517
-    Height = 25
-    Top = 298
-    Width = 88
+    Left = 516
+    Height = 26
+    Top = 336
+    Width = 90
     Caption = 'Delete'
     OnClick = ButtonDeleteClick
     TabOrder = 3
   end
-  object PopupMenu: TPopupMenu
-    Left = 296
-    Top = 164
-    object MenuItemDelete: TMenuItem
-      Caption = 'Delete'
-      ImageIndex = 31
-    end
+  object ButtonClose: TButton
+    Left = 516
+    Height = 26
+    Top = 376
+    Width = 90
+    Caption = 'Close'
+    ModalResult = 1
+    TabOrder = 4
   end
   object Images: TImageList
-    Left = 168
-    Top = 192
+    Left = 176
+    Top = 176
     Bitmap = {
       4C69030000001000000010000000FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FFFDFFFFFFF7FAFFFFF7FBFFFFFEFFFFFF00FF00FF00FF00FF00
