@@ -120,7 +120,7 @@ begin
   if (Key = VK_F8) and (Shift = []) then
     begin
       ExpertMode := not ExpertMode;
-      Repaint;
+      ShowDetails;
     end;
 end;
 
@@ -220,8 +220,8 @@ begin
   Memo.Lines.Add(CurrModule.info);
   Memo.SelStart := 1;
 
+  ButtonConvert.Enabled := not ExpertMode or (ExtractFileExt(CurrModule.fileName) <> '.unbound');
   ButtonDelete.Enabled := CurrBible <> CurrModule;
-  ButtonConvert.Enabled := ExtractFileExt(CurrModule.fileName) <> '.unbound';
 end;
 
 procedure TShelfForm.GridSelection(Sender: TObject; aCol, aRow: Integer);
