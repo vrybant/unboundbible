@@ -18,20 +18,20 @@ type
   private
     procedure InsertContents(const Contents: TContentArray);
     procedure InsertBooks(Books: TFPGList<TBook>);
-    procedure InsertFootnotes(const Footnotes: TStringArray);
+    procedure InsertFootnotes(const List: TStringArray);
     function GetMyswordFootnotes(const Contents: TContentArray): TStringArray;
     function GetFootnotes: TStringArray;
   public
-    procedure Exporting(Source : TBible);
+    procedure Exporting(Bible: TBible);
   end;
 
   TCommentaryExporter = type Helper for TCommentary
-    procedure InsertData(const List : TStringArray);
-    procedure Exporting(Source : TCommentary);
+    procedure InsertData(const List: TStringArray);
+    procedure Exporting(Commentary: TCommentary);
   end;
 
   TDictionaryExporter = type Helper for TDictionary
-    procedure Exporting(Source : TDictionary);
+    procedure Exporting(Source: TDictionary);
   end;
 
   TToolsExporter = type Helper for TTools
@@ -135,76 +135,68 @@ begin
   end;
 end;
 
-procedure TBibleExporter.InsertFootnotes(const Footnotes : TStringArray);
+procedure TBibleExporter.InsertFootnotes(const List : TStringArray);
 var
-  Item : string;
+  A : TStringArray;
+  s : string;
 begin
-  if Length(Footnotes) = 0 then Exit;
+  output(Length(List));
+  if Length(List) = 0 then Exit;
   try
     Connection.ExecuteDirect('CREATE TABLE "Footnotes"'+
       '("Book" INT, "Chapter" INT, "Verse" INT, "Marker" TEXT, "Text" TEXT);');
-    try
-      for Item in Footnotes do
-        begin
-          (*
-          Query.SQL.Text := 'INSERT INTO Footnotes VALUES (:b,:c,:v,:m,:t);';
-          Query.ParamByName('b').AsInteger := Item.book;
-          Query.ParamByName('c').AsInteger := Item.chapter;
-          Query.ParamByName('v').AsInteger := Item.fromverse;
-          Query.ParamByName('m').AsString  := Item.marker;
-          Query.ParamByName('t').AsString  := Item.data;
-          Query.ExecSQL;
-          *)
-        end;
-      CommitTransaction;
-    except
-      //
-    end;
-  finally
-    Query.Close;
+
+    for s in List do
+      begin
+        A := s.Split(#0);
+        if A.Count < 5 then Continue;
+        Query.SQL.Text := 'INSERT INTO Footnotes VALUES (:b,:c,:v,:m,:t);';
+        Query.ParamByName('b').AsString := A[0]; // book
+        Query.ParamByName('c').AsString := A[1]; // chapter
+        Query.ParamByName('v').AsString := A[2]; // verse
+        Query.ParamByName('m').AsString := A[3]; // marker
+        Query.ParamByName('t').AsString := A[4]; // text
+        Query.ExecSQL;
+      end;
+
+    CommitTransaction;
+  except
+    output('Exception');
   end;
+  Query.Close;
 end;
 
 function TBibleExporter.GetMyswordFootnotes(const Contents : TContentArray): TStringArray;
 var
-  Footnote : string;
-  List : TStringArray;
   Content : TContent;
-  s : string;
+  s, r : string;
 begin
   Result := [];
-
   for Content in Contents do
     if Content.text.Contains('<RF') then
       for s in ExtractMyswordFootnotes(Content.text) do
         begin
-          List := s.Split(#0);
-          if Length(List) < 2 then Continue;
-(*
-          Footnote.book      := Content.verse.book;
-          Footnote.chapter   := Content.verse.chapter;
-          Footnote.fromverse := Content.verse.number;
-          Footnote.marker    := List[0];
-          Footnote.data      := List[1];
-
-          Result.Add(Footnote);
-          *)
+          r := Content.verse.book.ToString    + #0;
+          r += Content.verse.chapter.ToString + #0;
+          r += Content.verse.number.ToString  + #0;
+          r += s;
+          Result.Add(r);
         end;
 end;
 
 function TBibleExporter.GetFootnotes: TStringArray;
 begin
   if format = mysword then Result := GetMyswordFootnotes(GetAll(true));
-  if format = mybible then Result := Tools.Commentaries.GetAll(fileName);
+  if format = mybible then Result := Tools.Commentaries.GetAllFootnotes(fileName);
 end;
 
-procedure TBibleExporter.Exporting(Source : TBible);
+procedure TBibleExporter.Exporting(Bible: TBible);
 begin
-  Source.LoadDatabase;
-  InsertDetails(Source);
-  InsertBooks(Source.Books);
-  InsertContents(Source.GetAll);
-  InsertFootnotes(Source.GetFootnotes);
+  Bible.LoadDatabase;
+  InsertDetails(Bible);
+  InsertBooks(Bible.Books);
+  InsertContents(Bible.GetAll);
+  InsertFootnotes(Bible.GetFootnotes);
 end;
 
 //=================================================================================================
@@ -240,10 +232,10 @@ begin
   Query.Close;
 end;
 
-procedure TCommentaryExporter.Exporting(Source : TCommentary);
+procedure TCommentaryExporter.Exporting(Commentary : TCommentary);
 begin
-  InsertDetails(Source);
-  InsertData(Source.GetAll);
+  InsertDetails(Commentary);
+  InsertData(Commentary.GetAll);
 end;
 
 //=================================================================================================

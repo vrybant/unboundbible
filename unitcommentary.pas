@@ -25,13 +25,13 @@ type
   TCommentaries = class(TFPGList<TCommentary>)
   private
     procedure Load;
-    function FindCommentary(module: string; footnotes: boolean = false): TCommentary;
+    function FindCommentary(module: string): TCommentary;
     procedure SavePrivates;
     procedure ReadPrivates;
   public
     constructor Create;
     function GetMybibleFootnote(module: string; Verse: TVerse; marker: string): string;
-    function GetAll(module: string): TStringArray;
+    function GetAllFootnotes(module: string): TStringArray;
     function FootnotesOnly: boolean;
     procedure DeleteItem(Item: TCommentary);
     destructor Destroy; override;
@@ -139,9 +139,10 @@ end;
 function TCommentary.GetAll(footnotes: boolean = false): TStringArray;
 var
   b : integer;
-  s : string;
+  f, s : string;
 begin
   Result := [];
+  f := iif(footnotes, z.marker, z.toverse);
   try
     Query.SQL.Text := 'SELECT * FROM ' + z.commentary;
     Query.Open;
@@ -153,10 +154,10 @@ begin
           s := DecodeID(b).ToString + #0;
           s += Query.FieldByName(z.chapter  ).AsString + #0;
           s += Query.FieldByName(z.fromverse).AsString + #0;
-          s += Query.FieldByName(z.toverse  ).AsString + #0;
-          if footnotes then s += Query.FieldByName(z.marker).AsString + #0;
-          s += Query.FieldByName(z.data).AsString;
+          s += Query.FieldByName(f          ).AsString + #0;
+          s += Query.FieldByName(z.data     ).AsString;
           Result.Add(s);
+          if DecodeID(b) = 1 then output(s.Replace(#0,'_'));
         except
           //
         end;
@@ -205,7 +206,7 @@ begin
       end;
 end;
 
-function TCommentaries.FindCommentary(module: string; footnotes: boolean = false): TCommentary;
+function TCommentaries.FindCommentary(module: string): TCommentary;
 var
   Commentary : TCommentary;
   name : string;
@@ -213,7 +214,7 @@ begin
   Result := nil;
   name := ExtractOnlyName(module);
   for Commentary in Self do
-    if footnotes and Prefix(name, Commentary.filename) then Result := Commentary;
+    if Prefix(name, Commentary.filename) then Result := Commentary;
 end;
 
 function TCommentaries.GetMybibleFootnote(module: string; Verse: TVerse; marker: string): string;
@@ -221,17 +222,17 @@ var
   Commentary : TCommentary;
 begin
   Result := '';
-  Commentary := FindCommentary(module, true);
+  Commentary := FindCommentary(module);
   if Commentary <> nil then Result := Commentary.GetMybibleFootnote(Verse, marker);
 end;
 
-function TCommentaries.GetAll(module: string): TStringArray;
+function TCommentaries.GetAllFootnotes(module: string): TStringArray;
 var
   Commentary : TCommentary;
 begin
   Result := [];
   Commentary := FindCommentary(module);
-  if Commentary <> nil then Result := Commentary.GetAll;
+  if Commentary <> nil then Result := Commentary.GetAll(true);
 end;
 
 function TCommentaries.FootnotesOnly: boolean;
