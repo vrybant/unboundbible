@@ -18,19 +18,15 @@ type
   private
     procedure InsertContents(const Contents: TContentArray);
     procedure InsertBooks(Books: TFPGList<TBook>);
-    procedure InsertFootnotes(const Footnotes: TFootnotesArray);
-    function GetMyswordFootnotes(const Contents: TContentArray): TFootnotesArray;
-    function GetFootnotes: TFootnotesArray;
+    procedure InsertFootnotes(const Footnotes: TStringArray);
+    function GetMyswordFootnotes(const Contents: TContentArray): TStringArray;
+    function GetFootnotes: TStringArray;
   public
     procedure Exporting(Source : TBible);
   end;
 
-  TFootnotesArrayHelper = type Helper for TFootnotesArray
-    procedure Add(const Value: TCommentaryRec);
-  end;
-
   TCommentaryExporter = type Helper for TCommentary
-    procedure InsertData(const CommentaryArr : TCommentaryArray);
+    procedure InsertData(const CommentaryArr : TStringArray);
     procedure Exporting(Source : TCommentary);
   end;
 
@@ -139,9 +135,9 @@ begin
   end;
 end;
 
-procedure TBibleExporter.InsertFootnotes(const Footnotes : TFootnotesArray);
+procedure TBibleExporter.InsertFootnotes(const Footnotes : TStringArray);
 var
-  Item : TCommentaryRec;
+  Item : string;
 begin
   if Length(Footnotes) = 0 then Exit;
   try
@@ -150,6 +146,7 @@ begin
     try
       for Item in Footnotes do
         begin
+          (*
           Query.SQL.Text := 'INSERT INTO Footnotes VALUES (:b,:c,:v,:m,:t);';
           Query.ParamByName('b').AsInteger := Item.book;
           Query.ParamByName('c').AsInteger := Item.chapter;
@@ -157,6 +154,7 @@ begin
           Query.ParamByName('m').AsString  := Item.marker;
           Query.ParamByName('t').AsString  := Item.data;
           Query.ExecSQL;
+          *)
         end;
       CommitTransaction;
     except
@@ -167,9 +165,9 @@ begin
   end;
 end;
 
-function TBibleExporter.GetMyswordFootnotes(const Contents : TContentArray): TFootnotesArray;
+function TBibleExporter.GetMyswordFootnotes(const Contents : TContentArray): TStringArray;
 var
-  Footnote : TCommentaryRec;
+  Footnote : string;
   List : TStringArray;
   Content : TContent;
   s : string;
@@ -182,7 +180,7 @@ begin
         begin
           List := s.Split(#0);
           if Length(List) < 2 then Continue;
-
+(*
           Footnote.book      := Content.verse.book;
           Footnote.chapter   := Content.verse.chapter;
           Footnote.fromverse := Content.verse.number;
@@ -190,10 +188,11 @@ begin
           Footnote.data      := List[1];
 
           Result.Add(Footnote);
+          *)
         end;
 end;
 
-function TBibleExporter.GetFootnotes: TFootnotesArray;
+function TBibleExporter.GetFootnotes: TStringArray;
 begin
   if format = mysword then Result := GetMyswordFootnotes(GetAll(true));
   if format = mybible then Result := Tools.Commentaries.GetAll(fileName);
@@ -212,15 +211,9 @@ end;
 //                                      Commentary
 //=================================================================================================
 
-procedure TFootnotesArrayHelper.Add(const Value: TCommentaryRec);
-begin
-  SetLength(Self, Length(Self)+1);
-  Self[Length(Self)-1] := Value;
-end;
-
-procedure TCommentaryExporter.InsertData(const CommentaryArr : TCommentaryArray);
+procedure TCommentaryExporter.InsertData(const CommentaryArr : TStringArray);
 var
-  Item : TCommentaryRec;
+  Item : string;
 begin
   if Length(CommentaryArr) = 0 then Exit;
   try
@@ -229,6 +222,7 @@ begin
     try
       for Item in CommentaryArr do
         begin
+          (*
           Query.SQL.Text := 'INSERT INTO Commentary VALUES (:b,:c,:f,:t,:d);';
           Query.ParamByName('b').AsInteger := Item.book;
           Query.ParamByName('c').AsInteger := Item.chapter;
@@ -236,6 +230,7 @@ begin
           Query.ParamByName('t').AsInteger := Item.toverse;
           Query.ParamByName('d').AsString  := Item.data;
           Query.ExecSQL;
+          *)
         end;
       CommitTransaction;
     except
