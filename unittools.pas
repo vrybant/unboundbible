@@ -127,23 +127,36 @@ begin
   for item in List do Highlight(s, item, Options);
 end;
 
+function VerseFromLine(s: string): TVerse;
+var
+  A : TStringArray;
+begin
+  Result.Init;
+  A := s.Split(#0);
+  if A.Count < 3 then Exit;
+  Result.book    := ToInt(A[0]);
+  Result.chapter := ToInt(A[1]);
+  Result.number  := ToInt(A[2]);
+  Result.count   := 1;
+end;
+
 function TTools.Get_Search(st: string; out count: integer): string;
 var
-  ContentArray : TContentArray;
-  content : TContent;
-  link, text : string;
+  List, A : TStringArray;
+  s, link, text : string;
 begin
   Result := '';
-  ContentArray := CurrBible.Search(st, CurrentSearchOptions, CurrentSearchRange);
-  count := Length(ContentArray);
+  List := CurrBible.Search(st, CurrentSearchOptions, CurrentSearchRange);
+  count := List.Count;
 
-  for content in ContentArray do
+  for s in List do
     begin
-      link := CurrBible.VerseToStr(content.verse,true);
-      text := content.text;
-      if CurrBible.accented then Replace(text,AcuteChar,'');
-
-      Highlights(text,st,CurrentSearchOptions);
+      A := s.Split(#0);
+      if A.Count < 4 then Continue;
+      link := CurrBible.VerseToStr(VerseFromLine(s), true);
+      text := A[3];
+      if CurrBible.accented then Replace(text, AcuteChar,'');
+      Highlights(text, st, CurrentSearchOptions);
       text := '<l>' + link + '</l>' + ' ' + text + '<br><br>';
       Result += text;
     end;

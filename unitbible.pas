@@ -12,14 +12,6 @@ type
     procedure Init;
   end;
 
-  TContent = record
-    verse : TVerse;
-    text : string;
-    procedure Init;
-  end;
-
-  TContentArray = array of TContent;
-
   TBook = class
     title   : string;
     abbr    : string;
@@ -45,7 +37,7 @@ type
     Books : TFPGList<TBook>;
   private
     z : TBibleAlias;
-    function RankContents(const Contents: TContentArray): TContentArray;
+    function RankContent(const List: TStringArray): TStringArray;
     procedure LoadUnboundDatabase;
     procedure LoadMyswordDatabase;
     function GetUnboundFootnote(Verse: TVerse; marker: string): string;
@@ -62,7 +54,7 @@ type
     function GetRange(Verse: TVerse; raw: boolean = false): TStringArray;
     function GetAll(raw: boolean = false): TStringArray;
     function GoodLink(Verse: TVerse): boolean;
-    function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
+    function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TStringArray;
     procedure ShowTags;
     function GetTitles: TStringArray;
     function ChaptersCount(Verse: TVerse): integer;
@@ -140,12 +132,6 @@ const
    chapter := 1;
    number  := 1;
    count   := 1;
- end;
-
- procedure TContent.Init;
- begin
-   verse.Init;
-   text := '';
  end;
 
 //=================================================================================================
@@ -399,68 +385,68 @@ begin
   Result := not GetRange(Verse).IsEmpty;
 end;
 
-function TBible.RankContents(const Contents: TContentArray): TContentArray;
+function TBible.RankContent(const List: TStringArray): TStringArray;
 var
   Book : TBook;
-  Content : TContent;
+  s, p : string;
   k : integer = 0;
 begin
-  SetLength(Result, Length(Contents));
+  SetLength(Result, Length(List));
   for Book in Books do
-    for Content in Contents do
-      if Content.verse.book = Book.Number then
-        begin
-          Result[k] := Content;
-          Inc(k);
-        end;
+    begin
+      p := Book.Number.ToString + #0;
+      for s in List do
+        if Prefix(p, s) then
+          begin
+            Result[k] := s;
+            Inc(k);
+          end;
+    end;
 end;
 
-function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
+function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TStringArray;
 var
-  Contents : TContentArray = [];
-  queryRange : string = '';
-  from, till : string;
-  nt : boolean;
-  i : integer;
+  r : string = '';
+  s, t : string;
+  b : integer;
 begin
+  Result := [];
   SetSearchOptions(searchString, SearchOptions, format, accented);
 
   if Range.from > 0 then
-    begin
-      from := ToStr(EncodeID(Range.from));
-      till := ToStr(EncodeID(Range.till));
-      queryRange := ' AND ' + z.book + ' >= ' + from + ' AND ' + z.book + ' <= ' + till;
-    end;
-
+    r := ' AND ' + z.book + ' >= ' + EncodeID(Range.from).ToString +
+         ' AND ' + z.book + ' <= ' + EncodeID(Range.till).ToString;
   try
     try
-      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE super(' + z.text + ')=''1''' + queryRange;
+      Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE super(' + z.text + ')=''1''' + r;
       Query.Open;
 
-      Query.Last; // must be called before RecordCount
-      SetLength(Contents, Query.RecordCount);
-      Query.First;
+        while not Query.Eof do
+          try
+            try
+              b := Query.FieldByName(z.book).AsInteger;
+              s := DecodeID(b).ToString + #0;
+              s += Query.FieldByName(z.chapter).AsString + #0;
+              s += Query.FieldByName(z.verse  ).AsString + #0;
+              t := Query.FieldByName(z.text   ).AsString;
+              t := Prepare(t, format, IsNewTestament(b));
+              s += t;
+              Result.Add(s);
+            except
+              //
+            end;
+          finally
+            Query.Next;
+          end;
 
-      for i:=Low(Contents) to High(Contents) do
-        begin
-          Contents[i].Init;
-          try Contents[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
-          try Contents[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
-          try Contents[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
-          try Contents[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
-          Contents[i].verse.book := DecodeID(Contents[i].verse.book);
-          nt := IsNewTestament(Contents[i].verse.book);
-          Contents[i].text := Prepare(Contents[i].text, format, nt);
-          Query.Next;
-        end;
-    finally
-      Query.Close;
+    except
+      Exit([]);
     end;
-  except
-    Exit([]);
+  finally
+    Query.Close;
   end;
 
-  Result := RankContents(Contents);
+  Result := RankContent(Result);
 end;
 
 function TBible.GetAll(raw: boolean = false): TStringArray;
