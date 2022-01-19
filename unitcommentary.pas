@@ -124,16 +124,19 @@ function TCommentary.GetMybibleFootnote(Verse: TVerse; marker: string): string;
 begin
   Result := '';
   try
-    Query.SQL.Text := 'SELECT * FROM ' + z.commentary +
-       ' WHERE ' + z.book      + ' = ' + EncodeID(Verse.book).ToString +
-         ' AND ' + z.chapter   + ' = ' + ToStr(Verse.chapter) +
-         ' AND ' + z.marker    + ' ="' + marker    + '" ';
-    Query.Open;
-    try Result := Query.FieldByName(z.data).AsString; except end;
-  except
-    //
+    try
+      Query.SQL.Text := 'SELECT * FROM ' + z.commentary +
+         ' WHERE ' + z.book      + ' = ' + EncodeID(Verse.book).ToString +
+           ' AND ' + z.chapter   + ' = ' + ToStr(Verse.chapter) +
+           ' AND ' + z.marker    + ' ="' + marker    + '" ';
+      Query.Open;
+      try Result := Query.FieldByName(z.data).AsString; except end;
+    except
+      //
+    end;
+  finally
+    Query.Close;
   end;
-  Query.Close;
 end;
 
 function TCommentary.GetAll(footnotes: boolean = false): TStringArray;
