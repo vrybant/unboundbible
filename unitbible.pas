@@ -49,7 +49,7 @@ type
     function BookByNum(n: integer): TBook;
     function BookByName(s: string): TBook;
     function VerseToStr(Verse: TVerse; full: boolean): string;
-    function SrtToVerse(link : string): TVerse;
+    function SrtToVerse(link: string): TVerse;
     function GetChapter(Verse: TVerse): TStringArray;
     function GetRange(Verse: TVerse; raw: boolean = false): TStringArray;
     function GetAll(raw: boolean = false): TStringArray;
@@ -268,7 +268,7 @@ begin
     Result := Result + '-' + ToStr(verse.number + verse.count - 1);
 end;
 
-function TBible.SrtToVerse(link : string): TVerse;
+function TBible.SrtToVerse(link: string): TVerse;
 var
   Book : TBook;
 

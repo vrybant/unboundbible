@@ -127,17 +127,13 @@ begin
   for item in List do Highlight(s, item, Options);
 end;
 
-function VerseFromLine(s: string): TVerse;
-var
-  A : TStringArray;
+function ArrayToVerse(A: TStringArray): TVerse;
 begin
   Result.Init;
-  A := s.Split(#0);
   if A.Count < 3 then Exit;
   Result.book    := ToInt(A[0]);
   Result.chapter := ToInt(A[1]);
   Result.number  := ToInt(A[2]);
-  Result.count   := 1;
 end;
 
 function TTools.Get_Search(st: string; out count: integer): string;
@@ -153,7 +149,7 @@ begin
     begin
       A := s.Split(#0);
       if A.Count < 4 then Continue;
-      link := CurrBible.VerseToStr(VerseFromLine(s), true);
+      link := CurrBible.VerseToStr(ArrayToVerse(A), true);
       text := A[3];
       if CurrBible.accented then Replace(text, AcuteChar,'');
       Highlights(text, st, CurrentSearchOptions);
