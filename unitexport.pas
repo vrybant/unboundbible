@@ -31,13 +31,14 @@ type
   end;
 
   TDictionaryExporter = type Helper for TDictionary
-    procedure Exporting(Source: TDictionary);
+    procedure InsertData(const List : TStringArray);
+    procedure Exporting(Dictionary: TDictionary);
   end;
 
   TToolsExporter = type Helper for TTools
-    procedure ExportBible(Source: TBible);
-    procedure ExportCommentary(Source: TCommentary);
-    procedure ExportDictionary(Source: TDictionary);
+    procedure ExportBible(Bible: TBible);
+    procedure ExportCommentary(Commentary: TCommentary);
+    procedure ExportDictionary(Dictionary: TDictionary);
   end;
 
 implementation
@@ -252,58 +253,87 @@ end;
 //                                        Dictionary
 //=================================================================================================
 
-procedure TDictionaryExporter.Exporting(Source : TDictionary);
+procedure TDictionaryExporter.InsertData(const List : TStringArray);
+var
+  A : TStringArray;
+  s : string;
 begin
-  InsertDetails(Source);
+  if Length(List) = 0 then Exit;
+  try
+    try
+      Connection.ExecuteDirect('CREATE TABLE "Dictionary"("word" TEXT, "data" TEXT);');
+
+      for s in List do
+        begin
+          A := s.Split(#0);
+          if A.Count < 2 then Continue;
+          Query.SQL.Text := 'INSERT INTO Dictionary VALUES (:w,:d);';
+          Query.ParamByName('w').AsString := A[0]; // word
+          Query.ParamByName('d').AsString := A[1]; // data
+          Query.ExecSQL;
+        end;
+      CommitTransaction;
+    except
+      //
+    end;
+  finally
+    Query.Close;
+  end;
+end;
+
+procedure TDictionaryExporter.Exporting(Dictionary: TDictionary);
+begin
+  InsertDetails(Dictionary);
+  InsertData(Dictionary.GetAll);
 end;
 
 //=================================================================================================
 //                                           Tools
 //=================================================================================================
 
-procedure TToolsExporter.ExportBible(Source: TBible);
+procedure TToolsExporter.ExportBible(Bible: TBible);
 var
-  Bible : TBible;
+  NewBible : TBible;
   path : string;
 begin
-  path := DataPath + Slash + '_' + Source.filename + '.unbound';
+  path := DataPath + Slash + '_' + Bible.filename + '.unbound';
 
   if FileExists(path) then DeleteFile(path);
   if FileExists(path) then Exit;
 
-  Bible := TBible.Create(path);
-  Bible.Exporting(Source);
-  Bible.Free;
+  NewBible := TBible.Create(path);
+  NewBible.Exporting(Bible);
+  NewBible.Free;
 end;
 
-procedure TToolsExporter.ExportCommentary(Source: TCommentary);
+procedure TToolsExporter.ExportCommentary(Commentary: TCommentary);
 var
-  Commentary : TCommentary;
+  NewCommentary : TCommentary;
   path : string;
 begin
-  path := DataPath + Slash + '_' + Source.filename + '.unbound';
+  path := DataPath + Slash + '_' + Commentary.filename + '.unbound';
 
   if FileExists(path) then DeleteFile(path);
   if FileExists(path) then Exit;
 
-  Commentary := TCommentary.Create(path);
-  Commentary.Exporting(Source);
-  Commentary.Free;
+  NewCommentary := TCommentary.Create(path);
+  NewCommentary.Exporting(Commentary);
+  NewCommentary.Free;
 end;
 
-procedure TToolsExporter.ExportDictionary(Source: TDictionary);
+procedure TToolsExporter.ExportDictionary(Dictionary: TDictionary);
 var
-  Dictionary : TDictionary;
+  NewDictionary : TDictionary;
   path : string;
 begin
-  path := DataPath + Slash + '_' + Source.filename + '.unbound';
+  path := DataPath + Slash + '_' + Dictionary.filename + '.unbound';
 
   if FileExists(path) then DeleteFile(path);
   if FileExists(path) then Exit;
 
-  Dictionary := TDictionary.Create(path);
-  Dictionary.Exporting(Source);
-  Dictionary.Free;
+  NewDictionary := TDictionary.Create(path);
+  NewDictionary.Exporting(Dictionary);
+  NewDictionary.Free;
 end;
 
 end.

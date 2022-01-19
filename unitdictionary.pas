@@ -24,6 +24,7 @@ type
   public
     constructor Create(filePath: string);
     function GetData(key: string): TStringArray;
+    function GetAll: TStringArray;
   end;
 
   TDictionaries = class(TFPGList<TDictionary>)
@@ -119,6 +120,37 @@ begin
           Query.Next;
         end;
       SetLength(Result, count);
+    except
+      //
+    end;
+  finally
+    Query.Close;
+  end;
+end;
+
+function TDictionary.GetAll: TStringArray;
+var
+  s : string;
+begin
+  Result := [];
+  try
+    try
+      Query.SQL.Text := 'SELECT * FROM ' + z.dictionary;
+      Query.Open;
+
+      while not Query.Eof do
+        try
+          try
+            s := Query.FieldByName(z.word).AsString + #0;
+            s += Query.FieldByName(z.data).AsString;
+            Result.Add(s);
+          except
+            //
+          end;
+        finally
+          Query.Next;
+        end;
+
     except
       //
     end;
