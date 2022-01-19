@@ -26,7 +26,7 @@ type
   end;
 
   TCommentaryExporter = type Helper for TCommentary
-    procedure InsertData(const CommentaryArr : TStringArray);
+    procedure InsertData(const List : TStringArray);
     procedure Exporting(Source : TCommentary);
   end;
 
@@ -211,35 +211,33 @@ end;
 //                                      Commentary
 //=================================================================================================
 
-procedure TCommentaryExporter.InsertData(const CommentaryArr : TStringArray);
+procedure TCommentaryExporter.InsertData(const List : TStringArray);
 var
-  Item : string;
+  A : TStringArray;
+  s : string;
 begin
-  if Length(CommentaryArr) = 0 then Exit;
+  if Length(List) = 0 then Exit;
   try
     Connection.ExecuteDirect('CREATE TABLE "Commentary"'+
-      '("book" INT, "chapter" INT, "fromverse" INT, "toverse" TEXT, "data" TEXT);');
-    try
-      for Item in CommentaryArr do
-        begin
-          (*
-          Query.SQL.Text := 'INSERT INTO Commentary VALUES (:b,:c,:f,:t,:d);';
-          Query.ParamByName('b').AsInteger := Item.book;
-          Query.ParamByName('c').AsInteger := Item.chapter;
-          Query.ParamByName('f').AsInteger := Item.fromverse;
-          Query.ParamByName('t').AsInteger := Item.toverse;
-          Query.ParamByName('d').AsString  := Item.data;
-          Query.ExecSQL;
-          *)
-        end;
-      CommitTransaction;
-    except
-      //
-      output('except');
-    end;
-  finally
-    Query.Close;
+      '("book" INT, "chapter" INT, "fromverse" INT, "toverse" INT, "data" TEXT);');
+
+    for s in List do
+      begin
+        A := s.Split(#0);
+        if A.Count < 5 then Continue;
+        Query.SQL.Text := 'INSERT INTO Commentary VALUES (:b,:c,:f,:t,:d);';
+        Query.ParamByName('b').AsString := A[0]; // book
+        Query.ParamByName('c').AsString := A[1]; // chapter
+        Query.ParamByName('f').AsString := A[2]; // fromverse
+        Query.ParamByName('t').AsString := A[3]; // toverse
+        Query.ParamByName('d').AsString := A[4]; // data
+        Query.ExecSQL;
+      end;
+    CommitTransaction;
+  except
+    output('exception');
   end;
+  Query.Close;
 end;
 
 procedure TCommentaryExporter.Exporting(Source : TCommentary);
