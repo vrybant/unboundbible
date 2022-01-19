@@ -16,10 +16,10 @@ type
 
   TBibleExporter = type Helper for TBible
   private
-    procedure InsertContents(const Contents: TContentArray);
+    procedure InsertText(const List: TStringArray);
     procedure InsertBooks(Books: TFPGList<TBook>);
     procedure InsertFootnotes(const List: TStringArray);
-    function GetMyswordFootnotes(const Contents: TContentArray): TStringArray;
+    function GetMyswordFootnotes(const List: TStringArray): TStringArray;
     function GetFootnotes: TStringArray;
   public
     procedure Exporting(Bible: TBible);
@@ -109,21 +109,26 @@ begin
   end;
 end;
 
-procedure TBibleExporter.InsertContents(const Contents: TContentArray);
+procedure TBibleExporter.InsertText(const List: TStringArray);
 var
-  Item : TContent;
+  A : TStringArray;
+  s : string;
 begin
+  if Length(List) = 0 then Exit;
   try
-    Connection.ExecuteDirect('CREATE TABLE "Bible"'+
-      '("Book" INT, "Chapter" INT, "Verse" INT, "Scripture" TEXT);');
     try
-      for item in Contents do
+      Connection.ExecuteDirect('CREATE TABLE "Bible"'+
+        '("Book" INT, "Chapter" INT, "Verse" INT, "Scripture" TEXT);');
+
+      for s in List do
         begin
-          Query.SQL.Text := 'INSERT INTO Bible VALUES (:b,:c,:v,:s);';
-          Query.ParamByName('b').AsInteger := Item.verse.book;
-          Query.ParamByName('c').AsInteger := Item.verse.chapter;
-          Query.ParamByName('v').AsInteger := Item.verse.number;
-          Query.ParamByName('s').AsString  := Item.text;
+          A := s.Split(#0);
+          if A.Count < 4 then Continue;
+          Query.SQL.Text := 'INSERT INTO Bible VALUES (:b,:c,:v,:t);';
+          Query.ParamByName('b').AsString := A[0]; // book
+          Query.ParamByName('c').AsString := A[1]; // chapter
+          Query.ParamByName('v').AsString := A[2]; // verse
+          Query.ParamByName('t').AsString := A[3]; // text
           Query.ExecSQL;
         end;
       CommitTransaction;
@@ -143,44 +148,46 @@ begin
   output(Length(List));
   if Length(List) = 0 then Exit;
   try
-    Connection.ExecuteDirect('CREATE TABLE "Footnotes"'+
-      '("Book" INT, "Chapter" INT, "Verse" INT, "Marker" TEXT, "Text" TEXT);');
+    try
+      Connection.ExecuteDirect('CREATE TABLE "Footnotes"'+
+        '("Book" INT, "Chapter" INT, "Verse" INT, "Marker" TEXT, "Text" TEXT);');
 
-    for s in List do
-      begin
-        A := s.Split(#0);
-        if A.Count < 5 then Continue;
-        Query.SQL.Text := 'INSERT INTO Footnotes VALUES (:b,:c,:v,:m,:t);';
-        Query.ParamByName('b').AsString := A[0]; // book
-        Query.ParamByName('c').AsString := A[1]; // chapter
-        Query.ParamByName('v').AsString := A[2]; // verse
-        Query.ParamByName('m').AsString := A[3]; // marker
-        Query.ParamByName('t').AsString := A[4]; // text
-        Query.ExecSQL;
-      end;
+      for s in List do
+        begin
+          A := s.Split(#0);
+          if A.Count < 5 then Continue;
+          Query.SQL.Text := 'INSERT INTO Footnotes VALUES (:b,:c,:v,:m,:t);';
+          Query.ParamByName('b').AsString := A[0]; // book
+          Query.ParamByName('c').AsString := A[1]; // chapter
+          Query.ParamByName('v').AsString := A[2]; // verse
+          Query.ParamByName('m').AsString := A[3]; // marker
+          Query.ParamByName('t').AsString := A[4]; // text
+          Query.ExecSQL;
+        end;
 
-    CommitTransaction;
-  except
-    output('Exception');
+      CommitTransaction;
+    except
+      //
+    end;
+  finally
+    Query.Close;
   end;
-  Query.Close;
 end;
 
-function TBibleExporter.GetMyswordFootnotes(const Contents: TContentArray): TStringArray;
+function TBibleExporter.GetMyswordFootnotes(const List: TStringArray): TStringArray;
 var
-  Content : TContent;
-  s, r : string;
+  Arr : TStringArray;
+  Line, Item : string;
 begin
   Result := [];
-  for Content in Contents do
-    if Content.text.Contains('<RF') then
-      for s in ExtractMyswordFootnotes(Content.text) do
+  for Line in List do
+    if Line.Contains('<RF') then
+      for Item in ExtractMyswordFootnotes(Line) do
         begin
-          r := Content.verse.book.ToString    + #0;
-          r += Content.verse.chapter.ToString + #0;
-          r += Content.verse.number.ToString  + #0;
-          r += s;
-          Result.Add(r);
+          Arr := Line.Split(#0);
+          if Arr.Count < 4 then Continue;
+          Arr[3] := Item;
+          Result.Add(''.Join(#0, Arr));
         end;
 end;
 
@@ -195,7 +202,7 @@ begin
   Bible.LoadDatabase;
   InsertDetails(Bible);
   InsertBooks(Bible.Books);
-  InsertContents(Bible.GetAll);
+  InsertText(Bible.GetAll);
   InsertFootnotes(Bible.GetFootnotes);
 end;
 
@@ -210,26 +217,29 @@ var
 begin
   if Length(List) = 0 then Exit;
   try
-    Connection.ExecuteDirect('CREATE TABLE "Commentary"'+
-      '("book" INT, "chapter" INT, "fromverse" INT, "toverse" INT, "data" TEXT);');
+    try
+      Connection.ExecuteDirect('CREATE TABLE "Commentary"'+
+        '("book" INT, "chapter" INT, "fromverse" INT, "toverse" INT, "data" TEXT);');
 
-    for s in List do
-      begin
-        A := s.Split(#0);
-        if A.Count < 5 then Continue;
-        Query.SQL.Text := 'INSERT INTO Commentary VALUES (:b,:c,:f,:t,:d);';
-        Query.ParamByName('b').AsString := A[0]; // book
-        Query.ParamByName('c').AsString := A[1]; // chapter
-        Query.ParamByName('f').AsString := A[2]; // fromverse
-        Query.ParamByName('t').AsString := A[3]; // toverse
-        Query.ParamByName('d').AsString := A[4]; // data
-        Query.ExecSQL;
-      end;
-    CommitTransaction;
-  except
-    output('exception');
+      for s in List do
+        begin
+          A := s.Split(#0);
+          if A.Count < 5 then Continue;
+          Query.SQL.Text := 'INSERT INTO Commentary VALUES (:b,:c,:f,:t,:d);';
+          Query.ParamByName('b').AsString := A[0]; // book
+          Query.ParamByName('c').AsString := A[1]; // chapter
+          Query.ParamByName('f').AsString := A[2]; // fromverse
+          Query.ParamByName('t').AsString := A[3]; // toverse
+          Query.ParamByName('d').AsString := A[4]; // data
+          Query.ExecSQL;
+        end;
+      CommitTransaction;
+    except
+      //
+    end;
+  finally
+    Query.Close;
   end;
-  Query.Close;
 end;
 
 procedure TCommentaryExporter.Exporting(Commentary : TCommentary);

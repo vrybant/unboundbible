@@ -60,7 +60,7 @@ type
     function SrtToVerse(link : string): TVerse;
     function GetChapter(Verse: TVerse): TStringArray;
     function GetRange(Verse: TVerse; raw: boolean = false): TStringArray;
-    function GetAll(raw: boolean = false): TContentArray;
+    function GetAll(raw: boolean = false): TStringArray;
     function GoodLink(Verse: TVerse): boolean;
     function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TContentArray;
     procedure ShowTags;
@@ -463,35 +463,35 @@ begin
   Result := RankContents(Contents);
 end;
 
-function TBible.GetAll(raw: boolean = false): TContentArray;
+function TBible.GetAll(raw: boolean = false): TStringArray;
 var
-  i : integer;
+  s, t : string;
+  b : integer;
 begin
   Result := [];
-
   try
     try
       Query.SQL.Text := 'SELECT * FROM ' + z.bible;
       Query.Open;
 
-      Query.Last; // must be called before RecordCount
-      SetLength(Result, Query.RecordCount);
-      Query.First;
-
-      for i:=Low(Result) to High(Result) do
-        begin
-          Result[i].Init;
-          try Result[i].verse.book    := Query.FieldByName(z.book   ).AsInteger; except end;
-          try Result[i].verse.chapter := Query.FieldByName(z.chapter).AsInteger; except end;
-          try Result[i].verse.number  := Query.FieldByName(z.verse  ).AsInteger; except end;
-          try Result[i].text          := Query.FieldByName(z.text   ).AsString;  except end;
-          Result[i].verse.book := DecodeID(Result[i].verse.book);
-
-          if not raw and (format <> unbound) then
-            Result[i].text := ConvertTags(Result[i].text, format);
-
+      while not Query.Eof do
+        try
+          try
+            b := Query.FieldByName(z.book).AsInteger;
+            s := DecodeID(b).ToString + #0;
+            s += Query.FieldByName(z.chapter).AsString + #0;
+            s += Query.FieldByName(z.verse  ).AsString + #0;
+            t := Query.FieldByName(z.text   ).AsString;
+            if not raw and (format <> unbound) then t := ConvertTags(t, format);
+            s += t;
+            Result.Add(s);
+          except
+            //
+          end;
+        finally
           Query.Next;
         end;
+
     except
       //
     end;
@@ -502,12 +502,11 @@ end;
 
 procedure TBible.ShowTags;
 var
-  Content : TContent;
-  item : string;
+  s, item : string;
   r : string = '';
 begin
-  for Content in GetAll do
-    for item in XmlToList(Content.text) do
+  for s in GetAll do
+    for item in XmlToList(s) do
       if Prefix('<', item) then
         if not Prefix('<W', item) then
           if not r.Contains(item) then r += item;
@@ -522,24 +521,17 @@ begin
 end;
 
 function TBible.ChaptersCount(Verse: TVerse): integer;
-var
-  id : integer;
 begin
   Result := 1;
-  id := EncodeID(Verse.book);
-
   try
-    try
-      Query.SQL.Text := 'SELECT MAX(' + z.chapter + ') AS Count FROM ' + z.bible +
-                            ' WHERE ' + z.book + '=' + ToStr(id);
-      Query.Open;
-      try Result := Query.FieldByName('Count').AsInteger; except end;
-    except
-      //
-    end;
-  finally
-    Query.Close;
+    Query.SQL.Text := 'SELECT MAX(' + z.chapter + ') AS Count FROM ' + z.bible +
+                      ' WHERE ' + z.book + '=' + EncodeID(Verse.book).ToString;
+    Query.Open;
+    try Result := Query.FieldByName('Count').AsInteger; except end;
+  except
+    //
   end;
+  Query.Close;
 end;
 
 function TBible.GetUnboundFootnote(Verse: TVerse; marker: string): string;
@@ -549,15 +541,15 @@ begin
   try
     try
       Query.SQL.Text := 'SELECT * FROM Footnotes'
-        + ' WHERE Book = '  + ToStr(Verse.book)
-        + ' AND Chapter = ' + ToStr(Verse.chapter)
-        + ' AND Verse = '   + ToStr(Verse.number)
+        + ' WHERE Book = '  + Verse.book.ToString
+        + ' AND Chapter = ' + Verse.chapter.ToString
+        + ' AND Verse = '   + Verse.number.ToString
         + ' AND Marker = "' + marker + '" ';
 
       Query.Open;
       while not Query.Eof do
         try
-          List.Add( Query.FieldByName('Text').AsString );
+          List.Add( Query.FieldByName('Text').AsString );            // ???? ex
         finally
           Query.Next;
         end;
@@ -627,6 +619,8 @@ begin
   for f in DatabaseList do
     if f.Contains('.bbl.') or f.Contains('.SQLite3') then
       begin
+        if f.Contains('\_') then Continue; // DEBUG
+
         if f.Contains('.dictionary.') or f.Contains('.commentaries.') then Continue;
         if f.Contains('.crossreferences.') then Continue;
         Bible := TBible.Create(f);
