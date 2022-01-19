@@ -142,32 +142,35 @@ var
   f, s : string;
 begin
   Result := [];
-  f := iif(footnotes, z.marker, z.toverse);
   try
-    Query.SQL.Text := 'SELECT * FROM ' + z.commentary;
-    Query.Open;
+    try
+      Query.SQL.Text := 'SELECT * FROM ' + z.commentary;
+      Query.Open;
+      f := iif(footnotes, z.marker, z.toverse);
 
-    while not Query.Eof do
-      begin
+      while not Query.Eof do
         try
-          b := Query.FieldByName(z.book).AsInteger;
-          s := DecodeID(b).ToString + #0;
-          s += Query.FieldByName(z.chapter  ).AsString + #0;
-          s += Query.FieldByName(z.fromverse).AsString + #0;
-          s += Query.FieldByName(f          ).AsString + #0;
-          s += Query.FieldByName(z.data     ).AsString;
-          Result.Add(s);
-          if DecodeID(b) = 1 then output(s.Replace(#0,'_'));
-        except
-          //
+          try
+            b := Query.FieldByName(z.book).AsInteger;
+            s := DecodeID(b).ToString + #0;
+            s += Query.FieldByName(z.chapter  ).AsString + #0;
+            s += Query.FieldByName(z.fromverse).AsString + #0;
+            s += Query.FieldByName(f          ).AsString + #0;
+            s += Query.FieldByName(z.data     ).AsString;
+            Result.Add(s);
+          except
+            //
+          end;
+        finally
+          Query.Next;
         end;
-        Query.Next;
-      end;
 
-  except
-    //
+    except
+      //
+    end;
+  finally
+    Query.Close;
   end;
-  Query.Close;
 end;
 
 //=================================================================================================

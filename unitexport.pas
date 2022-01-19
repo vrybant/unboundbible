@@ -109,7 +109,7 @@ begin
   end;
 end;
 
-procedure TBibleExporter.InsertContents(const Contents : TContentArray);
+procedure TBibleExporter.InsertContents(const Contents: TContentArray);
 var
   Item : TContent;
 begin
@@ -135,7 +135,7 @@ begin
   end;
 end;
 
-procedure TBibleExporter.InsertFootnotes(const List : TStringArray);
+procedure TBibleExporter.InsertFootnotes(const List: TStringArray);
 var
   A : TStringArray;
   s : string;
@@ -166,7 +166,7 @@ begin
   Query.Close;
 end;
 
-function TBibleExporter.GetMyswordFootnotes(const Contents : TContentArray): TStringArray;
+function TBibleExporter.GetMyswordFootnotes(const Contents: TContentArray): TStringArray;
 var
   Content : TContent;
   s, r : string;
