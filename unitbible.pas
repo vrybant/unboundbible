@@ -37,7 +37,7 @@ type
     Books : TFPGList<TBook>;
   private
     z : TBibleAlias;
-    function RankContent(const List: TStringArray): TStringArray;
+    function SortContent(const List: TStringArray): TStringArray;
     procedure LoadUnboundDatabase;
     procedure LoadMyswordDatabase;
     function GetUnboundFootnote(Verse: TVerse; marker: string): string;
@@ -54,7 +54,7 @@ type
     function GetRange(Verse: TVerse; raw: boolean = false): TStringArray;
     function GetAll(raw: boolean = false): TStringArray;
     function GoodLink(Verse: TVerse): boolean;
-    function Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TStringArray;
+    function Search(searchString: string; Options: TSearchOptions; Range: TRange): TStringArray;
     procedure ShowTags;
     function GetTitles: TStringArray;
     function ChaptersCount(Verse: TVerse): integer;
@@ -385,7 +385,7 @@ begin
   Result := not GetRange(Verse).IsEmpty;
 end;
 
-function TBible.RankContent(const List: TStringArray): TStringArray;
+function TBible.SortContent(const List: TStringArray): TStringArray;
 var
   Book : TBook;
   s, p : string;
@@ -405,14 +405,14 @@ begin
   SetLength(Result, k);
 end;
 
-function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TStringArray;
+function TBible.Search(searchString: string; Options: TSearchOptions; Range: TRange): TStringArray;
 var
   r : string = '';
   s, t : string;
   b : integer;
 begin
   Result := [];
-  SetSearchOptions(searchString, SearchOptions, format, accented);
+  SetSearchOptions(searchString, Options, format, accented);
 
   if Range.from > 0 then
     r := ' AND ' + z.book + ' >= ' + EncodeID(Range.from).ToString +
@@ -448,7 +448,7 @@ begin
     Query.Close;
   end;
 
-  Result := RankContent(Result);
+  Result := SortContent(Result);
 end;
 
 function TBible.GetAll(raw: boolean = false): TStringArray;
