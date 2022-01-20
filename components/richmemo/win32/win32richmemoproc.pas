@@ -820,6 +820,8 @@ var
   AnsiText : AnsiString;
   txt      : PChar;
   sr       : TCHARRANGE;
+const
+  UNDO_FLAG=1; // can be undone
 begin
   GetSelRange(RichEditWnd, sr);
   SetSelection(RichEditWnd, TextStart, ReplaceLength);
@@ -827,11 +829,11 @@ begin
   txt:=nil;
   if UnicodeEnabledOS then begin
     if Text<>'' then txt:=@Text[1];
-    SendMessageW(RichEditWnd, EM_REPLACESEL, 0, LPARAM(txt));
+    SendMessageW(RichEditWnd, EM_REPLACESEL, UNDO_FLAG, LPARAM(txt));
   end else begin
     AnsiText:=Text;
     if AnsiText<>'' then txt:=@AnsiText[1];
-    SendMessageA(RichEditWnd, EM_REPLACESEL, 0, LPARAM(txt));
+    SendMessageA(RichEditWnd, EM_REPLACESEL, UNDO_FLAG, LPARAM(txt));
   end;
 
   SetSelRange(RichEditWnd, sr);
