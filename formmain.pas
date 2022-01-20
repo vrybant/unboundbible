@@ -730,9 +730,9 @@ end;
 
 procedure TMainForm.CmdCopyVerses(Sender: TObject);
 begin
-  {$ifdef linux} MemoBible.SaveSelection; {$endif}
+  {$ifdef unix} MemoBible.SaveSelection; {$endif}
   VersesToClipboard;
-  {$ifdef linux} MemoBible.RestoreSelection; {$endif}
+  {$ifdef unix} MemoBible.RestoreSelection; {$endif}
 end;
 
 procedure TMainForm.CmdSearch(Sender: TObject);
@@ -1538,7 +1538,7 @@ begin
 end;
 {$endif}
 
-{$ifdef linux}
+{$ifdef unix}
 procedure TMainForm.VersesToClipboard;
 var
   MemoPreview : TUnboundMemo;
