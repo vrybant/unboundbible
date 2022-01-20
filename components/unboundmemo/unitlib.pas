@@ -544,6 +544,7 @@ end;
 
 procedure Output(s: string);
 begin
+  Replace(s,#0,' ');
   {$ifdef windows} OutputDebugString(PChar(s)); {$endif}
   {$ifdef linux} DebugLn(s); {$endif}
 end;

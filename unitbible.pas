@@ -402,6 +402,7 @@ begin
             Inc(k);
           end;
     end;
+  SetLength(Result, k);
 end;
 
 function TBible.Search(searchString: string; SearchOptions: TSearchOptions; Range: TRange): TStringArray;
@@ -431,6 +432,7 @@ begin
               t := Query.FieldByName(z.text   ).AsString;
               t := Prepare(t, format, IsNewTestament(b));
               s += t;
+              output(s);
               Result.Add(s);
             except
               //
@@ -605,7 +607,7 @@ begin
   for f in DatabaseList do
     if f.Contains('.bbl.') or f.Contains('.SQLite3') then
       begin
-        if f.Contains('\_') then Continue; // DEBUG
+        if f.Contains('_') then Continue; // DEBUG
 
         if f.Contains('.dictionary.') or f.Contains('.commentaries.') then Continue;
         if f.Contains('.crossreferences.') then Continue;
