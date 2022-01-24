@@ -408,7 +408,9 @@ begin
         TabSheetCommentary.TabVisible := False;
         TabSheetDictionary.TabVisible := False;
       {$endif}
-      ShowCurrVerse(CurrVerse.number > 1);
+      {$ifndef darwin}
+        ShowCurrVerse(CurrVerse.number > 1);
+      {$endif}
       showed := True;
     end;
 

@@ -45,14 +45,14 @@ object MainForm: TMainForm
     TabOrder = 2
     Wrapable = False
     object ToolSeparator2: TToolButton
-      Left = 266
+      Left = 238
       Height = 28
       Top = 0
       Caption = 'ToolSeparator2'
       Style = tbsDivider
     end
     object ToolButtonNew: TToolButton
-      Left = 154
+      Left = 126
       Top = 0
       HelpType = htKeyword
       Action = ActionFileNew
@@ -60,53 +60,53 @@ object MainForm: TMainForm
       ShowCaption = False
     end
     object ToolButtonOpen: TToolButton
-      Left = 182
+      Left = 154
       Top = 0
       Action = ActionFileOpen
       Enabled = False
     end
     object ToolButtonSave: TToolButton
-      Left = 210
+      Left = 182
       Top = 0
       Action = ActionFileSave
       Enabled = False
     end
     object ToolButtonPrint: TToolButton
-      Left = 238
+      Left = 210
       Top = 0
       Action = ActionFilePrint
       Enabled = False
       Visible = False
     end
     object ToolSeparator3: TToolButton
-      Left = 149
+      Left = 121
       Height = 28
       Top = 0
       ImageIndex = 3
       Style = tbsDivider
     end
     object ToolButtonCut: TToolButton
-      Left = 271
+      Left = 243
       Top = 0
       Action = ActionEditCut
     end
     object ToolButtonCopy: TToolButton
-      Left = 299
+      Left = 271
       Top = 0
       Action = ActionEditCopy
     end
     object ToolButtonPaste: TToolButton
-      Left = 355
+      Left = 327
       Top = 0
       Action = ActionEditPaste
     end
     object ToolButtonUndo: TToolButton
-      Left = 383
+      Left = 355
       Top = 0
       Action = ActionEditUndo
     end
     object ToolSeparator5: TToolButton
-      Left = 556
+      Left = 528
       Height = 28
       Top = 0
       Caption = 'ToolSeparator5'
@@ -114,7 +114,7 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolSeparator6: TToolButton
-      Left = 645
+      Left = 617
       Height = 28
       Top = 0
       Caption = 'ToolSeparator6'
@@ -123,31 +123,31 @@ object MainForm: TMainForm
       Style = tbsDivider
     end
     object ToolButtonBold: TToolButton
-      Left = 444
+      Left = 416
       Top = 0
       Action = ActionBold
       Style = tbsCheck
     end
     object ToolButtonItalic: TToolButton
-      Left = 472
+      Left = 444
       Top = 0
       Action = ActionItalic
       Style = tbsCheck
     end
     object ToolButtonUnderline: TToolButton
-      Left = 500
+      Left = 472
       Top = 0
       Action = ActionUnderline
       Style = tbsCheck
     end
     object ToolButtonLink: TToolButton
-      Left = 528
+      Left = 500
       Top = 0
       Action = ActionLink
       Style = tbsCheck
     end
     object ToolButtonLeft: TToolButton
-      Left = 561
+      Left = 533
       Top = 0
       Action = ActionLeft
       Grouped = True
@@ -155,7 +155,7 @@ object MainForm: TMainForm
     end
     object ToolButtonCenter: TToolButton
       Tag = 2
-      Left = 589
+      Left = 561
       Top = 0
       Action = ActionCenter
       Grouped = True
@@ -163,38 +163,38 @@ object MainForm: TMainForm
     end
     object ToolButtonRight: TToolButton
       Tag = 1
-      Left = 617
+      Left = 589
       Top = 0
       Action = ActionRight
       Grouped = True
       Style = tbsCheck
     end
     object ToolButtonBullets: TToolButton
-      Left = 650
+      Left = 622
       Top = 0
       Action = ActionBullets
       Style = tbsCheck
     end
     object ToolButtonFont: TToolButton
-      Left = 416
+      Left = 388
       Top = 0
       Action = ActionFont
     end
     object ToolButtonVerses: TToolButton
-      Left = 327
+      Left = 299
       Top = 0
       Action = ActionCopyVerses
       ParentShowHint = False
       ShowHint = True
     end
     object ToolSeparator4: TToolButton
-      Left = 411
+      Left = 383
       Height = 28
       Top = 0
       Style = tbsDivider
     end
     object ToolButtonCommentary: TToolButton
-      Left = 93
+      Left = 65
       Top = 0
       Action = ActionCommentaries
     end
@@ -204,12 +204,12 @@ object MainForm: TMainForm
       Action = ActionModules
     end
     object ToolButtonDictionary: TToolButton
-      Left = 121
+      Left = 93
       Top = 0
       Action = ActionDictionaries
     end
     object ToolPanel: TPanel
-      Left = 678
+      Left = 650
       Height = 28
       Top = 0
       Width = 230
@@ -225,7 +225,7 @@ object MainForm: TMainForm
       TabOrder = 0
     end
     object ToolButtonSearch: TToolButton
-      Left = 908
+      Left = 880
       Hint = 'Search'
       Top = 0
       Caption = 'Search...'
@@ -233,7 +233,7 @@ object MainForm: TMainForm
       OnClick = ToolButtonSearchClick
     end
     object ToolButtonReference: TToolButton
-      Left = 65
+      Left = 37
       Hint = 'Сross References'
       Top = 0
       Action = ActionReference
@@ -392,13 +392,17 @@ object MainForm: TMainForm
       OnChange = PageControlChange
       object TabSheetBible: TTabSheet
         Caption = 'Bible'
+        ClientHeight = 344
+        ClientWidth = 497
         Font.Color = clWindowText
         Font.Height = -12
         ParentFont = False
         object MemoBible: TUnboundMemo
           Cursor = crArrow
           Left = 0
+          Height = 344
           Top = 0
+          Width = 497
           Align = alClient
           Font.Color = clWindowText
           Font.Height = -16
@@ -876,6 +880,403 @@ object MainForm: TMainForm
         ImageIndex = 0
       end
     end
+  end
+  object PopupMenu: TPopupMenu
+    Images = Images
+    OnPopup = PopupMenuPopup
+    Left = 400
+    Top = 160
+    object pmSearchfor: TMenuItem
+      Action = ActionSearchfor
+      AutoCheck = True
+    end
+    object pmLookup: TMenuItem
+      Action = ActionLookup
+    end
+    object pmSeparator: TMenuItem
+      Caption = '-'
+    end
+    object pmCut: TMenuItem
+      Action = ActionEditCut
+      Caption = 'Cut'
+      SubMenuImages = Images
+    end
+    object pmCopy: TMenuItem
+      Action = ActionEditCopy
+      Caption = 'Copy'
+    end
+    object pmPaste: TMenuItem
+      Action = ActionEditPaste
+      Caption = 'Paste'
+    end
+    object pmSeparator2: TMenuItem
+      Caption = '-'
+    end
+    object pmVerses: TMenuItem
+      Action = ActionCopyVerses
+    end
+    object pmCopyAs: TMenuItem
+      Action = ActionCopyAs
+      Bitmap.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00BCADA8FFBCADA8FFBCADA8FFBCAD
+        A8FFBCADA8FFBCADA8FFBCADA8FFBCADA8FFBCADA8FFFF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00786D61FF786D61FF786D61FF786D
+        61FF786D61FF786D61FF786D61FF786D61FF786D61FFFF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF007D7165FFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7D7165FFFF00FF00FF00FF00FF00
+        FF00FF00FF00BCADA8FFBCADA8FFBCADA8FF817569FFF7F5F1FFAD7930FFAD79
+        30FFAD7930FFAD7930FFCCAD81FFF7F5F1FF817569FFFF00FF00FF00FF00FF00
+        FF00FF00FF00786D61FF786D61FF786D61FF867A6EFFF5F1ECFFF5F1ECFFF5F1
+        ECFFF5F1ECFFF5F1ECFFF5F1ECFFF5F1ECFF867A6EFFFF00FF00BCADA8FFBCAD
+        A8FFBCADA8FF7D7165FFFFFFFFFFFFFFFFFF8C7F73FFF2EEE9FFAC772EFFAC77
+        2EFFAC772EFFAC772EFFC6A679FFE6E1DBFF877B6FFFFF00FF00786D61FF786D
+        61FF786D61FF817569FFF7F5F1FFAD7930FF928578FFEFE9E2FFEFE9E2FFEFE9
+        E2FFEFE9E2FFE8E2DBFFDBD7D1FFCAC5BEFF81766AFFFF00FF007D7165FFFFFF
+        FFFFFFFFFFFF867A6EFFF5F1ECFFF5F1ECFF978A7DFFEDE8E0FFAB762DFFC7A6
+        78FFEDE8E0FFA79C8FFF978A7DFF978A7DFF978A7DFFFF00FF00817569FFF7F5
+        F1FFAD7930FF8C7F73FFF2EEE9FFAC772EFF9C8E81FFEAE3DAFFEAE3DAFFEAE3
+        DAFFEAE3DAFFADA298FFF3EDE7FFF3EDE7FFB6ABA0FFFF00FF00867A6EFFF5F1
+        ECFFF5F1ECFF928578FFEFE9E2FFEFE9E2FFA09285FFF5F1EDFFF5F1EDFFF5F1
+        EDFFF5F1EDFFB5ACA3FFFEFDFCFFB5ACA3FFC2B3ACFFFF00FF008C7F73FFF2EE
+        E9FFAC772EFF978A7DFFEDE8E0FFAB762DFFA39587FFA39587FFA39587FFA395
+        87FFACA093FFA19385FFA39587FFC2B2ACFFFF00FF00FF00FF00928578FFEFE9
+        E2FFEFE9E2FF9C8E81FFEAE3DAFFEAE3DAFFEAE3DAFFEAE3DAFFADA298FFF3ED
+        E7FFF3EDE7FFB6ABA0FFFF00FF00FF00FF00FF00FF00FF00FF00978A7DFFEDE8
+        E0FFAB762DFFA09285FFF5F1EDFFF5F1EDFFF5F1EDFFF5F1EDFFB5ACA3FFFEFD
+        FCFFB5ACA3FFC2B3ACFFFF00FF00FF00FF00FF00FF00FF00FF009C8E81FFEAE3
+        DAFFEAE3DAFFA39587FFA39587FFA39587FFA39587FFACA093FFA19385FFA395
+        87FFC2B2ACFFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00A09285FFF5F1
+        EDFFF5F1EDFFF5F1EDFFF5F1EDFFB5ACA3FFFEFDFCFFB5ACA3FFC2B3ACFFFF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00A39587FFA395
+        87FFA39587FFA39587FFACA093FFA19385FFA39587FFC2B2ACFFFF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      }
+      ImageIndex = 8
+    end
+  end
+  object ActionList: TActionList
+    Images = Images
+    Left = 400
+    Top = 104
+    object ActionAbout: THelpAction
+      Category = 'Tools'
+      Caption = 'CmdAbout'
+      ImageIndex = 31
+      OnExecute = CmdAbout
+    end
+    object ActionFileNew: TAction
+      Category = 'File'
+      Caption = '&New'
+      Hint = 'Create a new file'
+      ImageIndex = 1
+      OnExecute = CmdFileNew
+      ShortCut = 16462
+    end
+    object ActionFileOpen: TAction
+      Category = 'File'
+      Caption = '&Open...'
+      Hint = 'Open an existing file'
+      ImageIndex = 2
+      OnExecute = CmdFileOpen
+      ShortCut = 16463
+    end
+    object ActionFileSave: TAction
+      Category = 'File'
+      Caption = '&Save'
+      Hint = 'Save current file'
+      ImageIndex = 3
+      OnExecute = CmdFileSave
+      ShortCut = 16467
+    end
+    object ActionFilePrint: TAction
+      Category = 'File'
+      Caption = '&Print'
+      Hint = 'Print current file'
+      ImageIndex = 4
+      OnExecute = CmdFilePrint
+      ShortCut = 16464
+    end
+    object ActionExit: TAction
+      Category = 'File'
+      Caption = 'E&xit'
+      Hint = 'Exit this application'
+      OnExecute = CmdExit
+      ShortCut = 32856
+    end
+    object ActionFileSaveAs: TAction
+      Category = 'File'
+      Caption = 'Save &As...'
+      Hint = 'Save current file under a new name'
+      OnExecute = CmdFileSaveAs
+    end
+    object ActionEditCut: TAction
+      Category = 'Edit'
+      Caption = 'Cu&t'
+      Enabled = False
+      Hint = 'Delete selected item'
+      ImageIndex = 6
+      OnExecute = CmdEdit
+      ShortCut = 16472
+    end
+    object ActionEditCopy: TAction
+      Category = 'Edit'
+      Caption = '&Copy'
+      Hint = 'Copy selected item to clipboard'
+      ImageIndex = 7
+      OnExecute = CmdEdit
+      ShortCut = 16451
+    end
+    object ActionEditPaste: TAction
+      Category = 'Edit'
+      Caption = '&Paste'
+      Enabled = False
+      Hint = 'Paste contents of clipboard'
+      ImageIndex = 9
+      OnExecute = CmdEdit
+      ShortCut = 16470
+    end
+    object ActionEditUndo: TAction
+      Category = 'Edit'
+      Caption = '&Undo'
+      Enabled = False
+      Hint = 'Undo the last action'
+      ImageIndex = 10
+      OnExecute = CmdEdit
+      ShortCut = 16474
+    end
+    object ActionEditDel: TAction
+      Category = 'Edit'
+      Caption = 'EditDelCmd'
+      Enabled = False
+      Hint = 'Delete selected item'
+      OnExecute = CmdEdit
+    end
+    object ActionEditSelAll: TEditSelectAll
+      Category = 'Edit'
+      Caption = 'Вы&делить все...'
+      Enabled = False
+      Hint = 'Выделить все'
+      OnExecute = CmdEdit
+      ShortCut = 16449
+    end
+    object ActionCompare: TAction
+      Category = 'Tools'
+      Caption = 'CmdCompare'
+      ImageIndex = 11
+      OnExecute = CmdCompare
+    end
+    object ActionEditFont: TAction
+      Category = 'Edit'
+      Caption = '&Font...'
+      Enabled = False
+      OnExecute = CmdEdit
+    end
+    object ActionFont: TAction
+      Tag = 13
+      Category = 'Memo'
+      Caption = 'Font'
+      Enabled = False
+      ImageIndex = 13
+      OnExecute = CmdStyle
+    end
+    object ActionBold: TAction
+      Tag = 15
+      Category = 'Memo'
+      Caption = 'Bold'
+      Enabled = False
+      ImageIndex = 15
+      OnExecute = CmdStyle
+      ShortCut = 16450
+    end
+    object ActionItalic: TAction
+      Tag = 17
+      Category = 'Memo'
+      Caption = 'Italic'
+      Enabled = False
+      ImageIndex = 17
+      OnExecute = CmdStyle
+      ShortCut = 16457
+    end
+    object ActionUnderline: TAction
+      Tag = 19
+      Category = 'Memo'
+      Caption = 'Underline'
+      Enabled = False
+      ImageIndex = 19
+      OnExecute = CmdStyle
+      ShortCut = 16469
+    end
+    object ActionLink: TAction
+      Tag = 21
+      Category = 'Memo'
+      Caption = 'Link'
+      Enabled = False
+      ImageIndex = 21
+      OnExecute = CmdStyle
+      ShortCut = 16459
+    end
+    object ActionLeft: TAction
+      Tag = 23
+      Category = 'Memo'
+      Caption = 'AlignLeft'
+      Enabled = False
+      ImageIndex = 23
+      OnExecute = CmdStyle2
+      ShortCut = 16460
+    end
+    object ActionCenter: TAction
+      Tag = 25
+      Category = 'Memo'
+      Caption = 'AlignCenter'
+      Enabled = False
+      ImageIndex = 25
+      OnExecute = CmdStyle2
+      ShortCut = 16453
+    end
+    object ActionRight: TAction
+      Tag = 27
+      Category = 'Memo'
+      Caption = 'AlignRight'
+      Enabled = False
+      ImageIndex = 27
+      OnExecute = CmdStyle2
+      ShortCut = 16466
+    end
+    object ActionBullets: TAction
+      Tag = 29
+      Category = 'Memo'
+      Caption = 'Bullets'
+      Enabled = False
+      ImageIndex = 29
+      OnExecute = CmdStyle2
+    end
+    object ActionCopyAs: TAction
+      Category = 'Edit'
+      Caption = 'Copy As...'
+      Enabled = False
+      OnExecute = CmdCopyAs
+    end
+    object ActionCopyVerses: TAction
+      Category = 'Edit'
+      Caption = 'Copy Verses'
+      Enabled = False
+      ImageIndex = 8
+      OnExecute = CmdCopyVerses
+      ShortCut = 16466
+    end
+    object ActionIncrease: TAction
+      Category = 'Memo'
+      Caption = 'Increase'
+      OnExecute = CmdStyle
+      SecondaryShortCuts.Strings = (
+        'Ctrl++'
+      )
+      ShortCut = 16491
+    end
+    object ActionDecrease: TAction
+      Category = 'Memo'
+      Caption = 'Decrease'
+      OnExecute = CmdStyle
+      SecondaryShortCuts.Strings = (
+        'Ctrl+-'
+      )
+      ShortCut = 16493
+    end
+    object ActionSearch: TAction
+      Category = 'Tools'
+      Caption = 'ActionSearch'
+      OnExecute = CmdSearch
+      ShortCut = 16454
+    end
+    object ActionSearchfor: TAction
+      Category = 'Tools'
+      Caption = 'Search for'
+      Hint = 'Search'
+      ImageIndex = 5
+      OnExecute = CmdSearchFor
+    end
+    object ActionLookup: TAction
+      Category = 'Tools'
+      Caption = 'Look Up'
+      ImageIndex = 40
+      OnExecute = cmdLookup
+    end
+    object ActionReference: TAction
+      Category = 'Tools'
+      Caption = 'Сross-References'
+      ImageIndex = 39
+      OnExecute = CmdReference
+    end
+    object ActionCommentaries: TAction
+      Category = 'Tools'
+      Caption = 'Commentaries'
+      ImageIndex = 38
+      OnExecute = CmdCommentaries
+    end
+    object ActionDictionaries: TAction
+      Category = 'Tools'
+      Caption = 'Dictionaries'
+      ImageIndex = 40
+      OnExecute = CmdDictionaries
+    end
+    object ActionOptions: TAction
+      Category = 'Tools'
+      Caption = 'Options'
+      OnExecute = CmdOptions
+    end
+    object ActionInterlinear: TAction
+      Category = 'Tools'
+      Caption = 'CmdOnline'
+      OnExecute = CmdInterline
+    end
+    object ActionModules: TAction
+      Category = 'Tools'
+      Caption = 'ActionModules'
+      ImageIndex = 11
+      OnExecute = cmdModules
+    end
+    object ActionFavorites: TAction
+      Category = 'Tools'
+      Caption = 'ActionFavorites'
+      ImageIndex = 43
+      OnExecute = CmdFavoritesExecute
+    end
+  end
+  object OpenDialog: TOpenDialog
+    Filter = 'Rich Text Files (*.rtf)|*.rtf'
+    Left = 240
+    Top = 104
+  end
+  object FontDialog: TFontDialog
+    MinFontSize = 0
+    MaxFontSize = 0
+    Left = 240
+    Top = 160
+  end
+  object SaveDialog: TSaveDialog
+    Filter = 'Rich Text Files (*.rtf)|*.rtf'
+    Options = [ofHideReadOnly, ofEnableSizing, ofViewDetail]
+    Left = 320
+    Top = 216
+  end
+  object FontDialogNotes: TFontDialog
+    MinFontSize = 0
+    MaxFontSize = 0
+    Left = 240
+    Top = 216
+  end
+  object PrintDialog: TPrintDialog
+    Collate = True
+    Options = [poDisablePrintToFile]
+    Left = 320
+    Top = 160
+  end
+  object IdleTimer: TIdleTimer
+    OnTimer = IdleTimerTimer
+    Left = 472
+    Top = 104
   end
   object Images: TImageList
     Left = 320
@@ -2323,402 +2724,5 @@ object MainForm: TMainForm
       00010A0D1E20212961642E3A86872F3A8788222A64670B0E2123000000010000
       0000000000000000000000000000
     }
-  end
-  object PopupMenu: TPopupMenu
-    Images = Images
-    OnPopup = PopupMenuPopup
-    Left = 400
-    Top = 160
-    object pmSearchfor: TMenuItem
-      Action = ActionSearchfor
-      AutoCheck = True
-    end
-    object pmLookup: TMenuItem
-      Action = ActionLookup
-    end
-    object pmSeparator: TMenuItem
-      Caption = '-'
-    end
-    object pmCut: TMenuItem
-      Action = ActionEditCut
-      Caption = 'Cut'
-      SubMenuImages = Images
-    end
-    object pmCopy: TMenuItem
-      Action = ActionEditCopy
-      Caption = 'Copy'
-    end
-    object pmPaste: TMenuItem
-      Action = ActionEditPaste
-      Caption = 'Paste'
-    end
-    object pmSeparator2: TMenuItem
-      Caption = '-'
-    end
-    object pmVerses: TMenuItem
-      Action = ActionCopyVerses
-    end
-    object pmCopyAs: TMenuItem
-      Action = ActionCopyAs
-      Bitmap.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00BCADA8FFBCADA8FFBCADA8FFBCAD
-        A8FFBCADA8FFBCADA8FFBCADA8FFBCADA8FFBCADA8FFFF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00786D61FF786D61FF786D61FF786D
-        61FF786D61FF786D61FF786D61FF786D61FF786D61FFFF00FF00FF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF007D7165FFFFFFFFFFFFFFFFFFFFFF
-        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF7D7165FFFF00FF00FF00FF00FF00
-        FF00FF00FF00BCADA8FFBCADA8FFBCADA8FF817569FFF7F5F1FFAD7930FFAD79
-        30FFAD7930FFAD7930FFCCAD81FFF7F5F1FF817569FFFF00FF00FF00FF00FF00
-        FF00FF00FF00786D61FF786D61FF786D61FF867A6EFFF5F1ECFFF5F1ECFFF5F1
-        ECFFF5F1ECFFF5F1ECFFF5F1ECFFF5F1ECFF867A6EFFFF00FF00BCADA8FFBCAD
-        A8FFBCADA8FF7D7165FFFFFFFFFFFFFFFFFF8C7F73FFF2EEE9FFAC772EFFAC77
-        2EFFAC772EFFAC772EFFC6A679FFE6E1DBFF877B6FFFFF00FF00786D61FF786D
-        61FF786D61FF817569FFF7F5F1FFAD7930FF928578FFEFE9E2FFEFE9E2FFEFE9
-        E2FFEFE9E2FFE8E2DBFFDBD7D1FFCAC5BEFF81766AFFFF00FF007D7165FFFFFF
-        FFFFFFFFFFFF867A6EFFF5F1ECFFF5F1ECFF978A7DFFEDE8E0FFAB762DFFC7A6
-        78FFEDE8E0FFA79C8FFF978A7DFF978A7DFF978A7DFFFF00FF00817569FFF7F5
-        F1FFAD7930FF8C7F73FFF2EEE9FFAC772EFF9C8E81FFEAE3DAFFEAE3DAFFEAE3
-        DAFFEAE3DAFFADA298FFF3EDE7FFF3EDE7FFB6ABA0FFFF00FF00867A6EFFF5F1
-        ECFFF5F1ECFF928578FFEFE9E2FFEFE9E2FFA09285FFF5F1EDFFF5F1EDFFF5F1
-        EDFFF5F1EDFFB5ACA3FFFEFDFCFFB5ACA3FFC2B3ACFFFF00FF008C7F73FFF2EE
-        E9FFAC772EFF978A7DFFEDE8E0FFAB762DFFA39587FFA39587FFA39587FFA395
-        87FFACA093FFA19385FFA39587FFC2B2ACFFFF00FF00FF00FF00928578FFEFE9
-        E2FFEFE9E2FF9C8E81FFEAE3DAFFEAE3DAFFEAE3DAFFEAE3DAFFADA298FFF3ED
-        E7FFF3EDE7FFB6ABA0FFFF00FF00FF00FF00FF00FF00FF00FF00978A7DFFEDE8
-        E0FFAB762DFFA09285FFF5F1EDFFF5F1EDFFF5F1EDFFF5F1EDFFB5ACA3FFFEFD
-        FCFFB5ACA3FFC2B3ACFFFF00FF00FF00FF00FF00FF00FF00FF009C8E81FFEAE3
-        DAFFEAE3DAFFA39587FFA39587FFA39587FFA39587FFACA093FFA19385FFA395
-        87FFC2B2ACFFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00A09285FFF5F1
-        EDFFF5F1EDFFF5F1EDFFF5F1EDFFB5ACA3FFFEFDFCFFB5ACA3FFC2B3ACFFFF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00A39587FFA395
-        87FFA39587FFA39587FFACA093FFA19385FFA39587FFC2B2ACFFFF00FF00FF00
-        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-      }
-      ImageIndex = 8
-    end
-  end
-  object ActionList: TActionList
-    Images = Images
-    Left = 400
-    Top = 104
-    object ActionAbout: THelpAction
-      Category = 'Tools'
-      Caption = 'CmdAbout'
-      ImageIndex = 31
-      OnExecute = CmdAbout
-    end
-    object ActionFileNew: TAction
-      Category = 'File'
-      Caption = '&New'
-      Hint = 'Create a new file'
-      ImageIndex = 1
-      OnExecute = CmdFileNew
-      ShortCut = 16462
-    end
-    object ActionFileOpen: TAction
-      Category = 'File'
-      Caption = '&Open...'
-      Hint = 'Open an existing file'
-      ImageIndex = 2
-      OnExecute = CmdFileOpen
-      ShortCut = 16463
-    end
-    object ActionFileSave: TAction
-      Category = 'File'
-      Caption = '&Save'
-      Hint = 'Save current file'
-      ImageIndex = 3
-      OnExecute = CmdFileSave
-      ShortCut = 16467
-    end
-    object ActionFilePrint: TAction
-      Category = 'File'
-      Caption = '&Print'
-      Hint = 'Print current file'
-      ImageIndex = 4
-      OnExecute = CmdFilePrint
-      ShortCut = 16464
-    end
-    object ActionExit: TAction
-      Category = 'File'
-      Caption = 'E&xit'
-      Hint = 'Exit this application'
-      OnExecute = CmdExit
-      ShortCut = 32856
-    end
-    object ActionFileSaveAs: TAction
-      Category = 'File'
-      Caption = 'Save &As...'
-      Hint = 'Save current file under a new name'
-      OnExecute = CmdFileSaveAs
-    end
-    object ActionEditCut: TAction
-      Category = 'Edit'
-      Caption = 'Cu&t'
-      Enabled = False
-      Hint = 'Delete selected item'
-      ImageIndex = 6
-      OnExecute = CmdEdit
-      ShortCut = 16472
-    end
-    object ActionEditCopy: TAction
-      Category = 'Edit'
-      Caption = '&Copy'
-      Hint = 'Copy selected item to clipboard'
-      ImageIndex = 7
-      OnExecute = CmdEdit
-      ShortCut = 16451
-    end
-    object ActionEditPaste: TAction
-      Category = 'Edit'
-      Caption = '&Paste'
-      Enabled = False
-      Hint = 'Paste contents of clipboard'
-      ImageIndex = 9
-      OnExecute = CmdEdit
-      ShortCut = 16470
-    end
-    object ActionEditUndo: TAction
-      Category = 'Edit'
-      Caption = '&Undo'
-      Enabled = False
-      Hint = 'Undo the last action'
-      ImageIndex = 10
-      OnExecute = CmdEdit
-      ShortCut = 16474
-    end
-    object ActionEditDel: TAction
-      Category = 'Edit'
-      Caption = 'EditDelCmd'
-      Enabled = False
-      Hint = 'Delete selected item'
-      OnExecute = CmdEdit
-    end
-    object ActionEditSelAll: TEditSelectAll
-      Category = 'Edit'
-      Caption = 'Вы&делить все...'
-      Enabled = False
-      Hint = 'Выделить все'
-      OnExecute = CmdEdit
-      ShortCut = 16449
-    end
-    object ActionCompare: TAction
-      Category = 'Tools'
-      Caption = 'CmdCompare'
-      ImageIndex = 11
-      OnExecute = CmdCompare
-    end
-    object ActionEditFont: TAction
-      Category = 'Edit'
-      Caption = '&Font...'
-      Enabled = False
-      OnExecute = CmdEdit
-    end
-    object ActionFont: TAction
-      Tag = 13
-      Category = 'Memo'
-      Caption = 'Font'
-      Enabled = False
-      ImageIndex = 13
-      OnExecute = CmdStyle
-    end
-    object ActionBold: TAction
-      Tag = 15
-      Category = 'Memo'
-      Caption = 'Bold'
-      Enabled = False
-      ImageIndex = 15
-      OnExecute = CmdStyle
-      ShortCut = 16450
-    end
-    object ActionItalic: TAction
-      Tag = 17
-      Category = 'Memo'
-      Caption = 'Italic'
-      Enabled = False
-      ImageIndex = 17
-      OnExecute = CmdStyle
-      ShortCut = 16457
-    end
-    object ActionUnderline: TAction
-      Tag = 19
-      Category = 'Memo'
-      Caption = 'Underline'
-      Enabled = False
-      ImageIndex = 19
-      OnExecute = CmdStyle
-      ShortCut = 16469
-    end
-    object ActionLink: TAction
-      Tag = 21
-      Category = 'Memo'
-      Caption = 'Link'
-      Enabled = False
-      ImageIndex = 21
-      OnExecute = CmdStyle
-      ShortCut = 16459
-    end
-    object ActionLeft: TAction
-      Tag = 23
-      Category = 'Memo'
-      Caption = 'AlignLeft'
-      Enabled = False
-      ImageIndex = 23
-      OnExecute = CmdStyle2
-      ShortCut = 16460
-    end
-    object ActionCenter: TAction
-      Tag = 25
-      Category = 'Memo'
-      Caption = 'AlignCenter'
-      Enabled = False
-      ImageIndex = 25
-      OnExecute = CmdStyle2
-      ShortCut = 16453
-    end
-    object ActionRight: TAction
-      Tag = 27
-      Category = 'Memo'
-      Caption = 'AlignRight'
-      Enabled = False
-      ImageIndex = 27
-      OnExecute = CmdStyle2
-      ShortCut = 16466
-    end
-    object ActionBullets: TAction
-      Tag = 29
-      Category = 'Memo'
-      Caption = 'Bullets'
-      Enabled = False
-      ImageIndex = 29
-      OnExecute = CmdStyle2
-    end
-    object ActionCopyAs: TAction
-      Category = 'Edit'
-      Caption = 'Copy As...'
-      Enabled = False
-      OnExecute = CmdCopyAs
-    end
-    object ActionCopyVerses: TAction
-      Category = 'Edit'
-      Caption = 'Copy Verses'
-      Enabled = False
-      ImageIndex = 8
-      OnExecute = CmdCopyVerses
-      ShortCut = 16466
-    end
-    object ActionIncrease: TAction
-      Category = 'Memo'
-      Caption = 'Increase'
-      OnExecute = CmdStyle
-      SecondaryShortCuts.Strings = (
-        'Ctrl++'
-      )
-      ShortCut = 16491
-    end
-    object ActionDecrease: TAction
-      Category = 'Memo'
-      Caption = 'Decrease'
-      OnExecute = CmdStyle
-      SecondaryShortCuts.Strings = (
-        'Ctrl+-'
-      )
-      ShortCut = 16493
-    end
-    object ActionSearch: TAction
-      Category = 'Tools'
-      Caption = 'ActionSearch'
-      OnExecute = CmdSearch
-      ShortCut = 16454
-    end
-    object ActionSearchfor: TAction
-      Category = 'Tools'
-      Caption = 'Search for'
-      Hint = 'Search'
-      ImageIndex = 5
-      OnExecute = CmdSearchFor
-    end
-    object ActionLookup: TAction
-      Category = 'Tools'
-      Caption = 'Look Up'
-      ImageIndex = 40
-      OnExecute = cmdLookup
-    end
-    object ActionReference: TAction
-      Category = 'Tools'
-      Caption = 'Сross-References'
-      ImageIndex = 39
-      OnExecute = CmdReference
-    end
-    object ActionCommentaries: TAction
-      Category = 'Tools'
-      Caption = 'Commentaries'
-      ImageIndex = 38
-      OnExecute = CmdCommentaries
-    end
-    object ActionDictionaries: TAction
-      Category = 'Tools'
-      Caption = 'Dictionaries'
-      ImageIndex = 40
-      OnExecute = CmdDictionaries
-    end
-    object ActionOptions: TAction
-      Category = 'Tools'
-      Caption = 'Options'
-      OnExecute = CmdOptions
-    end
-    object ActionInterlinear: TAction
-      Category = 'Tools'
-      Caption = 'CmdOnline'
-      OnExecute = CmdInterline
-    end
-    object ActionModules: TAction
-      Category = 'Tools'
-      Caption = 'ActionModules'
-      ImageIndex = 11
-      OnExecute = cmdModules
-    end
-    object ActionFavorites: TAction
-      Category = 'Tools'
-      Caption = 'ActionFavorites'
-      ImageIndex = 43
-      OnExecute = CmdFavoritesExecute
-    end
-  end
-  object OpenDialog: TOpenDialog
-    Filter = 'Rich Text Files (*.rtf)|*.rtf'
-    Left = 240
-    Top = 104
-  end
-  object FontDialog: TFontDialog
-    MinFontSize = 0
-    MaxFontSize = 0
-    Left = 240
-    Top = 160
-  end
-  object SaveDialog: TSaveDialog
-    Filter = 'Rich Text Files (*.rtf)|*.rtf'
-    Options = [ofHideReadOnly, ofEnableSizing, ofViewDetail]
-    Left = 320
-    Top = 216
-  end
-  object FontDialogNotes: TFontDialog
-    MinFontSize = 0
-    MaxFontSize = 0
-    Left = 240
-    Top = 216
-  end
-  object PrintDialog: TPrintDialog
-    Collate = True
-    Options = [poDisablePrintToFile]
-    Left = 320
-    Top = 160
-  end
-  object IdleTimer: TIdleTimer
-    OnTimer = IdleTimerTimer
-    Left = 472
-    Top = 104
   end
 end
