@@ -86,7 +86,7 @@ end;
 procedure TShelfForm.FormCreate(Sender: TObject);
 begin
   CurrModule := nil;
-  ExpertMode := false;
+  ExpertMode := NOT false;
   Application.HintPause := 1;
   LabelFilename.Caption := '';
   {$ifdef windows} MemoWidth := Memo.Width; {$endif}
@@ -179,11 +179,13 @@ begin
   CommentariesGrid.RowCount := 1;
   DictionariesGrid.RowCount := 1;
 
-  for Module in Tools.Bibles       do Insert(BiblesGrid, Module);
-  for Module in Tools.Dictionaries do Insert(DictionariesGrid, Module);
+  for Module in Tools.Bibles do Insert(BiblesGrid, Module);
 
   for Module in Tools.Commentaries do
     if not (Module as TCommentary).footnotes then Insert(CommentariesGrid, Module);
+
+  for Module in Tools.Dictionaries do
+    if not (Module as TDictionary).embedded then Insert(DictionariesGrid, Module);
 end;
 
 function TShelfForm.ActiveGrid: TStringGrid;
@@ -254,18 +256,15 @@ end;
 
 procedure TShelfForm.ButtonDeleteClick(Sender: TObject);
 begin
-  (*
   if QuestionDlg(' ' + T('Confirmation'),
     T('Do you wish to delete this module?') + LineBreaker + LineBreaker +
-      Modules[BiblesGrid.Row].name + LineBreaker, mtWarning,
+      CurrModule.name + LineBreaker, mtWarning,
         [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) = idYes then
           begin
-            Tools.DeleteModule(Modules[BiblesGrid.Row]);
-            Modules.Delete(BiblesGrid.Row);
-            BiblesGrid.DeleteRow(BiblesGrid.Row);
+            Tools.DeleteModule(CurrModule);
+            ActiveGrid.DeleteRow(ActiveGrid.Row);
             GridSelection(Sender, BiblesGrid.Col, BiblesGrid.Row);
           end;
-  *)
 end;
 
 procedure TShelfForm.ButtonConvertClick(Sender: TObject);

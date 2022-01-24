@@ -33,7 +33,8 @@ type
     function GetMybibleFootnote(module: string; Verse: TVerse; marker: string): string;
     function GetAllFootnotes(module: string): TStringArray;
     function FootnotesOnly: boolean;
-    procedure DeleteItem(Item: TCommentary);
+    procedure DeleteItem(Item: TCommentary); overload;
+    procedure DeleteItem(module: string); overload;
     destructor Destroy; override;
   end;
 
@@ -255,6 +256,14 @@ begin
   Item.Delete;
   Item.Free;
   Delete(IndexOf(Item));
+end;
+
+procedure TCommentaries.DeleteItem(module: string);
+var
+  Item : TCommentary;
+begin
+  Item := FindCommentary(module);
+  if Item <> nil then DeleteItem(Item);
 end;
 
 procedure TCommentaries.SavePrivates;

@@ -31,7 +31,6 @@ type
     function Get_Footnote(marker: string = ''): string;
     function Get_Verses: string;
     procedure SetCurrBible(Value: string);
-    procedure Get_Modules(const Modules: TModules);
     procedure DeleteModule(const Module: TModule);
   private
     procedure SaveConfig;
@@ -304,19 +303,14 @@ begin
   if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
 end;
 
-procedure TTools.Get_Modules(const Modules: TModules);
-var
-  Module: TModule;
-begin
-  for Module in Bibles       do Modules.Add(Module);
-  for Module in Commentaries do Modules.Add(Module);
-  for Module in Dictionaries do Modules.Add(Module);
-  for Module in References   do Modules.Add(Module);
-end;
-
 procedure TTools.DeleteModule(const Module: TModule);
 begin
- if Module.ClassType = TBible      then Bibles      .DeleteItem(Module as TBible      );
+ if Module.ClassType = TBible then
+   begin
+     if Module.format = mybible then Commentaries.DeleteItem(Module.fileName);
+     Bibles.DeleteItem(Module as TBible);
+   end;
+
  if Module.ClassType = TCommentary then Commentaries.DeleteItem(Module as TCommentary );
  if Module.ClassType = TDictionary then Dictionaries.DeleteItem(Module as TDictionary );
  if Module.ClassType = TReference  then References  .DeleteItem(Module as TReference  );
@@ -359,8 +353,10 @@ begin
 end;
 
 initialization
-  RemoveOldFiles;
-  UnzipDefaultsFiles;
+  {$ifndef darwin}
+    RemoveOldFiles;
+    UnzipDefaultsFiles;
+  {$endif}
   Tools := TTools.Create;
 
 finalization

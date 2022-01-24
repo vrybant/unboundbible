@@ -7,7 +7,7 @@ unit UnitModule;
 interface
 
 uses
-  Classes, Fgl, SysUtils, Dialogs, Graphics, ClipBrd, LazUtf8, IniFiles, DB, SQLdb,
+  Classes, SysUtils, Dialogs, Graphics, ClipBrd, LazUtf8, IniFiles, DB, SQLdb,
   {$ifdef zeos} ZConnection, ZDataset, ZDbcSqLite, {$else} SQLite3conn, {$endif}
   UnitLib;
 
@@ -66,8 +66,6 @@ type
     class function mybible2unbound(id: integer): integer;
     procedure OpenDatabase;
   end;
-
- TModules = TFPGList<TModule>;
 
 implementation
 
