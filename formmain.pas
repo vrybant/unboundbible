@@ -14,7 +14,6 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
-    ActionFavorites: TAction;
     ClearHistory: TButton;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
@@ -27,7 +26,7 @@ type
     miDictionaries: TMenuItem;
     N7: TMenuItem;
     Panel1: TPanel;
-    Panel2: TPanel;
+    PanelHistory: TPanel;
     Panel3: TPanel;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
@@ -157,7 +156,6 @@ type
     pmSeparator2: TMenuItem;
 
     StandardToolBar: TToolBar;
-    ToolButtonFavorites: TToolButton;
     ToolPanel: TPanel;
     ToolButtonBold: TToolButton;
     ToolButtonBullets: TToolButton;
@@ -189,7 +187,6 @@ type
     ToolSeparator5: TToolButton;
     ToolSeparator6: TToolButton;
 
-    procedure CmdFavoritesExecute(Sender: TObject);
     procedure ClearHistoryClick(Sender: TObject);
     procedure CmdReference(Sender: TObject);
     procedure CmdCommentaries(Sender: TObject);
@@ -242,7 +239,6 @@ type
     procedure RadioButtonClick(Sender: TObject);
     procedure ToolButtonDonateClick(Sender: TObject);
     procedure ToolButtonSearchClick(Sender: TObject);
-
   private
     NoteFileName: string;
     RecentList: TStringArray;
@@ -252,12 +248,13 @@ type
     showed : boolean;
     function UnboundMemo: TUnboundMemo;
     function CheckFileSave: boolean;
-    function SelectBible(name: string): boolean;
     procedure LoadComboBox;
     procedure EnableActions;
+    procedure FirstAppearance;
     procedure UpDownButtons;
     procedure SelectBook(title: string; scroll: boolean);
     procedure ShowCurrVerse(select: boolean);
+    procedure ShowCurrBible;
     procedure LangMenuInit;
     procedure LoadChapter;
     procedure LoadSearch(s: string);
@@ -328,13 +325,6 @@ begin
 
   ReadConfig;
   AssignFont;
-  LoadComboBox;
-  MakeBookList;
-  if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
-  UpdateStatus(CurrBible.Info);
-
-  // LoadChapter; // RichMemo doesn't load from Stream,
-                  // so we call it from FormShow
 
   LangMenuInit;
   RecentMenuInit;
@@ -365,6 +355,9 @@ begin
   {$endif}
 
   UpdateActionImage;
+  ShowCurrBible;
+
+  // ?? LoadChapter; // RichMemo doesn't load from Stream, so we call it from FormShow
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -374,46 +367,22 @@ begin
   Localization.Free;
 end;
 
-procedure TMainForm.HistoryBoxClick(Sender: TObject);
-var
-  List : TStringArray;
-  Verse : TVerse;
-  bibleName, link : string;
+procedure TMainForm.FirstAppearance;
 begin
-  List := HistoryBox.GetSelectedText.Split('~');
-  if List.Count < 2 then Exit;
-
-  link := List[0];
-  bibleName := List[1].Trim;
-  MainForm.Caption:= link + '~' + bibleName;
-
-  Tools.SetCurrBible(bibleName) ;
-
-  Verse := CurrBible.SrtToVerse(link);
-  if not CurrBible.GoodLink(Verse) then Exit;
-  CurrVerse := Verse;
-  ShowCurrVerse(True);
-  SelectBible(bibleName);
-  UpdateStatus(CurrBible.Info);
+  LocalizeApplication;
+  {$ifdef linux}
+    TabSheetSearch    .TabVisible := False;
+    TabSheetReference .TabVisible := False;
+    TabSheetCommentary.TabVisible := False;
+    TabSheetDictionary.TabVisible := False;
+    ShowCurrVerse(CurrVerse.number > 1);
+  {$endif}
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  if not showed then // first time
-    begin
-      LocalizeApplication;
-      {$ifdef linux}
-        TabSheetSearch    .TabVisible := False;
-        TabSheetReference .TabVisible := False;
-        TabSheetCommentary.TabVisible := False;
-        TabSheetDictionary.TabVisible := False;
-      {$endif}
-      {$ifndef darwin}
-        ShowCurrVerse(CurrVerse.number > 1);
-      {$endif}
-      showed := True;
-    end;
-
+  if not showed then FirstAppearance;
+  showed := True;
   {$ifdef windows} IdleMessage := 'HideCursor'; {$endif}
 end;
 
@@ -446,6 +415,25 @@ begin
 
   Edit.Left := StandardToolBar.Width - ToolButtonSearch.Width - Edit.Width - 4;
   Edit.Visible := ToolPanel.Width > Edit.Width;
+end;
+
+procedure TMainForm.HistoryBoxClick(Sender: TObject);
+var
+  List : TStringArray;
+  Verse : TVerse;
+  biblename, link : string;
+begin
+  List := HistoryBox.GetSelectedText.Split('~');
+  if List.Count < 2 then Exit;
+
+  link := List[0];
+  biblename := List[1].Trim;
+  MainForm.Caption:= link + '~' + biblename;
+
+  Tools.SetCurrBible(bibleName);
+  Verse := CurrBible.SrtToVerse(link);
+  if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
+  ShowCurrBible;
 end;
 
 procedure TMainForm.MemoMouseLeave(Sender: TObject);
@@ -646,19 +634,9 @@ begin
 end;
 
 procedure TMainForm.ComboBoxChange(Sender: TObject);
-var
-  select : boolean;
 begin
   Tools.SetCurrBible( ComboBox.Items[ComboBox.ItemIndex] ) ;
-  MakeBookList;
-  select := CurrVerse.number > 1;
-  {$ifdef linux}
-    IdleMessage := 'ShowCurrVerse(' + ToStr(select) + ')';
-  {$else}
-    ShowCurrVerse(select);
-  {$endif}
-  SelectPage(apBible);
-  UpdateStatus(CurrBible.Info);
+  ShowCurrBible;
 end;
 
 procedure TMainForm.ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
@@ -759,11 +737,6 @@ begin
     HistoryBox.Clear;
 end;
 
-procedure TMainForm.CmdFavoritesExecute(Sender: TObject);
-begin
-  Tools.FavoriteMode := not Tools.FavoriteMode;
-end;
-
 procedure TMainForm.CmdCommentaries(Sender: TObject);
 var
   Response : integer;
@@ -814,10 +787,10 @@ procedure TMainForm.CmdFileOpen(Sender: TObject);
 begin
   if not CheckFileSave then Exit;
   if OpenDialog.Execute then
-  begin
-    PerformFileOpen(OpenDialog.FileName);
-    MemoNotes.ReadOnly := ofReadOnly in OpenDialog.Options;
-  end;
+    begin
+      PerformFileOpen(OpenDialog.FileName);
+      MemoNotes.ReadOnly := ofReadOnly in OpenDialog.Options;
+    end;
 end;
 
 procedure TMainForm.CmdFileSave(Sender: TObject);
@@ -827,10 +800,10 @@ begin
   if NoteFileName = Untitled then
     CmdFileSaveAs(Sender)
   else
-  begin
-    MemoNotes.SaveToFile(NoteFileName);
-    MemoNotes.Modified := False;
-  end;
+    begin
+      MemoNotes.SaveToFile(NoteFileName);
+      MemoNotes.Modified := False;
+    end;
 end;
 
 procedure TMainForm.CmdFileSaveAs(Sender: TObject);
@@ -868,13 +841,12 @@ end;
 
 procedure TMainForm.CmdModules(Sender: TObject);
 begin
-  ShelfForm.ShowModal;
-  LoadComboBox;
+  if ShelfForm.ShowModal = mrOk then ShowCurrBible else LoadComboBox;
 end;
 
 procedure TMainForm.CmdExit(Sender: TObject);
 begin
-  Close
+  Close;
 end;
 
 //-------------------------------------------------------------------------------------------------
@@ -927,14 +899,18 @@ begin
   if Memo.hyperlink.isEmpty then Exit;
 
   if Memo.Foreground = fgLink then
-    if SelectBible(Memo.hyperlink) then Exit;
-
-  if Memo.Foreground = fgLink then
     begin
       Verse := CurrBible.SrtToVerse(Memo.hyperlink);
-      if not CurrBible.GoodLink(Verse) then Exit;
-      CurrVerse := Verse;
-      ShowCurrVerse(True);
+      if CurrBible.GoodLink(Verse) then
+        begin
+          CurrVerse := Verse;
+          ShowCurrVerse(True);
+        end
+      else
+        begin
+          Tools.SetCurrBible(Memo.hyperlink);
+          ShowCurrBible;
+        end;
     end;
 
   if Memo = MemoBible then
@@ -959,13 +935,13 @@ end;
 
 procedure TMainForm.LoadComboBox;
 var
-  item : string;
+  Item : string;
 begin
   ComboBox.Items.Clear;
-  for item in Tools.Get_BilesNames do
+  for Item in Tools.Get_FavoriteBiles do
     begin
-      ComboBox.Items.Add(item);
-      if item = CurrBible.name then ComboBox.ItemIndex := ComboBox.Items.Count - 1;
+      ComboBox.Items.Add(Item);
+      if Item = CurrBible.name then ComboBox.ItemIndex := ComboBox.Items.Count - 1;
     end;
 end;
 
@@ -997,22 +973,6 @@ begin
   PopupMenu.Popup(CursorPos.X, CursorPos.Y);
 end;
 
-function TMainForm.SelectBible(name: string): boolean;
-var
-  item : string;
-begin
-  Result := False;
-  if name.Contains(':') then Exit;
-
-  for item in ComboBox.Items do
-    if item = name then
-      begin
-        ComboBox.ItemIndex := ComboBox.Items.IndexOf(item);
-        ComboBoxChange(nil);
-        Exit(True);
-      end;
-end;
-
 procedure TMainForm.SelectBook(title: string; scroll: boolean);
 var
   item : string;
@@ -1035,12 +995,27 @@ begin
   MakeChapterList;
   LoadChapter;
 
-
   SelectBook(Book.title, TModule.IsNewTestament(CurrVerse.book));
   ChapterBox.ItemIndex := CurrVerse.Chapter - 1;
 
   if select then MemoBible.SelectParagraph(CurrVerse.Number);
   Repaint;
+end;
+
+procedure TMainForm.ShowCurrBible;
+var
+  select : boolean;
+begin
+  LoadComboBox;
+  MakeBookList;
+  select := CurrVerse.number > 1;
+  {$ifdef linux}
+    IdleMessage := 'ShowCurrVerse(' + ToStr(select) + ')';
+  {$else}
+    ShowCurrVerse(select);
+  {$endif}
+  SelectPage(apBible);
+  UpdateStatus(CurrBible.Info);
 end;
 
 function TMainForm.CheckFileSave: boolean;
@@ -1403,7 +1378,6 @@ procedure TMainForm.LoadChapter;
 begin
   MemoBible.LoadText(Tools.Get_Chapter, true);
   SelectPage(apBible);
-
 end;
 
 procedure TMainForm.LoadSearch(s: string);
@@ -1519,7 +1493,7 @@ begin
   RichTextToClipboard(ParseWin(Tools.Get_Verses, Font), RemoveTags(Tools.Get_Verses));
   if Options.cvCopyNoFormat then
     begin
-       MemoPreview := TUnboundMemo.Create(self);
+      MemoPreview := TUnboundMemo.Create(self);
       MemoPreview.Parent := MainForm;
       MemoPreview.Font.Assign(Font);
       MemoPreview.LoadText(Tools.Get_Verses);
@@ -1577,9 +1551,9 @@ end;
 
 procedure TMainForm.SaveConfig;
 var
-  IniFile: TIniFile;
+  IniFile : TIniFile;
   item : string;
-  i: integer;
+  i : integer;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
