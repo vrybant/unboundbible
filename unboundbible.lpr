@@ -15,12 +15,12 @@ begin
   Application.Title := {$ifdef windows} 'Unbound Bible' {$else} 'unboundbible' {$endif};
   Application.Initialize;
 
-  Application.CreateForm(TMainForm,    MainForm);
-  Application.CreateForm(TAboutBox,    AboutBox);
-  Application.CreateForm(TNotifyForm,  NotifyForm);
-  Application.CreateForm(TSearchForm,  SearchForm);
-  Application.CreateForm(TCopyForm,    CopyForm);
-  Application.CreateForm(TShelfForm,   ShelfForm);
+  Application.CreateForm(TMainForm,   MainForm);
+  Application.CreateForm(TAboutBox,   AboutBox);
+  Application.CreateForm(TNotifyForm, NotifyForm);
+  Application.CreateForm(TSearchForm, SearchForm);
+  Application.CreateForm(TCopyForm,   CopyForm);
+  Application.CreateForm(TShelfForm,  ShelfForm);
 
   Application.Run;
 end.

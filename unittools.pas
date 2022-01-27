@@ -14,13 +14,12 @@ type
     Bibles : TBibles;
     Commentaries : TCommentaries;
     Dictionaries : TDictionaries;
-    FavoriteMode : boolean;
   private
     References : TReferences;
   public
     constructor Create;
     destructor Destroy; override;
-    function Get_BilesNames: TStringArray;
+    function Get_FavoriteBiles: TStringArray;
     function Get_Chapter: string;
     function Get_Search(st: string; out count: integer): string;
     function Get_Compare: string;
@@ -30,7 +29,8 @@ type
     function Get_Strong(number: string = ''): string;
     function Get_Footnote(marker: string = ''): string;
     function Get_Verses: string;
-    procedure SetCurrBible(Value: string);
+    procedure SetCurrBible(Bible: TBible); overload;
+    procedure SetCurrBible(Value: string); overload;
     procedure DeleteModule(const Module: TModule);
   private
     procedure SaveConfig;
@@ -54,10 +54,8 @@ begin
   Commentaries := TCommentaries.Create;
   Dictionaries := TDictionaries.Create;
   References := TReferences.Create;
-  //
-  FavoriteMode := True;
-  //
   ReadConfig;
+  if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
 end;
 
 destructor TTools.Destroy;
@@ -69,14 +67,14 @@ begin
   Bibles.Free;
 end;
 
-function TTools.Get_BilesNames: TStringArray;
+function TTools.Get_FavoriteBiles: TStringArray;
 var
   Bible : TBible;
 begin
   Result := [];
   for Bible in Bibles do
     begin
-      if FavoriteMode and not Bible.favorite then Continue;
+      if not Bible.favorite and (Bible <> CurrBible) then Continue;
       Result.Add(Bible.Name);
     end;
 end;
@@ -166,7 +164,7 @@ begin
 
   for Bible in Bibles do
     begin
-      if FavoriteMode and not Bible.favorite then Continue;
+      if not Bible.favorite and (Bible <> CurrBible) then Continue;
       s := ''.Join(' ', Bible.GetRange(CurrVerse));
       if s.isEmpty then Continue;
       Result += '<br><l>' + Bible.Name + '</l><br>' + s + '<br>';
@@ -198,7 +196,6 @@ begin
   for Commentary in Commentaries do
     begin
       if Commentary.footnotes then Continue;
-      if FavoriteMode and not Commentary.favorite then Continue;
       Strings := Commentary.GetData(CurrVerse);
       if Strings.IsEmpty then Continue;
       Result += '<h>' + Commentary.Name + '</h><br><br>';
@@ -286,6 +283,13 @@ begin
   Result += quote + '<br> ';
 end;
 
+procedure TTools.SetCurrBible(Bible: TBible);
+begin
+  CurrBible := Bible;
+  CurrBible.LoadDatabase;
+  if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
+end;
+
 procedure TTools.SetCurrBible(Value: string);
 var
   Bible : TBible;
@@ -299,8 +303,7 @@ begin
         Break;
       end;
 
-  CurrBible.LoadDatabase;
-  if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
+  SetCurrBible(Bible);
 end;
 
 procedure TTools.DeleteModule(const Module: TModule);
@@ -317,7 +320,8 @@ begin
 end;
 
 procedure TTools.SaveConfig;
-var IniFile: TIniFile;
+var
+  IniFile : TIniFile;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
@@ -333,8 +337,8 @@ end;
 
 procedure TTools.ReadConfig;
 var
-  IniFile: TIniFile;
-  Version: string;
+  IniFile : TIniFile;
+  Version : string;
   CurrentBible : string;
 begin
   IniFile := TIniFile.Create(ConfigFile);
