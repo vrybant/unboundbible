@@ -100,13 +100,14 @@ object ShelfForm: TShelfForm
             SizePriority = 0
             Title.Alignment = taCenter
             Title.Caption = '⭐️'
-            Width = 30
+            Width = 0
+            Visible = False
           end        
           item
             ButtonStyle = cbsNone
             Title.Alignment = taCenter
             Title.Caption = 'Title'
-            Width = 515
+            Width = 545
           end        
           item
             Alignment = taCenter
@@ -129,8 +130,8 @@ object ShelfForm: TShelfForm
         OnGetCheckboxState = GridGetCheckboxState
         OnSelection = GridSelection
         ColWidths = (
-          30
-          515
+          0
+          545
           40
         )
       end
@@ -238,13 +239,14 @@ object ShelfForm: TShelfForm
     ParentColor = False
     Visible = False
   end
-  object ButtonConvert: TButton
+  object ButtonOpen: TButton
     Left = 516
     Height = 26
     Top = 296
     Width = 90
-    Caption = 'Convert'
-    OnClick = ButtonConvertClick
+    Caption = 'Open'
+    ModalResult = 1
+    OnClick = ButtonOpenClick
     TabOrder = 2
   end
   object ButtonDelete: TButton
@@ -262,7 +264,7 @@ object ShelfForm: TShelfForm
     Top = 376
     Width = 90
     Caption = 'Close'
-    ModalResult = 1
+    ModalResult = 11
     TabOrder = 4
   end
   object Images: TImageList

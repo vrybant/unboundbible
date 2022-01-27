@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Graphics, Dialogs, Forms, Controls, ComCtrls, StdCtrls, Buttons, ExtCtrls, Grids,
-  SysUtils, LCLIntf, LCLType, Menus, UnitLib, UnitModule;
+  SysUtils, LCLIntf, LCLType, LazUtf8, Menus, UnitLib, UnitModule;
 
 type
 
@@ -12,7 +12,7 @@ type
 
   TShelfForm = class(TForm)
     ButtonDelete: TButton;
-    ButtonConvert: TButton;
+    ButtonOpen: TButton;
     Images: TImageList;
     LabelFile: TLabel;
     LabelFilename: TLabel;
@@ -29,7 +29,7 @@ type
     ToggleBox1: TToggleBox;
     ButtonClose: TButton;
     procedure ButtonDeleteClick(Sender: TObject);
-    procedure ButtonConvertClick(Sender: TObject);
+    procedure ButtonOpenClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -78,7 +78,7 @@ begin
   Caption := ' ' + T('Modules');
   BiblesGrid.Columns[clName].Title.Caption := T('Title');
   LabelFile.Caption := T('File Name') + ' : ';
-  ButtonConvert.Caption := T('Download');
+  ButtonOpen.Caption := T('Download');
   ButtonDelete.Caption := T('Delete');
   ButtonClose.Caption := T('Close');
 end;
@@ -86,7 +86,7 @@ end;
 procedure TShelfForm.FormCreate(Sender: TObject);
 begin
   CurrModule := nil;
-  ExpertMode := NOT false;
+  ExpertMode := false;
   Application.HintPause := 1;
   LabelFilename.Caption := '';
   {$ifdef windows} MemoWidth := Memo.Width; {$endif}
@@ -100,10 +100,11 @@ end;
 procedure TShelfForm.FormPaint(Sender: TObject);
 begin
   Caption := ' ' + T('Modules');
-  ButtonConvert.Caption := T('Download');
+  ButtonOpen.Caption := T('Open');
+  ButtonOpen.Enabled := PageControl.ActivePageIndex = apBible;
 
-  if ExpertMode then Caption := Caption + ' - ' + UpperCase(T('Expert Mode'));
-  if ExpertMode then ButtonConvert.Caption := T('Convert');
+  if ExpertMode then Caption := Caption + ' - ' + UTF8UpperCase(T('Expert Mode'));
+  if ExpertMode then ButtonOpen.Caption := T('Convert');
 
   LabelFilename.Left := LabelFile.Left + LabelFile.Width;
   {$ifdef windows} Memo.Width := MemoWidth - iif(Memo.ScrollBars = ssNone, 10, 0); {$endif}
@@ -117,7 +118,7 @@ end;
 
 procedure TShelfForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if (Key = VK_F8) and (Shift = []) then
+  if (Key = VK_F6) and (Shift = []) then
     begin
       ExpertMode := not ExpertMode;
       ShowDetails;
@@ -142,14 +143,14 @@ procedure TShelfForm.GridCheckboxToggled(Sender: TObject; aCol, aRow: Integer; a
 begin
   if (aCol <> 0) or (aRow <= 0) then Exit;
 
-  if Sender = CommentariesGrid then
-    Tools.Commentaries[aRow-1].favorite := aState = cbChecked;
-
   if Sender = BiblesGrid then
     begin
       if CurrBible = Tools.Bibles[aRow-1] then aState := cbChecked;
       Tools.Bibles[aRow-1].favorite := aState = cbChecked
     end;
+
+  if Sender = CommentariesGrid then
+    Tools.Commentaries[aRow-1].favorite := aState = cbChecked;
 
   (Sender as TStringGrid).Cells[aCol, aRow] := iif(aState = cbChecked, '*', '');
 end;
@@ -222,7 +223,7 @@ begin
   Memo.Lines.Add(CurrModule.info);
   Memo.SelStart := 1;
 
-  ButtonConvert.Enabled := not ExpertMode or (ExtractFileExt(CurrModule.fileName) <> '.unbound');
+  ButtonOpen.Enabled := not ExpertMode or (ExtractFileExt(CurrModule.fileName) <> '.unbound');
   ButtonDelete.Enabled := CurrBible <> CurrModule;
 end;
 
@@ -267,13 +268,14 @@ begin
           end;
 end;
 
-procedure TShelfForm.ButtonConvertClick(Sender: TObject);
+procedure TShelfForm.ButtonOpenClick(Sender: TObject);
 begin
   if not ExpertMode then
-    begin
-      OpenURL(DownloadsURL);
-      Exit;
-    end;
+    if PageControl.ActivePageIndex = apBible then
+      begin
+        Tools.SetCurrBible(CurrModule as TBible);
+        Exit;
+      end;
 
   case PageControl.ActivePageIndex of
     apBible        : Tools.ExportBible(CurrModule as TBible);
@@ -283,7 +285,6 @@ begin
 
   QuestionDlg(' ', 'Module ' + CurrModule.fileName + ' has been extracted.',
     mtInformation, [mrOK, T('OK'), 'IsDefault'], 0);
-
 end;
 
 end.
