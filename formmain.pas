@@ -650,7 +650,7 @@ var
 begin
   if Key = VK_RETURN then
     begin
-    Verse := CurrBible.SrtToVerse(trim(Edit.Text));
+      Verse := CurrBible.SrtToVerse(trim(Edit.Text));
       if CurrBible.GoodLink(Verse) then
         begin
           CurrVerse := Verse;
@@ -840,6 +840,7 @@ end;
 procedure TMainForm.CmdModules(Sender: TObject);
 begin
   if ShelfForm.ShowModal = mrOk then ShowCurrBible else LoadComboBox;
+  if PageControl.ActivePageIndex = apCompare then LoadCompare;
 end;
 
 procedure TMainForm.CmdExit(Sender: TObject);
