@@ -31,7 +31,7 @@ type
     function Get_Verses: string;
     procedure SetCurrBible(Bible: TBible); overload;
     procedure SetCurrBible(Value: string); overload;
-    procedure DeleteModule(const Module: TModule);
+    function DeleteModule(const Module: TModule): boolean;
   private
     procedure SaveConfig;
     procedure ReadConfig;
@@ -306,17 +306,17 @@ begin
   SetCurrBible(Bible);
 end;
 
-procedure TTools.DeleteModule(const Module: TModule);
+function TTools.DeleteModule(const Module: TModule): boolean;
 begin
  if Module.ClassType = TBible then
    begin
-     if Module.format = mybible then Commentaries.DeleteItem(Module.fileName);
-     Bibles.DeleteItem(Module as TBible);
+     if Module.format = mybible then Commentaries.DeleteFootnotes(Module.fileName);
+     Result := Bibles.DeleteItem(Module as TBible);
    end;
 
- if Module.ClassType = TCommentary then Commentaries.DeleteItem(Module as TCommentary );
- if Module.ClassType = TDictionary then Dictionaries.DeleteItem(Module as TDictionary );
- if Module.ClassType = TReference  then References  .DeleteItem(Module as TReference  );
+ if Module.ClassType = TCommentary then Result := Commentaries.DeleteItem(Module as TCommentary );
+ if Module.ClassType = TDictionary then Result := Dictionaries.DeleteItem(Module as TDictionary );
+ if Module.ClassType = TReference  then Result := References  .DeleteItem(Module as TReference  );
 end;
 
 procedure TTools.SaveConfig;

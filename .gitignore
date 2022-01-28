@@ -9,6 +9,7 @@ __history
 *.deb
 *.rpm
 *.dll
+*.dbg
 *.ini
 bin/*
 lib/*

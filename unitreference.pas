@@ -27,7 +27,7 @@ type
   public
     constructor Create;
     function GetData(Verse: TVerse; language: string; out info: string): TReferenceArray;
-    procedure DeleteItem(Item: TReference);
+    function DeleteItem(Item: TReference): boolean;
     destructor Destroy; override;
   end;
 
@@ -172,11 +172,12 @@ begin
   info := Reference.info;
 end;
 
-procedure TReferences.DeleteItem(Item: TReference);
+function TReferences.DeleteItem(Item: TReference): boolean;
 begin
-  Item.Delete;
+  if not Item.Delete then Exit(false);
   Item.Free;
   Delete(IndexOf(Item));
+  Exit(true);
 end;
 
 destructor TReferences.Destroy;

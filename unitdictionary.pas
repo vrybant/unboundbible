@@ -35,7 +35,7 @@ type
     constructor Create;
     function EmbeddedOnly: boolean;
     function GetStrong(Verse: TVerse; language: string; number: string): string;
-    procedure DeleteItem(Item: TDictionary);
+    function DeleteItem(Item: TDictionary): boolean;
     destructor Destroy; override;
   end;
 
@@ -227,11 +227,12 @@ begin
     if not Dictionary.embedded then Result := False;
 end;
 
-procedure TDictionaries.DeleteItem(Item: TDictionary);
+function TDictionaries.DeleteItem(Item: TDictionary): boolean;
 begin
-  Item.Delete;
+  if not Item.Delete then Exit(false);
   Item.Free;
   Delete(IndexOf(Item));
+  Exit(true);
 end;
 
 destructor TDictionaries.Destroy;
