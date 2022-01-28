@@ -6,7 +6,7 @@ interface
 
 uses
   {$ifdef windows} Windows, Windirs, {$endif}
-  {$ifdef unix} LazLogger, {$endif}
+  {$ifopt D+}{$ifdef unix} LazLogger, {$endif}{$endif}
   SysUtils, StrUtils, Classes, Variants, Graphics, Controls, Forms, Dialogs,
   LazUtf8, LCLProc, LCLVersion, ExtCtrls, ClipBrd, Process, UTF8Process;
 
@@ -544,9 +544,11 @@ end;
 
 procedure Output(s: string);
 begin
-  Replace(s,#0,' ');
-  {$ifdef windows} OutputDebugString(PChar(s)); {$endif}
-  {$ifdef unix} DebugLn(s); {$endif}
+  {$ifopt D+}
+    Replace(s,#0,' ');
+    {$ifdef windows} OutputDebugString(PChar(s)); {$endif}
+    {$ifdef unix} DebugLn(s); {$endif}
+  {$endif}
 end;
 
 procedure Output(n: integer);
