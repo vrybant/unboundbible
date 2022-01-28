@@ -74,7 +74,7 @@ type
     destructor Destroy; override;
     function IsEmpty: boolean;
     function GetDefaultBible: string;
-    procedure DeleteItem(Item: TBible);
+    function DeleteItem(Item: TBible): boolean;
   end;
 
 implementation
@@ -646,11 +646,12 @@ begin
       end;
 end;
 
-procedure TBibles.DeleteItem(Item: TBible);
+function TBibles.DeleteItem(Item: TBible): boolean;
 begin
-  Item.Delete;
+  if not Item.Delete then Exit(false);
   Item.Free;
   Delete(IndexOf(Item));
+  Exit(true);
 end;
 
 procedure TBibles.SavePrivates;

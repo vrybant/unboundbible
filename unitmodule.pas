@@ -58,12 +58,13 @@ type
     function EncodeID(id: integer): integer;
     function DecodeID(id: integer): integer;
     function TableExists(table: string): boolean;
-    procedure Delete;
+    function Delete: boolean;
     procedure SavePrivate(const IniFile: TIniFile);
     procedure ReadPrivate(const IniFile: TIniFile);
   private
     class function unbound2mybible(id: integer): integer;
     class function mybible2unbound(id: integer): integer;
+    function OpenConnection: boolean;
     procedure OpenDatabase;
   end;
 
@@ -86,7 +87,6 @@ var
 constructor TModule.Create(FilePath: string; new: boolean = false);
 var
   ext : string;
-  dbhandle : Pointer;
 begin
   inherited Create;
 
@@ -134,6 +134,17 @@ begin
     Query.DataBase := Connection;
   {$endif}
 
+  if not OpenConnection then Exit;
+  if not new then OpenDatabase;
+  if encryption then connected := false;
+
+//output(FilePath);
+end;
+
+function TModule.OpenConnection: boolean;
+var
+  dbhandle : Pointer;
+begin
   try
     {$ifdef zeos}
       Connection.Connect;
@@ -143,19 +154,14 @@ begin
       Transaction.Active := True;
       dbhandle := Connection.Handle;
     {$endif}
-
-    if not Connection.Connected then Exit;
+    if not Connection.Connected then Exit(false);
     SQLite3CreateFunctions(dbhandle);
  // Connection.ExecuteDirect('PRAGMA case_sensitive_like = 1');
   except
     output('connection failed ' + FilePath);
-    Exit;
+    Exit(false);
   end;
-
-  if not new then OpenDatabase;
-  if encryption then connected := false;
-
-//output(FilePath);
+  Exit(true);
 end;
 
 procedure TModule.CommitTransaction;
@@ -205,10 +211,11 @@ begin
   TableNames.Free;
 end;
 
-procedure TModule.Delete;
+function TModule.Delete: boolean;
 begin
-  {$ifndef zeos} Connection.Close; {$endif}
-  DeleteFile(filePath);
+  {$ifdef zeos} Connection.Disconnect; {$else} Connection.Close; {$endif}
+  Result := DeleteFile(filePath);
+  if not Result then OpenConnection;
 end;
 
 destructor TModule.Destroy;
