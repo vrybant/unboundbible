@@ -236,7 +236,6 @@ type
     procedure miDonateClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
-    procedure RadioButtonClick(Sender: TObject);
     procedure ToolButtonDonateClick(Sender: TObject);
     procedure ToolButtonSearchClick(Sender: TObject);
   private
@@ -335,6 +334,8 @@ begin
 //ToolButtonDonate.Visible := not DonateVisited;
   IdleMessage := '';
 
+  ShowCurrBible;
+
   {$ifdef windows}
     TabSheetSearch    .TabVisible := False;
     TabSheetReference .TabVisible := False;
@@ -354,10 +355,7 @@ begin
     ToolSeparator6.Visible := False;
   {$endif}
 
-  UpdateActionImage;
-  ShowCurrBible;
-
-  // ?? LoadChapter; // RichMemo doesn't load from Stream, so we call it from FormShow
+  {$ifndef darwin} UpdateActionImage; {$endif}
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -1014,7 +1012,6 @@ begin
   {$else}
     ShowCurrVerse(select);
   {$endif}
-  SelectPage(apBible);
   UpdateStatus(CurrBible.Info);
 end;
 
@@ -1252,11 +1249,7 @@ begin
     begin
       Font.Assign(FontDialog.Font);
       AssignFont;
-      MakeBookList;
-      MakeChapterList;
-      LoadChapter;
-      FormPaint(self);
-      Invalidate;
+      ShowCurrBible;
     end;
 end;
 
@@ -1300,13 +1293,6 @@ begin
 
   pmSearchfor.Caption := StringReplace( T('Search for %'),'%',s,[]);
   pmLookup   .Caption := StringReplace( T('Look Up %')   ,'%',s,[]);
-end;
-
-procedure TMainForm.RadioButtonClick(Sender: TObject);
-begin
-  MakeBookList;
-  MakeChapterList;
-  LoadChapter;
 end;
 
 procedure TMainForm.ToolButtonDonateClick(Sender: TObject);
