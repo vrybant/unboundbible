@@ -159,14 +159,14 @@ procedure TUnboundMemo.GetParagraphRange;
 var
   List : TStringArray;
 begin
-  if not SelText.Contains(LineBreaker) then
+  if not SelText.Contains(LineBreak) then
     begin
       ParagraphStart := GetParagraphNumber(SelStart, SelLength = 0);
       ParagraphCount := 1;
       Exit;
     end;
 
-  List := SelText.Split(LineBreaker);
+  List := SelText.Split(LineBreak);
 
   if GetNumber(SelText) > 0 then
     begin
@@ -187,7 +187,7 @@ var
   ps : string;
   x : integer;
 begin
-  ps := LineBreaker + ' ' + ToStr(n) + ' ';
+  ps := LineBreak + ' ' + ToStr(n) + ' ';
   x := UTF8Pos(ps, Text);
   if (x = 0) and (n <> 1) then Exit;
   SetSel(x, x+1);

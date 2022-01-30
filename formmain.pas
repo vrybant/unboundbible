@@ -1110,7 +1110,7 @@ begin
   B := PageControl.ActivePageIndex = apBible;
   L := PageControl.ActivePageIndex = apNotes;
   S := UnboundMemo.SelLength > iif(B,1,0);
-  M := UnboundMemo.SelText.Contains(LineBreaker); // multiline
+  M := UnboundMemo.SelText.Contains(LineBreak); // multiline
 
   ActionSearchfor.Visible  := S and not M;
   ActionLookup.Visible     := S and not M;

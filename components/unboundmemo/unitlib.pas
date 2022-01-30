@@ -102,7 +102,7 @@ const
 
 const
   Slash = DirectorySeparator;
-  LineBreaker = {$ifdef windows}#13{$else}#10{$endif};
+  LineBreak = {$ifdef windows}#13{$else}#10{$endif};
   AcuteChar = #$CC#$81;
 
 implementation
