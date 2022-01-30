@@ -100,11 +100,10 @@ end;
 procedure TShelfForm.FormPaint(Sender: TObject);
 begin
   Caption := ' ' + T('Modules');
-  ButtonOpen.Caption := T('Open');
-  ButtonOpen.Enabled := PageControl.ActivePageIndex = apBible;
-
   if ExpertMode then Caption := Caption + ' - ' + UTF8UpperCase(T('Expert Mode'));
-  if ExpertMode then ButtonOpen.Caption := T('Convert');
+
+  ButtonOpen.Caption := iif(ExpertMode, T('Convert'), T('Open'));
+  ButtonOpen.Enabled := ExpertMode or (PageControl.ActivePageIndex = apBible);
 
   LabelFilename.Left := LabelFile.Left + LabelFile.Width;
   {$ifdef windows} Memo.Width := MemoWidth - iif(Memo.ScrollBars = ssNone, 10, 0); {$endif}
@@ -122,6 +121,7 @@ begin
     begin
       ExpertMode := not ExpertMode;
       ShowDetails;
+      Repaint;
     end;
 end;
 
