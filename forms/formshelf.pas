@@ -257,15 +257,16 @@ end;
 
 procedure TShelfForm.ButtonDeleteClick(Sender: TObject);
 begin
-  if QuestionDlg(' ' + T('Confirmation'),
-    T('Do you wish to delete this module?') + LineBreaker + LineBreaker +
-      CurrModule.name + LineBreaker, mtWarning,
-        [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) = idYes then
-          begin
-            Tools.DeleteModule(CurrModule);
-            ActiveGrid.DeleteRow(ActiveGrid.Row);
-            GridSelection(Sender, BiblesGrid.Col, BiblesGrid.Row);
-          end;
+  if QuestionDlg(' ' + T('Confirmation'), T('Do you wish to delete this module?') +
+    LineBreak + LineBreak + CurrModule.name + LineBreak, mtWarning,
+      [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) <> idYes then Exit;
+
+  if not Tools.DeleteModule(CurrModule) then
+    if QuestionDlg(' ' + T('Error'), T('Cannot delete the module.') + LineBreak,
+      mtError, [mrCancel, T('Close')], 0) = idCancel then Exit;
+
+  ActiveGrid.DeleteRow(ActiveGrid.Row);
+  GridSelection(Sender, BiblesGrid.Col, BiblesGrid.Row);
 end;
 
 procedure TShelfForm.ButtonOpenClick(Sender: TObject);
