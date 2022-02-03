@@ -30,7 +30,7 @@ type
     function Get_Footnote(marker: string = ''): string;
     function Get_Verses: string;
     procedure SetCurrBible(Bible: TBible); overload;
-    procedure SetCurrBible(Value: string); overload;
+    procedure SetCurrBible(value: string); overload;
     function DeleteModule(const Module: TModule): boolean;
   private
     procedure SaveConfig;
@@ -290,14 +290,14 @@ begin
   if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
 end;
 
-procedure TTools.SetCurrBible(Value: string);
+procedure TTools.SetCurrBible(value: string);
 var
   Bible : TBible;
 begin
   CurrBible := Bibles[0];
 
   for Bible in Bibles do
-    if Bible.Name = Value then
+    if (Bible.filename = value) or (Bible.name = value) then
       begin
         CurrBible := Bible;
         Break;

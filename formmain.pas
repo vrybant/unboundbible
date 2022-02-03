@@ -28,6 +28,7 @@ type
     Panel1: TPanel;
     PanelHistory: TPanel;
     Panel3: TPanel;
+    PopupHistory: TPopupMenu;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
     FontDialogNotes: TFontDialog;
@@ -156,6 +157,7 @@ type
     pmSeparator2: TMenuItem;
 
     StandardToolBar: TToolBar;
+    ToolButtonHistory: TToolButton;
     ToolPanel: TPanel;
     ToolButtonBold: TToolButton;
     ToolButtonBullets: TToolButton;
@@ -241,6 +243,7 @@ type
   private
     NoteFileName: string;
     RecentList: TStringArray;
+    HistoryList: TStringArray;
     Statuses: TStatuses;
 //  DonateVisited: boolean;
     IdleMessage : string;
@@ -271,6 +274,7 @@ type
     procedure ReadConfig;
     procedure RebuildRecentList;
     procedure RecentMenuInit;
+    procedure HistoryMenuInit;
     procedure HideCursor;
     procedure SaveConfig;
     procedure SelectPage(page: integer);
@@ -317,6 +321,7 @@ begin
 
   Caption := ApplicationName + ' ' + ApplicationVersion;
   RecentList := [];
+  HistoryList := [];
   showed := False;
 
   SaveDialog.InitialDir := DocumentsPath;
@@ -327,6 +332,7 @@ begin
 
   LangMenuInit;
   RecentMenuInit;
+  HistoryMenuInit;
 
   NoteFileName := Untitled;
   MemoNotes.Lines.Clear;
@@ -421,12 +427,11 @@ var
   Verse : TVerse;
   biblename, link : string;
 begin
-  List := HistoryBox.GetSelectedText.Split('~');
-  if List.Count < 2 then Exit;
+  List := HistoryBox.GetSelectedText.Split(#0);
+  if List.Count < 3 then Exit;
 
   link := List[0];
-  biblename := List[1].Trim;
-  MainForm.Caption:= link + '~' + biblename;
+  biblename := List[2].Trim;
 
   Tools.SetCurrBible(bibleName);
   Verse := CurrBible.SrtToVerse(link);
@@ -1088,6 +1093,22 @@ begin
     end;
 end;
 
+procedure TMainForm.HistoryMenuInit;
+var
+  MenuItem : TMenuItem;
+  item, s : string;
+begin
+  PopupHistory.Items.Clear;
+
+  for item in HistoryList.Reverse do
+    begin
+      if not item.Contains(#0) then Continue;
+      s := item.Split(#0)[0];
+      MenuItem := NewItem(s, 0, False, True, nil, 0, '');
+      PopupHistory.Items.Add(MenuItem);
+    end;
+end;
+
 function TMainForm.UnboundMemo: TUnboundMemo;
 begin
   case PageControl.ActivePageIndex of
@@ -1321,9 +1342,14 @@ begin
   if Sender = HistoryBox then Exit;
   s := CurrBible.VerseToStr(CurrVerse, true);
   if s.isEmpty then Exit;
-  link += s + ' ~ ' + CurrBible.name;
+  link := s + #0 + CurrBible.abbreviation + #0 + CurrBible.fileName;
+
+  HistoryList.Add(link);
+
+  // *****
+
   if (HistoryBox.Count <> 0) and (link = HistoryBox.Items.Strings[0]) then Exit;
-  HistoryBox.Items.Insert(0,link);
+  HistoryBox.Items.Insert(0,link.Replace(#0,' '));
 
   if HistoryBox.Count + 1 > HistoryLengthEdit.Value then
     for i:= 0 to HistoryBox.Count - HistoryLengthEdit.Value do
@@ -1572,11 +1598,11 @@ begin
   for item in RecentList do
     IniFile.WriteString('Recent', 'File_' + RecentList.IndexOf(item).ToString, item);
 
-  IniFile.WriteInteger('History',  'Count', HistoryBox.Count);
-  IniFile.WriteInteger('History', 'Length', HistoryLengthEdit.Value);
+  IniFile.WriteInteger('History',  'Count', HistoryList.Count);
+//IniFile.WriteInteger('History', 'Length', HistoryLength.Value);
 
-  for i:=0 to HistoryBox.Count-1 do
-    IniFile.WriteString('History', 'Link_' + i.ToString, HistoryBox.Items.Strings[i]);
+  for i:=0 to HistoryList.Count-1 do
+    IniFile.WriteString('History', 'Link_' + i.ToString, HistoryList[i]);
 
   IniFile.Free;
 end;
@@ -1612,8 +1638,9 @@ begin
 
   Count := IniFile.ReadInteger('History', 'Count', 0);
   for i := 0 to Count - 1 do
-    HistoryBox.Items.Add(IniFile.ReadString('History', 'Link_' + ToStr(i), ''));
-  HistoryLengthEdit.Value := IniFile.ReadInteger('History', 'Length', HistoryLengthEdit.Value);
+    HistoryList.Add(IniFile.ReadString('History', 'Link_' + ToStr(i), ''));
+
+//HistoryLength.Value := IniFile.ReadInteger('History', 'Length', HistoryLength.Value);
 
   IniFile.Free;
 end;
