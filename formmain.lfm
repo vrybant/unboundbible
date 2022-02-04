@@ -2621,5 +2621,12 @@ object MainForm: TMainForm
     OnPopup = PopupHistoryPopup
     Left = 472
     Top = 160
+    object phSeparator: TMenuItem
+      Caption = '-'
+    end
+    object phClean: TMenuItem
+      Caption = 'Clean'
+      OnClick = phCleanClick
+    end
   end
 end

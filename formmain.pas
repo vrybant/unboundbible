@@ -16,6 +16,8 @@ type
   TMainForm = class(TForm)
     Edit: TEdit;
     IdleTimer: TIdleTimer;
+    phClean: TMenuItem;
+    phSeparator: TMenuItem;
     miIssue: TMenuItem;
     miDonate: TMenuItem;
     MenuItem2: TMenuItem;
@@ -228,6 +230,7 @@ type
     procedure miIssueClick(Sender: TObject);
     procedure miDonateClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
+    procedure phCleanClick(Sender: TObject);
     procedure PopupHistoryPopup(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
     procedure ToolButtonDonateClick(Sender: TObject);
@@ -373,6 +376,7 @@ begin
     TabSheetDictionary.TabVisible := False;
     ShowCurrVerse(CurrVerse.number > 1);
   {$endif}
+  ToolButtonHistory.Enabled := HistoryList.Count > 1;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -1064,14 +1068,16 @@ var
   List : TStringArray;
   i : integer;
 begin
-  PopupHistory.Items.Clear;
-  for i := High(HistoryList)-1 downto Low(HistoryList) do
+  for i := PopupHistory.Items.Count - 3 downto 0 do
+    PopupHistory.Items[i].Free;
+
+  for i := Low(HistoryList) to High(HistoryList) - 1 do
     begin
       List := HistoryList[i].Split(#0);
       if List.IsEmpty then Continue;
       MenuItem := NewItem(List[0], 0, False, True, OnHistoryClick, 0, '');
       MenuItem.Tag := i;
-      PopupHistory.Items.Add(MenuItem);
+      PopupHistory.Items.Insert(0, MenuItem);
     end;
 end;
 
@@ -1306,6 +1312,12 @@ begin
   pmLookup   .Caption := StringReplace( T('Look Up %')   ,'%',s,[]);
 end;
 
+procedure TMainForm.phCleanClick(Sender: TObject);
+begin
+  HistoryList := [];
+  ToolButtonHistory.Enabled := False;
+end;
+
 procedure TMainForm.ToolButtonDonateClick(Sender: TObject);
 begin
   OpenURL(DonateURL);
@@ -1326,13 +1338,14 @@ procedure TMainForm.AddToHistory(Sender:TObject);
 var
   s : string;
 const
-  HistoryLength = 25;
+  HistoryLength = 15;
 begin
   s := CurrBible.VerseToStr(CurrVerse, true);
   if s.isEmpty then Exit;
   s += #0 + CurrBible.abbreviation + #0 + CurrBible.fileName;
   HistoryList.Add(s);
   while HistoryList.Count > HistoryLength do HistoryList.Delete(0);
+  ToolButtonHistory.Enabled := HistoryList.Count > 1;
 end;
 
 procedure TMainForm.MakeBookList;
