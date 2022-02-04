@@ -389,7 +389,7 @@ object MainForm: TMainForm
       Left = 1
       Height = 374
       Top = 1
-      Width = 505
+      Width = 691
       ActivePage = TabSheetBible
       Align = alClient
       Font.Color = clWindowText
@@ -401,7 +401,7 @@ object MainForm: TMainForm
       object TabSheetBible: TTabSheet
         Caption = 'Bible'
         ClientHeight = 344
-        ClientWidth = 497
+        ClientWidth = 683
         Font.Color = clWindowText
         Font.Height = -12
         ParentFont = False
@@ -410,7 +410,7 @@ object MainForm: TMainForm
           Left = 0
           Height = 344
           Top = 0
-          Width = 497
+          Width = 683
           Align = alClient
           Font.Color = clWindowText
           Font.Height = -16
@@ -608,114 +608,6 @@ object MainForm: TMainForm
           TabOrder = 0
           ZoomFactor = 1
           Linkable = True
-        end
-      end
-    end
-    object Splitter: TSplitter
-      Left = 506
-      Height = 374
-      Top = 1
-      Width = 5
-      Align = alRight
-      Beveled = True
-      MinSize = 100
-      ResizeAnchor = akRight
-    end
-    object PanelHistory: TPanel
-      Left = 511
-      Height = 374
-      Top = 1
-      Width = 181
-      Align = alRight
-      ClientHeight = 374
-      ClientWidth = 181
-      Font.Color = clBlack
-      Font.Height = -16
-      Font.Name = 'Tahoma'
-      Font.Pitch = fpVariable
-      Font.Quality = fqDraft
-      ParentFont = False
-      TabOrder = 2
-      object HistoryBox: TListBox
-        Left = 1
-        Height = 296
-        Top = 1
-        Width = 179
-        Align = alClient
-        Font.CharSet = RUSSIAN_CHARSET
-        Font.Color = clBlack
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Pitch = fpVariable
-        Font.Quality = fqDraft
-        ItemHeight = 0
-        ParentShowHint = False
-        ParentFont = False
-        ScrollWidth = 166
-        ShowHint = True
-        TabOrder = 0
-      end
-      object Panel3: TPanel
-        Left = 1
-        Height = 76
-        Top = 297
-        Width = 179
-        Align = alBottom
-        ClientHeight = 76
-        ClientWidth = 179
-        Font.Color = clBlack
-        Font.Height = -16
-        Font.Name = 'Tahoma'
-        Font.Pitch = fpVariable
-        Font.Quality = fqDraft
-        ParentFont = False
-        TabOrder = 1
-        object ClearHistory: TButton
-          Left = 11
-          Height = 25
-          Top = 43
-          Width = 96
-          Caption = 'Purge history'
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Pitch = fpVariable
-          Font.Quality = fqDraft
-          OnClick = ClearHistoryClick
-          ParentFont = False
-          TabOrder = 0
-        end
-        object HistoryLengthEdit: TSpinEdit
-          Left = 80
-          Height = 24
-          Top = 9
-          Width = 59
-          Alignment = taRightJustify
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Pitch = fpVariable
-          Font.Quality = fqDraft
-          Increment = 10
-          MaxValue = 1000
-          MinValue = 10
-          ParentFont = False
-          TabOrder = 1
-          Value = 50
-        end
-        object Label1: TLabel
-          Left = 11
-          Height = 19
-          Top = 11
-          Width = 54
-          Caption = 'Length:'
-          Font.Color = clBlack
-          Font.Height = -16
-          Font.Name = 'Tahoma'
-          Font.Pitch = fpVariable
-          Font.Quality = fqDraft
-          ParentColor = False
-          ParentFont = False
         end
       end
     end

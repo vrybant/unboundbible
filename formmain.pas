@@ -5,7 +5,7 @@ interface
 uses
   Classes, Fgl, SysUtils, LazFileUtils, LazUTF8, Forms, Controls, Graphics,
   Dialogs, StdCtrls, Menus, ExtCtrls, ComCtrls, IniFiles, LCLIntf, LCLType,
-  LCLProc, ActnList, ClipBrd, StdActns, Buttons, Spin, PrintersDlgs,
+  LCLProc, ActnList, ClipBrd, StdActns, Buttons, PrintersDlgs,
   RichMemo, UnboundMemo, UnitUtils, UnitLib;
 
 type
@@ -14,11 +14,8 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
-    ClearHistory: TButton;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
-    HistoryBox: TListBox;
-    Label1: TLabel;
     miIssue: TMenuItem;
     miDonate: TMenuItem;
     MenuItem2: TMenuItem;
@@ -26,8 +23,6 @@ type
     miDictionaries: TMenuItem;
     N7: TMenuItem;
     Panel1: TPanel;
-    PanelHistory: TPanel;
-    Panel3: TPanel;
     PopupHistory: TPopupMenu;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
@@ -89,8 +84,6 @@ type
     BookBox: TListBox;
     Ruler: TPanel;
     PanelLeft: TPanel;
-    HistoryLengthEdit: TSpinEdit;
-    Splitter: TSplitter;
     Splitter1: TSplitter;
     StatusBar: TStatusBar;
     Images: TImageList;
@@ -189,7 +182,6 @@ type
     ToolSeparator5: TToolButton;
     ToolSeparator6: TToolButton;
 
-    procedure ClearHistoryClick(Sender: TObject);
     procedure CmdReference(Sender: TObject);
     procedure CmdCommentaries(Sender: TObject);
     procedure CmdDictionaries(Sender: TObject);
@@ -714,12 +706,6 @@ end;
 procedure TMainForm.CmdReference(Sender: TObject);
 begin
   LoadReference;
-end;
-
-procedure TMainForm.ClearHistoryClick(Sender: TObject);
-begin
-  if QuestionDlg('Purge history','Sure to purge history?',mtWarning,[mrYes, mrCancel, 'IsDefault'],'')=mrYes then
-    HistoryBox.Clear;
 end;
 
 procedure TMainForm.CmdCommentaries(Sender: TObject);
@@ -1338,25 +1324,15 @@ end;
 
 procedure TMainForm.AddToHistory(Sender:TObject);
 var
-  link : string = '';
   s : string;
-  i : integer;
+const
+  HistoryLength = 25;
 begin
-  if Sender = HistoryBox then Exit;
   s := CurrBible.VerseToStr(CurrVerse, true);
   if s.isEmpty then Exit;
-  link := s + #0 + CurrBible.abbreviation + #0 + CurrBible.fileName;
-
-  HistoryList.Add(link);
-
-  // *****
-
-  if (HistoryBox.Count <> 0) and (link = HistoryBox.Items.Strings[0]) then Exit;
-  HistoryBox.Items.Insert(0,link.Replace(#0,' '));
-
-  if HistoryBox.Count + 1 > HistoryLengthEdit.Value then
-    for i:= 0 to HistoryBox.Count - HistoryLengthEdit.Value do
-        HistoryBox.Items.Delete(HistoryBox.Count - 1);
+  s += #0 + CurrBible.abbreviation + #0 + CurrBible.fileName;
+  HistoryList.Add(s);
+  while HistoryList.Count > HistoryLength do HistoryList.Delete(0);
 end;
 
 procedure TMainForm.MakeBookList;
