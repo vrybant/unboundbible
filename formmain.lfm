@@ -2726,6 +2726,7 @@ object MainForm: TMainForm
   end
   object PopupHistory: TPopupMenu
     TrackButton = tbLeftButton
+    OnPopup = PopupHistoryPopup
     Left = 472
     Top = 160
   end

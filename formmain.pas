@@ -236,6 +236,7 @@ type
     procedure miIssueClick(Sender: TObject);
     procedure miDonateClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
+    procedure PopupHistoryPopup(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
     procedure ToolButtonDonateClick(Sender: TObject);
     procedure ToolButtonSearchClick(Sender: TObject);
@@ -332,7 +333,6 @@ begin
 
   MakeLangMenu;
   MakeRecentMenu;
-  MakeHistoryMenu;
 
   NoteFileName := Untitled;
   MemoNotes.Lines.Clear;
@@ -1035,24 +1035,13 @@ procedure TMainForm.OnHistoryClick(Sender: TObject);
 var
   List : TStringArray;
   Verse : TVerse;
-  biblename, link : string;
-  s : string;
-  x : integer;
+  t : integer;
 begin
-  output((Sender as TMenuItem).Caption);
-  x := (Sender as TMenuItem).Tag;
-  s := HistoryList[x];
-
-//output(s.CountChar(#0));
-
-  List := s.Split(#0);
+  t := (Sender as TMenuItem).Tag;
+  List := HistoryList[t].Split(#0);
   if List.Count < 3 then Exit;
-
-  link := List[0];
-  biblename := List[2];
-
-  Tools.SetCurrBible(bibleName);
-  Verse := CurrBible.SrtToVerse(link);
+  Tools.SetCurrBible(List[2]); // filename
+  Verse := CurrBible.SrtToVerse(List[0]);
   if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
   ShowCurrBible;
 end;
@@ -1086,16 +1075,15 @@ end;
 procedure TMainForm.MakeHistoryMenu;
 var
   MenuItem : TMenuItem;
-  s : string;
+  List : TStringArray;
   i : integer;
 begin
   PopupHistory.Items.Clear;
-
-  for i := High(HistoryList) downto Low(HistoryList) do
+  for i := High(HistoryList)-1 downto Low(HistoryList) do
     begin
-      if not HistoryList[i].Contains(#0) then Continue;
-      s := HistoryList[i].Split(#0)[0];
-      MenuItem := NewItem(s, 0, False, True, OnHistoryClick, 0, '');
+      List := HistoryList[i].Split(#0);
+      if List.IsEmpty then Continue;
+      MenuItem := NewItem(List[0], 0, False, True, OnHistoryClick, 0, '');
       MenuItem.Tag := i;
       PopupHistory.Items.Add(MenuItem);
     end;
@@ -1107,16 +1095,16 @@ var
   Local : TLocal;
 begin
   for Local in Localization do
-  begin
-    MenuItem := TMenuItem.Create(MainMenu);
+    begin
+      MenuItem := TMenuItem.Create(MainMenu);
 
-    MenuItem.Caption := Local.language;
-    MenuItem.Hint    := Local.id;
-    MenuItem.Checked := Local.id = Localization.id;
-    MenuItem.OnClick := OnLangClick;
+      MenuItem.Caption := Local.language;
+      MenuItem.Hint    := Local.id;
+      MenuItem.Checked := Local.id = Localization.id;
+      MenuItem.OnClick := OnLangClick;
 
-    miLocalization.Add(MenuItem);
-  end;
+      miLocalization.Add(MenuItem);
+    end;
 end;
 
 function TMainForm.UnboundMemo: TUnboundMemo;
@@ -1313,6 +1301,11 @@ begin
   end;
 
   {$ifdef windows} IdleMessage := 'HideCursor'; {$endif}
+end;
+
+procedure TMainForm.PopupHistoryPopup(Sender: TObject);
+begin
+  MakeHistoryMenu;
 end;
 
 procedure TMainForm.PopupMenuPopup(Sender: TObject);
