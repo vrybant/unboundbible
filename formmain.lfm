@@ -649,7 +649,6 @@ object MainForm: TMainForm
         Font.Pitch = fpVariable
         Font.Quality = fqDraft
         ItemHeight = 0
-        OnClick = HistoryBoxClick
         ParentShowHint = False
         ParentFont = False
         ScrollWidth = 166

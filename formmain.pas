@@ -223,7 +223,6 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-    procedure HistoryBoxClick(Sender: TObject);
     procedure IdleTimerTimer(Sender: TObject);
     procedure BookBoxClick(Sender: TObject);
     procedure ChapterBoxClick(Sender: TObject);
@@ -257,7 +256,6 @@ type
     procedure SelectBook(title: string; scroll: boolean);
     procedure ShowCurrVerse(select: boolean);
     procedure ShowCurrBible;
-    procedure LangMenuInit;
     procedure LoadChapter;
     procedure LoadSearch(s: string);
     procedure LoadCompare;
@@ -268,13 +266,15 @@ type
     procedure LoadFootnote(s: string);
     procedure MakeBookList;
     procedure MakeChapterList;
+    procedure MakeLangMenu;
     procedure OnRecentClick(Sender: TObject);
+    procedure OnHistoryClick(Sender: TObject);
     procedure OnLangClick(Sender: TObject);
     procedure PerformFileOpen(const FileName: string);
     procedure ReadConfig;
     procedure RebuildRecentList;
-    procedure RecentMenuInit;
-    procedure HistoryMenuInit;
+    procedure MakeRecentMenu;
+    procedure MakeHistoryMenu;
     procedure HideCursor;
     procedure SaveConfig;
     procedure SelectPage(page: integer);
@@ -330,9 +330,9 @@ begin
   ReadConfig;
   AssignFont;
 
-  LangMenuInit;
-  RecentMenuInit;
-  HistoryMenuInit;
+  MakeLangMenu;
+  MakeRecentMenu;
+  MakeHistoryMenu;
 
   NoteFileName := Untitled;
   MemoNotes.Lines.Clear;
@@ -419,24 +419,6 @@ begin
 
   Edit.Left := StandardToolBar.Width - ToolButtonSearch.Width - Edit.Width - 4;
   Edit.Visible := ToolPanel.Width > Edit.Width;
-end;
-
-procedure TMainForm.HistoryBoxClick(Sender: TObject);
-var
-  List : TStringArray;
-  Verse : TVerse;
-  biblename, link : string;
-begin
-  List := HistoryBox.GetSelectedText.Split(#0);
-  if List.Count < 3 then Exit;
-
-  link := List[0];
-  biblename := List[2].Trim;
-
-  Tools.SetCurrBible(bibleName);
-  Verse := CurrBible.SrtToVerse(link);
-  if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
-  ShowCurrBible;
 end;
 
 procedure TMainForm.MemoMouseLeave(Sender: TObject);
@@ -1049,6 +1031,32 @@ begin
   if CheckFileSave then PerformFileOpen(RecentList[(Sender as TMenuItem).tag]);
 end;
 
+procedure TMainForm.OnHistoryClick(Sender: TObject);
+var
+  List : TStringArray;
+  Verse : TVerse;
+  biblename, link : string;
+  s : string;
+  x : integer;
+begin
+  output((Sender as TMenuItem).Caption);
+  x := (Sender as TMenuItem).Tag;
+  s := HistoryList[x];
+
+//output(s.CountChar(#0));
+
+  List := s.Split(#0);
+  if List.Count < 3 then Exit;
+
+  link := List[0];
+  biblename := List[2];
+
+  Tools.SetCurrBible(bibleName);
+  Verse := CurrBible.SrtToVerse(link);
+  if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
+  ShowCurrBible;
+end;
+
 procedure TMainForm.OnLangClick(Sender: TObject);
 var
   MenuItem : TMenuItem;
@@ -1059,25 +1067,7 @@ begin
   LocalizeApplication;
 end;
 
-procedure TMainForm.LangMenuInit;
-var
-  MenuItem : TMenuItem;
-  Local : TLocal;
-begin
-  for Local in Localization do
-  begin
-    MenuItem := TMenuItem.Create(MainMenu);
-
-    MenuItem.Caption := Local.language;
-    MenuItem.Hint    := Local.id;
-    MenuItem.Checked := Local.id = Localization.id;
-    MenuItem.OnClick := OnLangClick;
-
-    miLocalization.Add(MenuItem);
-  end;
-end;
-
-procedure TMainForm.RecentMenuInit;
+procedure TMainForm.MakeRecentMenu;
 var
   MenuItem : TMenuItem;
   item : string;
@@ -1093,20 +1083,40 @@ begin
     end;
 end;
 
-procedure TMainForm.HistoryMenuInit;
+procedure TMainForm.MakeHistoryMenu;
 var
   MenuItem : TMenuItem;
-  item, s : string;
+  s : string;
+  i : integer;
 begin
   PopupHistory.Items.Clear;
 
-  for item in HistoryList.Reverse do
+  for i := High(HistoryList) downto Low(HistoryList) do
     begin
-      if not item.Contains(#0) then Continue;
-      s := item.Split(#0)[0];
-      MenuItem := NewItem(s, 0, False, True, nil, 0, '');
+      if not HistoryList[i].Contains(#0) then Continue;
+      s := HistoryList[i].Split(#0)[0];
+      MenuItem := NewItem(s, 0, False, True, OnHistoryClick, 0, '');
+      MenuItem.Tag := i;
       PopupHistory.Items.Add(MenuItem);
     end;
+end;
+
+procedure TMainForm.MakeLangMenu;
+var
+  MenuItem : TMenuItem;
+  Local : TLocal;
+begin
+  for Local in Localization do
+  begin
+    MenuItem := TMenuItem.Create(MainMenu);
+
+    MenuItem.Caption := Local.language;
+    MenuItem.Hint    := Local.id;
+    MenuItem.Checked := Local.id = Localization.id;
+    MenuItem.OnClick := OnLangClick;
+
+    miLocalization.Add(MenuItem);
+  end;
 end;
 
 function TMainForm.UnboundMemo: TUnboundMemo;
@@ -1211,7 +1221,7 @@ begin
 
   RecentList.Add(NoteFileName);
   if RecentList.Count > RecentMax then RecentList.Delete(0);
-  RecentMenuInit;
+  MakeRecentMenu;
 end;
 
 procedure TMainForm.PerformFileOpen(const FileName: string);
