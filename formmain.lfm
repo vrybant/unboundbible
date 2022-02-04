@@ -2624,9 +2624,9 @@ object MainForm: TMainForm
     object phSeparator: TMenuItem
       Caption = '-'
     end
-    object phClean: TMenuItem
-      Caption = 'Clean'
-      OnClick = phCleanClick
+    object pmClean: TMenuItem
+      Caption = 'Clean History'
+      OnClick = pmCleanClick
     end
   end
 end

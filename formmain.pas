@@ -16,7 +16,7 @@ type
   TMainForm = class(TForm)
     Edit: TEdit;
     IdleTimer: TIdleTimer;
-    phClean: TMenuItem;
+    pmClean: TMenuItem;
     phSeparator: TMenuItem;
     miIssue: TMenuItem;
     miDonate: TMenuItem;
@@ -230,7 +230,7 @@ type
     procedure miIssueClick(Sender: TObject);
     procedure miDonateClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
-    procedure phCleanClick(Sender: TObject);
+    procedure pmCleanClick(Sender: TObject);
     procedure PopupHistoryPopup(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
     procedure ToolButtonDonateClick(Sender: TObject);
@@ -332,7 +332,7 @@ begin
   NoteFileName := Untitled;
   MemoNotes.Lines.Clear;
   MemoNotes.Font.Size := Font.Size;
-//ToolButtonDonate.Visible := not DonateVisited;
+  ToolButtonHistory.Enabled := HistoryList.Count > 1;
   IdleMessage := '';
 
   ShowCurrBible;
@@ -376,7 +376,6 @@ begin
     TabSheetDictionary.TabVisible := False;
     ShowCurrVerse(CurrVerse.number > 1);
   {$endif}
-  ToolButtonHistory.Enabled := HistoryList.Count > 1;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -439,8 +438,6 @@ begin
   MemoDictionary.Font.Assign(Font);
 end;
 
-
-
 procedure TMainForm.Localize;
 begin
   miTools.Caption := T('Tools');
@@ -485,6 +482,7 @@ begin
   pmPaste.Caption := T('Paste');
   pmCopyAs.Caption := T('Copy As…');
   pmVerses.Caption := T('Copy Verses');
+  pmClean.Caption := T('Clean History');
 
   TabSheetBible.Caption := T('Bible');
   TabSheetSearch.Caption := T('Search');
@@ -1312,7 +1310,7 @@ begin
   pmLookup   .Caption := StringReplace( T('Look Up %')   ,'%',s,[]);
 end;
 
-procedure TMainForm.phCleanClick(Sender: TObject);
+procedure TMainForm.pmCleanClick(Sender: TObject);
 begin
   HistoryList := [];
   ToolButtonHistory.Enabled := False;
@@ -1321,7 +1319,6 @@ end;
 procedure TMainForm.ToolButtonDonateClick(Sender: TObject);
 begin
   OpenURL(DonateURL);
-//DonateVisited := True;
 end;
 
 procedure TMainForm.ToolButtonSearchClick(Sender: TObject);
