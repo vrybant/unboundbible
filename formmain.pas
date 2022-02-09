@@ -14,6 +14,8 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ActionHistoryR: TAction;
+    ActionHistoryL: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
     pmClean: TMenuItem;
@@ -152,7 +154,8 @@ type
     pmSeparator2: TMenuItem;
 
     StandardToolBar: TToolBar;
-    ToolButtonHistory: TToolButton;
+    ToolButtonHistoryR: TToolButton;
+    ToolButtonHistoryL: TToolButton;
     ToolPanel: TPanel;
     ToolButtonBold: TToolButton;
     ToolButtonBullets: TToolButton;
@@ -184,6 +187,8 @@ type
     ToolSeparator5: TToolButton;
     ToolSeparator6: TToolButton;
 
+    procedure ActionHistoryLExecute(Sender: TObject);
+    procedure ActionHistoryRExecute(Sender: TObject);
     procedure CmdReference(Sender: TObject);
     procedure CmdCommentaries(Sender: TObject);
     procedure CmdDictionaries(Sender: TObject);
@@ -332,7 +337,7 @@ begin
   NoteFileName := Untitled;
   MemoNotes.Lines.Clear;
   MemoNotes.Font.Size := Font.Size;
-  ToolButtonHistory.Enabled := HistoryList.Count > 1;
+  ToolButtonHistoryL.Enabled := HistoryList.Count > 1;
   IdleMessage := '';
 
   ShowCurrBible;
@@ -708,6 +713,18 @@ end;
 procedure TMainForm.CmdReference(Sender: TObject);
 begin
   LoadReference;
+end;
+
+procedure TMainForm.ActionHistoryLExecute(Sender: TObject);
+begin
+
+end;
+
+procedure TMainForm.ActionHistoryRExecute(Sender: TObject);
+begin
+  ActionHistoryL    .Enabled := not ActionHistoryL    .Enabled;
+  ToolButtonHistoryL.Enabled := not ToolButtonHistoryL.Enabled;
+  UpdateActionImage;
 end;
 
 procedure TMainForm.CmdCommentaries(Sender: TObject);
@@ -1107,8 +1124,8 @@ begin
     apCommentaries : Result := MemoCommentary;
     apDictionaries : Result := MemoDictionary;
     apNotes        : Result := MemoNotes;
-    else
-      Result := nil;
+  else
+    Result := nil;
   end;
 end;
 
@@ -1183,10 +1200,10 @@ var i: integer;
 begin
   with ActionList do
     for i := 0 to ActionCount - 1 do
-      if TAction(Actions[i]).Tag > 0 then
+      if Actions[i].Tag > 0 then
         if TAction(Actions[i]).Enabled
-          then TAction(Actions[i]).ImageIndex := TAction(Actions[i]).Tag
-          else TAction(Actions[i]).ImageIndex := TAction(Actions[i]).Tag + 1;
+          then TAction(Actions[i]).ImageIndex := Actions[i].Tag
+          else TAction(Actions[i]).ImageIndex := Actions[i].Tag + 1;
 end;
 
 procedure TMainForm.RebuildRecentList;
@@ -1313,7 +1330,7 @@ end;
 procedure TMainForm.pmCleanClick(Sender: TObject);
 begin
   HistoryList := [];
-  ToolButtonHistory.Enabled := False;
+  ToolButtonHistoryL.Enabled := False;
 end;
 
 procedure TMainForm.ToolButtonDonateClick(Sender: TObject);
@@ -1342,7 +1359,7 @@ begin
   s += #0 + CurrBible.abbreviation + #0 + CurrBible.fileName;
   HistoryList.Add(s);
   while HistoryList.Count > HistoryLength do HistoryList.Delete(0);
-  ToolButtonHistory.Enabled := HistoryList.Count > 1;
+  ToolButtonHistoryL.Enabled := HistoryList.Count > 1;
 end;
 
 procedure TMainForm.MakeBookList;
