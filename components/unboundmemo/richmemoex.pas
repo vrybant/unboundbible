@@ -30,7 +30,6 @@ type
     procedure HideCursor;
     procedure Hide_Selection;
     procedure Show_Selection;
-    procedure SelectAll;
     function  SelAttributes: TFontParams;
     function SelParaAlignment: TParaAlignment;
     {$ifdef windows} function SelParaNumbering: TParaNumbering; {$endif}
@@ -147,16 +146,6 @@ begin
   Result := SendMessage(Handle, EM_CANUNDO,  0, 0) <> 0;
   {$else}
   Result := True;
-  {$endif}
-end;
-
-procedure TRichMemoEx.SelectAll;
-begin
-  {$ifdef windows}
-  SendMessage(Handle, EM_SETSEL, 0, -1);
-  {$else}
-  SelStart := 0;
-  SelLength := MaxInt;
   {$endif}
 end;
 

@@ -33,7 +33,7 @@ type
     function Foreground: integer;
     procedure SelectParagraph(n: integer);
     procedure SelectWord;
-    procedure SelectAll;
+    procedure SelectAll; override;
     procedure SaveSelection;
     procedure RestoreSelection;
     procedure LoadText(Source: string; jtag: boolean = false);
