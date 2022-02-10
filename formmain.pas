@@ -14,10 +14,11 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
-    ActionHistoryR: TAction;
-    ActionHistoryL: TAction;
+    ActionHistoryRight: TAction;
+    ActionHistoryLeft: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
+    phSeparator1: TMenuItem;
     pmClean: TMenuItem;
     phSeparator: TMenuItem;
     miIssue: TMenuItem;
@@ -27,7 +28,9 @@ type
     miDictionaries: TMenuItem;
     N7: TMenuItem;
     Panel1: TPanel;
-    PopupHistory: TPopupMenu;
+    pmClean1: TMenuItem;
+    PopupHistoryLeft: TPopupMenu;
+    PopupHistoryRight: TPopupMenu;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
     FontDialogNotes: TFontDialog;
@@ -187,8 +190,8 @@ type
     ToolSeparator5: TToolButton;
     ToolSeparator6: TToolButton;
 
-    procedure ActionHistoryLExecute(Sender: TObject);
-    procedure ActionHistoryRExecute(Sender: TObject);
+    procedure CmdHistoryLExecute(Sender: TObject);
+    procedure CmdHistoryRExecute(Sender: TObject);
     procedure CmdReference(Sender: TObject);
     procedure CmdCommentaries(Sender: TObject);
     procedure CmdDictionaries(Sender: TObject);
@@ -236,7 +239,7 @@ type
     procedure miDonateClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
     procedure pmCleanClick(Sender: TObject);
-    procedure PopupHistoryPopup(Sender: TObject);
+    procedure PopupHistoryLeftPopup(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
     procedure ToolButtonDonateClick(Sender: TObject);
     procedure ToolButtonSearchClick(Sender: TObject);
@@ -244,7 +247,7 @@ type
     NoteFileName: string;
     RecentList: TStringArray;
     HistoryList: TStringArray;
-    HistoryIndex: integer;
+    HistoryNow: integer;
     Statuses: TStatuses;
 //  DonateVisited: boolean;
     IdleMessage : string;
@@ -716,16 +719,16 @@ begin
   LoadReference;
 end;
 
-procedure TMainForm.ActionHistoryLExecute(Sender: TObject);
+procedure TMainForm.CmdHistoryLExecute(Sender: TObject);
 begin
-
+  //
 end;
 
-procedure TMainForm.ActionHistoryRExecute(Sender: TObject);
+procedure TMainForm.CmdHistoryRExecute(Sender: TObject);
 begin
-  ActionHistoryL    .Enabled := not ActionHistoryL    .Enabled;
-  ToolButtonHistoryL.Enabled := not ToolButtonHistoryL.Enabled;
-  UpdateActionImage;
+  //ActionHistoryLeft    .Enabled := not ActionHistoryLeft    .Enabled;
+  //ToolButtonHistoryL.Enabled := not ToolButtonHistoryL.Enabled;
+  //UpdateActionImage;
 end;
 
 procedure TMainForm.CmdCommentaries(Sender: TObject);
@@ -1084,16 +1087,19 @@ var
   List : TStringArray;
   i : integer;
 begin
-  for i := PopupHistory.Items.Count - 3 downto 0 do
-    PopupHistory.Items[i].Free;
+  PopupHistoryRight.Items.Clear;
 
-  for i := Low(HistoryList) to High(HistoryList) - 1 do
+  for i := 0 to PopupHistoryLeft.Items.Count - 3 do
+    PopupHistoryLeft.Items[0].Free;
+
+  for i := Low(HistoryList) to High(HistoryList) do
     begin
       List := HistoryList[i].Split(#0);
       if List.IsEmpty then Continue;
       MenuItem := NewItem(List[0], 0, False, True, OnHistoryClick, 0, '');
       MenuItem.Tag := i;
-      PopupHistory.Items.Insert(0, MenuItem);
+      if i < HistoryNow then PopupHistoryLeft.Items.Insert(0, MenuItem);
+      if i > HistoryNow then PopupHistoryRight.Items.Add(MenuItem);
     end;
 end;
 
@@ -1311,7 +1317,7 @@ begin
   {$ifdef windows} IdleMessage := 'HideCursor'; {$endif}
 end;
 
-procedure TMainForm.PopupHistoryPopup(Sender: TObject);
+procedure TMainForm.PopupHistoryLeftPopup(Sender: TObject);
 begin
   MakeHistoryMenu;
 end;
@@ -1363,6 +1369,8 @@ begin
   ToolButtonHistoryL.Enabled := HistoryList.Count > 1;
 end;
 
+//-----------------------------------------------------------------------------------------
+
 procedure TMainForm.MakeBookList;
 var
   l : boolean;
@@ -1373,8 +1381,6 @@ begin
   BookBox.Items.AddStrings(CurrBible.GetTitles, True);
   if l and (BookBox.Count > 0) then BookBox.ItemIndex := 0;
 end;
-
-//-----------------------------------------------------------------------------------------
 
 procedure TMainForm.MakeChapterList;
 var
@@ -1605,12 +1611,11 @@ begin
   for item in RecentList do
     IniFile.WriteString('Recent', 'File_' + RecentList.IndexOf(item).ToString, item);
 
+  IniFile.WriteInteger('History', 'Now'  , HistoryNow);
   IniFile.WriteInteger('History', 'Count', HistoryList.Count);
-  IniFile.WriteInteger('History', 'Index', HistoryIndex);
-//IniFile.WriteInteger('History', 'Length', HistoryLength.Value);
 
   for i:=0 to HistoryList.Count-1 do
-    IniFile.WriteString('History', 'Link_' + i.ToString, HistoryList[i]);
+    IniFile.WriteString('History', 'Item_' + i.ToString, HistoryList[i]);
 
   IniFile.Free;
 end;
@@ -1644,12 +1649,10 @@ begin
   for i := 0 to Count - 1 do
     RecentList.Add(IniFile.ReadString('Recent', 'File_' + ToStr(i), ''));
 
+  HistoryNow := IniFile.ReadInteger('History', 'Now', 0);
   Count := IniFile.ReadInteger('History', 'Count', 0);
   for i := 0 to Count - 1 do
-    HistoryList.Add(IniFile.ReadString('History', 'Link_' + ToStr(i), ''));
-
-  HistoryIndex := IniFile.ReadInteger('History', 'Index', 0);
-//HistoryLength := IniFile.ReadInteger('History', 'Length', 25);
+    HistoryList.Add(IniFile.ReadString('History', 'Item_' + ToStr(i), ''));
 
   IniFile.Free;
 end;

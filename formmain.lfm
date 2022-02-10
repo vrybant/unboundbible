@@ -248,14 +248,15 @@ object MainForm: TMainForm
     object ToolButtonHistoryL: TToolButton
       Left = 4
       Top = 0
-      Action = ActionHistoryL
-      DropdownMenu = PopupHistory
+      Action = ActionHistoryLeft
+      DropdownMenu = PopupHistoryLeft
       Style = tbsDropDown
     end
     object ToolButtonHistoryR: TToolButton
       Left = 44
       Top = 0
-      Action = ActionHistoryR
+      Action = ActionHistoryRight
+      DropdownMenu = PopupHistoryRight
       Style = tbsDropDown
     end
   end
@@ -786,8 +787,8 @@ object MainForm: TMainForm
   object PopupMenu: TPopupMenu
     Images = Images
     OnPopup = PopupMenuPopup
-    Left = 400
-    Top = 160
+    Left = 488
+    Top = 104
     object pmSearchfor: TMenuItem
       Action = ActionSearchfor
       AutoCheck = True
@@ -1139,19 +1140,19 @@ object MainForm: TMainForm
       ImageIndex = 11
       OnExecute = cmdModules
     end
-    object ActionHistoryL: TAction
+    object ActionHistoryLeft: TAction
       Tag = 43
       Category = 'Tools'
       Caption = 'ActionHistoryL'
       ImageIndex = 43
-      OnExecute = ActionHistoryLExecute
+      OnExecute = CmdHistoryLExecute
     end
-    object ActionHistoryR: TAction
+    object ActionHistoryRight: TAction
       Tag = 45
       Category = 'Tools'
       Caption = 'ActionHistoryR'
       ImageIndex = 45
-      OnExecute = ActionHistoryRExecute
+      OnExecute = CmdHistoryRExecute
     end
   end
   object OpenDialog: TOpenDialog
@@ -1185,8 +1186,8 @@ object MainForm: TMainForm
   end
   object IdleTimer: TIdleTimer
     OnTimer = IdleTimerTimer
-    Left = 472
-    Top = 104
+    Left = 400
+    Top = 160
   end
   object Images: TImageList
     Left = 320
@@ -2699,10 +2700,10 @@ object MainForm: TMainForm
       FF00FF00FF00FF00FF00FF00FF00
     }
   end
-  object PopupHistory: TPopupMenu
+  object PopupHistoryLeft: TPopupMenu
     TrackButton = tbLeftButton
-    OnPopup = PopupHistoryPopup
-    Left = 472
+    OnPopup = PopupHistoryLeftPopup
+    Left = 488
     Top = 160
     object phSeparator: TMenuItem
       Caption = '-'
@@ -2711,5 +2712,11 @@ object MainForm: TMainForm
       Caption = 'Clean History'
       OnClick = pmCleanClick
     end
+  end
+  object PopupHistoryRight: TPopupMenu
+    TrackButton = tbLeftButton
+    OnPopup = PopupHistoryLeftPopup
+    Left = 488
+    Top = 216
   end
 end
