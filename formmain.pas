@@ -244,6 +244,7 @@ type
     NoteFileName: string;
     RecentList: TStringArray;
     HistoryList: TStringArray;
+    HistoryIndex: integer;
     Statuses: TStatuses;
 //  DonateVisited: boolean;
     IdleMessage : string;
@@ -1196,14 +1197,14 @@ begin
 end;
 
 procedure TMainForm.UpdateActionImage;
-var i: integer;
+var
+  Action : TContainedAction;
 begin
-  with ActionList do
-    for i := 0 to ActionCount - 1 do
-      if Actions[i].Tag > 0 then
-        if TAction(Actions[i]).Enabled
-          then TAction(Actions[i]).ImageIndex := Actions[i].Tag
-          else TAction(Actions[i]).ImageIndex := Actions[i].Tag + 1;
+  for Action in ActionList do
+    if Action.Tag > 0 then
+      if TAction(Action).Enabled
+        then TAction(Action).ImageIndex := Action.Tag
+        else TAction(Action).ImageIndex := Action.Tag + 1;
 end;
 
 procedure TMainForm.RebuildRecentList;
@@ -1604,7 +1605,8 @@ begin
   for item in RecentList do
     IniFile.WriteString('Recent', 'File_' + RecentList.IndexOf(item).ToString, item);
 
-  IniFile.WriteInteger('History',  'Count', HistoryList.Count);
+  IniFile.WriteInteger('History', 'Count', HistoryList.Count);
+  IniFile.WriteInteger('History', 'Index', HistoryIndex);
 //IniFile.WriteInteger('History', 'Length', HistoryLength.Value);
 
   for i:=0 to HistoryList.Count-1 do
@@ -1646,7 +1648,8 @@ begin
   for i := 0 to Count - 1 do
     HistoryList.Add(IniFile.ReadString('History', 'Link_' + ToStr(i), ''));
 
-//HistoryLength.Value := IniFile.ReadInteger('History', 'Length', HistoryLength.Value);
+  HistoryIndex := IniFile.ReadInteger('History', 'Index', 0);
+//HistoryLength := IniFile.ReadInteger('History', 'Length', 25);
 
   IniFile.Free;
 end;
