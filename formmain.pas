@@ -190,8 +190,8 @@ type
     ToolSeparator5: TToolButton;
     ToolSeparator6: TToolButton;
 
-    procedure CmdHistoryLExecute(Sender: TObject);
-    procedure CmdHistoryRExecute(Sender: TObject);
+    procedure CmdHistoryLeftExecute(Sender: TObject);
+    procedure CmdHistoryRightExecute(Sender: TObject);
     procedure CmdReference(Sender: TObject);
     procedure CmdCommentaries(Sender: TObject);
     procedure CmdDictionaries(Sender: TObject);
@@ -239,7 +239,7 @@ type
     procedure miDonateClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
     procedure pmCleanClick(Sender: TObject);
-    procedure PopupHistoryLeftPopup(Sender: TObject);
+    procedure PopupHistoryPopup(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
     procedure ToolButtonDonateClick(Sender: TObject);
     procedure ToolButtonSearchClick(Sender: TObject);
@@ -719,16 +719,30 @@ begin
   LoadReference;
 end;
 
-procedure TMainForm.CmdHistoryLExecute(Sender: TObject);
+procedure TMainForm.CmdHistoryLeftExecute(Sender: TObject);
 begin
-  //
+  if HistoryNow > 0 then HistoryNow -= 1 else Exit; // to-do
+  OnHistoryClick(nil);
 end;
 
-procedure TMainForm.CmdHistoryRExecute(Sender: TObject);
+procedure TMainForm.CmdHistoryRightExecute(Sender: TObject);
 begin
-  //ActionHistoryLeft    .Enabled := not ActionHistoryLeft    .Enabled;
-  //ToolButtonHistoryL.Enabled := not ToolButtonHistoryL.Enabled;
-  //UpdateActionImage;
+  if HistoryNow < HistoryList.Count - 1 then HistoryNow += 1 else Exit;
+  OnHistoryClick(nil);
+end;
+
+procedure TMainForm.OnHistoryClick(Sender: TObject);
+var
+  List : TStringArray;
+  Verse : TVerse;
+begin
+  if Sender <> nil then HistoryNow := (Sender as TMenuItem).Tag;
+  List := HistoryList[HistoryNow].Split(#0);
+  if List.Count < 3 then Exit;
+  Tools.SetCurrBible(List[2]); // filename
+  Verse := CurrBible.SrtToVerse(List[0]);
+  if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
+  ShowCurrBible;
 end;
 
 procedure TMainForm.CmdCommentaries(Sender: TObject);
@@ -1040,21 +1054,6 @@ begin
   if CheckFileSave then PerformFileOpen(RecentList[(Sender as TMenuItem).tag]);
 end;
 
-procedure TMainForm.OnHistoryClick(Sender: TObject);
-var
-  List : TStringArray;
-  Verse : TVerse;
-  t : integer;
-begin
-  t := (Sender as TMenuItem).Tag;
-  List := HistoryList[t].Split(#0);
-  if List.Count < 3 then Exit;
-  Tools.SetCurrBible(List[2]); // filename
-  Verse := CurrBible.SrtToVerse(List[0]);
-  if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
-  ShowCurrBible;
-end;
-
 procedure TMainForm.OnLangClick(Sender: TObject);
 var
   MenuItem : TMenuItem;
@@ -1094,6 +1093,7 @@ begin
 
   for i := Low(HistoryList) to High(HistoryList) do
     begin
+      if i = HistoryNow then Continue;
       List := HistoryList[i].Split(#0);
       if List.IsEmpty then Continue;
       MenuItem := NewItem(List[0], 0, False, True, OnHistoryClick, 0, '');
@@ -1317,7 +1317,7 @@ begin
   {$ifdef windows} IdleMessage := 'HideCursor'; {$endif}
 end;
 
-procedure TMainForm.PopupHistoryLeftPopup(Sender: TObject);
+procedure TMainForm.PopupHistoryPopup(Sender: TObject);
 begin
   MakeHistoryMenu;
 end;
@@ -1366,7 +1366,8 @@ begin
   s += #0 + CurrBible.abbreviation + #0 + CurrBible.fileName;
   HistoryList.Add(s);
   while HistoryList.Count > HistoryLength do HistoryList.Delete(0);
-  ToolButtonHistoryL.Enabled := HistoryList.Count > 1;
+  HistoryNow := HistoryList.Count - 1;
+//ToolButtonHistoryR.Enabled := HistoryList.Count > 1;
 end;
 
 //-----------------------------------------------------------------------------------------
