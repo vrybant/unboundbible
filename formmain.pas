@@ -14,10 +14,12 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    ActionHistory: TAction;
     ActionHistoryRight: TAction;
     ActionHistoryLeft: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
+    miHistory: TMenuItem;
     phSeparator1: TMenuItem;
     pmClean: TMenuItem;
     phSeparator: TMenuItem;
@@ -102,6 +104,7 @@ type
     TabSheetCompare: TTabSheet;
     TabSheetCommentary: TTabSheet;
     TabSheetDictionary: TTabSheet;
+    TabSheetHistory: TTabSheet;
     TabSheetNotes: TTabSheet;
 
     MainMenu: TMainMenu;
@@ -157,8 +160,8 @@ type
     pmSeparator2: TMenuItem;
 
     StandardToolBar: TToolBar;
-    ToolButtonHistoryR: TToolButton;
-    ToolButtonHistoryL: TToolButton;
+    ToolButtonHistoryRight: TToolButton;
+    ToolButtonHistoryLeft: TToolButton;
     ToolPanel: TPanel;
     ToolButtonBold: TToolButton;
     ToolButtonBullets: TToolButton;
@@ -190,6 +193,7 @@ type
     ToolSeparator5: TToolButton;
     ToolSeparator6: TToolButton;
 
+    procedure CmdHistory(Sender: TObject);
     procedure CmdHistoryLeftExecute(Sender: TObject);
     procedure CmdHistoryRightExecute(Sender: TObject);
     procedure CmdReference(Sender: TObject);
@@ -311,7 +315,8 @@ const
   apReferences   = 3;
   apCommentaries = 4;
   apDictionaries = 5;
-  apNotes        = 6;
+  apHistory      = 6;
+  apNotes        = 7;
 
 {$R *.lfm}
 
@@ -341,7 +346,7 @@ begin
   NoteFileName := Untitled;
   MemoNotes.Lines.Clear;
   MemoNotes.Font.Size := Font.Size;
-  ToolButtonHistoryL.Enabled := HistoryList.Count > 1;
+//ToolButtonHistoryLeft.Enabled := HistoryList.Count > 1;
   IdleMessage := '';
 
   ShowCurrBible;
@@ -351,6 +356,7 @@ begin
     TabSheetReference .TabVisible := False;
     TabSheetCommentary.TabVisible := False;
     TabSheetDictionary.TabVisible := False;
+    TabSheetHistory   .TabVisible := False;
     IdleTimer.Interval := 50;
   {$endif}
 
@@ -458,6 +464,7 @@ begin
   miRrefx.Caption := T('Cross-References');
   miCommentaries.Caption := T('Commentaries');
   miDictionaries.Caption := T('Dictionaries');
+  miHistory.Caption := T('History');
   miTranslate.Caption := T('Translation');
   miInterlinear.Caption := T('Interlinear') + ' (biblehub.com)';
   miPrint.Caption := T('Print');
@@ -499,6 +506,7 @@ begin
   TabSheetReference.Caption := T('Cross-References');
   TabSheetCommentary.Caption := T('Commentaries');
   TabSheetDictionary.Caption := T('Dictionaries');
+  TabSheetDictionary.Caption := T('History');
   TabSheetNotes.Caption := T('Notes');
 
   ToolButtonNew.Hint := T('New');
@@ -721,8 +729,13 @@ end;
 
 procedure TMainForm.CmdHistoryLeftExecute(Sender: TObject);
 begin
-  if HistoryNow > 0 then HistoryNow -= 1 else Exit; // to-do
+  if HistoryNow > 0 then HistoryNow -= 1 else Exit; // to-do: enable button
   OnHistoryClick(nil);
+end;
+
+procedure TMainForm.CmdHistory(Sender: TObject);
+begin
+
 end;
 
 procedure TMainForm.CmdHistoryRightExecute(Sender: TObject);
@@ -1337,7 +1350,8 @@ end;
 procedure TMainForm.pmCleanClick(Sender: TObject);
 begin
   HistoryList := [];
-  ToolButtonHistoryL.Enabled := False;
+  HistoryNow := 0;
+//ToolButtonHistoryLeft.Enabled := False;
 end;
 
 procedure TMainForm.ToolButtonDonateClick(Sender: TObject);
@@ -1364,10 +1378,11 @@ begin
   s := CurrBible.VerseToStr(CurrVerse, true);
   if s.isEmpty then Exit;
   s += #0 + CurrBible.abbreviation + #0 + CurrBible.fileName;
+  if not HistoryList.IsEmpty and (s = HistoryList[HistoryList.Count-1]) then Exit;
   HistoryList.Add(s);
   while HistoryList.Count > HistoryLength do HistoryList.Delete(0);
   HistoryNow := HistoryList.Count - 1;
-//ToolButtonHistoryR.Enabled := HistoryList.Count > 1;
+//ToolButtonHistoryRight.Enabled := HistoryList.Count > 1;
 end;
 
 //-----------------------------------------------------------------------------------------

@@ -20,7 +20,7 @@ object MainForm: TMainForm
   OnDestroy = FormDestroy
   OnPaint = FormPaint
   OnShow = FormShow
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.2.2.0'
   object StandardToolBar: TToolBar
     Left = 0
     Height = 30
@@ -245,14 +245,14 @@ object MainForm: TMainForm
       Caption = 'ToolSeparator'
       Style = tbsDivider
     end
-    object ToolButtonHistoryL: TToolButton
+    object ToolButtonHistoryLeft: TToolButton
       Left = 4
       Top = 0
       Action = ActionHistoryLeft
       DropdownMenu = PopupHistoryLeft
       Style = tbsDropDown
     end
-    object ToolButtonHistoryR: TToolButton
+    object ToolButtonHistoryRight: TToolButton
       Left = 44
       Top = 0
       Action = ActionHistoryRight
@@ -396,12 +396,12 @@ object MainForm: TMainForm
       Height = 374
       Top = 1
       Width = 691
-      ActivePage = TabSheetBible
+      ActivePage = TabSheetHistory
       Align = alClient
       Font.Color = clWindowText
       Font.Height = -13
       ParentFont = False
-      TabIndex = 0
+      TabIndex = 6
       TabOrder = 0
       OnChange = PageControlChange
       object TabSheetBible: TTabSheet
@@ -587,6 +587,12 @@ object MainForm: TMainForm
           Linkable = True
         end
       end
+      object TabSheetHistory: TTabSheet
+        Caption = 'History'
+        Font.Color = clWindowText
+        Font.Height = -13
+        ParentFont = False
+      end
       object TabSheetNotes: TTabSheet
         Caption = 'Notes'
         ClientHeight = 344
@@ -648,6 +654,10 @@ object MainForm: TMainForm
       object miDictionaries: TMenuItem
         Action = ActionDictionaries
         Caption = 'Dictionary'
+      end
+      object miHistory: TMenuItem
+        Action = ActionHistory
+        Caption = 'History'
       end
       object N7: TMenuItem
         Caption = '-'
@@ -1153,6 +1163,11 @@ object MainForm: TMainForm
       Caption = 'ActionHistoryR'
       ImageIndex = 45
       OnExecute = CmdHistoryRightExecute
+    end
+    object ActionHistory: TAction
+      Category = 'Tools'
+      Caption = 'ActionHistory'
+      OnExecute = CmdHistory
     end
   end
   object OpenDialog: TOpenDialog
