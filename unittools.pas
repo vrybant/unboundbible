@@ -26,6 +26,7 @@ type
     function Get_Reference(out info: string): string;
     function Get_Commentary: string;
     function Get_Dictionary(st: string = ''): string;
+    function Get_History: string;
     function Get_Strong(number: string = ''): string;
     function Get_Footnote(marker: string = ''): string;
     function Get_Verses: string;
@@ -43,6 +44,9 @@ var
   Options : TCopyOptions;
   Tools : TTools;
 
+  HistoryList: TStringArray;
+  HistoryNow: integer;
+
 implementation
 
 uses
@@ -54,6 +58,7 @@ begin
   Commentaries := TCommentaries.Create;
   Dictionaries := TDictionaries.Create;
   References := TReferences.Create;
+  HistoryList := [];
   ReadConfig;
   if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
 end;
@@ -211,7 +216,7 @@ var
   item : string;
 begin
   Result := '';
-  if st.isEmpty then Exit;
+  if st.IsEmpty then Exit;
 
   for Dictionary in Dictionaries do
     begin
@@ -221,6 +226,22 @@ begin
       Result += '<h>' + Dictionary.Name + '</h><br><br>';
       for item in Strings do Result += '<tab>' + item + '<br>';
       Result += '<br>';
+    end;
+end;
+
+function TTools.Get_History: string;
+var
+  List : TStringArray;
+  link, s : string;
+begin
+  Result := '';
+  for s in HistoryList do
+    begin
+      List := s.Split(#0);
+      if List.IsEmpty then Continue;
+      link := List[0];
+//    link := CurrBible.StrToVerse(List[0], not Options.cvAbbreviate);
+      Result += '<l>' + link + '</l> ' + '<br><br>';
     end;
 end;
 
@@ -322,6 +343,7 @@ end;
 procedure TTools.SaveConfig;
 var
   IniFile : TIniFile;
+  i : integer;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
@@ -332,6 +354,12 @@ begin
   IniFile.WriteInteger('Verse', 'Number', CurrVerse.number);
   IniFile.WriteInteger('Verse', 'Count', CurrVerse.count);
 
+  IniFile.WriteInteger('History', 'Now'  , HistoryNow);
+  IniFile.WriteInteger('History', 'Count', HistoryList.Count);
+
+  for i:=0 to HistoryList.Count-1 do
+    IniFile.WriteString('History', 'Item_' + i.ToString, HistoryList[i]);
+
   IniFile.Free;
 end;
 
@@ -340,6 +368,7 @@ var
   IniFile : TIniFile;
   Version : string;
   CurrentBible : string;
+  i, Count : integer;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
@@ -352,6 +381,11 @@ begin
   CurrVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);
   CurrVerse.number  := IniFile.ReadInteger('Verse', 'Number',  0);
   CurrVerse.count   := IniFile.ReadInteger('Verse', 'Count',   0);
+
+  HistoryNow := IniFile.ReadInteger('History', 'Now', 0);
+  Count := IniFile.ReadInteger('History', 'Count', 0);
+  for i := 0 to Count - 1 do
+    HistoryList.Add(IniFile.ReadString('History', 'Item_' + ToStr(i), ''));
 
   IniFile.Free;
 end;

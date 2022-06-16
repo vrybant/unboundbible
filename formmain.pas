@@ -252,8 +252,6 @@ type
   private
     NoteFileName: string;
     RecentList: TStringArray;
-    HistoryList: TStringArray;
-    HistoryNow: integer;
     Statuses: TStatuses;
 //  DonateVisited: boolean;
     IdleMessage : string;
@@ -334,7 +332,6 @@ begin
 
   Caption := ApplicationName + ' ' + ApplicationVersion;
   RecentList := [];
-  HistoryList := [];
   showed := False;
 
   SaveDialog.InitialDir := DocumentsPath;
@@ -1157,8 +1154,6 @@ procedure TMainForm.EnableActions;
 var
   B, L, M, S : boolean;
 begin
-  EXIT;
-
   B := PageControl.ActivePageIndex = apBible;
   L := PageControl.ActivePageIndex = apNotes;
   S := UnboundMemo.SelLength > iif(B,1,0);
@@ -1511,15 +1506,11 @@ end;
 
 procedure TMainForm.LoadHistory;
 var
-  text, data: string;
-  info : string = '';
+  text : string;
 begin
-  //text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
-  //data := Tools.Get_Reference(info);
-  //if data.isEmpty then text += T('Сross-references not found.') else text += data;
-  MemoHistory.LoadText('text');
+  text := Tools.Get_History;
+  MemoHistory.LoadText(text);
   SelectPage(apHistory);
-  UpdateStatus(info);
 end;
 
 procedure TMainForm.LoadStrong(s: string);
@@ -1615,7 +1606,6 @@ procedure TMainForm.SaveConfig;
 var
   IniFile : TIniFile;
   item : string;
-  i : integer;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
@@ -1646,12 +1636,6 @@ begin
 
   for item in RecentList do
     IniFile.WriteString('Recent', 'File_' + RecentList.IndexOf(item).ToString, item);
-
-  IniFile.WriteInteger('History', 'Now'  , HistoryNow);
-  IniFile.WriteInteger('History', 'Count', HistoryList.Count);
-
-  for i:=0 to HistoryList.Count-1 do
-    IniFile.WriteString('History', 'Item_' + i.ToString, HistoryList[i]);
 
   IniFile.Free;
 end;
@@ -1684,11 +1668,6 @@ begin
   Count := IniFile.ReadInteger('Recent', 'Count', RecentList.Count);
   for i := 0 to Count - 1 do
     RecentList.Add(IniFile.ReadString('Recent', 'File_' + ToStr(i), ''));
-
-  HistoryNow := IniFile.ReadInteger('History', 'Now', 0);
-  Count := IniFile.ReadInteger('History', 'Count', 0);
-  for i := 0 to Count - 1 do
-    HistoryList.Add(IniFile.ReadString('History', 'Item_' + ToStr(i), ''));
 
   IniFile.Free;
 end;
