@@ -160,6 +160,7 @@ type
     pmSeparator2: TMenuItem;
 
     StandardToolBar: TToolBar;
+    ToolButtonHistory: TToolButton;
     ToolButtonHistoryRight: TToolButton;
     ToolButtonHistoryLeft: TToolButton;
     ToolPanel: TPanel;
@@ -192,6 +193,7 @@ type
     ToolSeparator4: TToolButton;
     ToolSeparator5: TToolButton;
     ToolSeparator6: TToolButton;
+    MemoHistory: TUnboundMemo;
 
     procedure CmdHistory(Sender: TObject);
     procedure CmdHistoryLeftExecute(Sender: TObject);
@@ -271,6 +273,7 @@ type
     procedure LoadReference;
     procedure LoadCommentary;
     procedure LoadDictionary(s: string);
+    procedure LoadHistory;
     procedure LoadStrong(s: string);
     procedure LoadFootnote(s: string);
     procedure MakeBookList;
@@ -735,7 +738,7 @@ end;
 
 procedure TMainForm.CmdHistory(Sender: TObject);
 begin
-
+  LoadHistory;
 end;
 
 procedure TMainForm.CmdHistoryRightExecute(Sender: TObject);
@@ -1143,6 +1146,7 @@ begin
     apReferences   : Result := MemoReference;
     apCommentaries : Result := MemoCommentary;
     apDictionaries : Result := MemoDictionary;
+    apHistory      : Result := MemoHistory;
     apNotes        : Result := MemoNotes;
   else
     Result := nil;
@@ -1153,6 +1157,8 @@ procedure TMainForm.EnableActions;
 var
   B, L, M, S : boolean;
 begin
+  EXIT;
+
   B := PageControl.ActivePageIndex = apBible;
   L := PageControl.ActivePageIndex = apNotes;
   S := UnboundMemo.SelLength > iif(B,1,0);
@@ -1324,6 +1330,7 @@ begin
     apReferences   : CmdReference(Sender);
     apCommentaries : CmdCommentaries(Sender);
     apDictionaries : CmdDictionaries(Sender);
+    apHistory      : CmdHistory(Sender);
     apNotes        : UnboundMemo.SetFocus;
   end;
 
@@ -1500,6 +1507,19 @@ begin
 
   MemoDictionary.LoadHtml(text);
   SelectPage(apDictionaries);
+end;
+
+procedure TMainForm.LoadHistory;
+var
+  text, data: string;
+  info : string = '';
+begin
+  //text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
+  //data := Tools.Get_Reference(info);
+  //if data.isEmpty then text += T('Сross-references not found.') else text += data;
+  MemoHistory.LoadText('text');
+  SelectPage(apHistory);
+  UpdateStatus(info);
 end;
 
 procedure TMainForm.LoadStrong(s: string);
