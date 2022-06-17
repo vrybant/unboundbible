@@ -106,7 +106,8 @@ end;
 
 function HistoryFile: string;
 begin
-  Result := ConfigPath + 'history.ini'; // linux ?
+  {$ifdef windows} Result := ConfigPath + 'history.ini'; {$endif}
+  {$ifdef unix} Result := ConfigFile; {$endif}
 end;
 
 function BibleHubURL(book, chapter, number: integer): string;
