@@ -257,6 +257,7 @@ type
     NoteFileName: string;
     RecentList: TStringArray;
     Statuses: TStatuses;
+    HistoryMax: integer;
 //  DonateVisited: boolean;
     IdleMessage : string;
     showed : boolean;
@@ -1390,16 +1391,13 @@ end;
 procedure TMainForm.AddToHistory(Sender:TObject);
 var
   s : string;
-const
-  HistoryLength = 15;
 begin
   s := CurrBible.VerseToStr(CurrVerse, true);
   if s.isEmpty then Exit;
   s := CurrBible.fileName + #9 + s + #9 + Tools.Get_Verses;
   if not HistoryList.IsEmpty and (s = HistoryList[HistoryList.Count-1]) then Exit;
   HistoryList.Add(s);
-  output(s);
-  while HistoryList.Count > HistoryLength do HistoryList.Delete(0);
+  while HistoryList.Count > HistoryMax do HistoryList.Delete(0);
   HistoryNow := HistoryList.Count - 1;
 //ToolButtonHistoryRight.Enabled := HistoryList.Count > 1;
 end;
@@ -1641,6 +1639,7 @@ begin
   IniFile.WriteString ('Application', 'Interface', Localization.id);
   IniFile.WriteString ('Application', 'FontName', Font.Name);
   IniFile.WriteInteger('Application', 'FontSize', Font.Size);
+  IniFile.WriteInteger('Application', 'HistoryMax', HistoryMax);
 //IniFile.WriteBool('Application', 'Donate', DonateVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
   IniFile.WriteBool('Options', 'Enumerated', Options.cvEnumerated);
@@ -1673,6 +1672,7 @@ begin
   Localization.id := IniFile.ReadString('Application', 'Interface', Localization.DefaultID);
   Font.Name := IniFile.ReadString ('Application', 'FontName', Font.Name);
   Font.Size := IniFile.ReadInteger('Application', 'FontSize', Font.Size);
+  HistoryMax := IniFile.ReadInteger('Application', 'HistoryMax', 100);
 //DonateVisited := IniFile.ReadBool('Application', 'Donate', False);
   Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
   Options.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);
