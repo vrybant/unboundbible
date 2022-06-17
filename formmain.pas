@@ -14,23 +14,11 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
-    ActionHistory: TAction;
-    ActionHistoryRight: TAction;
-    ActionHistoryLeft: TAction;
     Edit: TEdit;
     IdleTimer: TIdleTimer;
-    miHistory: TMenuItem;
-    phSeparator1: TMenuItem;
-    pmClean: TMenuItem;
-    phSeparator: TMenuItem;
-    miIssue: TMenuItem;
-    miDonate: TMenuItem;
-    MenuItem2: TMenuItem;
-    miRrefx: TMenuItem;
-    miDictionaries: TMenuItem;
-    N7: TMenuItem;
     Panel1: TPanel;
-    pmClean1: TMenuItem;
+    MainMenu: TMainMenu;
+    PopupMenu: TPopupMenu;
     PopupHistoryLeft: TPopupMenu;
     PopupHistoryRight: TPopupMenu;
     PrintDialog: TPrintDialog;
@@ -55,6 +43,7 @@ type
     ActionBold: TAction;
     ActionBullets: TAction;
     ActionCenter: TAction;
+    ActionCleanHistory: TAction;
     ActionCommentaries: TAction;
     ActionCompare: TAction;
     ActionCopyAs: TAction;
@@ -75,6 +64,9 @@ type
     ActionFileSave: TAction;
     ActionFileSaveAs: TAction;
     ActionFont: TAction;
+    ActionHistory: TAction;
+    ActionHistoryLeft: TAction;
+    ActionHistoryRight: TAction;
     ActionIncrease: TAction;
     ActionInterlinear: TAction;
     ActionItalic: TAction;
@@ -108,7 +100,15 @@ type
     TabSheetHistory: TTabSheet;
     TabSheetNotes: TTabSheet;
 
-    MainMenu: TMainMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    N6: TMenuItem;
+    N7: TMenuItem;
+    N9: TMenuItem;
+
     miBibleFolder: TMenuItem;
     miClear: TMenuItem;
     miCommentaries: TMenuItem;
@@ -116,13 +116,17 @@ type
     miCopy: TMenuItem;
     miCopyAs: TMenuItem;
     miCut: TMenuItem;
+    miDictionaries: TMenuItem;
+    miDonate: TMenuItem;
     miDownload: TMenuItem;
     miEdit: TMenuItem;
     miExit: TMenuItem;
     miHelp: TMenuItem;
     miHelpAbout: TMenuItem;
+    miHistory: TMenuItem;
     miHome: TMenuItem;
     miInterlinear: TMenuItem;
+    miIssue: TMenuItem;
     miLocalization: TMenuItem;
     miModules: TMenuItem;
     miNoteNew: TMenuItem;
@@ -134,6 +138,7 @@ type
     miPaste: TMenuItem;
     miPrint: TMenuItem;
     miRecent: TMenuItem;
+    miRrefx: TMenuItem;
     miSearch: TMenuItem;
     miSelectAll: TMenuItem;
     miTools: TMenuItem;
@@ -141,22 +146,20 @@ type
     miUndo: TMenuItem;
     miVerses: TMenuItem;
 
-    N1: TMenuItem;
-    N2: TMenuItem;
-    N3: TMenuItem;
-    N4: TMenuItem;
-    N5: TMenuItem;
-    N6: TMenuItem;
-    N9: TMenuItem;
-
-    PopupMenu: TPopupMenu;
+    MenuItem2: TMenuItem;
+    phSeparator1: TMenuItem;
+    phSeparator: TMenuItem;
+    pmClean1: TMenuItem;
+    pmClean: TMenuItem;
     pmCopy: TMenuItem;
     pmCopyAs: TMenuItem;
     pmCut: TMenuItem;
+    pmCleanHistory: TMenuItem;
     pmLookup: TMenuItem;
     pmPaste: TMenuItem;
     pmSearchfor: TMenuItem;
     pmSeparator2: TMenuItem;
+    pmSeparatorH: TMenuItem;
     pmSeparator: TMenuItem;
     pmVerses: TMenuItem;
 
@@ -195,6 +198,7 @@ type
     ToolSeparator5: TToolButton;
     ToolSeparator6: TToolButton;
 
+    procedure CmdCleanHistory(Sender: TObject);
     procedure CmdHistory(Sender: TObject);
     procedure CmdHistoryLeftExecute(Sender: TObject);
     procedure CmdHistoryRightExecute(Sender: TObject);
@@ -409,6 +413,7 @@ begin
     MemoReference .Clear;
     MemoCommentary.Clear;
     MemoDictionary.Clear;
+    MemoHistory   .Clear;
     MemoNotes     .Clear;
   {$endif}
 end;
@@ -498,6 +503,7 @@ begin
   pmCopyAs.Caption := T('Copy As…');
   pmVerses.Caption := T('Copy Verses');
   pmClean.Caption := T('Clean History');
+  pmCleanHistory.Caption := T('Clean History'); //
 
   TabSheetBible.Caption := T('Bible');
   TabSheetCommentary.Caption := T('Commentaries');
@@ -734,6 +740,13 @@ end;
 procedure TMainForm.CmdHistory(Sender: TObject);
 begin
   LoadHistory;
+end;
+
+procedure TMainForm.CmdCleanHistory(Sender: TObject);
+begin
+  HistoryList := [];
+  HistoryNow := 0;
+  MemoHistory.Clear;
 end;
 
 procedure TMainForm.CmdHistoryRightExecute(Sender: TObject);
@@ -1150,10 +1163,11 @@ end;
 
 procedure TMainForm.EnableActions;
 var
-  B, L, M, S : boolean;
+  B, L, H, M, S : boolean;
 begin
   B := PageControl.ActivePageIndex = apBible;
   L := PageControl.ActivePageIndex = apNotes;
+  H := PageControl.ActivePageIndex = apHistory;
   S := UnboundMemo.SelLength > iif(B,1,0);
   M := UnboundMemo.SelText.Contains(LineBreak); // multiline
 
@@ -1185,6 +1199,10 @@ begin
 
   ActionInterlinear.Enabled := B and not S and not M;
   ToolButtonSearch.Enabled  := PageControl.ActivePageIndex <> apDictionaries;
+
+  ActionCleanHistory.Enabled := H and not HistoryList.IsEmpty;;
+  pmSeparatorH.Visible       := H;
+  pmCleanHistory.Visible     := H;
 
   UpdateActionImage;
 end;

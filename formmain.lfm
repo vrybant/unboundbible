@@ -897,6 +897,12 @@ object MainForm: TMainForm
       }
       ImageIndex = 8
     end
+    object pmSeparatorH: TMenuItem
+      Caption = '-'
+    end
+    object pmCleanHistory: TMenuItem
+      Action = ActionCleanHistory
+    end
   end
   object ActionList: TActionList
     Images = Images
@@ -1198,6 +1204,11 @@ object MainForm: TMainForm
       Caption = 'ActionHistory'
       ImageIndex = 37
       OnExecute = CmdHistory
+    end
+    object ActionCleanHistory: TAction
+      Category = 'Tools'
+      Caption = 'Clear History'
+      OnExecute = CmdCleanHistory
     end
   end
   object OpenDialog: TOpenDialog
