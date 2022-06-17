@@ -36,6 +36,8 @@ type
   private
     procedure SaveConfig;
     procedure ReadConfig;
+    procedure SaveHistory;
+    procedure ReadHistory;
   end;
 
 var
@@ -60,12 +62,14 @@ begin
   References := TReferences.Create;
   HistoryList := [];
   ReadConfig;
+  ReadHistory;
   if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
 end;
 
 destructor TTools.Destroy;
 begin
   SaveConfig;
+  SaveHistory;
   References.Free;
   Dictionaries.Free;
   Commentaries.Free;
@@ -149,7 +153,7 @@ begin
 
   for s in List do
     begin
-      A := s.Split(#0);
+      A := s.Split(#9);
       if A.Count < 4 then Continue;
       link := CurrBible.VerseToStr(ArrayToVerse(A), true);
       text := A[3];
@@ -235,13 +239,14 @@ var
   link, s : string;
 begin
   Result := '';
-  for s in HistoryList do
+  for s in HistoryList.Reverse do
     begin
-      List := s.Split(#0);
+      List := s.Split(#9);
       if List.IsEmpty then Continue;
-      link := List[0];
+      link := List[1];
 //    link := CurrBible.StrToVerse(List[0], not Options.cvAbbreviate);
-      Result += '<l>' + link + '</l> ' + '<br><br>';
+      if List.Count < 3 then Exit;
+      Result += {'<l>' + link + '</l> ' + } List[2] + '<br>';
     end;
 end;
 
@@ -354,12 +359,6 @@ begin
   IniFile.WriteInteger('Verse', 'Number', CurrVerse.number);
   IniFile.WriteInteger('Verse', 'Count', CurrVerse.count);
 
-  IniFile.WriteInteger('History', 'Now'  , HistoryNow);
-  IniFile.WriteInteger('History', 'Count', HistoryList.Count);
-
-  for i:=0 to HistoryList.Count-1 do
-    IniFile.WriteString('History', 'Item_' + i.ToString, HistoryList[i]);
-
   IniFile.Free;
 end;
 
@@ -382,10 +381,36 @@ begin
   CurrVerse.number  := IniFile.ReadInteger('Verse', 'Number',  0);
   CurrVerse.count   := IniFile.ReadInteger('Verse', 'Count',   0);
 
-  HistoryNow := IniFile.ReadInteger('History', 'Now', 0);
+  IniFile.Free;
+end;
+
+procedure TTools.SaveHistory;
+var
+  IniFile : TIniFile;
+  i : integer;
+begin
+  IniFile := TIniFile.Create(HistoryFile);
+
+//IniFile.WriteInteger('History', 'Now'  , HistoryNow);
+  IniFile.WriteInteger('History', 'Count', HistoryList.Count);
+
+  for i:=0 to HistoryList.Count-1 do
+    IniFile.WriteString('History', 'n' + i.ToString, HistoryList[i]);
+
+  IniFile.Free;
+end;
+
+procedure TTools.ReadHistory;
+var
+  IniFile : TIniFile;
+  i, Count : integer;
+begin
+  IniFile := TIniFile.Create(HistoryFile);
+
+//HistoryNow := IniFile.ReadInteger('History', 'Now', 0);
   Count := IniFile.ReadInteger('History', 'Count', 0);
   for i := 0 to Count - 1 do
-    HistoryList.Add(IniFile.ReadString('History', 'Item_' + ToStr(i), ''));
+    HistoryList.Add(IniFile.ReadString('History', 'n' + ToStr(i), ''));
 
   IniFile.Free;
 end;

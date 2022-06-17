@@ -17,6 +17,7 @@ var
   ApplicationUpdate : boolean = false;
 
 function ConfigFile: string;
+function HistoryFile: string;
 function DataPath: string;
 function DatabaseList: TStringArray;
 function HomeURL: string;
@@ -92,11 +93,20 @@ begin
   Result := 'https://unboundbible.net/goto/donate' + ru + '.php'
 end;
 
-function ConfigFile: string;
+function ConfigPath: string;
 begin
   {$ifdef windows} Result := LocalAppDataPath + ApplicationName + Slash; {$endif}
   {$ifdef unix} Result := GetAppConfigDir(False); {$endif}
-  Result += 'config.ini';
+end;
+
+function ConfigFile: string;
+begin
+  Result := ConfigPath + 'config.ini';
+end;
+
+function HistoryFile: string;
+begin
+  Result := ConfigPath + 'history.ini'; // linux ?
 end;
 
 function BibleHubURL(book, chapter, number: integer): string;

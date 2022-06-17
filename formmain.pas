@@ -43,12 +43,13 @@ type
     EditCut1: TEditCut;
 
     MemoBible: TUnboundMemo;
-    MemoSearch: TUnboundMemo;
-    MemoCompare: TUnboundMemo;
-    MemoReference: TUnboundMemo;
     MemoCommentary: TUnboundMemo;
+    MemoCompare: TUnboundMemo;
     MemoDictionary: TUnboundMemo;
+    MemoHistory: TUnboundMemo;
     MemoNotes: TUnboundMemo;
+    MemoReference: TUnboundMemo;
+    MemoSearch: TUnboundMemo;
 
     ActionAbout: THelpAction;
     ActionBold: TAction;
@@ -121,12 +122,14 @@ type
     miHelp: TMenuItem;
     miHelpAbout: TMenuItem;
     miHome: TMenuItem;
+    miInterlinear: TMenuItem;
     miLocalization: TMenuItem;
+    miModules: TMenuItem;
     miNoteNew: TMenuItem;
     miNoteOpen: TMenuItem;
-    miNotes: TMenuItem;
     miNoteSave: TMenuItem;
     miNoteSaveAs: TMenuItem;
+    miNotes: TMenuItem;
     miOptions: TMenuItem;
     miPaste: TMenuItem;
     miPrint: TMenuItem;
@@ -134,11 +137,9 @@ type
     miSearch: TMenuItem;
     miSelectAll: TMenuItem;
     miTools: TMenuItem;
-    miUndo: TMenuItem;
-    miModules: TMenuItem;
-    miVerses: TMenuItem;
-    miInterlinear: TMenuItem;
     miTranslate: TMenuItem;
+    miUndo: TMenuItem;
+    miVerses: TMenuItem;
 
     N1: TMenuItem;
     N2: TMenuItem;
@@ -149,30 +150,28 @@ type
     N9: TMenuItem;
 
     PopupMenu: TPopupMenu;
-    pmSearchfor: TMenuItem;
-    pmCut: TMenuItem;
     pmCopy: TMenuItem;
-    pmPaste: TMenuItem;
     pmCopyAs: TMenuItem;
-    pmVerses: TMenuItem;
+    pmCut: TMenuItem;
     pmLookup: TMenuItem;
-    pmSeparator: TMenuItem;
+    pmPaste: TMenuItem;
+    pmSearchfor: TMenuItem;
     pmSeparator2: TMenuItem;
+    pmSeparator: TMenuItem;
+    pmVerses: TMenuItem;
 
     StandardToolBar: TToolBar;
-    ToolButtonHistory: TToolButton;
-    ToolButtonHistoryRight: TToolButton;
-    ToolButtonHistoryLeft: TToolButton;
-    ToolPanel: TPanel;
     ToolButtonBold: TToolButton;
     ToolButtonBullets: TToolButton;
     ToolButtonCenter: TToolButton;
     ToolButtonCommentary: TToolButton;
     ToolButtonCopy: TToolButton;
-    ToolButtonShelf: TToolButton;
     ToolButtonCut: TToolButton;
     ToolButtonDictionary: TToolButton;
     ToolButtonFont: TToolButton;
+    ToolButtonHistory: TToolButton;
+    ToolButtonHistoryLeft: TToolButton;
+    ToolButtonHistoryRight: TToolButton;
     ToolButtonItalic: TToolButton;
     ToolButtonLeft: TToolButton;
     ToolButtonLink: TToolButton;
@@ -184,16 +183,17 @@ type
     ToolButtonRight: TToolButton;
     ToolButtonSave: TToolButton;
     ToolButtonSearch: TToolButton;
+    ToolButtonShelf: TToolButton;
     ToolButtonUnderline: TToolButton;
     ToolButtonUndo: TToolButton;
     ToolButtonVerses: TToolButton;
+    ToolPanel: TPanel;
     ToolSeparator1: TToolButton;
     ToolSeparator2: TToolButton;
     ToolSeparator3: TToolButton;
     ToolSeparator4: TToolButton;
     ToolSeparator5: TToolButton;
     ToolSeparator6: TToolButton;
-    MemoHistory: TUnboundMemo;
 
     procedure CmdHistory(Sender: TObject);
     procedure CmdHistoryLeftExecute(Sender: TObject);
@@ -455,43 +455,42 @@ end;
 
 procedure TMainForm.Localize;
 begin
-  miTools.Caption := T('Tools');
-  miEdit.Caption := T('Edit');
-  miNotes.Caption := T('Notes');
-  miHelp.Caption := T('Help');
-  miSearch.Caption := T('Search');
-  miCompare.Caption := T('Compare');
-  miRrefx.Caption := T('Cross-References');
-  miCommentaries.Caption := T('Commentaries');
-  miDictionaries.Caption := T('Dictionaries');
-  miHistory.Caption := T('History');
-  miTranslate.Caption := T('Translation');
-  miInterlinear.Caption := T('Interlinear') + ' (biblehub.com)';
-  miPrint.Caption := T('Print');
-  miModules.Caption := T('Modules');
-  miOptions.Caption := T('Font…');
-  miLocalization.Caption := T('Localization');
-  miExit.Caption := T('Exit');
-  miUndo.Caption := T('Undo');
-  miCut.Caption := T('Cut');
-  miCopy.Caption := T('Copy');
-  miPaste.Caption := T('Paste');
+  miBibleFolder.Caption := T('Bible Folder');
   miClear.Caption := T('Delete');
-  miSelectAll.Caption := T('Select All');
+  miCommentaries.Caption := T('Commentaries');
+  miCompare.Caption := T('Compare');
+  miCopy.Caption := T('Copy');
   miCopyAs.Caption := T('Copy As…');
-  miVerses.Caption := T('Copy Verses');
+  miCut.Caption := T('Cut');
+  miDictionaries.Caption := T('Dictionaries');
+  miDonate.Caption := T('Donate');
+  miDownload.Caption := T('Modules Downloads');
+  miEdit.Caption := T('Edit');
+  miExit.Caption := T('Exit');
+  miHelp.Caption := T('Help');
+  miHelpAbout.Caption := T('About');
+  miHistory.Caption := T('History');
+  miHome.Caption := T('Home Page');
+  miInterlinear.Caption := T('Interlinear') + ' (biblehub.com)';
+  miIssue.Caption := T('Report an Issue');
+  miLocalization.Caption := T('Localization');
+  miModules.Caption := T('Modules');
   miNoteNew.Caption := T('New');
   miNoteOpen.Caption := T('Open…');
   miNoteSave.Caption := T('Save');
   miNoteSaveAs.Caption := T('Save As…');
+  miNotes.Caption := T('Notes');
+  miOptions.Caption := T('Font…');
+  miPaste.Caption := T('Paste');
+  miPrint.Caption := T('Print');
   miRecent.Caption := T('Open Recent');
-
-  miHome.Caption := T('Home Page');
-  miDonate.Caption := T('Donate');
-  miDownload.Caption := T('Modules Downloads');
-  miBibleFolder.Caption := T('Bible Folder');
-  miIssue.Caption := T('Report an Issue');
-  miHelpAbout.Caption := T('About');
+  miRrefx.Caption := T('Cross-References');
+  miSearch.Caption := T('Search');
+  miSelectAll.Caption := T('Select All');
+  miTools.Caption := T('Tools');
+  miTranslate.Caption := T('Translation');
+  miUndo.Caption := T('Undo');
+  miVerses.Caption := T('Copy Verses');
 
   pmCut.Caption := T('Cut');
   pmCopy.Caption := T('Copy');
@@ -501,39 +500,38 @@ begin
   pmClean.Caption := T('Clean History');
 
   TabSheetBible.Caption := T('Bible');
-  TabSheetSearch.Caption := T('Search');
-  TabSheetCompare.Caption := T('Compare');
-  TabSheetReference.Caption := T('Cross-References');
   TabSheetCommentary.Caption := T('Commentaries');
+  TabSheetCompare.Caption := T('Compare');
   TabSheetDictionary.Caption := T('Dictionaries');
-  TabSheetDictionary.Caption := T('History');
+  TabSheetHistory.Caption := T('History');
   TabSheetNotes.Caption := T('Notes');
+  TabSheetReference.Caption := T('Cross-References');
+  TabSheetSearch.Caption := T('Search');
 
+  ToolButtonBold.Hint := T('Bold');
+  ToolButtonBullets.Hint := T('Bullets');
+  ToolButtonCenter.Hint := T('Center');
+  ToolButtonCommentary.Hint := T('Commentaries');
+  ToolButtonCopy.Hint := T('Copy');
+  ToolButtonCut.Hint := T('Cut');
+  ToolButtonDictionary.Hint := T('Dictionaries');
+  ToolButtonFont.Hint := T('Font');
+  ToolButtonHistory.Hint := T('History');
+  ToolButtonItalic.Hint := T('Italic');
+  ToolButtonLeft.Hint := T('Align Left');
+  ToolButtonLink.Hint := T('Hyperlink');
   ToolButtonNew.Hint := T('New');
   ToolButtonOpen.Hint := T('Open');
-  ToolButtonSave.Hint := T('Save');
-  ToolButtonPrint.Hint := T('Print');
-  ToolButtonSearch.Hint := T('Search Options');
-  ToolButtonCut.Hint := T('Cut');
-  ToolButtonCopy.Hint := T('Copy');
-  ToolButtonVerses.Hint := T('Copy Verses');
   ToolButtonPaste.Hint := T('Paste');
-  ToolButtonUndo.Hint := T('Undo');
-
-  ToolButtonShelf.Hint := T('Modules');
+  ToolButtonPrint.Hint := T('Print');
   ToolButtonReference.Hint := T('Cross-References');
-  ToolButtonCommentary.Hint := T('Commentaries');
-  ToolButtonDictionary.Hint := T('Dictionaries');
-
-  ToolButtonFont.Hint := T('Font');
-  ToolButtonBold.Hint := T('Bold');
-  ToolButtonItalic.Hint := T('Italic');
-  ToolButtonUnderline.Hint := T('Underline');
-  ToolButtonLink.Hint := T('Hyperlink');
-  ToolButtonLeft.Hint := T('Align Left');
-  ToolButtonCenter.Hint := T('Center');
   ToolButtonRight.Hint := T('Align Right');
-  ToolButtonBullets.Hint := T('Bullets');
+  ToolButtonSave.Hint := T('Save');
+  ToolButtonSearch.Hint := T('Search Options');
+  ToolButtonShelf.Hint := T('Modules');
+  ToolButtonUnderline.Hint := T('Underline');
+  ToolButtonUndo.Hint := T('Undo');
+  ToolButtonVerses.Hint := T('Copy Verses');
 end;
 
 procedure TMainForm.LocalizeApplication;
@@ -750,10 +748,10 @@ var
   Verse : TVerse;
 begin
   if Sender <> nil then HistoryNow := (Sender as TMenuItem).Tag;
-  List := HistoryList[HistoryNow].Split(#0);
+  List := HistoryList[HistoryNow].Split(#9);
   if List.Count < 3 then Exit;
-  Tools.SetCurrBible(List[2]); // filename
-  Verse := CurrBible.SrtToVerse(List[0]);
+  Tools.SetCurrBible(List[0]); // filename
+  Verse := CurrBible.SrtToVerse(List[1]);
   if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
   ShowCurrBible;
 end;
@@ -1107,9 +1105,9 @@ begin
   for i := Low(HistoryList) to High(HistoryList) do
     begin
       if i = HistoryNow then Continue;
-      List := HistoryList[i].Split(#0);
+      List := HistoryList[i].Split(#9);
       if List.IsEmpty then Continue;
-      MenuItem := NewItem(List[0], 0, False, True, OnHistoryClick, 0, '');
+      MenuItem := NewItem(List[1], 0, False, True, OnHistoryClick, 0, '');
       MenuItem.Tag := i;
       if i < HistoryNow then PopupHistoryLeft.Items.Insert(0, MenuItem);
       if i > HistoryNow then PopupHistoryRight.Items.Add(MenuItem);
@@ -1379,9 +1377,10 @@ const
 begin
   s := CurrBible.VerseToStr(CurrVerse, true);
   if s.isEmpty then Exit;
-  s += #0 + CurrBible.abbreviation + #0 + CurrBible.fileName;
+  s := CurrBible.fileName + #9 + s + #9 + Tools.Get_Verses;
   if not HistoryList.IsEmpty and (s = HistoryList[HistoryList.Count-1]) then Exit;
   HistoryList.Add(s);
+  output(s);
   while HistoryList.Count > HistoryLength do HistoryList.Delete(0);
   HistoryNow := HistoryList.Count - 1;
 //ToolButtonHistoryRight.Enabled := HistoryList.Count > 1;
