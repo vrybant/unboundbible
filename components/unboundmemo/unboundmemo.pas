@@ -31,6 +31,7 @@ type
     ParagraphCount : integer;
     constructor Create(AOwner: TComponent); override;
     function Foreground: integer;
+    function Breaks: integer;
     procedure SelectParagraph(n: integer);
     procedure SelectWord;
     procedure SelectAll; override;
@@ -79,6 +80,18 @@ begin
   if SelAttributes.Color = clSysNavy  then Result := fgLink else
   if SelAttributes.Color = clSysBrown then Result := fgStrong else
   if SelAttributes.Color = clSysTeal  then Result := fgFootnote;
+end;
+
+function TUnboundMemo.Breaks: integer;
+var
+  c : char;
+begin
+  Result := 0;
+  SaveSelection;
+  SetSel(0, SelStart);
+  for c in SelText do
+    if c = chr(13) then Result += 1;
+  RestoreSelection;
 end;
 
 function TUnboundMemo.GetColorLink: string;
