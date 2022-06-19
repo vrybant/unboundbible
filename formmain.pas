@@ -19,8 +19,6 @@ type
     Panel1: TPanel;
     MainMenu: TMainMenu;
     PopupMenu: TPopupMenu;
-    PopupHistoryLeft: TPopupMenu;
-    PopupHistoryRight: TPopupMenu;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
     FontDialogNotes: TFontDialog;
@@ -148,9 +146,7 @@ type
 
     MenuItem2: TMenuItem;
     phSeparator1: TMenuItem;
-    phSeparator: TMenuItem;
     pmClean1: TMenuItem;
-    pmClean: TMenuItem;
     pmCopy: TMenuItem;
     pmCopyAs: TMenuItem;
     pmCut: TMenuItem;
@@ -173,8 +169,6 @@ type
     ToolButtonDictionary: TToolButton;
     ToolButtonFont: TToolButton;
     ToolButtonHistory: TToolButton;
-    ToolButtonHistoryLeft: TToolButton;
-    ToolButtonHistoryRight: TToolButton;
     ToolButtonItalic: TToolButton;
     ToolButtonLeft: TToolButton;
     ToolButtonLink: TToolButton;
@@ -200,8 +194,6 @@ type
 
     procedure CmdCleanHistory(Sender: TObject);
     procedure CmdHistory(Sender: TObject);
-    procedure CmdHistoryLeftExecute(Sender: TObject);
-    procedure CmdHistoryRightExecute(Sender: TObject);
     procedure CmdReference(Sender: TObject);
     procedure CmdCommentaries(Sender: TObject);
     procedure CmdDictionaries(Sender: TObject);
@@ -248,8 +240,6 @@ type
     procedure miIssueClick(Sender: TObject);
     procedure miDonateClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
-    procedure pmCleanClick(Sender: TObject);
-    procedure PopupHistoryPopup(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
     procedure ToolButtonDonateClick(Sender: TObject);
     procedure ToolButtonSearchClick(Sender: TObject);
@@ -257,8 +247,6 @@ type
     NoteFileName: string;
     RecentList: TStringArray;
     Statuses: TStatuses;
-    HistoryMax: integer;
-//  DonateVisited: boolean;
     IdleMessage : string;
     showed : boolean;
     function UnboundMemo: TUnboundMemo;
@@ -283,13 +271,11 @@ type
     procedure MakeChapterList;
     procedure MakeLangMenu;
     procedure OnRecentClick(Sender: TObject);
-    procedure OnHistoryClick(Sender: TObject);
     procedure OnLangClick(Sender: TObject);
     procedure PerformFileOpen(const FileName: string);
     procedure ReadConfig;
     procedure RebuildRecentList;
     procedure MakeRecentMenu;
-    procedure MakeHistoryMenu;
     procedure HideCursor;
     procedure SaveConfig;
     procedure SelectPage(page: integer);
@@ -301,7 +287,6 @@ type
     procedure ShowPopup;
     procedure Localize;
     procedure LocalizeApplication;
-    procedure AddToHistory(Sender: TObject);
   end;
 
 var
@@ -351,7 +336,6 @@ begin
   NoteFileName := Untitled;
   MemoNotes.Lines.Clear;
   MemoNotes.Font.Size := Font.Size;
-//ToolButtonHistoryLeft.Enabled := HistoryList.Count > 1;
   IdleMessage := '';
 
   ShowCurrBible;
@@ -409,13 +393,13 @@ procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   {$ifdef linux}
     MemoBible     .Clear;
-    MemoSearch    .Clear;
-    MemoCompare   .Clear;
-    MemoReference .Clear;
     MemoCommentary.Clear;
+    MemoCompare   .Clear;
     MemoDictionary.Clear;
     MemoHistory   .Clear;
     MemoNotes     .Clear;
+    MemoReference .Clear;
+    MemoSearch    .Clear;
   {$endif}
 end;
 
@@ -452,11 +436,12 @@ end;
 procedure TMainForm.AssignFont;
 begin
   MemoBible.Font.Assign(Font);
-  MemoSearch.Font.Assign(Font);
-  MemoCompare.Font.Assign(Font);
-  MemoReference.Font.Assign(Font);
   MemoCommentary.Font.Assign(Font);
+  MemoCompare.Font.Assign(Font);
   MemoDictionary.Font.Assign(Font);
+  MemoHistory.Font.Assign(Font);
+  MemoReference.Font.Assign(Font);
+  MemoSearch.Font.Assign(Font);
 end;
 
 procedure TMainForm.Localize;
@@ -503,7 +488,6 @@ begin
   pmPaste.Caption := T('Paste');
   pmCopyAs.Caption := T('Copy As…');
   pmVerses.Caption := T('Copy Verses');
-  pmClean.Caption := T('Clean History');
   pmCleanHistory.Caption := T('Clean History'); //
 
   TabSheetBible.Caption := T('Bible');
@@ -732,12 +716,6 @@ begin
   LoadReference;
 end;
 
-procedure TMainForm.CmdHistoryLeftExecute(Sender: TObject);
-begin
-  if HistoryNow > 0 then HistoryNow -= 1 else Exit; // to-do: enable button
-  OnHistoryClick(nil);
-end;
-
 procedure TMainForm.CmdHistory(Sender: TObject);
 begin
   LoadHistory;
@@ -745,29 +723,8 @@ end;
 
 procedure TMainForm.CmdCleanHistory(Sender: TObject);
 begin
-  HistoryList := [];
-  HistoryNow := 0;
+  Tools.CleanHistory;
   MemoHistory.Clear;
-end;
-
-procedure TMainForm.CmdHistoryRightExecute(Sender: TObject);
-begin
-  if HistoryNow < HistoryList.Count - 1 then HistoryNow += 1 else Exit;
-  OnHistoryClick(nil);
-end;
-
-procedure TMainForm.OnHistoryClick(Sender: TObject);
-var
-  List : TStringArray;
-  Verse : TVerse;
-begin
-  if Sender <> nil then HistoryNow := (Sender as TMenuItem).Tag;
-  List := HistoryList[HistoryNow].Split(#9);
-  if List.Count < 3 then Exit;
-  Tools.SetCurrBible(List[0]); // filename
-  Verse := CurrBible.SrtToVerse(List[1]);
-  if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
-  ShowCurrBible;
 end;
 
 procedure TMainForm.CmdCommentaries(Sender: TObject);
@@ -927,14 +884,21 @@ begin
     begin
       CurrVerse.Number := MemoBible.ParagraphStart;
       CurrVerse.Count  := MemoBible.ParagraphCount;
-      AddToHistory(Sender);
+      Tools.AddHistory;
     end;
 
   if Memo.hyperlink.isEmpty then Exit;
 
   if Memo.Foreground = fgLink then
     begin
+      if Memo = MemoHistory then
+        begin
+          Tools.SetCurrBibleFromHistory(Round((Memo.Breaks/2)));
+          ShowCurrBible;
+        end;
+
       Verse := CurrBible.SrtToVerse(Memo.hyperlink);
+
       if CurrBible.GoodLink(Verse) then
         begin
           CurrVerse := Verse;
@@ -942,6 +906,7 @@ begin
         end
       else
         begin
+          caption := Memo.hyperlink;
           Tools.SetCurrBible(Memo.hyperlink);
           ShowCurrBible;
         end;
@@ -1105,29 +1070,6 @@ begin
     end;
 end;
 
-procedure TMainForm.MakeHistoryMenu;
-var
-  MenuItem : TMenuItem;
-  List : TStringArray;
-  i : integer;
-begin
-  PopupHistoryRight.Items.Clear;
-
-  for i := 0 to PopupHistoryLeft.Items.Count - 3 do
-    PopupHistoryLeft.Items[0].Free;
-
-  for i := Low(HistoryList) to High(HistoryList) do
-    begin
-      if i = HistoryNow then Continue;
-      List := HistoryList[i].Split(#9);
-      if List.IsEmpty then Continue;
-      MenuItem := NewItem(List[1], 0, False, True, OnHistoryClick, 0, '');
-      MenuItem.Tag := i;
-      if i < HistoryNow then PopupHistoryLeft.Items.Insert(0, MenuItem);
-      if i > HistoryNow then PopupHistoryRight.Items.Add(MenuItem);
-    end;
-end;
-
 procedure TMainForm.MakeLangMenu;
 var
   MenuItem : TMenuItem;
@@ -1150,13 +1092,13 @@ function TMainForm.UnboundMemo: TUnboundMemo;
 begin
   case PageControl.ActivePageIndex of
     apBible        : Result := MemoBible;
-    apSearch       : Result := MemoSearch;
-    apCompare      : Result := MemoCompare;
-    apReferences   : Result := MemoReference;
     apCommentaries : Result := MemoCommentary;
+    apCompare      : Result := MemoCompare;
     apDictionaries : Result := MemoDictionary;
     apHistory      : Result := MemoHistory;
     apNotes        : Result := MemoNotes;
+    apReferences   : Result := MemoReference;
+    apSearch       : Result := MemoSearch;
   else
     Result := nil;
   end;
@@ -1201,7 +1143,7 @@ begin
   ActionInterlinear.Enabled := B and not S and not M;
   ToolButtonSearch.Enabled  := PageControl.ActivePageIndex <> apDictionaries;
 
-  ActionCleanHistory.Enabled := H and not HistoryList.IsEmpty;;
+  ActionCleanHistory.Enabled := H and not Tools.EmptyHistory;
   pmSeparatorH.Visible       := H;
   pmCleanHistory.Visible     := H;
 
@@ -1349,11 +1291,6 @@ begin
   {$ifdef windows} IdleMessage := 'HideCursor'; {$endif}
 end;
 
-procedure TMainForm.PopupHistoryPopup(Sender: TObject);
-begin
-  MakeHistoryMenu;
-end;
-
 procedure TMainForm.PopupMenuPopup(Sender: TObject);
 var s : String;
 begin
@@ -1364,13 +1301,6 @@ begin
 
   pmSearchfor.Caption := StringReplace( T('Search for %'),'%',s,[]);
   pmLookup   .Caption := StringReplace( T('Look Up %')   ,'%',s,[]);
-end;
-
-procedure TMainForm.pmCleanClick(Sender: TObject);
-begin
-  HistoryList := [];
-  HistoryNow := 0;
-//ToolButtonHistoryLeft.Enabled := False;
 end;
 
 procedure TMainForm.ToolButtonDonateClick(Sender: TObject);
@@ -1386,20 +1316,6 @@ begin
   Pos.y := PageControl.Top + 2;
   Pos := ClientToScreen(Pos);
   if SearchForm.ShowAtPos(Pos) = mrOk then LoadSearch(Edit.Text);
-end;
-
-procedure TMainForm.AddToHistory(Sender:TObject);
-var
-  s : string;
-begin
-  s := CurrBible.VerseToStr(CurrVerse, true);
-  if s.isEmpty then Exit;
-  s := CurrBible.fileName + #9 + s + #9 + Tools.Get_Verses;
-  if not HistoryList.IsEmpty and (s = HistoryList[HistoryList.Count-1]) then Exit;
-  HistoryList.Add(s);
-  while HistoryList.Count > HistoryMax do HistoryList.Delete(0);
-  HistoryNow := HistoryList.Count - 1;
-//ToolButtonHistoryRight.Enabled := HistoryList.Count > 1;
 end;
 
 //-----------------------------------------------------------------------------------------
@@ -1639,8 +1555,6 @@ begin
   IniFile.WriteString ('Application', 'Interface', Localization.id);
   IniFile.WriteString ('Application', 'FontName', Font.Name);
   IniFile.WriteInteger('Application', 'FontSize', Font.Size);
-  IniFile.WriteInteger('Application', 'HistoryMax', HistoryMax);
-//IniFile.WriteBool('Application', 'Donate', DonateVisited);
   IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
   IniFile.WriteBool('Options', 'Enumerated', Options.cvEnumerated);
   IniFile.WriteBool('Options', 'Guillemets', Options.cvGuillemets);
@@ -1672,8 +1586,6 @@ begin
   Localization.id := IniFile.ReadString('Application', 'Interface', Localization.DefaultID);
   Font.Name := IniFile.ReadString ('Application', 'FontName', Font.Name);
   Font.Size := IniFile.ReadInteger('Application', 'FontSize', Font.Size);
-  HistoryMax := IniFile.ReadInteger('Application', 'HistoryMax', 100);
-//DonateVisited := IniFile.ReadBool('Application', 'Donate', False);
   Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
   Options.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);
   Options.cvGuillemets := IniFile.ReadBool('Options', 'Guillemets', False);

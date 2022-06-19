@@ -16,6 +16,8 @@ type
     Dictionaries : TDictionaries;
   private
     References : TReferences;
+    History : TStringArray;
+    HistoryMax: integer;
   public
     constructor Create;
     destructor Destroy; override;
@@ -30,9 +32,13 @@ type
     function Get_Strong(number: string = ''): string;
     function Get_Footnote(marker: string = ''): string;
     function Get_Verses: string;
-    procedure SetCurrBible(Bible: TBible); overload;
-    procedure SetCurrBible(value: string); overload;
+    function SetCurrBible(Bible: TBible): boolean; overload;
+    function SetCurrBible(value: string): boolean; overload;
+    function SetCurrBibleFromHistory(n: integer): boolean;
     function DeleteModule(const Module: TModule): boolean;
+    function EmptyHistory: boolean;
+    procedure AddHistory;
+    procedure CleanHistory;
   private
     procedure SaveConfig;
     procedure ReadConfig;
@@ -46,9 +52,6 @@ var
   Options : TCopyOptions;
   Tools : TTools;
 
-  HistoryList: TStringArray;
-  HistoryNow: integer;
-
 implementation
 
 uses
@@ -60,7 +63,7 @@ begin
   Commentaries := TCommentaries.Create;
   Dictionaries := TDictionaries.Create;
   References := TReferences.Create;
-  HistoryList := [];
+  History := [];
   ReadConfig;
   ReadHistory;
   if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
@@ -153,7 +156,7 @@ begin
 
   for s in List do
     begin
-      A := s.Split(#9);
+      A := s.Split(#0);
       if A.Count < 4 then Continue;
       link := CurrBible.VerseToStr(ArrayToVerse(A), true);
       text := A[3];
@@ -239,7 +242,7 @@ var
   link, s : string;
 begin
   Result := '';
-  for s in HistoryList.Reverse do
+  for s in History.Reverse do
     begin
       List := s.Split(#9);
       if List.IsEmpty then Continue;
@@ -309,27 +312,35 @@ begin
   Result += quote + '<br> ';
 end;
 
-procedure TTools.SetCurrBible(Bible: TBible);
+function TTools.SetCurrBible(Bible: TBible): boolean;
 begin
   CurrBible := Bible;
   CurrBible.LoadDatabase;
-  if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
+  Result := CurrBible.loaded;
+  if Result then
+    if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
 end;
 
-procedure TTools.SetCurrBible(value: string);
+function TTools.SetCurrBible(value: string): boolean;
 var
   Bible : TBible;
 begin
-  CurrBible := Bibles[0];
-
+  Result := false;
   for Bible in Bibles do
     if (Bible.filename = value) or (Bible.name = value) then
-      begin
-        CurrBible := Bible;
-        Break;
-      end;
+      if SetCurrBible(Bible) then Exit(true);
+end;
 
-  SetCurrBible(Bible);
+function TTools.SetCurrBibleFromHistory(n: integer): boolean;
+var
+  List : TStringArray;
+begin
+  Result := false;
+  List := History.Reverse[n].Split(#9);
+  if List.Count < 3 then Exit;
+  if Tools.SetCurrBible(List[0]) then Exit(true); // filename
+//Verse := CurrBible.SrtToVerse(List[1]);
+//if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
 end;
 
 function TTools.DeleteModule(const Module: TModule): boolean;
@@ -343,6 +354,30 @@ begin
  if Module.ClassType = TCommentary then Result := Commentaries.DeleteItem(Module as TCommentary );
  if Module.ClassType = TDictionary then Result := Dictionaries.DeleteItem(Module as TDictionary );
  if Module.ClassType = TReference  then Result := References  .DeleteItem(Module as TReference  );
+end;
+
+// --- History ---
+
+function TTools.EmptyHistory: boolean;
+begin
+  Result := History.IsEmpty;
+end;
+
+procedure TTools.AddHistory;
+var
+  s : string;
+begin
+  s := CurrBible.VerseToStr(CurrVerse, true);
+  if s.isEmpty then Exit;
+  s := CurrBible.fileName + #9 + s + #9 + Get_Verses;
+  if not History.IsEmpty and (s = History[History.Count-1]) then Exit;
+  History.Add(s);
+  while History.Count > HistoryMax do History.Delete(0);
+end;
+
+procedure TTools.CleanHistory;
+begin
+  History := [];
 end;
 
 procedure TTools.SaveConfig;
@@ -391,11 +426,10 @@ var
 begin
   IniFile := TIniFile.Create(HistoryFile);
 
-//IniFile.WriteInteger('History', 'Now'  , HistoryNow);
-  IniFile.WriteInteger('History', 'Count', HistoryList.Count);
-
-  for i:=0 to HistoryList.Count-1 do
-    IniFile.WriteString('History', 'n' + i.ToString, HistoryList[i]);
+  IniFile.WriteInteger('History', 'Max', HistoryMax);
+  IniFile.WriteInteger('History', 'Count', History.Count);
+  for i:=0 to History.Count-1 do
+    IniFile.WriteString('History', 'n' + i.ToString, History[i]);
 
   IniFile.Free;
 end;
@@ -407,10 +441,10 @@ var
 begin
   IniFile := TIniFile.Create(HistoryFile);
 
-//HistoryNow := IniFile.ReadInteger('History', 'Now', 0);
+  HistoryMax := IniFile.ReadInteger('History', 'Max', 100);
   Count := IniFile.ReadInteger('History', 'Count', 0);
   for i := 0 to Count - 1 do
-    HistoryList.Add(IniFile.ReadString('History', 'n' + ToStr(i), ''));
+    History.Add(IniFile.ReadString('History', 'n' + ToStr(i), ''));
 
   IniFile.Free;
 end;
