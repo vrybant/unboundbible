@@ -620,8 +620,7 @@ end;
 
 procedure TMainForm.ComboBoxChange(Sender: TObject);
 begin
-  Tools.SetCurrBible( ComboBox.Items[ComboBox.ItemIndex] ) ;
-  ShowCurrBible;
+  if Tools.SetCurrBible(ComboBox.Items[ComboBox.ItemIndex]) then ShowCurrBible;
 end;
 
 procedure TMainForm.ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
@@ -892,10 +891,7 @@ begin
   if Memo.Foreground = fgLink then
     begin
       if Memo = MemoHistory then
-        begin
-          Tools.SetCurrBibleFromHistory(Round((Memo.Breaks/2)));
-          ShowCurrBible;
-        end;
+        if Tools.SetCurrBibleFromHistory(Round((Memo.Breaks/2))) then ShowCurrBible;
 
       Verse := CurrBible.SrtToVerse(Memo.hyperlink);
 
@@ -905,11 +901,7 @@ begin
           ShowCurrVerse(True);
         end
       else
-        begin
-          caption := Memo.hyperlink;
-          Tools.SetCurrBible(Memo.hyperlink);
-          ShowCurrBible;
-        end;
+        if Tools.SetCurrBible(Memo.hyperlink)then ShowCurrBible;
     end;
 
   if Memo = MemoBible then

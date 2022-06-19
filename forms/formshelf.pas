@@ -273,10 +273,7 @@ procedure TShelfForm.ButtonOpenClick(Sender: TObject);
 begin
   if not ExpertMode then
     if PageControl.ActivePageIndex = apBible then
-      begin
-        Tools.SetCurrBible(CurrModule as TBible);
-        Exit;
-      end;
+      if Tools.SetCurrBible(CurrModule as TBible) then Exit;
 
   case PageControl.ActivePageIndex of
     apBible        : Tools.ExportBible(CurrModule as TBible);

@@ -41,7 +41,7 @@ type
     procedure CleanHistory;
   private
     procedure SaveConfig;
-    procedure ReadConfig;
+    procedure ReadConfig(out Bible: string);
     procedure SaveHistory;
     procedure ReadHistory;
   end;
@@ -58,13 +58,16 @@ uses
   FormSearch, UnitUtils;
 
 constructor TTools.Create;
+var
+  Bible: string;
 begin
   Bibles := TBibles.Create;
   Commentaries := TCommentaries.Create;
   Dictionaries := TDictionaries.Create;
   References := TReferences.Create;
   History := [];
-  ReadConfig;
+  ReadConfig(Bible);
+  if not SetCurrBible(Bible) then SetCurrBible(Bibles[0]);
   ReadHistory;
   if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
 end;
@@ -334,13 +337,13 @@ end;
 function TTools.SetCurrBibleFromHistory(n: integer): boolean;
 var
   List : TStringArray;
+const
+  filename = 0;
 begin
   Result := false;
   List := History.Reverse[n].Split(#9);
   if List.Count < 3 then Exit;
-  if Tools.SetCurrBible(List[0]) then Exit(true); // filename
-//Verse := CurrBible.SrtToVerse(List[1]);
-//if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
+  if Tools.SetCurrBible(List[filename]) then Exit(true);
 end;
 
 function TTools.DeleteModule(const Module: TModule): boolean;
@@ -383,7 +386,6 @@ end;
 procedure TTools.SaveConfig;
 var
   IniFile : TIniFile;
-  i : integer;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
@@ -397,19 +399,16 @@ begin
   IniFile.Free;
 end;
 
-procedure TTools.ReadConfig;
+procedure TTools.ReadConfig(out Bible: string);
 var
   IniFile : TIniFile;
   Version : string;
-  CurrentBible : string;
-  i, Count : integer;
 begin
   IniFile := TIniFile.Create(ConfigFile);
 
   Version := IniFile.ReadString('Application', 'Version', '');
   ApplicationUpdate := ApplicationVersion <> Version;
-  CurrentBible := IniFile.ReadString('Application', 'CurrentBible', Bibles.GetDefaultBible);
-  SetCurrBible(CurrentBible);
+  Bible := IniFile.ReadString('Application', 'CurrentBible', Bibles.GetDefaultBible);
 
   CurrVerse.book    := IniFile.ReadInteger('Verse', 'Book',    0);
   CurrVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);
