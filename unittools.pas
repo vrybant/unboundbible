@@ -34,7 +34,7 @@ type
     function Get_Verses: string;
     function SetCurrBible(Bible: TBible): boolean; overload;
     function SetCurrBible(value: string): boolean; overload;
-    function SetCurrBibleFromHistory(n: integer): boolean;
+    function FilenameFromHistory(n: integer): string;
     function DeleteModule(const Module: TModule): boolean;
     function EmptyHistory: boolean;
     procedure AddHistory;
@@ -334,16 +334,15 @@ begin
       if SetCurrBible(Bible) then Exit(true);
 end;
 
-function TTools.SetCurrBibleFromHistory(n: integer): boolean;
+function TTools.FilenameFromHistory(n: integer): string;
 var
   List : TStringArray;
 const
   filename = 0;
 begin
-  Result := false;
   List := History.Reverse[n].Split(#9);
-  if List.Count < 3 then Exit;
-  if Tools.SetCurrBible(List[filename]) then Exit(true);
+  if List.Count < 3 then Exit('');
+  Result := List[filename];
 end;
 
 function TTools.DeleteModule(const Module: TModule): boolean;

@@ -873,6 +873,7 @@ procedure TMainForm.MemoMouseUp(Sender: TObject; Button: TMouseButton; Shift: TS
 var
   Memo : TUnboundMemo;
   Verse : TVerse;
+  s : string;
 begin
   Memo := Sender as TUnboundMemo;
 
@@ -891,7 +892,10 @@ begin
   if Memo.Foreground = fgLink then
     begin
       if Memo = MemoHistory then
-        if Tools.SetCurrBibleFromHistory(Round((Memo.Breaks/2))) then ShowCurrBible;
+        begin
+          s := Tools.FilenameFromHistory(Round((Memo.Breaks/2)));
+          if Tools.SetCurrBible(s) then ShowCurrBible;
+        end;
 
       Verse := CurrBible.SrtToVerse(Memo.hyperlink);
 
