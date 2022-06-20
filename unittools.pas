@@ -34,16 +34,16 @@ type
     function Get_Verses: string;
     function SetCurrBible(Bible: TBible): boolean; overload;
     function SetCurrBible(value: string): boolean; overload;
-    function FilenameFromHistory(n: integer): string;
     function DeleteModule(const Module: TModule): boolean;
     function EmptyHistory: boolean;
     procedure AddHistory;
     procedure CleanHistory;
+    function FilenameFromHistory(n: integer): string;
   private
-    procedure SaveConfig;
-    procedure ReadConfig(out Bible: string);
     procedure SaveHistory;
     procedure ReadHistory;
+    procedure SaveConfig;
+    procedure ReadConfig(out Bible: string);
   end;
 
 var
@@ -242,17 +242,14 @@ end;
 function TTools.Get_History: string;
 var
   List : TStringArray;
-  link, s : string;
+  s : string;
 begin
   Result := '';
   for s in History.Reverse do
     begin
       List := s.Split(#9);
-      if List.IsEmpty then Continue;
-      link := List[1];
-//    link := CurrBible.StrToVerse(List[0], not Options.cvAbbreviate);
-      if List.Count < 3 then Exit;
-      Result += {'<l>' + link + '</l> ' + } List[2] + '<br>';
+      if List.Count < 2 then Continue;
+      Result += List[1] + '<br>';
     end;
 end;
 
@@ -334,17 +331,6 @@ begin
       if SetCurrBible(Bible) then Exit(true);
 end;
 
-function TTools.FilenameFromHistory(n: integer): string;
-var
-  List : TStringArray;
-const
-  filename = 0;
-begin
-  List := History.Reverse[n].Split(#9);
-  if List.Count < 3 then Exit('');
-  Result := List[filename];
-end;
-
 function TTools.DeleteModule(const Module: TModule): boolean;
 begin
  if Module.ClassType = TBible then
@@ -369,9 +355,7 @@ procedure TTools.AddHistory;
 var
   s : string;
 begin
-  s := CurrBible.VerseToStr(CurrVerse, true);
-  if s.isEmpty then Exit;
-  s := CurrBible.fileName + #9 + s + #9 + Get_Verses;
+  s := CurrBible.fileName + #9 + Get_Verses;
   if not History.IsEmpty and (s = History[History.Count-1]) then Exit;
   History.Add(s);
   while History.Count > HistoryMax do History.Delete(0);
@@ -381,6 +365,49 @@ procedure TTools.CleanHistory;
 begin
   History := [];
 end;
+
+function TTools.FilenameFromHistory(n: integer): string;
+var
+  List : TStringArray;
+const
+  filename = 0;
+begin
+  List := History.Reverse[n].Split(#9);
+  if List.Count < 2 then Exit('');
+  Result := List[filename];
+end;
+
+procedure TTools.SaveHistory;
+var
+  IniFile : TIniFile;
+  i : integer;
+begin
+  IniFile := TIniFile.Create(HistoryFile);
+
+  IniFile.WriteInteger('History', 'Max', HistoryMax);
+  IniFile.WriteInteger('History', 'Count', History.Count);
+  for i:=0 to History.Count-1 do
+    IniFile.WriteString('History', 'n' + i.ToString, History[i]);
+
+  IniFile.Free;
+end;
+
+procedure TTools.ReadHistory;
+var
+  IniFile : TIniFile;
+  i, Count : integer;
+begin
+  IniFile := TIniFile.Create(HistoryFile);
+
+  HistoryMax := IniFile.ReadInteger('History', 'Max', 100);
+  Count := IniFile.ReadInteger('History', 'Count', 0);
+  for i := 0 to Count - 1 do
+    History.Add(IniFile.ReadString('History', 'n' + ToStr(i), ''));
+
+  IniFile.Free;
+end;
+
+// --- Config ---
 
 procedure TTools.SaveConfig;
 var
@@ -413,36 +440,6 @@ begin
   CurrVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);
   CurrVerse.number  := IniFile.ReadInteger('Verse', 'Number',  0);
   CurrVerse.count   := IniFile.ReadInteger('Verse', 'Count',   0);
-
-  IniFile.Free;
-end;
-
-procedure TTools.SaveHistory;
-var
-  IniFile : TIniFile;
-  i : integer;
-begin
-  IniFile := TIniFile.Create(HistoryFile);
-
-  IniFile.WriteInteger('History', 'Max', HistoryMax);
-  IniFile.WriteInteger('History', 'Count', History.Count);
-  for i:=0 to History.Count-1 do
-    IniFile.WriteString('History', 'n' + i.ToString, History[i]);
-
-  IniFile.Free;
-end;
-
-procedure TTools.ReadHistory;
-var
-  IniFile : TIniFile;
-  i, Count : integer;
-begin
-  IniFile := TIniFile.Create(HistoryFile);
-
-  HistoryMax := IniFile.ReadInteger('History', 'Max', 100);
-  Count := IniFile.ReadInteger('History', 'Count', 0);
-  for i := 0 to Count - 1 do
-    History.Add(IniFile.ReadString('History', 'n' + ToStr(i), ''));
 
   IniFile.Free;
 end;
