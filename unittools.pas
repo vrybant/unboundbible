@@ -43,7 +43,7 @@ type
     procedure SaveHistory;
     procedure ReadHistory;
     procedure SaveConfig;
-    procedure ReadConfig(out Bible: string);
+    procedure ReadConfig(out filename: string);
   end;
 
 var
@@ -59,15 +59,15 @@ uses
 
 constructor TTools.Create;
 var
-  Bible: string;
+  filename: string;
 begin
   Bibles := TBibles.Create;
   Commentaries := TCommentaries.Create;
   Dictionaries := TDictionaries.Create;
   References := TReferences.Create;
   History := [];
-  ReadConfig(Bible);
-  if not SetCurrBible(Bible) then SetCurrBible(Bibles[0]);
+  ReadConfig(filename);
+  if not SetCurrBible(filename) then SetCurrBible(Bibles[0]);
   ReadHistory;
   if not CurrBible.GoodLink(CurrVerse) then CurrVerse := CurrBible.FirstVerse;
 end;
@@ -416,7 +416,7 @@ begin
   IniFile := TIniFile.Create(ConfigFile);
 
   IniFile.WriteString ('Application', 'Version', ApplicationVersion);
-  IniFile.WriteString ('Application', 'CurrentBible', CurrBible.name);
+  IniFile.WriteString ('Application', 'CurrentBible', CurrBible.filename);
   IniFile.WriteInteger('Verse', 'Book', CurrVerse.book);
   IniFile.WriteInteger('Verse', 'Chapter', CurrVerse.chapter);
   IniFile.WriteInteger('Verse', 'Number', CurrVerse.number);
@@ -425,7 +425,7 @@ begin
   IniFile.Free;
 end;
 
-procedure TTools.ReadConfig(out Bible: string);
+procedure TTools.ReadConfig(out filename: string);
 var
   IniFile : TIniFile;
   Version : string;
@@ -434,7 +434,7 @@ begin
 
   Version := IniFile.ReadString('Application', 'Version', '');
   ApplicationUpdate := ApplicationVersion <> Version;
-  Bible := IniFile.ReadString('Application', 'CurrentBible', Bibles.GetDefaultBible);
+  filename := IniFile.ReadString('Application', 'CurrentBible', Bibles.GetDefaultBible);
 
   CurrVerse.book    := IniFile.ReadInteger('Verse', 'Book',    0);
   CurrVerse.chapter := IniFile.ReadInteger('Verse', 'Chapter', 0);

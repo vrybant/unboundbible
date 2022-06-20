@@ -641,8 +641,8 @@ begin
   for Bible in Self do
     if Bible.default_ then
       begin
-        if Bible.language = GetLanguageID then Exit(Bible.name);
-        if Bible.language = 'en' then Result := Bible.name;
+        if Bible.language = GetLanguageID then Exit(Bible.filename);
+        if Bible.language = 'en' then Result := Bible.filename;
       end;
 end;
 
