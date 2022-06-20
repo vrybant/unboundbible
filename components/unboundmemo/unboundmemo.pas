@@ -34,7 +34,7 @@ type
     function Breaks: integer;
     procedure SelectParagraph(n: integer);
     procedure SelectWord;
-    procedure SelectAll; override;
+    procedure SelectAll; {$ifdef windows} override; {$endif}
     procedure SaveSelection;
     procedure RestoreSelection;
     procedure LoadText(Source: string; jtag: boolean = false);
@@ -90,7 +90,7 @@ begin
   SaveSelection;
   SetSel(0, SelStart);
   for c in SelText do
-    if c = chr(13) then Result += 1;
+    if c = LineBreak then Result += 1;
   RestoreSelection;
 end;
 

@@ -378,6 +378,7 @@ begin
     TabSheetReference .TabVisible := False;
     TabSheetCommentary.TabVisible := False;
     TabSheetDictionary.TabVisible := False;
+    TabSheetHistory   .TabVisible := False;
     ShowCurrVerse(CurrVerse.number > 1);
   {$endif}
 end;
