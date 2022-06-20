@@ -105,6 +105,7 @@ type
     N5: TMenuItem;
     N6: TMenuItem;
     N7: TMenuItem;
+    N8: TMenuItem;
     N9: TMenuItem;
 
     miBibleFolder: TMenuItem;
@@ -140,7 +141,6 @@ type
     miSearch: TMenuItem;
     miSelectAll: TMenuItem;
     miTools: TMenuItem;
-    miTranslate: TMenuItem;
     miUndo: TMenuItem;
     miVerses: TMenuItem;
 
@@ -480,7 +480,6 @@ begin
   miSearch.Caption := T('Search');
   miSelectAll.Caption := T('Select All');
   miTools.Caption := T('Tools');
-  miTranslate.Caption := T('Translation');
   miUndo.Caption := T('Undo');
   miVerses.Caption := T('Copy Verses');
 

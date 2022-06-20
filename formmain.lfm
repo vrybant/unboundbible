@@ -651,9 +651,15 @@ object MainForm: TMainForm
     Top = 216
     object miTools: TMenuItem
       Caption = '&Tools'
+      object miModules: TMenuItem
+        Action = ActionModules
+        Caption = 'Modules'
+      end
+      object N7: TMenuItem
+        Caption = '-'
+      end
       object miSearch: TMenuItem
         Action = ActionSearchfor
-        Visible = False
       end
       object miCompare: TMenuItem
         Action = ActionCompare
@@ -674,23 +680,14 @@ object MainForm: TMainForm
         Action = ActionHistory
         Caption = 'History'
       end
-      object N7: TMenuItem
+      object N5: TMenuItem
         Caption = '-'
-      end
-      object miTranslate: TMenuItem
-        Caption = 'Translate'
-        ImageIndex = 35
-        Visible = False
-      end
-      object miModules: TMenuItem
-        Action = ActionModules
-        Caption = 'Modules'
       end
       object miInterlinear: TMenuItem
         Action = ActionInterlinear
         Caption = 'Interlinear'
       end
-      object N5: TMenuItem
+      object N8: TMenuItem
         Caption = '-'
       end
       object miOptions: TMenuItem
