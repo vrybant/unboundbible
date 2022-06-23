@@ -19,6 +19,7 @@ type
     Panel1: TPanel;
     MainMenu: TMainMenu;
     PopupMenu: TPopupMenu;
+    PopupTabs: TPopupMenu;
     PrintDialog: TPrintDialog;
     FontDialog: TFontDialog;
     FontDialogNotes: TFontDialog;
@@ -145,8 +146,7 @@ type
     miVerses: TMenuItem;
 
     MenuItem2: TMenuItem;
-    phSeparator1: TMenuItem;
-    pmClean1: TMenuItem;
+    pmClose: TMenuItem;
     pmCopy: TMenuItem;
     pmCopyAs: TMenuItem;
     pmCut: TMenuItem;
@@ -240,6 +240,8 @@ type
     procedure miIssueClick(Sender: TObject);
     procedure miDonateClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
+    procedure PageControlMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure pmCloseClick(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
     procedure ToolButtonDonateClick(Sender: TObject);
     procedure ToolButtonSearchClick(Sender: TObject);
@@ -483,12 +485,13 @@ begin
   miUndo.Caption := T('Undo');
   miVerses.Caption := T('Copy Verses');
 
-  pmCut.Caption := T('Cut');
+  pmCleanHistory.Caption := T('Clean History');
+  pmClose.Caption := T('Close');
   pmCopy.Caption := T('Copy');
-  pmPaste.Caption := T('Paste');
   pmCopyAs.Caption := T('Copy As…');
+  pmCut.Caption := T('Cut');
+  pmPaste.Caption := T('Paste');
   pmVerses.Caption := T('Copy Verses');
-  pmCleanHistory.Caption := T('Clean History'); //
 
   TabSheetBible.Caption := T('Bible');
   TabSheetCommentary.Caption := T('Commentaries');
@@ -1288,7 +1291,8 @@ begin
 end;
 
 procedure TMainForm.PopupMenuPopup(Sender: TObject);
-var s : String;
+var
+  s : string;
 begin
   pmSeparator.Visible := ActionLookup.Visible;
 
@@ -1299,6 +1303,19 @@ begin
   pmLookup   .Caption := StringReplace( T('Look Up %')   ,'%',s,[]);
 end;
 
+procedure TMainForm.PageControlMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if Button = mbRight then
+    if PageControl.ActivePageIndex = PageControl.IndexOfPageAt(X,Y) then
+      if not (PageControl.ActivePageIndex in [apBible, apCompare, apNotes]) then
+        PopupTabs.PopUp;
+end;
+
+procedure TMainForm.pmCloseClick(Sender: TObject);
+begin
+  PageControl.ActivePage.TabVisible := False;
+end;
+
 procedure TMainForm.ToolButtonDonateClick(Sender: TObject);
 begin
   OpenURL(DonateURL);
@@ -1306,7 +1323,7 @@ end;
 
 procedure TMainForm.ToolButtonSearchClick(Sender: TObject);
 var
-  Pos: TPoint;
+  Pos : TPoint;
 begin
   Pos.x := Width - (SearchForm.Width div 2);
   Pos.y := PageControl.Top + 2;

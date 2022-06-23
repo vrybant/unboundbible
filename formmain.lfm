@@ -392,9 +392,11 @@ object MainForm: TMainForm
       Font.Color = clWindowText
       Font.Height = -13
       ParentFont = False
+      PopupMenu = PopupTabs
       TabIndex = 0
       TabOrder = 0
       OnChange = PageControlChange
+      OnMouseUp = PageControlMouseUp
       object TabSheetBible: TTabSheet
         Caption = 'Bible'
         ClientHeight = 344
@@ -1495,5 +1497,14 @@ object MainForm: TMainForm
       10EAD6973F4D3FFD0DA9ACFF1463EE3F9E47C6DE193FAB784CDD926D668D1FED
       F1BB416BFC765E5F62D6F8BDDFFA6F2940C84F
     }
+  end
+  object PopupTabs: TPopupMenu
+    AutoPopup = False
+    Left = 488
+    Top = 167
+    object pmClose: TMenuItem
+      Caption = 'Close'
+      OnClick = pmCloseClick
+    end
   end
 end
