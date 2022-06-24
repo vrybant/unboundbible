@@ -352,7 +352,7 @@ object MainForm: TMainForm
     ParentFont = False
     TabOrder = 0
   end
-  object Edit: TEdit
+  object ToolEdit: TEdit
     Left = 696
     Height = 22
     Top = 3
@@ -361,7 +361,7 @@ object MainForm: TMainForm
     Color = clWhite
     DoubleBuffered = True
     Font.Height = 15
-    OnKeyDown = EditKeyDown
+    OnKeyDown = ToolEditKeyDown
     ParentDoubleBuffered = False
     ParentFont = False
     TabOrder = 4

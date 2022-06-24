@@ -14,7 +14,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
-    Edit: TEdit;
+    ToolEdit: TEdit;
     IdleTimer: TIdleTimer;
     Panel1: TPanel;
     MainMenu: TMainMenu;
@@ -220,7 +220,7 @@ type
     procedure AssignFont;
     procedure ComboBoxChange(Sender: TObject);
     procedure ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
-    procedure EditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure ToolEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -420,8 +420,8 @@ begin
   ToolPanel.Width := StandardToolBar.Width - ToolButtonRight.Width - ToolButtonSearch.Width
                    - {$ifdef linux} ToolButtonRight.Left {$else} ToolButtonBullets.Left {$endif};
 
-  Edit.Left := StandardToolBar.Width - ToolButtonSearch.Width - Edit.Width - 4;
-  Edit.Visible := ToolPanel.Width > Edit.Width;
+  ToolEdit.Left := StandardToolBar.Width - ToolButtonSearch.Width - ToolEdit.Width - 4;
+  ToolEdit.Visible := ToolPanel.Width > ToolEdit.Width;
 end;
 
 procedure TMainForm.MemoMouseLeave(Sender: TObject);
@@ -633,20 +633,20 @@ begin
   Canvas.TextOut(ARect.Left + 220, ARect.Top, '[ru]');
 end;
 
-procedure TMainForm.EditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TMainForm.ToolEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
   Verse: TVerse;
 begin
   if Key = VK_RETURN then
     begin
-      Verse := CurrBible.SrtToVerse(trim(Edit.Text));
+      Verse := CurrBible.SrtToVerse(trim(ToolEdit.Text));
       if CurrBible.GoodLink(Verse) then
         begin
           CurrVerse := Verse;
           ShowCurrVerse(True)
         end
-    else if PageControl.ActivePageIndex = apDictionaries then LoadDictionary(Edit.Text)
-      else LoadSearch(Edit.Text);
+    else if PageControl.ActivePageIndex = apDictionaries then LoadDictionary(ToolEdit.Text)
+      else LoadSearch(ToolEdit.Text);
     end;
 
 end;
@@ -704,13 +704,13 @@ end;
 
 procedure TMainForm.CmdSearch(Sender: TObject);
 begin
-  Edit.SetFocus;
+  ToolEdit.SetFocus;
 end;
 
 procedure TMainForm.CmdSearchFor(Sender: TObject);
 begin
-  Edit.Text := Trim(UnboundMemo.SelText);
-  LoadSearch(Edit.Text);
+  ToolEdit.Text := Trim(UnboundMemo.SelText);
+  LoadSearch(ToolEdit.Text);
 end;
 
 procedure TMainForm.CmdReference(Sender: TObject);
@@ -747,7 +747,7 @@ end;
 
 procedure TMainForm.CmdLookup(Sender: TObject);
 begin
-  Edit.Text := Trim(UnboundMemo.SelText);
+  ToolEdit.Text := Trim(UnboundMemo.SelText);
   CmdDictionaries(Sender);
 end;
 
@@ -762,7 +762,7 @@ begin
       Exit;
     end;
 
-  LoadDictionary(Edit.Text);
+  LoadDictionary(ToolEdit.Text);
 end;
 
 procedure TMainForm.CmdFileNew(Sender: TObject);
@@ -1328,7 +1328,7 @@ begin
   Pos.x := Width - (SearchForm.Width div 2);
   Pos.y := PageControl.Top + 2;
   Pos := ClientToScreen(Pos);
-  if SearchForm.ShowAtPos(Pos) = mrOk then LoadSearch(Edit.Text);
+  if SearchForm.ShowAtPos(Pos) = mrOk then LoadSearch(ToolEdit.Text);
 end;
 
 //-----------------------------------------------------------------------------------------
