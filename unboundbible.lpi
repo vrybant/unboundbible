@@ -130,7 +130,7 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="18">
+    <Units Count="19">
       <Unit0>
         <Filename Value="unboundbible.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -236,6 +236,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormShelf"/>
       </Unit17>
+      <Unit18>
+        <Filename Value="forms\formoptions.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="OptionsForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="FormOptions"/>
+      </Unit18>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

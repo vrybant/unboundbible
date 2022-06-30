@@ -298,8 +298,8 @@ implementation
 
 uses
   {$ifdef windows} UmParseWin, {$endif}
-  FormAbout, FormNotify, FormSearch, UnitTools, UnitLocal, FormCopy, FormShelf,
-  UnitModule, UnitBible, UnitCommentary, UnitDictionary;
+  FormAbout, FormNotify, FormSearch, FormOptions, FormCopy, FormShelf,
+  UnitTools, UnitLocal, UnitModule, UnitBible, UnitCommentary, UnitDictionary;
 
 const
   apBible        = 0; // active page
@@ -1250,6 +1250,10 @@ end;
 
 procedure TMainForm.CmdOptions(Sender: TObject);
 begin
+  OptionsForm.ShowModal;
+
+  Exit;
+
   FontDialog.Font.Assign(Font);
   if FontDialog.Execute then
     begin
