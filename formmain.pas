@@ -467,14 +467,13 @@ begin
   miHome.Caption := T('Home Page');
   miInterlinear.Caption := T('Interlinear') + ' (biblehub.com)';
   miIssue.Caption := T('Report an Issue');
-  miLocalization.Caption := T('Localization');
   miModules.Caption := T('Modules');
   miNoteNew.Caption := T('New');
   miNoteOpen.Caption := T('Open…');
   miNoteSave.Caption := T('Save');
   miNoteSaveAs.Caption := T('Save As…');
   miNotes.Caption := T('Notes');
-  miOptions.Caption := T('Font…');
+  miOptions.Caption := T('Options');
   miPaste.Caption := T('Paste');
   miPrint.Caption := T('Print');
   miRecent.Caption := T('Open Recent');
@@ -530,12 +529,13 @@ end;
 
 procedure TMainForm.LocalizeApplication;
 begin
-  MainForm   .Localize;
-  SearchForm .Localize;
-  ShelfForm  .Localize;
-  AboutBox   .Localize;
-  CopyForm   .Localize;
-  ShelfForm  .Localize;
+  MainForm    .Localize;
+  AboutBox    .Localize;
+  CopyForm    .Localize;
+  OptionsForm .Localize;
+  SearchForm  .Localize;
+  ShelfForm   .Localize;
+  ShelfForm   .Localize;
 end;
 
 //-------------------------------------------------------------------------------------------------
@@ -1492,7 +1492,7 @@ var
   MemoCopy    : TMemo;
 begin
   RichTextToClipboard(ParseWin(Tools.Get_Verses, Font), RemoveTags(Tools.Get_Verses));
-  if Options.cvCopyNoFormat then
+  if CopyOptions.cvCopyNoFormat then
     begin
       MemoPreview := TUnboundMemo.Create(self);
       MemoPreview.Parent := MainForm;
@@ -1572,13 +1572,13 @@ begin
   IniFile.WriteString ('Application', 'Interface', Localization.id);
   IniFile.WriteString ('Application', 'FontName', Font.Name);
   IniFile.WriteInteger('Application', 'FontSize', Font.Size);
-  IniFile.WriteBool('Options', 'Abbreviate', Options.cvAbbreviate);
-  IniFile.WriteBool('Options', 'Enumerated', Options.cvEnumerated);
-  IniFile.WriteBool('Options', 'Guillemets', Options.cvGuillemets);
-  IniFile.WriteBool('Options', 'Parentheses', Options.cvParentheses);
-  IniFile.WriteBool('Options', 'End', Options.cvEnd);
-  IniFile.WriteBool('Options', 'NewLine', Options.cvNewLine);
-  IniFile.WriteBool('Options', 'CopyNoFormat', Options.cvCopyNoFormat);
+  IniFile.WriteBool('Options', 'Abbreviate', CopyOptions.cvAbbreviate);
+  IniFile.WriteBool('Options', 'Enumerated', CopyOptions.cvEnumerated);
+  IniFile.WriteBool('Options', 'Guillemets', CopyOptions.cvGuillemets);
+  IniFile.WriteBool('Options', 'Parentheses', CopyOptions.cvParentheses);
+  IniFile.WriteBool('Options', 'End', CopyOptions.cvEnd);
+  IniFile.WriteBool('Options', 'NewLine', CopyOptions.cvNewLine);
+  IniFile.WriteBool('Options', 'CopyNoFormat', CopyOptions.cvCopyNoFormat);
   IniFile.WriteInteger('Recent', 'Count', RecentList.Count);
 
   for item in RecentList do
@@ -1603,13 +1603,13 @@ begin
   Localization.id := IniFile.ReadString('Application', 'Interface', Localization.DefaultID);
   Font.Name := IniFile.ReadString ('Application', 'FontName', Font.Name);
   Font.Size := IniFile.ReadInteger('Application', 'FontSize', Font.Size);
-  Options.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
-  Options.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);
-  Options.cvGuillemets := IniFile.ReadBool('Options', 'Guillemets', False);
-  Options.cvParentheses := IniFile.ReadBool('Options', 'Parentheses', False);
-  Options.cvEnd := IniFile.ReadBool('Options', 'End', False);
-  Options.cvNewLine := IniFile.ReadBool('Options', 'NewLine', False);
-  Options.cvCopyNoFormat := IniFile.ReadBool('Options', 'CopyNoFormat', False);
+  CopyOptions.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
+  CopyOptions.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);
+  CopyOptions.cvGuillemets := IniFile.ReadBool('Options', 'Guillemets', False);
+  CopyOptions.cvParentheses := IniFile.ReadBool('Options', 'Parentheses', False);
+  CopyOptions.cvEnd := IniFile.ReadBool('Options', 'End', False);
+  CopyOptions.cvNewLine := IniFile.ReadBool('Options', 'NewLine', False);
+  CopyOptions.cvCopyNoFormat := IniFile.ReadBool('Options', 'CopyNoFormat', False);
 
   Count := IniFile.ReadInteger('Recent', 'Count', RecentList.Count);
   for i := 0 to Count - 1 do

@@ -49,7 +49,7 @@ type
 var
   CurrBible : TBible = nil;
   CurrVerse : TVerse;
-  Options : TCopyOptions;
+  CopyOptions : TCopyOptions;
   Tools : TTools;
 
 implementation
@@ -194,7 +194,7 @@ begin
   Result := '';
   for Item in References.GetData(CurrVerse, CurrBible.language, info) do
     begin
-      link := CurrBible.VerseToStr(Item, not Options.cvAbbreviate);
+      link := CurrBible.VerseToStr(Item, not CopyOptions.cvAbbreviate);
       if link.isEmpty then Continue;
       Result += '<l>' + link + '</l> ' + ''.Join(' ', CurrBible.GetRange(Item)) + '<br><br>';
     end;
@@ -287,11 +287,11 @@ begin
 
   for line in List do
     begin
-      if Options.cvEnumerated and (CurrVerse.Count > 1) then
-        if l or (not l and Options.cvEnd) then
+      if CopyOptions.cvEnumerated and (CurrVerse.Count > 1) then
+        if l or (not l and CopyOptions.cvEnd) then
           begin
             n := ToStr(number);
-            if Options.cvParentheses then n := '(' + n + ')';
+            if CopyOptions.cvParentheses then n := '(' + n + ')';
             quote += n + ' ';
           end;
 
@@ -301,13 +301,13 @@ begin
     end;
 
   quote := Trim(quote);
-  if Options.cvGuillemets then quote := '«' + quote + '»';
+  if CopyOptions.cvGuillemets then quote := '«' + quote + '»';
 
-  link := CurrBible.VerseToStr(CurrVerse, not Options.cvAbbreviate);
+  link := CurrBible.VerseToStr(CurrVerse, not CopyOptions.cvAbbreviate);
   link := '<l>' + link + '</l>';
-  if Options.cvNewLine then linkDelim := '<br>' else linkDelim := ' ';
-  if Options.cvParentheses then link := '(' + link + ')';
-  if Options.cvEnd then quote := quote + linkDelim + link else quote := link + linkDelim + quote;
+  if CopyOptions.cvNewLine then linkDelim := '<br>' else linkDelim := ' ';
+  if CopyOptions.cvParentheses then link := '(' + link + ')';
+  if CopyOptions.cvEnd then quote := quote + linkDelim + link else quote := link + linkDelim + quote;
 
   Result += quote + '<br> ';
 end;

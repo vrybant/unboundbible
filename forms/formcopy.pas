@@ -75,15 +75,15 @@ begin
     CheckBox.Top := 290;
   {$endif}
 
-  TempOptions := Options;
+  TempOptions := CopyOptions;
 
-  CheckGroup.Checked[cgAbbreviate]  := Options.cvAbbreviate;
-  CheckGroup.Checked[cgEnumerated]  := Options.cvEnumerated;
-  CheckGroup.Checked[cgGuillemets]  := Options.cvGuillemets;
-  CheckGroup.Checked[cgParentheses] := Options.cvParentheses;
-  CheckGroup.Checked[cgEnd]         := Options.cvEnd;
-  CheckGroup.Checked[cgNewLine]     := Options.cvNewLine;
-  CheckGroup.Checked[cgCopyNoFormat]:= Options.cvCopyNoFormat;
+  CheckGroup.Checked[cgAbbreviate]  := CopyOptions.cvAbbreviate;
+  CheckGroup.Checked[cgEnumerated]  := CopyOptions.cvEnumerated;
+  CheckGroup.Checked[cgGuillemets]  := CopyOptions.cvGuillemets;
+  CheckGroup.Checked[cgParentheses] := CopyOptions.cvParentheses;
+  CheckGroup.Checked[cgEnd]         := CopyOptions.cvEnd;
+  CheckGroup.Checked[cgNewLine]     := CopyOptions.cvNewLine;
+  CheckGroup.Checked[cgCopyNoFormat]:= CopyOptions.cvCopyNoFormat;
 
   CheckBox.Checked:= False;
 
@@ -119,13 +119,13 @@ end;
 
 procedure TCopyForm.CheckGroupItemClick(Sender: TObject; Index: integer);
 begin
-  Options.cvAbbreviate  := CheckGroup.Checked[cgAbbreviate];
-  Options.cvEnumerated  := CheckGroup.Checked[cgEnumerated];
-  Options.cvGuillemets  := CheckGroup.Checked[cgGuillemets];
-  Options.cvParentheses := CheckGroup.Checked[cgParentheses];
-  Options.cvEnd         := CheckGroup.Checked[cgEnd];
-  Options.cvNewLine     := CheckGroup.Checked[cgNewLine];
-  Options.cvCopyNoFormat:= CheckGroup.Checked[cgCopyNoFormat];
+  CopyOptions.cvAbbreviate  := CheckGroup.Checked[cgAbbreviate];
+  CopyOptions.cvEnumerated  := CheckGroup.Checked[cgEnumerated];
+  CopyOptions.cvGuillemets  := CheckGroup.Checked[cgGuillemets];
+  CopyOptions.cvParentheses := CheckGroup.Checked[cgParentheses];
+  CopyOptions.cvEnd         := CheckGroup.Checked[cgEnd];
+  CopyOptions.cvNewLine     := CheckGroup.Checked[cgNewLine];
+  CopyOptions.cvCopyNoFormat:= CheckGroup.Checked[cgCopyNoFormat];
   LoadText;
   Repaint;
 end;
@@ -137,8 +137,8 @@ end;
 
 procedure TCopyForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if self.ModalResult <> mrOk then Options := TempOptions;
-  if (self.ModalResult = mrOk) and (not CheckBox.Checked) then Options := TempOptions;
+  if self.ModalResult <> mrOk then CopyOptions := TempOptions;
+  if (self.ModalResult = mrOk) and (not CheckBox.Checked) then CopyOptions := TempOptions;
 end;
 
 end.

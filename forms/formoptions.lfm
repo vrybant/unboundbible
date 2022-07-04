@@ -1,21 +1,78 @@
 object OptionsForm: TOptionsForm
-  Left = 404
-  Height = 240
-  Top = 217
-  Width = 320
+  Left = 406
+  Height = 229
+  Top = 584
+  Width = 440
   BorderStyle = bsDialog
   Caption = 'Options'
-  ClientHeight = 240
-  ClientWidth = 320
+  ClientHeight = 229
+  ClientWidth = 440
+  OnCreate = FormCreate
   Position = poScreenCenter
   LCLVersion = '2.2.2.0'
-  object Button1: TButton
-    Left = 96
-    Height = 96
-    Top = 64
-    Width = 115
+  object ButtonClose: TButton
+    Left = 184
+    Height = 24
+    Top = 176
+    Width = 88
     Caption = 'Close'
-    OnClick = Button1Click
+    OnClick = ButtonCloseClick
     TabOrder = 0
+  end
+  object ComboBox: TComboBox
+    Left = 136
+    Height = 23
+    Top = 32
+    Width = 232
+    ItemHeight = 15
+    TabOrder = 1
+  end
+  object LabelLang: TLabel
+    Left = 16
+    Height = 15
+    Top = 32
+    Width = 110
+    Alignment = taRightJustify
+    AutoSize = False
+    Caption = 'Localization'
+    ParentColor = False
+  end
+  object LabelHistory: TLabel
+    Left = 16
+    Height = 15
+    Top = 78
+    Width = 110
+    Alignment = taRightJustify
+    AutoSize = False
+    Caption = 'History Max'
+    ParentColor = False
+  end
+  object Edit: TEdit
+    Left = 136
+    Height = 23
+    Top = 76
+    Width = 48
+    Alignment = taCenter
+    NumbersOnly = True
+    TabOrder = 2
+    Text = '100'
+  end
+  object LabelFont: TLabel
+    Left = 16
+    Height = 15
+    Top = 121
+    Width = 110
+    Alignment = taRightJustify
+    AutoSize = False
+    Caption = 'Font'
+    ParentColor = False
+  end
+  object EditFont: TEdit
+    Left = 136
+    Height = 23
+    Top = 121
+    Width = 232
+    ReadOnly = True
+    TabOrder = 3
   end
 end
