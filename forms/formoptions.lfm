@@ -8,14 +8,16 @@ object OptionsForm: TOptionsForm
   ClientHeight = 229
   ClientWidth = 440
   OnCreate = FormCreate
+  OnPaint = FormPaint
   Position = poScreenCenter
   LCLVersion = '2.2.2.0'
   object ButtonClose: TButton
-    Left = 184
+    Left = 280
     Height = 24
     Top = 176
     Width = 88
     Caption = 'Close'
+    ModalResult = 11
     OnClick = ButtonCloseClick
     TabOrder = 0
   end
@@ -71,8 +73,34 @@ object OptionsForm: TOptionsForm
     Left = 136
     Height = 23
     Top = 121
-    Width = 232
+    Width = 192
     ReadOnly = True
     TabOrder = 3
+  end
+  object ButtonFont: TButton
+    Left = 336
+    Height = 24
+    Top = 121
+    Width = 32
+    Caption = '...'
+    OnClick = ButtonFontClick
+    TabOrder = 4
+  end
+  object ButtonOK: TButton
+    Left = 136
+    Height = 25
+    Top = 175
+    Width = 75
+    Caption = 'OK'
+    ModalResult = 11
+    OnClick = ButtonOKClick
+    TabOrder = 5
+  end
+  object FontDialog: TFontDialog
+    MinFontSize = 0
+    MaxFontSize = 0
+    Options = [fdNoStyleSel]
+    Left = 48
+    Top = 160
   end
 end

@@ -1250,14 +1250,9 @@ end;
 
 procedure TMainForm.CmdOptions(Sender: TObject);
 begin
-  OptionsForm.ShowModal;
-
-  Exit;
-
-  FontDialog.Font.Assign(Font);
-  if FontDialog.Execute then
+  if OptionsForm.ShowModalEx(Font) = mrOk then
     begin
-      Font.Assign(FontDialog.Font);
+      Font.Assign(OptionsForm.FontDialog.Font);
       AssignFont;
       ShowCurrBible;
     end;
@@ -1572,13 +1567,13 @@ begin
   IniFile.WriteString ('Application', 'Interface', Localization.id);
   IniFile.WriteString ('Application', 'FontName', Font.Name);
   IniFile.WriteInteger('Application', 'FontSize', Font.Size);
-  IniFile.WriteBool('Options', 'Abbreviate', CopyOptions.cvAbbreviate);
-  IniFile.WriteBool('Options', 'Enumerated', CopyOptions.cvEnumerated);
-  IniFile.WriteBool('Options', 'Guillemets', CopyOptions.cvGuillemets);
-  IniFile.WriteBool('Options', 'Parentheses', CopyOptions.cvParentheses);
-  IniFile.WriteBool('Options', 'End', CopyOptions.cvEnd);
-  IniFile.WriteBool('Options', 'NewLine', CopyOptions.cvNewLine);
-  IniFile.WriteBool('Options', 'CopyNoFormat', CopyOptions.cvCopyNoFormat);
+  IniFile.WriteBool('Copy', 'Abbreviate', CopyOptions.cvAbbreviate);
+  IniFile.WriteBool('Copy', 'Enumerated', CopyOptions.cvEnumerated);
+  IniFile.WriteBool('Copy', 'Guillemets', CopyOptions.cvGuillemets);
+  IniFile.WriteBool('Copy', 'Parentheses', CopyOptions.cvParentheses);
+  IniFile.WriteBool('Copy', 'End', CopyOptions.cvEnd);
+  IniFile.WriteBool('Copy', 'NewLine', CopyOptions.cvNewLine);
+  IniFile.WriteBool('Copy', 'CopyNoFormat', CopyOptions.cvCopyNoFormat);
   IniFile.WriteInteger('Recent', 'Count', RecentList.Count);
 
   for item in RecentList do
@@ -1603,13 +1598,13 @@ begin
   Localization.id := IniFile.ReadString('Application', 'Interface', Localization.DefaultID);
   Font.Name := IniFile.ReadString ('Application', 'FontName', Font.Name);
   Font.Size := IniFile.ReadInteger('Application', 'FontSize', Font.Size);
-  CopyOptions.cvAbbreviate := IniFile.ReadBool('Options', 'Abbreviate', False);
-  CopyOptions.cvEnumerated := IniFile.ReadBool('Options', 'Enumerated', False);
-  CopyOptions.cvGuillemets := IniFile.ReadBool('Options', 'Guillemets', False);
-  CopyOptions.cvParentheses := IniFile.ReadBool('Options', 'Parentheses', False);
-  CopyOptions.cvEnd := IniFile.ReadBool('Options', 'End', False);
-  CopyOptions.cvNewLine := IniFile.ReadBool('Options', 'NewLine', False);
-  CopyOptions.cvCopyNoFormat := IniFile.ReadBool('Options', 'CopyNoFormat', False);
+  CopyOptions.cvAbbreviate := IniFile.ReadBool('Copy', 'Abbreviate', False);
+  CopyOptions.cvEnumerated := IniFile.ReadBool('Copy', 'Enumerated', False);
+  CopyOptions.cvGuillemets := IniFile.ReadBool('Copy', 'Guillemets', False);
+  CopyOptions.cvParentheses := IniFile.ReadBool('Copy', 'Parentheses', False);
+  CopyOptions.cvEnd := IniFile.ReadBool('Copy', 'End', False);
+  CopyOptions.cvNewLine := IniFile.ReadBool('Copy', 'NewLine', False);
+  CopyOptions.cvCopyNoFormat := IniFile.ReadBool('Copy', 'CopyNoFormat', False);
 
   Count := IniFile.ReadInteger('Recent', 'Count', RecentList.Count);
   for i := 0 to Count - 1 do

@@ -694,7 +694,6 @@ object MainForm: TMainForm
       end
       object miOptions: TMenuItem
         Action = ActionOptions
-        Caption = 'Font...'
       end
       object miLocalization: TMenuItem
         Caption = 'Localization'
