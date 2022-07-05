@@ -21,10 +21,11 @@ type
     LabelFont: TLabel;
     LabelLang: TLabel;
     procedure ButtonOKClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure ButtonFontClick(Sender: TObject);
     procedure ButtonCloseClick(Sender: TObject);
+  private
+    procedure MakeLangList;
   public
     function ShowModalEx(const Font: TFont): integer;
     procedure Localize;
@@ -39,13 +40,9 @@ implementation
 
 uses UnitUtils, UnitLocal, UnitLib;
 
-procedure TOptionsForm.FormCreate(Sender: TObject);
-begin
-  //
-end;
-
 function TOptionsForm.ShowModalEx(const Font: TFont): integer;
 begin
+  MakeLangList;
   FontDialog.Font.Assign(Font);
   Result := ShowModal;
 end;
@@ -63,6 +60,19 @@ begin
   LabelFont.Caption := T('Font');
   ButtonOK.Caption := T('OK');
   ButtonClose.Caption := T('Close');
+end;
+
+procedure TOptionsForm.MakeLangList;
+var
+  Local : TLocal;
+begin
+  ComboBox.Items.Clear;
+
+  for Local in Localization do
+    begin
+      ComboBox.Items.Add(Local.language);
+      if Local.id = Localization.id then ComboBox.ItemIndex := ComboBox.Items.Count - 1;
+    end;
 end;
 
 procedure TOptionsForm.ButtonFontClick(Sender: TObject);
