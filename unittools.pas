@@ -382,7 +382,7 @@ var
   IniFile : TIniFile;
   i : integer;
 begin
-  IniFile := TIniFile.Create(HistoryFile);
+  IniFile := TIniFile.Create(ConfigPath + HistoryFile);
 
   IniFile.WriteInteger('History', 'Max', HistoryMax);
   IniFile.WriteInteger('History', 'Count', History.Count);
@@ -397,7 +397,7 @@ var
   IniFile : TIniFile;
   i, Count : integer;
 begin
-  IniFile := TIniFile.Create(HistoryFile);
+  IniFile := TIniFile.Create(ConfigPath + HistoryFile);
 
   HistoryMax := IniFile.ReadInteger('History', 'Max', 100);
   Count := IniFile.ReadInteger('History', 'Count', 0);

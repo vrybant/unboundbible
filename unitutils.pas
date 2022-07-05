@@ -16,8 +16,12 @@ const
 var
   ApplicationUpdate : boolean = false;
 
-function ConfigFile: string;
-function HistoryFile: string;
+const
+  ConfigFile  = 'config.ini';
+  ModulesFile = 'modules.ini';
+  HistoryFile = 'history.ini';
+
+function ConfigPath: string;
 function DataPath: string;
 function DatabaseList: TStringArray;
 function HomeURL: string;
@@ -97,16 +101,6 @@ function ConfigPath: string;
 begin
   {$ifdef windows} Result := LocalAppDataPath + ApplicationName + Slash; {$endif}
   {$ifdef unix} Result := GetAppConfigDir(False); {$endif}
-end;
-
-function ConfigFile: string;
-begin
-  Result := ConfigPath + 'config.ini';
-end;
-
-function HistoryFile: string;
-begin
-  Result := ConfigPath + 'history.ini';
 end;
 
 function BibleHubURL(book, chapter, number: integer): string;
