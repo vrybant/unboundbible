@@ -217,7 +217,6 @@ type
     procedure CmdStyle2(Sender: TObject);
     procedure CmdModules(Sender: TObject);
 
-    procedure AssignFont;
     procedure ComboBoxChange(Sender: TObject);
     procedure ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
     procedure ToolEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -289,6 +288,7 @@ type
     procedure ShowPopup;
     procedure Localize;
   public
+    procedure AssignFont;
     procedure LocalizeApplication;
   end;
 
@@ -1252,10 +1252,6 @@ end;
 procedure TMainForm.CmdOptions(Sender: TObject);
 begin
   OptionsForm.Show;
-
-  //Font.Assign(OptionsForm.FontDialog.Font);
-  //AssignFont;
-  //ShowCurrBible;
 end;
 
 procedure TMainForm.IdleTimerTimer(Sender: TObject);

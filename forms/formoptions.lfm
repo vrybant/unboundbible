@@ -8,7 +8,6 @@ object OptionsForm: TOptionsForm
   ClientHeight = 229
   ClientWidth = 440
   OnCreate = FormCreate
-  OnPaint = FormPaint
   OnShow = FormShow
   Position = poScreenCenter
   LCLVersion = '2.2.2.0'
@@ -61,7 +60,7 @@ object OptionsForm: TOptionsForm
     Width = 48
     Alignment = taCenter
     NumbersOnly = True
-    TabOrder = 2
+    TabOrder = 3
     Text = '100'
   end
   object LabelFont: TLabel
@@ -74,38 +73,15 @@ object OptionsForm: TOptionsForm
     Caption = 'Font'
     ParentColor = False
   end
-  object EditFont: TEdit
-    Left = 232
-    Height = 23
-    Top = 152
-    Width = 192
-    ReadOnly = True
-    TabOrder = 3
-  end
-  object ButtonFont: TButton
-    Left = 336
-    Height = 24
-    Top = 121
-    Width = 32
-    Caption = '...'
-    OnClick = ButtonFontClick
-    TabOrder = 4
-  end
   object ComboBoxFont: TComboBox
     Left = 136
     Height = 23
     Top = 120
     Width = 188
     ItemHeight = 15
+    OnSelect = ComboBoxFontSelect
     ReadOnly = True
     Style = csDropDownList
-    TabOrder = 5
-  end
-  object FontDialog: TFontDialog
-    MinFontSize = 0
-    MaxFontSize = 0
-    Options = [fdNoStyleSel]
-    Left = 48
-    Top = 160
+    TabOrder = 2
   end
 end
