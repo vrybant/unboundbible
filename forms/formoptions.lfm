@@ -7,6 +7,7 @@ object OptionsForm: TOptionsForm
   Caption = 'Options'
   ClientHeight = 229
   ClientWidth = 440
+  FormStyle = fsStayOnTop
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
@@ -77,11 +78,22 @@ object OptionsForm: TOptionsForm
     Left = 136
     Height = 23
     Top = 120
-    Width = 188
+    Width = 172
     ItemHeight = 15
     OnSelect = ComboBoxFontSelect
     ReadOnly = True
     Style = csDropDownList
     TabOrder = 2
+  end
+  object ComboBoxSize: TComboBox
+    Left = 320
+    Height = 23
+    Top = 120
+    Width = 48
+    ItemHeight = 15
+    OnSelect = ComboBoxSizeSelect
+    ReadOnly = True
+    Style = csDropDownList
+    TabOrder = 4
   end
 end
