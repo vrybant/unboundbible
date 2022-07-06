@@ -7,26 +7,29 @@ object OptionsForm: TOptionsForm
   Caption = 'Options'
   ClientHeight = 229
   ClientWidth = 440
+  OnCreate = FormCreate
   OnPaint = FormPaint
+  OnShow = FormShow
   Position = poScreenCenter
   LCLVersion = '2.2.2.0'
   object ButtonClose: TButton
-    Left = 280
+    Left = 184
     Height = 24
-    Top = 176
+    Top = 184
     Width = 88
     Caption = 'Close'
     ModalResult = 11
     OnClick = ButtonCloseClick
     TabOrder = 0
   end
-  object ComboBox: TComboBox
+  object ComboBoxLang: TComboBox
     Left = 136
     Height = 23
     Top = 32
     Width = 232
     DropDownCount = 10
     ItemHeight = 15
+    OnSelect = ComboBoxLangSelect
     ReadOnly = True
     Style = csDropDownList
     TabOrder = 1
@@ -72,9 +75,9 @@ object OptionsForm: TOptionsForm
     ParentColor = False
   end
   object EditFont: TEdit
-    Left = 136
+    Left = 232
     Height = 23
-    Top = 121
+    Top = 152
     Width = 192
     ReadOnly = True
     TabOrder = 3
@@ -88,14 +91,14 @@ object OptionsForm: TOptionsForm
     OnClick = ButtonFontClick
     TabOrder = 4
   end
-  object ButtonOK: TButton
+  object ComboBoxFont: TComboBox
     Left = 136
-    Height = 24
-    Top = 176
-    Width = 88
-    Caption = 'OK'
-    ModalResult = 11
-    OnClick = ButtonOKClick
+    Height = 23
+    Top = 120
+    Width = 188
+    ItemHeight = 15
+    ReadOnly = True
+    Style = csDropDownList
     TabOrder = 5
   end
   object FontDialog: TFontDialog

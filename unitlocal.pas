@@ -23,6 +23,7 @@ type
     destructor Destroy; override;
     function DefaultID: string;
     function Translate(const s: string): string;
+    procedure SelectLanguage(language: string);
     property id: string read FID write SetID;
   end;
 
@@ -98,6 +99,14 @@ procedure TLocalization.SetID(Value: string);
 begin
   FID := Value;
   SetLocalFile;
+end;
+
+procedure TLocalization.SelectLanguage(language: string);
+var
+  Item : TLocal;
+begin
+  for Item in Self do
+    if Item.language = language then id := Item.id;
 end;
 
 function TLocalization.Translate(const s: string): string;

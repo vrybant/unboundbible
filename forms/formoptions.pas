@@ -10,24 +10,27 @@ type
   { TOptionsForm }
 
   TOptionsForm = class(TForm)
-    ButtonOK: TButton;
     ButtonFont: TButton;
     ButtonClose: TButton;
-    ComboBox: TComboBox;
+    ComboBoxLang: TComboBox;
+    ComboBoxFont: TComboBox;
     Edit: TEdit;
     EditFont: TEdit;
     FontDialog: TFontDialog;
     LabelHistory: TLabel;
     LabelFont: TLabel;
     LabelLang: TLabel;
-    procedure ButtonOKClick(Sender: TObject);
+    procedure ComboBoxLangSelect(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure ButtonFontClick(Sender: TObject);
+    procedure ButtonOKClick(Sender: TObject);
     procedure ButtonCloseClick(Sender: TObject);
   private
     procedure MakeLangList;
+    procedure MakeFontList;
   public
-    function ShowModalEx(const Font: TFont): integer;
     procedure Localize;
   end;
 
@@ -38,13 +41,24 @@ implementation
 
 {$R *.lfm}
 
-uses UnitUtils, UnitLocal, UnitLib;
+uses FormMain, UnitUtils, UnitLocal, UnitLib;
 
-function TOptionsForm.ShowModalEx(const Font: TFont): integer;
+procedure TOptionsForm.FormCreate(Sender: TObject);
+begin
+  //
+end;
+
+procedure TOptionsForm.ComboBoxLangSelect(Sender: TObject);
+begin
+  Localization.SelectLanguage(ComboBoxLang.Items[ComboBoxLang.ItemIndex]);
+  MainForm.LocalizeApplication;
+end;
+
+procedure TOptionsForm.FormShow(Sender: TObject);
 begin
   MakeLangList;
+  MakeFontList;
   FontDialog.Font.Assign(Font);
-  Result := ShowModal;
 end;
 
 procedure TOptionsForm.FormPaint(Sender: TObject);
@@ -58,7 +72,6 @@ begin
   LabelLang.Caption :=  T('Localization');
   LabelHistory.Caption := 'История';
   LabelFont.Caption := T('Font');
-  ButtonOK.Caption := T('OK');
   ButtonClose.Caption := T('Close');
 end;
 
@@ -66,12 +79,24 @@ procedure TOptionsForm.MakeLangList;
 var
   Local : TLocal;
 begin
-  ComboBox.Items.Clear;
+  ComboBoxLang.Items.Clear;
 
   for Local in Localization do
     begin
-      ComboBox.Items.Add(Local.language);
-      if Local.id = Localization.id then ComboBox.ItemIndex := ComboBox.Items.Count - 1;
+      ComboBoxLang.Items.Add(Local.language);
+      if Local.id = Localization.id then ComboBoxLang.ItemIndex := ComboBoxLang.Items.Count - 1;
+    end;
+end;
+
+procedure TOptionsForm.MakeFontList;
+var
+  FontName: string;
+begin
+  ComboBoxFont.Items.Clear;
+  for FontName in Screen.Fonts do
+    begin
+      ComboBoxFont.Items.Add(FontName);
+      if FontName = FontDialog.Font.Name then ComboBoxFont.ItemIndex := ComboBoxFont.Items.Count - 1;
     end;
 end;
 

@@ -288,6 +288,7 @@ type
     procedure VersesToClipboard;
     procedure ShowPopup;
     procedure Localize;
+  public
     procedure LocalizeApplication;
   end;
 
@@ -1250,12 +1251,11 @@ end;
 
 procedure TMainForm.CmdOptions(Sender: TObject);
 begin
-  if OptionsForm.ShowModalEx(Font) = mrOk then
-    begin
-      Font.Assign(OptionsForm.FontDialog.Font);
-      AssignFont;
-      ShowCurrBible;
-    end;
+  OptionsForm.Show;
+
+  //Font.Assign(OptionsForm.FontDialog.Font);
+  //AssignFont;
+  //ShowCurrBible;
 end;
 
 procedure TMainForm.IdleTimerTimer(Sender: TObject);
@@ -1550,7 +1550,7 @@ var
   IniFile : TIniFile;
   item : string;
 begin
-  IniFile := TIniFile.Create(ConfigFile);
+  IniFile := TIniFile.Create(ConfigPath + ConfigFile);
 
   if WindowState = wsNormal then
   begin
@@ -1587,7 +1587,7 @@ var
   IniFile : TIniFile;
   i, Count : integer;
 begin
-  IniFile := TIniFile.Create(ConfigFile);
+  IniFile := TIniFile.Create(ConfigPath + ConfigFile);
 
   Height := IniFile.ReadInteger('Window', 'Height', Screen.Height - 220);
   Width := IniFile.ReadInteger('Window', 'Width', Screen.Width - 450);
