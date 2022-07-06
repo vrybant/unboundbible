@@ -662,6 +662,7 @@ object MainForm: TMainForm
       end
       object miSearch: TMenuItem
         Action = ActionSearchfor
+        Visible = False
       end
       object miCompare: TMenuItem
         Action = ActionCompare
@@ -694,9 +695,6 @@ object MainForm: TMainForm
       end
       object miOptions: TMenuItem
         Action = ActionOptions
-      end
-      object miLocalization: TMenuItem
-        Caption = 'Localization'
       end
       object N4: TMenuItem
         Caption = '-'

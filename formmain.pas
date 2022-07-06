@@ -127,7 +127,6 @@ type
     miHome: TMenuItem;
     miInterlinear: TMenuItem;
     miIssue: TMenuItem;
-    miLocalization: TMenuItem;
     miModules: TMenuItem;
     miNoteNew: TMenuItem;
     miNoteOpen: TMenuItem;
@@ -270,9 +269,7 @@ type
     procedure LoadFootnote(s: string);
     procedure MakeBookList;
     procedure MakeChapterList;
-    procedure MakeLangMenu;
     procedure OnRecentClick(Sender: TObject);
-    procedure OnLangClick(Sender: TObject);
     procedure PerformFileOpen(const FileName: string);
     procedure ReadConfig;
     procedure RebuildRecentList;
@@ -332,8 +329,6 @@ begin
 
   ReadConfig;
   AssignFont;
-
-  MakeLangMenu;
   MakeRecentMenu;
 
   NoteFileName := Untitled;
@@ -1044,16 +1039,6 @@ begin
   if CheckFileSave then PerformFileOpen(RecentList[(Sender as TMenuItem).tag]);
 end;
 
-procedure TMainForm.OnLangClick(Sender: TObject);
-var
-  MenuItem : TMenuItem;
-begin
-  Localization.id := (Sender as TMenuItem).Hint;
-  for MenuItem in miLocalization do MenuItem.Checked := False;
-  (Sender as TMenuItem).Checked := True;
-  LocalizeApplication;
-end;
-
 procedure TMainForm.MakeRecentMenu;
 var
   MenuItem : TMenuItem;
@@ -1067,24 +1052,6 @@ begin
       MenuItem := NewItem(ExtractOnlyName(item), 0, False, True, OnRecentClick, 0, '');
       MenuItem.Tag := RecentList.IndexOf(item);
       miRecent.Add(MenuItem);
-    end;
-end;
-
-procedure TMainForm.MakeLangMenu;
-var
-  MenuItem : TMenuItem;
-  Local : TLocal;
-begin
-  for Local in Localization do
-    begin
-      MenuItem := TMenuItem.Create(MainMenu);
-
-      MenuItem.Caption := Local.language;
-      MenuItem.Hint    := Local.id;
-      MenuItem.Checked := Local.id = Localization.id;
-      MenuItem.OnClick := OnLangClick;
-
-      miLocalization.Add(MenuItem);
     end;
 end;
 
