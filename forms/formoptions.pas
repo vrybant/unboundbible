@@ -110,7 +110,7 @@ procedure TOptionsForm.MakeSizeList;
 var
   i : integer;
 const
-  arr : array [1..14] of integer = (8,9,10,11,12,14,16,18,20,22,24,26,28,36);
+  arr : array [1..14] of integer = (8,9,10,11,12,13,14,16,18,20,22,24,28,32);
 begin
   ComboBoxSize.Items.Clear;
   for i in arr do
