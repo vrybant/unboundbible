@@ -17,8 +17,8 @@ type
   private
     References : TReferences;
     History : TStringArray;
-    HistoryMax: integer;
   public
+    HistoryMax: integer;
     constructor Create;
     destructor Destroy; override;
     function Get_FavoriteBiles: TStringArray;

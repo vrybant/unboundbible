@@ -10,7 +10,7 @@ type
   { TOptionsForm }
 
   TOptionsForm = class(TForm)
-    Edit: TEdit;
+    ComboBoxMax: TComboBox;
     LabelHistory: TLabel;
     LabelFont: TLabel;
     LabelLang: TLabel;
@@ -20,6 +20,7 @@ type
     ButtonClose: TButton;
     procedure ComboBoxFontSelect(Sender: TObject);
     procedure ComboBoxLangSelect(Sender: TObject);
+    procedure ComboBoxMaxSelect(Sender: TObject);
     procedure ComboBoxSizeSelect(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -29,6 +30,7 @@ type
     procedure MakeLangList;
     procedure MakeFontList;
     procedure MakeSizeList;
+    procedure MakeMaxList;
   public
     procedure Localize;
   end;
@@ -40,7 +42,7 @@ implementation
 
 {$R *.lfm}
 
-uses FormMain, UnitUtils, UnitLocal, UnitLib;
+uses FormMain, UnitTools, UnitUtils, UnitLocal, UnitLib;
 
 procedure TOptionsForm.FormCreate(Sender: TObject);
 begin
@@ -52,6 +54,7 @@ begin
   MakeLangList;
   MakeFontList;
   MakeSizeList;
+  MakeMaxList;
 end;
 
 procedure TOptionsForm.Localize;
@@ -67,6 +70,11 @@ procedure TOptionsForm.ComboBoxLangSelect(Sender: TObject);
 begin
   Localization.SelectLanguage(ComboBoxLang.Items[ComboBoxLang.ItemIndex]);
   MainForm.LocalizeApplication;
+end;
+
+procedure TOptionsForm.ComboBoxMaxSelect(Sender: TObject);
+begin
+  Tools.HistoryMax := ComboBoxMax.Items[ComboBoxMax.ItemIndex].ToInteger;
 end;
 
 procedure TOptionsForm.ComboBoxFontSelect(Sender: TObject);
@@ -117,6 +125,20 @@ begin
     begin
       ComboBoxSize.Items.Add(ToStr(i));
       if i = MainForm.Font.Size then ComboBoxSize.ItemIndex := ComboBoxSize.Items.Count - 1;;
+    end;
+end;
+
+procedure TOptionsForm.MakeMaxList;
+var
+  i : integer;
+const
+  arr : array [1..9] of integer = (10,20,30,50,100,200,300,500,1000);
+begin
+  ComboBoxMax.Items.Clear;
+  for i in arr do
+    begin
+      ComboBoxMax.Items.Add(ToStr(i));
+      if i = Tools.HistoryMax then ComboBoxMax.ItemIndex := ComboBoxMax.Items.Count - 1;;
     end;
 end;
 
