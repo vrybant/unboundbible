@@ -1453,7 +1453,7 @@ var
   MemoCopy    : TMemo;
 begin
   RichTextToClipboard(ParseWin(Tools.Get_Verses, Font), RemoveTags(Tools.Get_Verses));
-  if CopyOptions.cvCopyNoFormat then
+  if CopyOptions.cvPlainText then
     begin
       MemoPreview := TUnboundMemo.Create(self);
       MemoPreview.Parent := MainForm;
@@ -1539,7 +1539,7 @@ begin
   IniFile.WriteBool('Copy', 'Parentheses', CopyOptions.cvParentheses);
   IniFile.WriteBool('Copy', 'End', CopyOptions.cvEnd);
   IniFile.WriteBool('Copy', 'NewLine', CopyOptions.cvNewLine);
-  IniFile.WriteBool('Copy', 'CopyNoFormat', CopyOptions.cvCopyNoFormat);
+  IniFile.WriteBool('Copy', 'CopyNoFormat', CopyOptions.cvPlainText);
   IniFile.WriteInteger('Recent', 'Count', RecentList.Count);
 
   for item in RecentList do
@@ -1570,7 +1570,7 @@ begin
   CopyOptions.cvParentheses := IniFile.ReadBool('Copy', 'Parentheses', False);
   CopyOptions.cvEnd := IniFile.ReadBool('Copy', 'End', False);
   CopyOptions.cvNewLine := IniFile.ReadBool('Copy', 'NewLine', False);
-  CopyOptions.cvCopyNoFormat := IniFile.ReadBool('Copy', 'CopyNoFormat', False);
+  CopyOptions.cvPlainText := IniFile.ReadBool('Copy', 'CopyNoFormat', False);
 
   Count := IniFile.ReadInteger('Recent', 'Count', RecentList.Count);
   for i := 0 to Count - 1 do

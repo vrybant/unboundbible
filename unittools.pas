@@ -7,7 +7,7 @@ uses SysUtils, Classes, Controls, Graphics, ClipBrd, LazUtf8, IniFiles, UnitLib,
 
 type
   TCopyOptions = record
-    cvAbbreviate, cvEnumerated, cvGuillemets, cvParentheses, cvEnd, cvCopyNoFormat, cvNewLine : boolean;
+    cvAbbreviate, cvEnumerated, cvGuillemets, cvParentheses, cvEnd, cvPlainText, cvNewLine : boolean;
   end;
 
   TTools = class

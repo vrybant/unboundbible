@@ -44,7 +44,7 @@ const
   cgParentheses = 3;
   cgEnd         = 4;
   cgNewLine     = 5;
-  cgCopyNoFormat= 6;
+  cgPlainText   = 6;
 
 {$R *.lfm}
 
@@ -62,7 +62,7 @@ begin
   CheckGroup.Items[cgParentheses] := T('Parentheses'     );
   CheckGroup.Items[cgEnd]         := T('Link in the end' );
   CheckGroup.Items[cgNewLine]     := T('Link in new line' );
-  CheckGroup.Items[cgCopyNoFormat]:= T('Copy without formatting' );
+  CheckGroup.Items[cgPlainText]   := T('Plain text'       );// T('Copy without formatting' );
 
   CheckBox.Caption := T('Set Default');
 end;
@@ -83,7 +83,7 @@ begin
   CheckGroup.Checked[cgParentheses] := CopyOptions.cvParentheses;
   CheckGroup.Checked[cgEnd]         := CopyOptions.cvEnd;
   CheckGroup.Checked[cgNewLine]     := CopyOptions.cvNewLine;
-  CheckGroup.Checked[cgCopyNoFormat]:= CopyOptions.cvCopyNoFormat;
+  CheckGroup.Checked[cgPlainText]   := CopyOptions.cvPlainText;
 
   CheckBox.Checked:= False;
 
@@ -104,7 +104,7 @@ begin
   Memo.CopyToClipboard;
   Memo.SelStart  := 0;
   Memo.SelLength := 0;
-  if CheckGroup.Checked[cgCopyNoFormat] then
+  if CheckGroup.Checked[cgPlainText] then
    begin
       MemoCopy := TMemo.Create(self);
       MemoCopy.Parent := CopyForm;
@@ -125,7 +125,7 @@ begin
   CopyOptions.cvParentheses := CheckGroup.Checked[cgParentheses];
   CopyOptions.cvEnd         := CheckGroup.Checked[cgEnd];
   CopyOptions.cvNewLine     := CheckGroup.Checked[cgNewLine];
-  CopyOptions.cvCopyNoFormat:= CheckGroup.Checked[cgCopyNoFormat];
+  CopyOptions.cvPlainText   := CheckGroup.Checked[cgPlainText];
   LoadText;
   Repaint;
 end;
