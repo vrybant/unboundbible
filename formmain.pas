@@ -327,6 +327,11 @@ begin
   SaveDialog.InitialDir := DocumentsPath;
   NoteFileName := Untitled;
 
+  {$ifdef linux}
+    Font.Name := 'default';
+    Font.Size := 11;
+  {$endif}
+
   ReadConfig;
   AssignFont;
   MakeRecentMenu;
@@ -348,8 +353,6 @@ begin
   {$endif}
 
   {$ifdef linux}
-    Font.Name := 'default';
-    Font.Size := 11;
     StandardToolBar.ParentColor := True;
     ToolPanel.Color := clForm;
     ActionFilePrint.Visible := False;
@@ -1487,16 +1490,16 @@ begin
   MemoPreview.CopyToClipboard;
   MemoPreview.Visible := false;
   MemoPreview.FreeOnRelease;
-  if Options.cvCopyNoFormat then
+  if CopyOptions.cvCopyNoFormat then
      begin
-      MemoCopy := TMemo.Create(self);
-      MemoCopy.Parent := MainForm;
-      MemoCopy.Visible:= false;
-      MemoCopy.Clear;
-      MemoCopy.PasteFromClipboard;
-      MemoCopy.SelectAll;
-      MemoCopy.CopyToClipboard;
-      MemoCopy.FreeOnRelease;
+       MemoCopy := TMemo.Create(self);
+       MemoCopy.Parent := MainForm;
+       MemoCopy.Visible:= false;
+       MemoCopy.Clear;
+       MemoCopy.PasteFromClipboard;
+       MemoCopy.SelectAll;
+       MemoCopy.CopyToClipboard;
+       MemoCopy.FreeOnRelease;
     end;
 end;
 {$endif}

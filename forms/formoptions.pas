@@ -22,7 +22,6 @@ type
     procedure ComboBoxLangSelect(Sender: TObject);
     procedure ComboBoxMaxChange(Sender: TObject);
     procedure ComboBoxSizeSelect(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ButtonOKClick(Sender: TObject);
     procedure ButtonCloseClick(Sender: TObject);
@@ -43,11 +42,6 @@ implementation
 {$R *.lfm}
 
 uses FormMain, UnitTools, UnitUtils, UnitLocal, UnitLib;
-
-procedure TOptionsForm.FormCreate(Sender: TObject);
-begin
-  //
-end;
 
 procedure TOptionsForm.FormShow(Sender: TObject);
 begin
@@ -107,7 +101,12 @@ procedure TOptionsForm.MakeFontList;
 var
   FontName: string;
 begin
+  Caption := MainForm.Font.Name;
   ComboBoxFont.Items.Clear;
+  {$ifdef linux}
+    ComboBoxFont.Items.Add('default');
+    ComboBoxFont.ItemIndex := 0;
+  {$endif}
   for FontName in Screen.Fonts do
     begin
       ComboBoxFont.Items.Add(FontName);

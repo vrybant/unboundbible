@@ -1,14 +1,13 @@
 object OptionsForm: TOptionsForm
   Left = 406
   Height = 213
-  Top = 584
+  Top = 546
   Width = 440
   BorderStyle = bsDialog
   Caption = 'Options'
   ClientHeight = 213
   ClientWidth = 440
   FormStyle = fsStayOnTop
-  OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
   LCLVersion = '2.2.2.0'
@@ -30,7 +29,6 @@ object OptionsForm: TOptionsForm
     DropDownCount = 10
     ItemHeight = 15
     OnSelect = ComboBoxLangSelect
-    ReadOnly = True
     Style = csDropDownList
     TabOrder = 1
   end
@@ -71,7 +69,6 @@ object OptionsForm: TOptionsForm
     Width = 172
     ItemHeight = 15
     OnSelect = ComboBoxFontSelect
-    ReadOnly = True
     Style = csDropDownList
     TabOrder = 2
   end
@@ -82,7 +79,6 @@ object OptionsForm: TOptionsForm
     Width = 56
     ItemHeight = 15
     OnSelect = ComboBoxSizeSelect
-    ReadOnly = True
     Style = csDropDownList
     TabOrder = 3
   end
