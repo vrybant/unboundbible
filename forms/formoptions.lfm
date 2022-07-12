@@ -1,11 +1,11 @@
 object OptionsForm: TOptionsForm
   Left = 406
-  Height = 229
+  Height = 213
   Top = 584
   Width = 440
   BorderStyle = bsDialog
   Caption = 'Options'
-  ClientHeight = 229
+  ClientHeight = 213
   ClientWidth = 440
   FormStyle = fsStayOnTop
   OnCreate = FormCreate
@@ -14,8 +14,8 @@ object OptionsForm: TOptionsForm
   LCLVersion = '2.2.2.0'
   object ButtonClose: TButton
     Left = 184
-    Height = 24
-    Top = 184
+    Height = 25
+    Top = 168
     Width = 88
     Caption = 'Close'
     ModalResult = 11
@@ -26,7 +26,7 @@ object OptionsForm: TOptionsForm
     Left = 136
     Height = 23
     Top = 32
-    Width = 232
+    Width = 240
     DropDownCount = 10
     ItemHeight = 15
     OnSelect = ComboBoxLangSelect
@@ -37,7 +37,7 @@ object OptionsForm: TOptionsForm
   object LabelLang: TLabel
     Left = 16
     Height = 15
-    Top = 32
+    Top = 35
     Width = 110
     Alignment = taRightJustify
     AutoSize = False
@@ -45,19 +45,19 @@ object OptionsForm: TOptionsForm
     ParentColor = False
   end
   object LabelHistory: TLabel
-    Left = 16
+    Left = 20
     Height = 15
-    Top = 128
-    Width = 110
+    Top = 131
+    Width = 288
     Alignment = taRightJustify
     AutoSize = False
-    Caption = 'History Max'
+    Caption = 'Maximum verses in history '
     ParentColor = False
   end
   object LabelFont: TLabel
     Left = 16
     Height = 15
-    Top = 81
+    Top = 83
     Width = 110
     Alignment = taRightJustify
     AutoSize = False
@@ -79,7 +79,7 @@ object OptionsForm: TOptionsForm
     Left = 320
     Height = 23
     Top = 80
-    Width = 48
+    Width = 56
     ItemHeight = 15
     OnSelect = ComboBoxSizeSelect
     ReadOnly = True
@@ -87,14 +87,13 @@ object OptionsForm: TOptionsForm
     TabOrder = 3
   end
   object ComboBoxMax: TComboBox
-    Left = 136
+    Left = 320
     Height = 23
     Top = 128
-    Width = 48
+    Width = 58
     ItemHeight = 15
-    OnSelect = ComboBoxMaxSelect
-    ReadOnly = True
-    Style = csDropDownList
+    MaxLength = 4
+    OnChange = ComboBoxMaxChange
     TabOrder = 4
   end
 end

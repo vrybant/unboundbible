@@ -20,7 +20,7 @@ type
     ButtonClose: TButton;
     procedure ComboBoxFontSelect(Sender: TObject);
     procedure ComboBoxLangSelect(Sender: TObject);
-    procedure ComboBoxMaxSelect(Sender: TObject);
+    procedure ComboBoxMaxChange(Sender: TObject);
     procedure ComboBoxSizeSelect(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -63,6 +63,7 @@ begin
   LabelLang.Caption :=  T('Localization');
   LabelHistory.Caption := 'История';
   LabelFont.Caption := T('Font');
+  LabelHistory.Caption := T('Maximum verses in history');
   ButtonClose.Caption := T('Close');
 end;
 
@@ -72,9 +73,9 @@ begin
   MainForm.LocalizeApplication;
 end;
 
-procedure TOptionsForm.ComboBoxMaxSelect(Sender: TObject);
+procedure TOptionsForm.ComboBoxMaxChange(Sender: TObject);
 begin
-  Tools.HistoryMax := ComboBoxMax.Items[ComboBoxMax.ItemIndex].ToInteger;
+  Tools.HistoryMax := ToInt(ComboBoxMax.Text);
 end;
 
 procedure TOptionsForm.ComboBoxFontSelect(Sender: TObject);
@@ -132,8 +133,9 @@ procedure TOptionsForm.MakeMaxList;
 var
   i : integer;
 const
-  arr : array [1..9] of integer = (10,20,30,50,100,200,300,500,1000);
+  arr : array [1..7] of integer = (10,20,50,100,200,500,1000);
 begin
+  ComboBoxMax.Text := Tools.HistoryMax.ToString;
   ComboBoxMax.Items.Clear;
   for i in arr do
     begin
