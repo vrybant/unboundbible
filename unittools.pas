@@ -387,7 +387,7 @@ begin
   IniFile.WriteInteger('History', 'Max', HistoryMax);
   IniFile.WriteInteger('History', 'Count', History.Count);
   for i:=0 to History.Count-1 do
-    IniFile.WriteString('History', 'n' + i.ToString, History[i]);
+    IniFile.WriteString('List', 'n' + i.ToString, History[i]);
 
   IniFile.Free;
 end;
@@ -402,7 +402,7 @@ begin
   HistoryMax := IniFile.ReadInteger('History', 'Max', 100);
   Count := IniFile.ReadInteger('History', 'Count', 0);
   for i := 0 to Count - 1 do
-    History.Add(IniFile.ReadString('History', 'n' + ToStr(i), ''));
+    History.Add(IniFile.ReadString('List', 'n' + ToStr(i), ''));
 
   IniFile.Free;
 end;

@@ -10,7 +10,7 @@ type
   { TOptionsForm }
 
   TOptionsForm = class(TForm)
-    ComboBoxMax: TComboBox;
+    EditMax: TEdit;
     LabelHistory: TLabel;
     LabelFont: TLabel;
     LabelLang: TLabel;
@@ -20,8 +20,8 @@ type
     ButtonClose: TButton;
     procedure ComboBoxFontSelect(Sender: TObject);
     procedure ComboBoxLangSelect(Sender: TObject);
-    procedure ComboBoxMaxChange(Sender: TObject);
     procedure ComboBoxSizeSelect(Sender: TObject);
+    procedure EditMaxChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ButtonOKClick(Sender: TObject);
     procedure ButtonCloseClick(Sender: TObject);
@@ -29,7 +29,6 @@ type
     procedure MakeLangList;
     procedure MakeFontList;
     procedure MakeSizeList;
-    procedure MakeMaxList;
   public
     procedure Localize;
   end;
@@ -48,7 +47,7 @@ begin
   MakeLangList;
   MakeFontList;
   MakeSizeList;
-  MakeMaxList;
+  EditMax.Text := Tools.HistoryMax.ToString;
 end;
 
 procedure TOptionsForm.Localize;
@@ -67,11 +66,6 @@ begin
   MainForm.LocalizeApplication;
 end;
 
-procedure TOptionsForm.ComboBoxMaxChange(Sender: TObject);
-begin
-  Tools.HistoryMax := ToInt(ComboBoxMax.Text);
-end;
-
 procedure TOptionsForm.ComboBoxFontSelect(Sender: TObject);
 begin
   MainForm.Font.Name := ComboBoxFont.Items[ComboBoxFont.ItemIndex];
@@ -82,6 +76,14 @@ procedure TOptionsForm.ComboBoxSizeSelect(Sender: TObject);
 begin
   MainForm.Font.Size := ComboBoxSize.Items[ComboBoxSize.ItemIndex].ToInteger;
   MainForm.AssignFont;
+end;
+
+procedure TOptionsForm.EditMaxChange(Sender: TObject);
+const
+  maximum = 1000;
+begin
+  Tools.HistoryMax := ToInt(EditMax.Text);
+  if Tools.HistoryMax > maximum then Tools.HistoryMax := maximum;
 end;
 
 procedure TOptionsForm.MakeLangList;
@@ -101,7 +103,6 @@ procedure TOptionsForm.MakeFontList;
 var
   FontName: string;
 begin
-  Caption := MainForm.Font.Name;
   ComboBoxFont.Items.Clear;
   {$ifdef linux}
     ComboBoxFont.Items.Add('default');
@@ -127,22 +128,6 @@ begin
       if i = MainForm.Font.Size then ComboBoxSize.ItemIndex := ComboBoxSize.Items.Count - 1;;
     end;
 end;
-
-procedure TOptionsForm.MakeMaxList;
-var
-  i : integer;
-const
-  arr : array [1..7] of integer = (10,20,50,100,200,500,1000);
-begin
-  ComboBoxMax.Text := Tools.HistoryMax.ToString;
-  ComboBoxMax.Items.Clear;
-  for i in arr do
-    begin
-      ComboBoxMax.Items.Add(ToStr(i));
-      if i = Tools.HistoryMax then ComboBoxMax.ItemIndex := ComboBoxMax.Items.Count - 1;;
-    end;
-end;
-
 
 procedure TOptionsForm.ButtonOKClick(Sender: TObject);
 begin

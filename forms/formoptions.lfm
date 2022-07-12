@@ -25,7 +25,7 @@ object OptionsForm: TOptionsForm
     Left = 136
     Height = 23
     Top = 32
-    Width = 240
+    Width = 234
     DropDownCount = 10
     ItemHeight = 15
     OnSelect = ComboBoxLangSelect
@@ -76,20 +76,22 @@ object OptionsForm: TOptionsForm
     Left = 320
     Height = 23
     Top = 80
-    Width = 56
+    Width = 50
     ItemHeight = 15
     OnSelect = ComboBoxSizeSelect
     Style = csDropDownList
     TabOrder = 3
   end
-  object ComboBoxMax: TComboBox
+  object EditMax: TEdit
     Left = 320
     Height = 23
     Top = 128
-    Width = 58
-    ItemHeight = 15
+    Width = 50
+    Alignment = taCenter
     MaxLength = 4
-    OnChange = ComboBoxMaxChange
+    NumbersOnly = True
+    OnChange = EditMaxChange
     TabOrder = 4
+    Text = '200'
   end
 end
