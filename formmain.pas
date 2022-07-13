@@ -1448,31 +1448,12 @@ end;
 
 {$ifdef windows}
 procedure TMainForm.VersesToClipboard;
-var
-  MemoPreview : TUnboundMemo;
-  MemoCopy    : TMemo;
 begin
-  RichTextToClipboard(ParseWin(Tools.Get_Verses, Font), RemoveTags(Tools.Get_Verses));
   if CopyOptions.cvPlainText then
-    begin
-      MemoPreview := TUnboundMemo.Create(self);
-      MemoPreview.Parent := MainForm;
-      MemoPreview.Font.Assign(Font);
-      MemoPreview.LoadText(Tools.Get_Verses);
-      MemoPreview.SelectAll;
-      MemoPreview.CopyToClipboard;
-      MemoPreview.Visible := false;
-      MemoPreview.FreeOnRelease;
+    PlainTextToClipboard(RemoveTags(Tools.Get_Verses));
 
-      MemoCopy := TMemo.Create(self);
-      MemoCopy.Parent := MainForm;
-      MemoCopy.Visible:= false;
-      MemoCopy.Clear;
-      MemoCopy.PasteFromClipboard;
-      MemoCopy.SelectAll;
-      MemoCopy.CopyToClipboard;
-      MemoCopy.FreeOnRelease;
-    end;
+  if not CopyOptions.cvPlainText then
+    RichTextToClipboard(ParseWin(Tools.Get_Verses, Font), RemoveTags(Tools.Get_Verses));
 end;
 {$endif}
 

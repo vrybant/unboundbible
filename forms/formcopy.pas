@@ -35,7 +35,7 @@ var
 
 implementation
 
-uses UnitUtils, UnitLocal;
+uses UnitLib, UnitUtils, UnitLocal;
 
 const
   cgAbbreviate  = 0;
@@ -92,29 +92,20 @@ begin
 end;
 
 procedure TCopyForm.LoadText;
+var
+  s : string;
 begin
-  Memo.LoadText(Tools.Get_Verses());
+  s := Tools.Get_Verses;
+  if CopyOptions.cvPlainText then s := RemoveTags(s);
+  Memo.LoadText(s);
 end;
 
 procedure TCopyForm.CopyToClipboard;
-var
-  MemoCopy    : TMemo;
 begin
   Memo.SelectAll;
   Memo.CopyToClipboard;
   Memo.SelStart  := 0;
   Memo.SelLength := 0;
-  if CheckGroup.Checked[cgPlainText] then
-   begin
-      MemoCopy := TMemo.Create(self);
-      MemoCopy.Parent := CopyForm;
-      MemoCopy.Visible:= false;
-      MemoCopy.Clear;
-      MemoCopy.PasteFromClipboard;
-      MemoCopy.SelectAll;
-      MemoCopy.CopyToClipboard;
-      MemoCopy.FreeOnRelease;
-   end;
 end;
 
 procedure TCopyForm.CheckGroupItemClick(Sender: TObject; Index: integer);
