@@ -56,6 +56,7 @@ function XmlToList(s: string): TStringArray;
 
 // сlipboard
 
+procedure PlainTextToClipboard(text: string);
 {$ifdef windows} procedure RichTextToClipboard(source: string; text: string); {$endif}
 
 // file's functions
@@ -332,7 +333,17 @@ end;
 
 // сlipboard
 
+procedure PlainTextToClipboard(text: string);
+var
+  Clipboard : TClipboard;
+begin
+  Clipboard := TClipboard.Create;
+  Clipboard.AsText:= text;
+  Clipboard.Free ;
+end;
+
 {$ifdef windows}
+
 procedure RichStreamToClipboard(Stream: TMemoryStream; text: string);
 var
   Clipboard : TClipboard;
@@ -341,7 +352,7 @@ begin
   Clipboard := TClipboard.Create ;
   Clipboard.AsText:= text;
   CF_RTF := RegisterClipboardFormat('Rich Text Format');
-  Clipboard.AddFormat(CF_RTF,Stream);
+  Clipboard.AddFormat(CF_RTF, Stream);
   Clipboard.Free ;
 end;
 
