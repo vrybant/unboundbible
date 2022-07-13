@@ -20,6 +20,7 @@ type
     procedure CheckGroupItemClick(Sender: TObject; {%H-}Index: integer);
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCreate(Sender: TObject);
   private
     TempOptions : TCopyOptions;
     procedure LoadText;
@@ -48,6 +49,11 @@ const
 
 {$R *.lfm}
 
+procedure TCopyForm.FormCreate(Sender: TObject);
+begin
+  {$ifdef linux} CheckGroup.Items.Delete(cgPlainText); {$endif}
+end;
+
 procedure TCopyForm.Localize;
 begin
   Caption := ' ' + T('Copy Verses');
@@ -62,7 +68,7 @@ begin
   CheckGroup.Items[cgParentheses] := T('Parentheses'     );
   CheckGroup.Items[cgEnd]         := T('Link in the end' );
   CheckGroup.Items[cgNewLine]     := T('Link in new line' );
-  CheckGroup.Items[cgPlainText]   := T('Plain text'       );// T('Copy without formatting' );
+  {$ifndef linux} CheckGroup.Items[cgPlainText] := T('Plain text'); {$endif}
 
   CheckBox.Caption := T('Set Default');
 end;
@@ -83,7 +89,7 @@ begin
   CheckGroup.Checked[cgParentheses] := CopyOptions.cvParentheses;
   CheckGroup.Checked[cgEnd]         := CopyOptions.cvEnd;
   CheckGroup.Checked[cgNewLine]     := CopyOptions.cvNewLine;
-  CheckGroup.Checked[cgPlainText]   := CopyOptions.cvPlainText;
+  {$ifndef linux} CheckGroup.Checked[cgPlainText] := CopyOptions.cvPlainText; {$endif}
 
   CheckBox.Checked:= False;
 
@@ -116,7 +122,7 @@ begin
   CopyOptions.cvParentheses := CheckGroup.Checked[cgParentheses];
   CopyOptions.cvEnd         := CheckGroup.Checked[cgEnd];
   CopyOptions.cvNewLine     := CheckGroup.Checked[cgNewLine];
-  CopyOptions.cvPlainText   := CheckGroup.Checked[cgPlainText];
+  {$ifndef linux} CopyOptions.cvPlainText := CheckGroup.Checked[cgPlainText]; {$endif}
   LoadText;
   Repaint;
 end;

@@ -9,6 +9,7 @@ object CopyForm: TCopyForm
   ClientWidth = 557
   OnActivate = FormActivate
   OnClose = FormClose
+  OnCreate = FormCreate
   Position = poScreenCenter
   LCLVersion = '2.2.2.0'
   object Memo: TUnboundMemo
@@ -73,7 +74,7 @@ object CopyForm: TCopyForm
       'Parentheses'
       'Link in the end'
       'Link in the new line'
-      'Copy without formatting'
+      'Plain text'
     )
     OnItemClick = CheckGroupItemClick
     ParentFont = False
