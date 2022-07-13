@@ -1507,7 +1507,7 @@ begin
   IniFile.WriteBool('Copy', 'Guillemets', CopyOptions.cvGuillemets);
   IniFile.WriteBool('Copy', 'Parentheses', CopyOptions.cvParentheses);
   IniFile.WriteBool('Copy', 'End', CopyOptions.cvEnd);
-  IniFile.WriteBool('Copy', 'NewLine', CopyOptions.cvNewLine);
+  IniFile.WriteBool('Copy', 'NewLine', CopyOptions.cvLineBreaks);
   IniFile.WriteBool('Copy', 'CopyNoFormat', CopyOptions.cvPlainText);
   IniFile.WriteInteger('Recent', 'Count', RecentList.Count);
 
@@ -1538,7 +1538,7 @@ begin
   CopyOptions.cvGuillemets := IniFile.ReadBool('Copy', 'Guillemets', False);
   CopyOptions.cvParentheses := IniFile.ReadBool('Copy', 'Parentheses', False);
   CopyOptions.cvEnd := IniFile.ReadBool('Copy', 'End', False);
-  CopyOptions.cvNewLine := IniFile.ReadBool('Copy', 'NewLine', False);
+  CopyOptions.cvLineBreaks := IniFile.ReadBool('Copy', 'NewLine', False);
   CopyOptions.cvPlainText := IniFile.ReadBool('Copy', 'CopyNoFormat', False);
 
   Count := IniFile.ReadInteger('Recent', 'Count', RecentList.Count);
