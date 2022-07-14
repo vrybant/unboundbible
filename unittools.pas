@@ -287,8 +287,10 @@ begin
 
   for line in List do
     begin
+      if CopyOptions.cvBreak and l then quote += '<br>';
+
       if CopyOptions.cvEnumerated and (CurrVerse.Count > 1) then
-        if l or (not l and CopyOptions.cvEnd) then
+        if CopyOptions.cvEnd or CopyOptions.cvBreak or l then
           begin
             n := ToStr(number);
             if CopyOptions.cvParentheses then n := '(' + n + ')';

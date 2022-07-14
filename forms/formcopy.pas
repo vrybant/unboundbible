@@ -23,6 +23,7 @@ type
     procedure FormCreate(Sender: TObject);
   private
     TempOptions : TCopyOptions;
+    procedure RemoveFormat(var s: string);
     procedure LoadText;
     procedure CopyToClipboard;
   public
@@ -97,12 +98,17 @@ begin
   ButtonCopy.SetFocus;
 end;
 
+procedure TCopyForm.RemoveFormat(var s: string);
+begin
+  s := RemoveTags(s.Replace('<br>','[br]')).Replace('[br]','<br>');
+end;
+
 procedure TCopyForm.LoadText;
 var
   s : string;
 begin
   s := Tools.Get_Verses;
-  if CopyOptions.cvPlain then s := RemoveTags(s);
+  if CopyOptions.cvPlain then RemoveFormat(s);
   Memo.LoadText(s);
 end;
 
@@ -139,4 +145,3 @@ begin
 end;
 
 end.
-
