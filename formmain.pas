@@ -1449,10 +1449,10 @@ end;
 {$ifdef windows}
 procedure TMainForm.VersesToClipboard;
 begin
-  if CopyOptions.cvPlainText then
+  if CopyOptions.cvPlain then
     PlainTextToClipboard(RemoveTags(Tools.Get_Verses));
 
-  if not CopyOptions.cvPlainText then
+  if not CopyOptions.cvPlain then
     RichTextToClipboard(ParseWin(Tools.Get_Verses, Font), RemoveTags(Tools.Get_Verses));
 end;
 {$endif}
@@ -1507,8 +1507,8 @@ begin
   IniFile.WriteBool('Copy', 'Guillemets', CopyOptions.cvGuillemets);
   IniFile.WriteBool('Copy', 'Parentheses', CopyOptions.cvParentheses);
   IniFile.WriteBool('Copy', 'End', CopyOptions.cvEnd);
-  IniFile.WriteBool('Copy', 'NewLine', CopyOptions.cvLineBreaks);
-  IniFile.WriteBool('Copy', 'CopyNoFormat', CopyOptions.cvPlainText);
+  IniFile.WriteBool('Copy', 'Break', CopyOptions.cvBreak);
+  IniFile.WriteBool('Copy', 'Plain', CopyOptions.cvPlain);
   IniFile.WriteInteger('Recent', 'Count', RecentList.Count);
 
   for item in RecentList do
@@ -1538,8 +1538,8 @@ begin
   CopyOptions.cvGuillemets := IniFile.ReadBool('Copy', 'Guillemets', False);
   CopyOptions.cvParentheses := IniFile.ReadBool('Copy', 'Parentheses', False);
   CopyOptions.cvEnd := IniFile.ReadBool('Copy', 'End', False);
-  CopyOptions.cvLineBreaks := IniFile.ReadBool('Copy', 'NewLine', False);
-  CopyOptions.cvPlainText := IniFile.ReadBool('Copy', 'CopyNoFormat', False);
+  CopyOptions.cvBreak := IniFile.ReadBool('Copy', 'Break', False);
+  CopyOptions.cvPlain := IniFile.ReadBool('Copy', 'Plain', False);
 
   Count := IniFile.ReadInteger('Recent', 'Count', RecentList.Count);
   for i := 0 to Count - 1 do

@@ -44,8 +44,8 @@ const
   cgGuillemets  = 2;
   cgParentheses = 3;
   cgEnd         = 4;
-  cgLineBreaks  = 5;
-  cgPlainText   = 6;
+  cgBreak       = 5;
+  cgPlain       = 6;
 
 {$R *.lfm}
 
@@ -67,8 +67,8 @@ begin
   CheckGroup.Items[cgGuillemets]  := T('Guillemets'      );
   CheckGroup.Items[cgParentheses] := T('Parentheses'     );
   CheckGroup.Items[cgEnd]         := T('Link in the end' );
-  CheckGroup.Items[cgLineBreaks]  := T('Line Breaks'     ); {$ifndef linux}
-  CheckGroup.Items[cgPlainText]   := T('Plain text'      ); {$endif}
+  CheckGroup.Items[cgBreak]       := T('Line Break'      ); {$ifndef linux}
+  CheckGroup.Items[cgPlain]       := T('Plain text'      ); {$endif}
 
   CheckBox.Caption := T('Set Default');
 end;
@@ -88,8 +88,8 @@ begin
   CheckGroup.Checked[cgGuillemets]  := CopyOptions.cvGuillemets;
   CheckGroup.Checked[cgParentheses] := CopyOptions.cvParentheses;
   CheckGroup.Checked[cgEnd]         := CopyOptions.cvEnd;
-  CheckGroup.Checked[cgLineBreaks]  := CopyOptions.cvLineBreaks; {$ifndef linux}
-  CheckGroup.Checked[cgPlainText]   := CopyOptions.cvPlainText;  {$endif}
+  CheckGroup.Checked[cgBreak]       := CopyOptions.cvBreak; {$ifndef linux}
+  CheckGroup.Checked[cgPlain]       := CopyOptions.cvPlain; {$endif}
 
   CheckBox.Checked:= False;
 
@@ -102,7 +102,7 @@ var
   s : string;
 begin
   s := Tools.Get_Verses;
-  if CopyOptions.cvPlainText then s := RemoveTags(s);
+  if CopyOptions.cvPlain then s := RemoveTags(s);
   Memo.LoadText(s);
 end;
 
@@ -121,8 +121,8 @@ begin
   CopyOptions.cvGuillemets  := CheckGroup.Checked[cgGuillemets];
   CopyOptions.cvParentheses := CheckGroup.Checked[cgParentheses];
   CopyOptions.cvEnd         := CheckGroup.Checked[cgEnd];
-  CopyOptions.cvLineBreaks  := CheckGroup.Checked[cgLineBreaks]; {$ifndef linux}
-  CopyOptions.cvPlainText   := CheckGroup.Checked[cgPlainText];  {$endif}
+  CopyOptions.cvBreak       := CheckGroup.Checked[cgBreak]; {$ifndef linux}
+  CopyOptions.cvPlain       := CheckGroup.Checked[cgPlain]; {$endif}
   LoadText;
   Repaint;
 end;
