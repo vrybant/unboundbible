@@ -108,6 +108,7 @@ var
   s : string;
 begin
   s := Tools.Get_Verses;
+  if CopyOptions.cvBreak then s += '<br>';
   if CopyOptions.cvPlain then RemoveFormat(s);
   Memo.LoadText(s);
 end;

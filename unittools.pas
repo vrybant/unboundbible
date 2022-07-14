@@ -303,15 +303,16 @@ begin
     end;
 
   quote := Trim(quote);
-  if CopyOptions.cvGuillemets then quote := '«' + quote + '»';
-
   link := CurrBible.VerseToStr(CurrVerse, not CopyOptions.cvAbbreviate);
   link := '<l>' + link + '</l>';
-  if CopyOptions.cvBreak       then linkDelim := '<br>' else linkDelim := ' ';
+
+  if CopyOptions.cvGuillemets then quote := '«' + quote + '»';
+  if CopyOptions.cvBreak then linkDelim := '<br>' else linkDelim := ' ';
   if CopyOptions.cvParentheses then link := '(' + link + ')';
   if CopyOptions.cvEnd then quote := quote + linkDelim + link else quote := link + linkDelim + quote;
+  if CopyOptions.cvBreak then quote += '<br>';
 
-  Result += quote + '<br> ';
+  Result += quote;
 end;
 
 function TTools.SetCurrBible(Bible: TBible): boolean;

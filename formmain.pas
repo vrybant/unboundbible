@@ -1449,11 +1449,9 @@ end;
 {$ifdef windows}
 procedure TMainForm.VersesToClipboard;
 begin
-  if CopyOptions.cvPlain then
-    PlainTextToClipboard(RemoveTags(Tools.Get_Verses));
-
-  if not CopyOptions.cvPlain then
-    RichTextToClipboard(ParseWin(Tools.Get_Verses, Font), RemoveTags(Tools.Get_Verses));
+  if CopyOptions.cvPlain
+    then PlainTextToClipboard(RemoveTags(Tools.Get_Verses))
+    else RichTextToClipboard(ParseWin(Tools.Get_Verses, Font), RemoveTags(Tools.Get_Verses));
 end;
 {$endif}
 
