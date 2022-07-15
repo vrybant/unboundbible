@@ -52,7 +52,7 @@ const
 
 procedure TCopyForm.FormCreate(Sender: TObject);
 begin
-  {$ifdef linux} CheckGroup.Items.Delete(cgPlainText); {$endif}
+  {$ifdef linux} CheckGroup.Items.Delete(cgPlain); {$endif}
 end;
 
 procedure TCopyForm.Localize;
@@ -141,8 +141,8 @@ end;
 
 procedure TCopyForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if self.ModalResult <> mrOk then CopyOptions := TempOptions;
-  if (self.ModalResult = mrOk) and (not CheckBox.Checked) then CopyOptions := TempOptions;
+  if ModalResult <> mrOk then CopyOptions := TempOptions;
+  if (ModalResult = mrOk) and (not CheckBox.Checked) then CopyOptions := TempOptions;
 end;
 
 end.
