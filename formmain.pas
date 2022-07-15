@@ -1448,10 +1448,13 @@ end;
 
 {$ifdef windows}
 procedure TMainForm.VersesToClipboard;
+var
+  s, t : string;
 begin
-  if CopyOptions.cvPlain
-    then PlainTextToClipboard(RemoveTags(Tools.Get_Verses))
-    else RichTextToClipboard(ParseWin(Tools.Get_Verses, Font), RemoveTags(Tools.Get_Verses));
+  s := Tools.Get_Verses;
+  if CopyOptions.cvPlain then CopyForm.RemoveFormat(s);
+  t := s.Replace('<br>', LineBreak);
+  RichTextToClipboard(ParseWin(s,Font), RemoveTags(t));
 end;
 {$endif}
 

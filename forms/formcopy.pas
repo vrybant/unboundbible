@@ -23,12 +23,12 @@ type
     procedure FormCreate(Sender: TObject);
   private
     TempOptions : TCopyOptions;
-    procedure RemoveFormat(var s: string);
     procedure LoadText;
     procedure CopyToClipboard;
   public
     ParagraphStart : integer;
     ParagraphEnd : integer;
+    procedure RemoveFormat(var s: string);
     procedure Localize;
   end;
 
