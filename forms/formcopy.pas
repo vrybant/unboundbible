@@ -68,7 +68,7 @@ begin
   CheckGroup.Items[cgGuillemets]  := T('Guillemets'      );
   CheckGroup.Items[cgParentheses] := T('Parentheses'     );
   CheckGroup.Items[cgEnd]         := T('Link in the end' );
-  CheckGroup.Items[cgBreak]       := T('Line Break'      ); {$ifndef linux}
+  CheckGroup.Items[cgBreak]       := T('Line Breaks'     ); {$ifndef linux}
   CheckGroup.Items[cgPlain]       := T('Plain text'      ); {$endif}
 
   CheckBox.Caption := T('Set Default');
