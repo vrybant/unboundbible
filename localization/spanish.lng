@@ -135,13 +135,13 @@ verses found = Versiculo encontrado
 
 // messages
 
-Cannot delete the module. = Cannot delete the module.
+Cannot delete the module. = No se puede eliminar el módulo.
 Commentaries not found. = Commentaries not found.
-Cross-references not found. = Cross-references not found.
-Do you wish to delete this module? = Do you wish to delete this module?
-Please enter your query in the search bar. = Please enter your query in the search bar.
-Please narrow your search. = Please narrow your search.
-This search returned too many results. = This search returned too many results. 
-You don't have any commentary modules. = You don't have any commentary modules.
-You don't have any dictionary modules. = You don't have any dictionary modules.
-You search for % produced no results. = You search for % produced no results. 
+Cross-references not found. = Comentarios no encontrados.
+Do you wish to delete this module? = ¿Desea eliminar este módulo?
+Please enter your query in the search bar. = Ingresa tu consulta en la barra de búsqueda.
+Please narrow your search. = Limite su búsqueda.
+This search returned too many results. = Esta búsqueda devolvió demasiados resultados. 
+You don't have any commentary modules. = No tienes ningún módulo de comentarios.
+You don't have any dictionary modules. = No tienes ningún módulo de diccionario.
+You search for % produced no results. = Tu búsqueda de % no produjo ningún resultado.
