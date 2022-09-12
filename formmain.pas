@@ -327,11 +327,6 @@ begin
   SaveDialog.InitialDir := DocumentsPath;
   NoteFileName := Untitled;
 
-  {$ifdef linux}
-    Font.Name := 'default';
-    Font.Size := 11;
-  {$endif}
-
   ReadConfig;
   AssignFont;
   MakeRecentMenu;
