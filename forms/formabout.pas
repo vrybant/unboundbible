@@ -9,7 +9,7 @@ type
   { TAboutBox }
 
   TAboutBox = class(TForm)
-    LabelFB: TLabel;
+    ImageTwitter: TImage;
     LabelGPL: TLabel;
     LabelName: TLabel;
     LabelTeam: TLabel;
@@ -17,6 +17,7 @@ type
     ImageFacebook: TImage;
     Image: TImage;
     procedure FormCreate(Sender: TObject);
+    procedure ImageTwitterClick(Sender: TObject);
     procedure ImageFacebookClick(Sender: TObject);
   public
     procedure Localize;
@@ -53,6 +54,11 @@ end;
 procedure TAboutBox.ImageFacebookClick(Sender: TObject);
 begin
   OpenURL('http://www.facebook.com/unbound.bible/');
+end;
+
+procedure TAboutBox.ImageTwitterClick(Sender: TObject);
+begin
+  OpenURL('https://twitter.com/unboundbible/');
 end;
 
 end.
