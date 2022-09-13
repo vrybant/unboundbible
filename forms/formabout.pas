@@ -53,7 +53,7 @@ end;
 
 procedure TAboutBox.ImageFacebookClick(Sender: TObject);
 begin
-  OpenURL('http://www.facebook.com/unbound.bible/');
+  OpenURL('http://www.facebook.com/unboundbible/');
 end;
 
 procedure TAboutBox.ImageTwitterClick(Sender: TObject);
