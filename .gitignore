@@ -8,7 +8,6 @@ __history
 *.exe
 *.deb
 *.rpm
-*.dll
 *.dbg
 *.ini
 bin/*
@@ -29,3 +28,4 @@ components/unboundmemo/lib/*
 components/unboundmemo/backup/*
 unboundbible
 Rubbish/*
+sqlite/*
