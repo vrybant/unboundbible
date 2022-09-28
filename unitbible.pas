@@ -432,7 +432,6 @@ begin
               t := Query.FieldByName(z.text   ).AsString;
               t := Prepare(t, format, IsNewTestament(b));
               s += t;
-              output(s);
               Result.Add(s);
             except
               //

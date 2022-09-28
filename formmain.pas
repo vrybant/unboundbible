@@ -900,6 +900,7 @@ begin
         begin
           CurrVerse := Verse;
           ShowCurrVerse(True);
+          Tools.AddHistory;
         end
       else
         if Tools.SetCurrBible(Memo.hyperlink)then ShowCurrBible;
