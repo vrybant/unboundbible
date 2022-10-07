@@ -1,19 +1,13 @@
-﻿ 
-; -- unboundbible.iss --
+﻿; -- unboundbible.iss --
+; Inno Setup Script 
                              
 #define MyAppName "Unbound Bible"
-#define MyAppVersion "5.4"
+#define MyAppVersion "5.4_beta"
 #define MyAppCopyright "GNU GPL"
 #define MyAppPublisher "Vladimir Rybant"
 #define MyAppURL "https://unboundbible.net"
 #define MyAppExeName "unboundbible.exe"
 #define MyAppOutput "unboundbible"
-
-#define MyAppArchitecture "win64"
-#define MyArchitectures "x64"
-
-;define MyAppArchitecture "win32"
-;define MyArchitectures "x86"
 
 [Setup]
  AppName={#MyAppName}
@@ -30,11 +24,10 @@
  DisableWelcomePage=no
  DisableStartupPrompt=yes
  DisableProgramGroupPage=yes
- OutputBaseFilename={#MyAppOutput}_{#MyAppVersion}_{#MyAppArchitecture}
+ OutputBaseFilename={#MyAppOutput}_{#MyAppVersion}
  UninstallDisplayIcon={app}\{#MyAppExeName}
  OutputDir=. 
              
- ArchitecturesAllowed={#MyArchitectures} 
  ArchitecturesInstallIn64BitMode=x64 
  UsedUserAreasWarning=no
 
@@ -49,8 +42,12 @@
 ;Source: "modules\*"       ; DestDir: "{%USERPROFILE}\{#MyAppName}"
  Source: "modules\*.zip"   ; DestDir: "{app}\modules"
  Source: "localization\*"  ; DestDir: "{app}\localization"
- Source: "{#MyAppExeName}" ; DestDir: "{app}" ; Flags: ignoreversion 
- Source: "sqlite3.dll"     ; DestDir: "{app}"
+
+ Source: "unboundbible_win32.exe" ; DestDir: "{app}" ; DestName: "{#MyAppExeName}"; Flags: ignoreversion ; Check: not Is64BitInstallMode 
+ Source: "unboundbible_win64.exe" ; DestDir: "{app}" ; DestName: "{#MyAppExeName}"; Flags: ignoreversion ; Check:     Is64BitInstallMode
+ 
+ Source: "sqlite\sqlite3_win32.dll" ; DestDir: "{app}" ; DestName: "sqlite3.dll"; Check: not Is64BitInstallMode 
+ Source: "sqlite\sqlite3_win64.dll" ; DestDir: "{app}" ; DestName: "sqlite3.dll"; Check:     Is64BitInstallMode
 
 [Icons]
 ;Name: "{commondesktop}\{#MyAppName}"                         ; Filename: "{app}\{#MyAppExeName}" ; WorkingDir: "{app}"; Tasks: desktopicon
