@@ -249,7 +249,7 @@ begin
     begin
       List := s.Split(#9);
       if List.Count < 2 then Continue;
-      Result += List[1] + '<br>';
+      Result += List[1] + '<br><br>';
     end;
 end;
 

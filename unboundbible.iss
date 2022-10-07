@@ -5,9 +5,15 @@
 #define MyAppVersion "5.4"
 #define MyAppCopyright "GNU GPL"
 #define MyAppPublisher "Vladimir Rybant"
-#define MyAppURL "http://vladimirrybant.org"
+#define MyAppURL "https://unboundbible.net"
 #define MyAppExeName "unboundbible.exe"
 #define MyAppOutput "unboundbible"
+
+#define MyAppArchitecture "win64"
+#define MyArchitectures "x64"
+
+;define MyAppArchitecture "win32"
+;define MyArchitectures "x86"
 
 [Setup]
  AppName={#MyAppName}
@@ -17,17 +23,22 @@
  AppPublisher={#MyAppPublisher}
  AppPublisherURL={#MyAppURL}
  AppSupportURL={#MyAppURL}
- AppUpdatesURL={#MyAppURL}
+ AppUpdatesURL={#MyAppURL}            
 
- DefaultDirName={commonpf}\{#MyAppName}
+ DefaultDirName={autopf}\{#MyAppName}
  DefaultGroupName={#MyAppName}
  DisableWelcomePage=no
  DisableStartupPrompt=yes
  DisableProgramGroupPage=yes
- OutputBaseFilename={#MyAppOutput}_{#MyAppVersion}
+ OutputBaseFilename={#MyAppOutput}_{#MyAppVersion}_{#MyAppArchitecture}
  UninstallDisplayIcon={app}\{#MyAppExeName}
  OutputDir=. 
              
+ ArchitecturesAllowed={#MyArchitectures} 
+ ArchitecturesInstallIn64BitMode=x64 
+ UsedUserAreasWarning=no
+
+ WizardStyle=modern
  Compression=bzip
  SolidCompression=yes
 
@@ -35,12 +46,11 @@
 ;Name: "{%USERPROFILE}\{#MyAppName}";
 
 [Files]
-;Source: "bibles\*"           ; DestDir: "{%USERPROFILE}\{#MyAppName}"
- Source: "bibles\*"           ; DestDir: "{app}\bibles"
- Source: "localization\*"     ; DestDir: "{app}\localization"
- Source: "titles\*"           ; DestDir: "{app}\titles" 
- Source: "{#MyAppExeName}"    ; DestDir: "{app}" ; Flags: ignoreversion
- Source: "sqlite3.dll"        ; DestDir: "{app}"
+;Source: "modules\*"       ; DestDir: "{%USERPROFILE}\{#MyAppName}"
+ Source: "modules\*.zip"   ; DestDir: "{app}\modules"
+ Source: "localization\*"  ; DestDir: "{app}\localization"
+ Source: "{#MyAppExeName}" ; DestDir: "{app}" ; Flags: ignoreversion 
+ Source: "sqlite3.dll"     ; DestDir: "{app}"
 
 [Icons]
 ;Name: "{commondesktop}\{#MyAppName}"                         ; Filename: "{app}\{#MyAppExeName}" ; WorkingDir: "{app}"; Tasks: desktopicon
