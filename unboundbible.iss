@@ -50,8 +50,7 @@
  Source: "sqlite\sqlite3_win64.dll" ; DestDir: "{app}" ; DestName: "sqlite3.dll"; Check:     Is64BitInstallMode
 
 [Icons]
-;Name: "{commondesktop}\{#MyAppName}"                         ; Filename: "{app}\{#MyAppExeName}" ; WorkingDir: "{app}"; Tasks: desktopicon
- Name: "{commondesktop}\{#MyAppName}"                         ; Filename: "{app}\{#MyAppExeName}" ; WorkingDir: "{app}" 
+ Name: "{commondesktop}\{#MyAppName}"                         ; Filename: "{app}\{#MyAppExeName}" ; WorkingDir: "{app}" ; Tasks: desktopicon
  Name: "{commonprograms}\{#MyAppName}\{#MyAppName}"           ; Filename: "{app}\{#MyAppExeName}" ; WorkingDir: "{app}"
  Name: "{commonprograms}\{#MyAppName}\Uninstall {#MyAppName}" ; Filename: "{app}\unins000.exe"    ; WorkingDir: "{app}"
 
@@ -74,7 +73,7 @@
  Type: dirifempty     ; Name: "{app}"
 
 [Tasks]
-;Name: desktopicon; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
+ Name: desktopicon; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
                  
 [Languages]
  Name: en; MessagesFile: "compiler:Default.isl"
