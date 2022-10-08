@@ -46,8 +46,8 @@
  Source: "unboundbible_win32.exe" ; DestDir: "{app}" ; DestName: "{#MyAppExeName}"; Flags: ignoreversion ; Check: not Is64BitInstallMode 
  Source: "unboundbible_win64.exe" ; DestDir: "{app}" ; DestName: "{#MyAppExeName}"; Flags: ignoreversion ; Check:     Is64BitInstallMode
  
- Source: "sqlite\sqlite3_win32.dll" ; DestDir: "{app}" ; DestName: "sqlite3.dll"; Check: not Is64BitInstallMode 
- Source: "sqlite\sqlite3_win64.dll" ; DestDir: "{app}" ; DestName: "sqlite3.dll"; Check:     Is64BitInstallMode
+ Source: "C:\Windows\SysWOW64\sqlite3.dll" ; DestDir: "{app}" ; Check: not Is64BitInstallMode 
+ Source:                     "sqlite3.dll" ; DestDir: "{app}" ; Check:     Is64BitInstallMode
 
 [Icons]
  Name: "{commondesktop}\{#MyAppName}"                         ; Filename: "{app}\{#MyAppExeName}" ; WorkingDir: "{app}" ; Tasks: desktopicon
