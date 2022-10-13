@@ -775,7 +775,6 @@ object MainForm: TMainForm
       end
       object miDonate: TMenuItem
         Caption = 'Become a Patron'
-        ImageIndex = 42
         OnClick = miDonateClick
       end
       object MenuItem2: TMenuItem

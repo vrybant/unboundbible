@@ -12,7 +12,8 @@ uses
 begin
   if Tools.Bibles.IsEmpty then Exit;
 
-  Application.Title := {$ifdef windows} 'Unbound Bible' {$else} 'unboundbible' {$endif};
+  Application.Title := 'Unbound Bible';
+  {$ifdef linux} Application.Title := 'unboundbible'; {$endif}
   Application.Initialize;
 
   Application.CreateForm(TMainForm,    MainForm);
