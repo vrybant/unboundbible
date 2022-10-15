@@ -76,9 +76,17 @@ const
 procedure TShelfForm.Localize;
 begin
   Caption := ' ' + T('Modules');
-  BiblesGrid.Columns[clName].Title.Caption := T('Title');
+
+  BiblesGrid      .Columns[clName].Title.Caption := T('Title');
+  CommentariesGrid.Columns[clName].Title.Caption := T('Title');
+  DictionariesGrid.Columns[clName].Title.Caption := T('Title');
+
+  BiblesSheet      .Caption := T('Bible');
+  CommentariesSheet.Caption := T('Commentaries');
+  DictionariesSheet.Caption := T('Dictionaries');;
+
   LabelFile.Caption := T('File Name') + ' : ';
-  ButtonOpen.Caption := T('Download');
+  ButtonOpen.Caption := T('Open');
   ButtonDelete.Caption := T('Delete');
   ButtonClose.Caption := T('Close');
 end;
