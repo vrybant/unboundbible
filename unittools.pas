@@ -416,7 +416,7 @@ procedure TTools.SaveConfig;
 var
   IniFile : TIniFile;
 begin
-  IniFile := TIniFile.Create(ConfigFile);
+  IniFile := TIniFile.Create(ConfigPath + ConfigFile);
 
   IniFile.WriteString ('Application', 'Version', ApplicationVersion);
   IniFile.WriteString ('Application', 'CurrentBible', CurrBible.filename);
@@ -433,7 +433,7 @@ var
   IniFile : TIniFile;
   Version : string;
 begin
-  IniFile := TIniFile.Create(ConfigFile);
+  IniFile := TIniFile.Create(ConfigPath + ConfigFile);
 
   Version := IniFile.ReadString('Application', 'Version', '');
   ApplicationUpdate := ApplicationVersion <> Version;
