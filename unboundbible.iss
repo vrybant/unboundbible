@@ -2,12 +2,12 @@
 ; Inno Setup Script 
                              
 #define MyAppName "Unbound Bible"
-#define MyAppVersion "5.4_beta"
 #define MyAppCopyright "GNU GPL"
 #define MyAppPublisher "Vladimir Rybant"
 #define MyAppURL "https://unboundbible.net"
 #define MyAppExeName "unboundbible.exe"
-#define MyAppOutput "unboundbible"
+#define MyAppVersion "5.4 Beta 2"
+#define MyAppOutput "unboundbible_5.4_beta_2"
 
 [Setup]
  AppName={#MyAppName}
@@ -24,7 +24,7 @@
  DisableWelcomePage=no
  DisableStartupPrompt=yes
  DisableProgramGroupPage=yes
- OutputBaseFilename={#MyAppOutput}_{#MyAppVersion}
+ OutputBaseFilename={#MyAppOutput}
  UninstallDisplayIcon={app}\{#MyAppExeName}
  OutputDir=. 
              
