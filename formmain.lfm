@@ -450,6 +450,7 @@ object MainForm: TMainForm
           Font.Name = 'Tahoma'
           HideSelection = False
           OnContextPopup = MemoContextPopup
+          OnKeyDown = MemoKeyDown
           OnMouseLeave = MemoMouseLeave
           OnMouseUp = MemoMouseUp
           OnSelectionChange = MemoSelectionChange
@@ -481,6 +482,7 @@ object MainForm: TMainForm
           Font.Name = 'Tahoma'
           HideSelection = False
           OnContextPopup = MemoContextPopup
+          OnKeyDown = MemoKeyDown
           OnMouseLeave = MemoMouseLeave
           OnMouseUp = MemoMouseUp
           OnSelectionChange = MemoSelectionChange
@@ -511,6 +513,7 @@ object MainForm: TMainForm
           Font.Name = 'Tahoma'
           HideSelection = False
           OnContextPopup = MemoContextPopup
+          OnKeyDown = MemoKeyDown
           OnMouseLeave = MemoMouseLeave
           OnMouseUp = MemoMouseUp
           OnSelectionChange = MemoSelectionChange
@@ -541,6 +544,7 @@ object MainForm: TMainForm
           Font.Name = 'Tahoma'
           HideSelection = False
           OnContextPopup = MemoContextPopup
+          OnKeyDown = MemoKeyDown
           OnMouseLeave = MemoMouseLeave
           OnMouseUp = MemoMouseUp
           OnSelectionChange = MemoSelectionChange
@@ -571,6 +575,7 @@ object MainForm: TMainForm
           Font.Name = 'Tahoma'
           HideSelection = False
           OnContextPopup = MemoContextPopup
+          OnKeyDown = MemoKeyDown
           OnMouseLeave = MemoMouseLeave
           OnMouseUp = MemoMouseUp
           OnSelectionChange = MemoSelectionChange
@@ -601,6 +606,7 @@ object MainForm: TMainForm
           Font.Name = 'Tahoma'
           HideSelection = False
           OnContextPopup = MemoContextPopup
+          OnKeyDown = MemoKeyDown
           OnMouseLeave = MemoMouseLeave
           OnMouseUp = MemoMouseUp
           OnSelectionChange = MemoSelectionChange
@@ -632,6 +638,7 @@ object MainForm: TMainForm
           Font.Name = 'Tahoma'
           HideSelection = False
           OnContextPopup = MemoContextPopup
+          OnKeyDown = MemoKeyDown
           OnMouseUp = MemoMouseUp
           OnSelectionChange = MemoSelectionChange
           ParentFont = False

@@ -901,7 +901,7 @@ procedure TMainForm.MemoBibleKeyUp(Sender: TObject; var Key: Word; Shift: TShift
 var
   Verse : TVerse;
 begin
-  if (Key <> VK_UP) and (Key <> VK_DOWN) and (Key <> VK_HOME) and (Key <> VK_END) then Exit;
+  if not (Key in [VK_UP, VK_DOWN, VK_HOME, VK_END]) then Exit;
   if Shift <> [] then Exit;
 
   Verse := CurrVerse;
@@ -912,19 +912,13 @@ begin
   if Key = VK_UP   then Verse.Number := Verse.Number - 1;
   if Key = VK_DOWN then Verse.Number := Verse.Number + 1;
 
-  caption := ToStr(CurrBible.VersesCount(CurrVerse));
-
   if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
   ShowCurrVerse(True);
 end;
 
 procedure TMainForm.MemoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-var
-  Memo : TUnboundMemo;
-  Verse : TVerse;
 begin
-  Memo := Sender as TUnboundMemo;
-  if (Key = VK_F10) and (Shift = [ssShift]) then Caption := '***';
+  if (Key = VK_APPS) or ((Key = VK_F10) and (Shift = [ssShift])) then ShowPopup;
 end;
 
 procedure TMainForm.MemoSelectionChange(Sender: TObject);
