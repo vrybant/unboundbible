@@ -218,6 +218,7 @@ type
 
     procedure ComboBoxChange(Sender: TObject);
     procedure ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
+    procedure MemoBibleKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ToolEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -922,6 +923,28 @@ end;
 procedure TMainForm.MemoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   Handled := True; // disable system popup menu
+end;
+
+
+procedure TMainForm.MemoBibleKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+var
+  Verse: TVerse;
+begin
+  if (Key <> VK_UP) and (Key <> VK_DOWN) and (Key <> VK_HOME) and (Key <> VK_END) then Exit;
+  if Shift <> [] then Exit;
+
+  Verse := CurrVerse;
+  Verse.count := 1;
+
+  if Key = VK_HOME then Verse.Number := 1;
+  if Key = VK_END  then Verse.Number := CurrBible.VersesCount(CurrVerse);
+  if Key = VK_UP   then Verse.Number := Verse.Number - 1;
+  if Key = VK_DOWN then Verse.Number := Verse.Number + 1;
+
+  caption := ToStr(CurrBible.VersesCount(CurrVerse));
+
+  if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
+  ShowCurrVerse(True);
 end;
 
 //-------------------------------------------------------------------------------------------------

@@ -58,6 +58,7 @@ type
     procedure ShowTags;
     function GetTitles: TStringArray;
     function ChaptersCount(Verse: TVerse): integer;
+    function VersesCount(Verse: TVerse): integer;
     function GetFootnote(Verse: TVerse; marker: string): string;
     destructor Destroy; override;
   end;
@@ -511,8 +512,23 @@ function TBible.ChaptersCount(Verse: TVerse): integer;
 begin
   Result := 1;
   try
-    Query.SQL.Text := 'SELECT MAX(' + z.chapter + ') AS Count FROM ' + z.bible +
-                      ' WHERE ' + z.book + '=' + EncodeID(Verse.book).ToString;
+    Query.SQL.Text := 'SELECT MAX(' + z.chapter + ') AS Count FROM ' + z.bible
+                    + ' WHERE ' + z.book + '=' + EncodeID(Verse.book).ToString;
+    Query.Open;
+    try Result := Query.FieldByName('Count').AsInteger; except end;
+  except
+    //
+  end;
+  Query.Close;
+end;
+
+function TBible.VersesCount(Verse: TVerse): integer;
+begin
+  Result := 1;
+  try
+    Query.SQL.Text := 'SELECT MAX(' + z.verse + ') AS Count FROM ' + z.bible
+                    + ' WHERE ' + z.book + '=' + EncodeID(Verse.book).ToString
+                    + ' AND Chapter = ' + Verse.chapter.ToString;
     Query.Open;
     try Result := Query.FieldByName('Count').AsInteger; except end;
   except

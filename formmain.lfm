@@ -416,6 +416,7 @@ object MainForm: TMainForm
           Font.Name = 'Tahoma'
           HideSelection = False
           OnContextPopup = MemoContextPopup
+          OnKeyUp = MemoBibleKeyUp
           OnMouseLeave = MemoMouseLeave
           OnMouseUp = MemoMouseUp
           OnSelectionChange = MemoSelectionChange
