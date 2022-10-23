@@ -901,19 +901,25 @@ procedure TMainForm.MemoBibleKeyUp(Sender: TObject; var Key: Word; Shift: TShift
 var
   Verse : TVerse;
 begin
-  if not (Key in [VK_UP, VK_DOWN, VK_HOME, VK_END]) then Exit;
-  if Shift <> [] then Exit;
+  if (Sender = MemoBible) and (Shift = [ssShift]) then
+    begin
+      CurrVerse.Number := MemoBible.ParagraphStart;
+      CurrVerse.Count  := MemoBible.ParagraphCount;
+    end;
 
-  Verse := CurrVerse;
-  Verse.Count := 1;
+  if (Key in [VK_UP, VK_DOWN, VK_HOME, VK_END]) and (Shift <> []) then
+    begin
+      Verse := CurrVerse;
+      Verse.Count := 1;
 
-  if Key = VK_HOME then Verse.Number := 1;
-  if Key = VK_END  then Verse.Number := CurrBible.VersesCount(CurrVerse);
-  if Key = VK_UP   then Verse.Number := Verse.Number - 1;
-  if Key = VK_DOWN then Verse.Number := Verse.Number + 1;
+      if Key = VK_HOME then Verse.Number := 1;
+      if Key = VK_END  then Verse.Number := CurrBible.VersesCount(CurrVerse);
+      if Key = VK_UP   then Verse.Number := Verse.Number - 1;
+      if Key = VK_DOWN then Verse.Number := Verse.Number + 1;
 
-  if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
-  ShowCurrVerse(True);
+      if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
+      ShowCurrVerse(True);
+    end;
 end;
 
 procedure TMainForm.MemoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
