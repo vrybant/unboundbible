@@ -13,6 +13,7 @@ type
   TShelfForm = class(TForm)
     ButtonDelete: TButton;
     ButtonOpen: TButton;
+    ButtonExtract: TButton;
     Images: TImageList;
     LabelFile: TLabel;
     LabelFilename: TLabel;
@@ -110,8 +111,8 @@ begin
   Caption := ' ' + T('Modules');
   if ExpertMode then Caption := Caption + ' - ' + UTF8UpperCase(T('Expert Mode'));
 
-  ButtonOpen.Caption := iif(ExpertMode, T('Convert'), T('Open'));
-  ButtonOpen.Enabled := ExpertMode or (PageControl.ActivePageIndex = apBible);
+  ButtonOpen.Enabled := PageControl.ActivePageIndex = apBible;
+  ButtonDelete.Caption := iif(ExpertMode, T('Convert'), T('Delete'));
 
   LabelFilename.Left := LabelFile.Left + LabelFile.Width;
   {$ifdef windows} Memo.Width := MemoWidth - iif(Memo.ScrollBars = ssNone, 10, 0); {$endif}
@@ -191,10 +192,10 @@ begin
   for Module in Tools.Bibles do Insert(BiblesGrid, Module);
 
   for Module in Tools.Commentaries do
-    if not (Module as TCommentary).footnotes then Insert(CommentariesGrid, Module);
+    {if not (Module as TCommentary).footnotes then} Insert(CommentariesGrid, Module);
 
   for Module in Tools.Dictionaries do
-    if not (Module as TDictionary).embedded then Insert(DictionariesGrid, Module);
+    {if not (Module as TDictionary).embedded then} Insert(DictionariesGrid, Module);
 end;
 
 function TShelfForm.ActiveGrid: TStringGrid;
@@ -231,8 +232,8 @@ begin
   Memo.Lines.Add(CurrModule.info);
   Memo.SelStart := 1;
 
-  ButtonOpen.Enabled := not ExpertMode or (ExtractFileExt(CurrModule.fileName) <> '.unbound');
-  ButtonDelete.Enabled := CurrBible <> CurrModule;
+//ButtonDelete.Enabled := CurrBible <> CurrModule;
+  ButtonDelete.Enabled := not ExpertMode or (CurrModule.format <> unbound);
 end;
 
 procedure TShelfForm.GridSelection(Sender: TObject; aCol, aRow: Integer);
@@ -265,32 +266,38 @@ end;
 
 procedure TShelfForm.ButtonDeleteClick(Sender: TObject);
 begin
-  if QuestionDlg(' ' + T('Confirmation'), T('Do you wish to delete this module?') +
-    LineBreak + LineBreak + CurrModule.name + LineBreak, mtWarning,
-      [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) <> idYes then Exit;
+  if not ExpertMode then
+    begin
+      if QuestionDlg(' ' + T('Confirmation'), T('Do you wish to delete this module?') +
+        LineBreak + LineBreak + CurrModule.name + LineBreak, mtWarning,
+          [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) <> idYes then Exit;
 
-  if not Tools.DeleteModule(CurrModule) then
-    if QuestionDlg(' ' + T('Error'), T('Cannot delete the module.') + LineBreak,
-      mtError, [mrCancel, T('Close')], 0) = idCancel then Exit;
+      if not Tools.DeleteModule(CurrModule) then
+        if QuestionDlg(' ' + T('Error'), T('Cannot delete the module.') + LineBreak,
+          mtError, [mrCancel, T('Close')], 0) = idCancel then Exit;
 
-  ActiveGrid.DeleteRow(ActiveGrid.Row);
-  GridSelection(Sender, BiblesGrid.Col, BiblesGrid.Row);
+      ActiveGrid.DeleteRow(ActiveGrid.Row);
+      GridSelection(Sender, BiblesGrid.Col, BiblesGrid.Row);
+    end;
+
+  if ExpertMode then
+    begin
+      if CurrModule.format = unbound then Exit;
+
+      case PageControl.ActivePageIndex of
+        apBible        : Tools.ExportBible(CurrModule as TBible);
+        apCommentaries : Tools.ExportCommentary(CurrModule as TCommentary);
+        apDictionaries : Tools.ExportDictionary(CurrModule as TDictionary);
+      end;
+
+      QuestionDlg(' ', 'Module ' + CurrModule.fileName + ' has been extracted.',
+        mtInformation, [mrOK, T('OK'), 'IsDefault'], 0);
+    end;
 end;
 
 procedure TShelfForm.ButtonOpenClick(Sender: TObject);
 begin
-  if not ExpertMode then
-    if PageControl.ActivePageIndex = apBible then
-      if Tools.SetCurrBible(CurrModule as TBible) then Exit;
-
-  case PageControl.ActivePageIndex of
-    apBible        : Tools.ExportBible(CurrModule as TBible);
-    apCommentaries : Tools.ExportCommentary(CurrModule as TCommentary);
-    apDictionaries : Tools.ExportDictionary(CurrModule as TDictionary);
-  end;
-
-  QuestionDlg(' ', 'Module ' + CurrModule.fileName + ' has been extracted.',
-    mtInformation, [mrOK, T('OK'), 'IsDefault'], 0);
+  Tools.SetCurrBible(CurrModule as TBible);
 end;
 
 end.

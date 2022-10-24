@@ -296,7 +296,7 @@ var
   NewBible : TBible;
   path : string;
 begin
-  path := DataPath + Slash + '_' + Bible.filename + '.unbound';
+  path := DataPath + Slash + Bible.filename + '.unbound';
 
   if FileExists(path) then DeleteFile(path);
   if FileExists(path) then Exit;
@@ -311,7 +311,7 @@ var
   NewCommentary : TCommentary;
   path : string;
 begin
-  path := DataPath + Slash + '_' + Commentary.filename + '.unbound';
+  path := DataPath + Slash + Commentary.filename + '.unbound';
 
   if FileExists(path) then DeleteFile(path);
   if FileExists(path) then Exit;
@@ -326,7 +326,7 @@ var
   NewDictionary : TDictionary;
   path : string;
 begin
-  path := DataPath + Slash + '_' + Dictionary.filename + '.unbound';
+  path := DataPath + Slash + Dictionary.filename + '.unbound';
 
   if FileExists(path) then DeleteFile(path);
   if FileExists(path) then Exit;
