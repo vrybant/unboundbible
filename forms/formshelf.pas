@@ -228,7 +228,9 @@ begin
   Memo.Lines.Add(CurrModule.info);
   Memo.SelStart := 1;
 
-  if not ExpertMode then ButtonDelete.Enabled := CurrBible <> CurrModule;
+  if not ExpertMode then
+    ButtonDelete.Enabled := (CurrBible <> CurrModule) and not CurrModule.embedded;
+
   if ExpertMode then ButtonDelete.Enabled := CurrModule.format <> unbound;
 end;
 
