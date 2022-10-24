@@ -6,8 +6,8 @@
 #define MyAppPublisher "Vladimir Rybant"
 #define MyAppURL "https://unboundbible.net"
 #define MyAppExeName "unboundbible.exe"
-#define MyAppVersion "5.4 Beta 3"
-#define MyAppOutput "unboundbible_5.4_beta_3"
+#define MyAppVersion "5.4 Beta 4"
+#define MyAppOutput "unboundbible_5.4_beta_4"
 
 [Setup]
  AppName={#MyAppName}
