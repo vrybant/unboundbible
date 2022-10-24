@@ -42,7 +42,7 @@ object MainForm: TMainForm
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 2
+    TabOrder = 0
     Wrapable = False
     object ToolSeparator2: TToolButton
       Left = 266
@@ -265,7 +265,7 @@ object MainForm: TMainForm
     Font.Pitch = fpVariable
     Font.Quality = fqDraft
     ParentFont = False
-    TabOrder = 1
+    TabOrder = 3
     object ComboBox: TComboBox
       Left = 5
       Height = 25
@@ -350,7 +350,7 @@ object MainForm: TMainForm
     Font.Pitch = fpVariable
     Font.Quality = fqDraft
     ParentFont = False
-    TabOrder = 0
+    TabOrder = 2
   end
   object ToolEdit: TEdit
     Left = 696
@@ -364,7 +364,7 @@ object MainForm: TMainForm
     OnKeyDown = ToolEditKeyDown
     ParentDoubleBuffered = False
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 1
   end
   object Panel1: TPanel
     Left = 336
