@@ -195,7 +195,8 @@ begin
     {if not (Module as TCommentary).footnotes then} Insert(CommentariesGrid, Module);
 
   for Module in Tools.Dictionaries do
-    {if not (Module as TDictionary).embedded then} Insert(DictionariesGrid, Module);
+    //if not (Module as TDictionary).embedded then
+      Insert(DictionariesGrid, Module);
 end;
 
 function TShelfForm.ActiveGrid: TStringGrid;
@@ -232,8 +233,8 @@ begin
   Memo.Lines.Add(CurrModule.info);
   Memo.SelStart := 1;
 
-//ButtonDelete.Enabled := CurrBible <> CurrModule;
-  ButtonDelete.Enabled := not ExpertMode or (CurrModule.format <> unbound);
+  if not ExpertMode then ButtonDelete.Enabled := CurrBible <> CurrModule;
+  if ExpertMode then ButtonDelete.Enabled := CurrModule.format <> unbound;
 end;
 
 procedure TShelfForm.GridSelection(Sender: TObject; aCol, aRow: Integer);
