@@ -152,7 +152,7 @@ end;
 procedure TUnboundMemo.KeyUp(var Key: Word; Shift: TShiftState);
 begin
   inherited;
-  if Paragraphic and (Shift = [ssShift]) then GetParagraphRange;
+  if Paragraphic and (Shift <> []) then GetParagraphRange;
   {$ifdef windows}
     if Linkable and not ReadOnly and (Key = VK_CONTROL) then ShowCaret(Handle);
   {$endif}

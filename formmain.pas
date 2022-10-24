@@ -901,13 +901,14 @@ procedure TMainForm.MemoBibleKeyUp(Sender: TObject; var Key: Word; Shift: TShift
 var
   Verse : TVerse;
 begin
-  if (Sender = MemoBible) and (Shift = [ssShift]) then
+  if (Sender = MemoBible) and (Shift <> []) then
     begin
       CurrVerse.Number := MemoBible.ParagraphStart;
       CurrVerse.Count  := MemoBible.ParagraphCount;
     end;
 
-  if (Key in [VK_UP, VK_DOWN, VK_HOME, VK_END]) and (Shift <> []) then
+  if (Key in [VK_UP, VK_DOWN] ) and (Shift = []) or
+     (Key in [VK_HOME, VK_END]) and (Shift = [ssCtrl]) then
     begin
       Verse := CurrVerse;
       Verse.Count := 1;
@@ -917,8 +918,11 @@ begin
       if Key = VK_UP   then Verse.Number := Verse.Number - 1;
       if Key = VK_DOWN then Verse.Number := Verse.Number + 1;
 
-      if CurrBible.GoodLink(Verse) then CurrVerse := Verse;
-      ShowCurrVerse(True);
+      if CurrBible.GoodLink(Verse) then
+        begin
+          CurrVerse := Verse;
+          ShowCurrVerse(True);
+        end;
     end;
 end;
 
