@@ -154,8 +154,7 @@ begin
   inherited;
 
   if Paragraphic then
-    if ((key = VK_HOME) and (Shift = [])) or (Shift <> []) then
-      GetParagraphRange;
+    if ((Key = VK_HOME) and (Shift = [])) or (Shift <> []) then GetParagraphRange;
 
   {$ifdef windows}
     if Linkable and not ReadOnly and (Key = VK_CONTROL) then ShowCaret(Handle);
