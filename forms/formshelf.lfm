@@ -63,12 +63,11 @@ object ShelfForm: TShelfForm
           end>
         DefaultDrawing = False
         FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goTabs, goRowSelect, goSmoothScroll, goCellHints]
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goRowSelect, goSmoothScroll, goCellHints]
         ParentShowHint = False
         RowCount = 4
         ShowHint = True
         TabOrder = 0
-        TabStop = False
         OnCheckboxToggled = GridCheckboxToggled
         OnGetCellHint = GridGetCellHint
         OnGetCheckboxState = GridGetCheckboxState
@@ -107,7 +106,7 @@ object ShelfForm: TShelfForm
             ButtonStyle = cbsNone
             Title.Alignment = taCenter
             Title.Caption = 'Title'
-            Width = 545
+            Width = 562
           end        
           item
             Alignment = taCenter
@@ -119,19 +118,18 @@ object ShelfForm: TShelfForm
           end>
         DefaultDrawing = False
         FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goTabs, goRowSelect, goSmoothScroll, goCellHints]
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goRowSelect, goSmoothScroll, goCellHints]
         ParentShowHint = False
         RowCount = 4
         ShowHint = True
         TabOrder = 0
-        TabStop = False
         OnCheckboxToggled = GridCheckboxToggled
         OnGetCellHint = GridGetCellHint
         OnGetCheckboxState = GridGetCheckboxState
         OnSelection = GridSelection
         ColWidths = (
           0
-          545
+          562
           40
         )
       end
@@ -163,7 +161,7 @@ object ShelfForm: TShelfForm
             ButtonStyle = cbsNone
             Title.Alignment = taCenter
             Title.Caption = 'Title'
-            Width = 545
+            Width = 562
           end        
           item
             Alignment = taCenter
@@ -175,17 +173,16 @@ object ShelfForm: TShelfForm
           end>
         DefaultDrawing = False
         FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goTabs, goRowSelect, goSmoothScroll, goCellHints]
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goRowSelect, goSmoothScroll, goCellHints]
         ParentShowHint = False
         RowCount = 4
         ShowHint = True
         TabOrder = 0
-        TabStop = False
         OnGetCellHint = GridGetCellHint
         OnSelection = GridSelection
         ColWidths = (
           0
-          545
+          562
           40
         )
       end
@@ -227,7 +224,7 @@ object ShelfForm: TShelfForm
     ParentColor = True
     ReadOnly = True
     ScrollBars = ssVertical
-    TabOrder = 5
+    TabOrder = 3
     TabStop = False
   end
   object LabelTest: TLabel
@@ -256,7 +253,7 @@ object ShelfForm: TShelfForm
     Width = 90
     Caption = 'Delete'
     OnClick = ButtonDeleteClick
-    TabOrder = 3
+    TabOrder = 4
   end
   object ButtonClose: TButton
     Left = 516
@@ -265,7 +262,7 @@ object ShelfForm: TShelfForm
     Width = 90
     Caption = 'Close'
     ModalResult = 11
-    TabOrder = 4
+    TabOrder = 5
   end
   object Images: TImageList
     Left = 176

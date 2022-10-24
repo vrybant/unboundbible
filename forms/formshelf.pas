@@ -190,13 +190,8 @@ begin
   DictionariesGrid.RowCount := 1;
 
   for Module in Tools.Bibles do Insert(BiblesGrid, Module);
-
-  for Module in Tools.Commentaries do
-    {if not (Module as TCommentary).footnotes then} Insert(CommentariesGrid, Module);
-
-  for Module in Tools.Dictionaries do
-    //if not (Module as TDictionary).embedded then
-      Insert(DictionariesGrid, Module);
+  for Module in Tools.Commentaries do Insert(CommentariesGrid, Module);
+  for Module in Tools.Dictionaries do Insert(DictionariesGrid, Module);
 end;
 
 function TShelfForm.ActiveGrid: TStringGrid;
