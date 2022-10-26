@@ -11,11 +11,13 @@ uses
 type
   TUnboundMemo = class(TRichMemoEx)
   protected
+    procedure DoParagraphChange;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure KeyUp(var Key: Word; Shift: TShiftState); override;
   private
-    FLinkable : boolean;
-    FParagraphic : boolean;
+    fLinkable : boolean;
+    fParagraphic : boolean;
+    fOnParagraphChange : TNotifyEvent;
     SelStartTemp : integer;
     SelLengthTemp : integer;
     function GetNumber(s: string): integer;
@@ -32,6 +34,7 @@ type
     constructor Create(AOwner: TComponent); override;
     function Foreground: integer;
     function Breaks: integer;
+    function Paragraphs: integer;
     procedure SelectParagraph(n: integer);
     procedure SelectWord;
     procedure SelectAll; {$ifdef windows} override; {$endif}
@@ -40,8 +43,9 @@ type
     procedure LoadText(Source: string; jtag: boolean = false);
     procedure LoadHtml(Source: string);
   published
-    property Linkable    : boolean read FLinkable    write FLinkable    default False;
-    property Paragraphic : boolean read FParagraphic write FParagraphic default False;
+    property Linkable    : boolean read fLinkable    write fLinkable    default False;
+    property Paragraphic : boolean read fParagraphic write fParagraphic default False;
+    property OnParagraphChange: TNotifyEvent read fOnParagraphChange write fOnParagraphChange;
   end;
 
 const
@@ -64,6 +68,11 @@ begin
   Cursor := crArrow;
 
   {$ifdef windows} if Font.Name = 'default' then Font.Name := 'Tahoma'; {$endif}
+end;
+
+procedure TUnboundMemo.DoParagraphChange;
+begin
+  if Assigned(fOnParagraphChange) then fOnParagraphChange(Self);
 end;
 
 function TUnboundMemo.GetNumber(s: string): integer;
@@ -143,6 +152,7 @@ begin
     begin
       if not Hyperlink.isEmpty then GetSel(x1,x2);
       GetParagraphRange;
+      DoParagraphChange;
       if not Hyperlink.isEmpty then SetSel(x1,x2);
     end;
 
@@ -154,7 +164,21 @@ begin
   inherited;
 
   if Paragraphic then
-    if ((Key = VK_HOME) and (Shift = [])) or (Shift <> []) then GetParagraphRange;
+    if ((Key in [VK_PRIOR, VK_NEXT]) and (Shift = [])) or (Shift <> []) then
+      begin
+        GetParagraphRange;
+        DoParagraphChange;
+      end;
+
+  if Paragraphic then
+    if ((Key in [VK_UP, VK_DOWN]) and (Shift = [])) then
+      begin
+        if Key = VK_UP   then if ParagraphStart > 1 then ParagraphStart -= 1;
+        if Key = VK_DOWN then if ParagraphStart < Paragraphs then ParagraphStart += 1;
+
+        SelectParagraph(ParagraphStart);
+        DoParagraphChange;
+      end;
 
   {$ifdef windows}
     if Linkable and not ReadOnly and (Key = VK_CONTROL) then ShowCaret(Handle);
@@ -197,6 +221,18 @@ begin
       ParagraphStart := GetNumber(List[1]) - 1;
       ParagraphCount := List.Count;
     end;
+end;
+
+function TUnboundMemo.Paragraphs: integer;
+var
+  i : integer = 1;
+  ps : string;
+begin
+  repeat
+    i += 1;
+    ps := LineBreak + ' ' + ToStr(i) + ' ';
+  until UTF8Pos(ps, Text) = 0;
+  Result := i-1;
 end;
 
 procedure TUnboundMemo.SelectParagraph(n: integer);
@@ -257,6 +293,7 @@ begin
   Hide_Selection;
   inherited;
   GetParagraphRange;
+  DoParagraphChange;
   Show_Selection;
 end;
 

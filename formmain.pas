@@ -218,7 +218,7 @@ type
 
     procedure ComboBoxChange(Sender: TObject);
     procedure ComboBoxDrawItem(Control: TWinControl; Index: integer; ARect: TRect; State: TOwnerDrawState);
-    procedure MemoBibleKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure MemoBibleParagraphChange(Sender: TObject);
     procedure MemoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ToolEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
@@ -647,13 +647,7 @@ begin
   if Sender = ActionEditPaste  then UnboundMemo.PasteFromClipboard;
   if Sender = ActionEditDel    then UnboundMemo.ClearSelection;
   if Sender = ActionEditUndo   then UnboundMemo.Undo;
-
-  if Sender = ActionEditSelAll then
-    begin
-      UnboundMemo.SelectAll;
-      CurrVerse.Number := MemoBible.ParagraphStart;
-      CurrVerse.Count  := MemoBible.ParagraphCount;
-   end;
+  if Sender = ActionEditSelAll then UnboundMemo.SelectAll;
 
   if Sender = ActionEditCut then
     begin
@@ -861,12 +855,7 @@ begin
   if Button = mbRight then ShowPopup;
   if Button <> mbLeft then Exit;
 
-  if Memo = MemoBible then
-    begin
-      CurrVerse.Number := MemoBible.ParagraphStart;
-      CurrVerse.Count  := MemoBible.ParagraphCount;
-      Tools.AddHistory;
-    end;
+  if Memo = MemoBible then Tools.AddHistory;
 
   if Memo.hyperlink.isEmpty then Exit;
 
@@ -897,35 +886,6 @@ begin
     if Memo.Foreground = fgStrong then LoadStrong(Memo.hyperlink);
 end;
 
-procedure TMainForm.MemoBibleKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-var
-  Verse : TVerse;
-begin
-  if (Sender = MemoBible) and (Shift <> []) then
-    begin
-      CurrVerse.Number := MemoBible.ParagraphStart;
-      CurrVerse.Count  := MemoBible.ParagraphCount;
-    end;
-
-  if (Key in [VK_UP, VK_DOWN] ) and (Shift = []) or
-     (Key in [VK_HOME, VK_END]) and (Shift = [ssCtrl]) then
-    begin
-      Verse := CurrVerse;
-      Verse.Count := 1;
-
-      if Key = VK_HOME then Verse.Number := 1;
-      if Key = VK_END  then Verse.Number := CurrBible.VersesCount(CurrVerse);
-      if Key = VK_UP   then Verse.Number := Verse.Number - 1;
-      if Key = VK_DOWN then Verse.Number := Verse.Number + 1;
-
-      if CurrBible.GoodLink(Verse) then
-        begin
-          CurrVerse := Verse;
-          ShowCurrVerse(True);
-        end;
-    end;
-end;
-
 procedure TMainForm.MemoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if (Key = VK_APPS) or ((Key = VK_F10) and (Shift = [ssShift])) then ShowPopup;
@@ -935,6 +895,12 @@ procedure TMainForm.MemoSelectionChange(Sender: TObject);
 begin
   EnableActions;
   if Sender = MemoNotes then UpDownButtons;
+end;
+
+procedure TMainForm.MemoBibleParagraphChange(Sender: TObject);
+begin
+  CurrVerse.Number := MemoBible.ParagraphStart;
+  CurrVerse.Count  := MemoBible.ParagraphCount;
 end;
 
 procedure TMainForm.MemoContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);

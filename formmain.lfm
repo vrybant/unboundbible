@@ -417,7 +417,6 @@ object MainForm: TMainForm
           HideSelection = False
           OnContextPopup = MemoContextPopup
           OnKeyDown = MemoKeyDown
-          OnKeyUp = MemoBibleKeyUp
           OnMouseLeave = MemoMouseLeave
           OnMouseUp = MemoMouseUp
           OnSelectionChange = MemoSelectionChange
@@ -428,6 +427,7 @@ object MainForm: TMainForm
           ZoomFactor = 1
           Linkable = True
           Paragraphic = True
+          OnParagraphChange = MemoBibleParagraphChange
         end
       end
       object TabSheetSearch: TTabSheet
