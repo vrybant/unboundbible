@@ -265,7 +265,7 @@ object MainForm: TMainForm
     Font.Pitch = fpVariable
     Font.Quality = fqDraft
     ParentFont = False
-    TabOrder = 3
+    TabOrder = 2
     object ComboBox: TComboBox
       Left = 5
       Height = 25
@@ -350,7 +350,7 @@ object MainForm: TMainForm
     Font.Pitch = fpVariable
     Font.Quality = fqDraft
     ParentFont = False
-    TabOrder = 2
+    TabOrder = 1
   end
   object ToolEdit: TEdit
     Left = 696
@@ -364,7 +364,7 @@ object MainForm: TMainForm
     OnKeyDown = ToolEditKeyDown
     ParentDoubleBuffered = False
     ParentFont = False
-    TabOrder = 1
+    TabOrder = 4
   end
   object Panel1: TPanel
     Left = 336
@@ -381,7 +381,7 @@ object MainForm: TMainForm
     Font.Pitch = fpVariable
     Font.Quality = fqDraft
     ParentFont = False
-    TabOrder = 5
+    TabOrder = 3
     object PageControl: TPageControl
       Left = 1
       Height = 374
