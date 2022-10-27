@@ -1483,7 +1483,7 @@ var
   IniFile : TIniFile;
   item : string;
 begin
-  IniFile := TIniFile.Create(ConfigPath + ConfigFile);
+  IniFile := TIniFile.Create(ConfigFile);
 
   if WindowState = wsNormal then
   begin
@@ -1520,7 +1520,7 @@ var
   IniFile : TIniFile;
   i, Count : integer;
 begin
-  IniFile := TIniFile.Create(ConfigPath + ConfigFile);
+  IniFile := TIniFile.Create(ConfigFile);
 
   Height := IniFile.ReadInteger('Window', 'Height', Screen.Height - 220);
   Width := IniFile.ReadInteger('Window', 'Width', Screen.Width - 450);

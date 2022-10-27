@@ -7,7 +7,7 @@ uses
 
 const
   ApplicationName = 'Unbound Bible';
-  ApplicationVersion = '5.4 BETA 4';
+  ApplicationVersion = '5.4';
   ModulesDirectory = 'modules';
   LangDirectory = 'localization';
   Untitled = 'Untitled';
@@ -16,12 +16,10 @@ const
 var
   ApplicationUpdate : boolean = false;
 
-const
-  ConfigFile  = 'config.ini';
-  ModulesFile = 'modules.ini';
-  HistoryFile = 'history.ini';
+function ConfigFile: string;
+function ModulesFile: string;
+function HistoryFile: string;
 
-function ConfigPath: string;
 function DataPath: string;
 function DatabaseList: TStringArray;
 function HomeURL: string;
@@ -99,8 +97,23 @@ end;
 
 function ConfigPath: string;
 begin
-  {$ifdef windows} Result := LocalAppDataPath + ApplicationName + Slash; {$endif}
-  {$ifdef unix} Result := GetAppConfigDir(False); {$endif}
+  {$ifdef windows} Result := LocalAppDataPath + ApplicationName;  {$endif}
+  {$ifdef unix}    Result := GetUserDir + '.config/unboundbible'; {$endif}
+end;
+
+function ConfigFile: string;
+begin
+  Result := ConfigPath + Slash + 'config.ini';
+end;
+
+function ModulesFile: string;
+begin
+  Result := ConfigPath + Slash + 'modules.ini';
+end;
+
+function HistoryFile: string;
+begin
+  Result := ConfigPath + Slash + 'history.ini';
 end;
 
 function BibleHubURL(book, chapter, number: integer): string;

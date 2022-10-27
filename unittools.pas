@@ -385,7 +385,7 @@ var
   IniFile : TIniFile;
   i : integer;
 begin
-  IniFile := TIniFile.Create(ConfigPath + HistoryFile);
+  IniFile := TIniFile.Create(HistoryFile);
 
   IniFile.WriteInteger('History', 'Max', HistoryMax);
   IniFile.WriteInteger('History', 'Count', History.Count);
@@ -400,10 +400,11 @@ var
   IniFile : TIniFile;
   i, Count : integer;
 begin
-  IniFile := TIniFile.Create(ConfigPath + HistoryFile);
+  IniFile := TIniFile.Create(HistoryFile);
 
   HistoryMax := IniFile.ReadInteger('History', 'Max', 100);
   Count := IniFile.ReadInteger('History', 'Count', 0);
+
   for i := 0 to Count - 1 do
     History.Add(IniFile.ReadString('List', 'n' + ToStr(i), ''));
 
@@ -416,7 +417,7 @@ procedure TTools.SaveConfig;
 var
   IniFile : TIniFile;
 begin
-  IniFile := TIniFile.Create(ConfigPath + ConfigFile);
+  IniFile := TIniFile.Create(ConfigFile);
 
   IniFile.WriteString ('Application', 'Version', ApplicationVersion);
   IniFile.WriteString ('Application', 'CurrentBible', CurrBible.filename);
@@ -433,7 +434,7 @@ var
   IniFile : TIniFile;
   Version : string;
 begin
-  IniFile := TIniFile.Create(ConfigPath + ConfigFile);
+  IniFile := TIniFile.Create(ConfigFile);
 
   Version := IniFile.ReadString('Application', 'Version', '');
   ApplicationUpdate := ApplicationVersion <> Version;

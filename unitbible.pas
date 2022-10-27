@@ -674,7 +674,7 @@ var
   IniFile : TIniFile;
   Bible : TBible;
 begin
-  IniFile := TIniFile.Create(ConfigPath + ModulesFile);
+  IniFile := TIniFile.Create(ModulesFile);
   for Bible in Self do Bible.SavePrivate(IniFile);
   IniFile.Free;
 end;
@@ -684,7 +684,7 @@ var
   IniFile : TIniFile;
   Bible : TBible;
 begin
-  IniFile := TIniFile.Create(ConfigPath + ModulesFile);
+  IniFile := TIniFile.Create(ModulesFile);
   for Bible in Self do Bible.ReadPrivate(IniFile);
   IniFile.Free;
 end;

@@ -272,7 +272,7 @@ var
   IniFile : TIniFile;
   Commentary : TCommentary;
 begin
-  IniFile := TIniFile.Create(ConfigPath + ConfigFile);
+  IniFile := TIniFile.Create(ConfigFile);
   for Commentary in Self do Commentary.SavePrivate(IniFile);
   IniFile.Free;
 end;
@@ -282,7 +282,7 @@ var
   IniFile : TIniFile;
   Commentary : TCommentary;
 begin
-  IniFile := TIniFile.Create(ConfigPath + ConfigFile);
+  IniFile := TIniFile.Create(ConfigFile);
   for Commentary in Self do Commentary.ReadPrivate(IniFile);
   IniFile.Free;
 end;
