@@ -225,12 +225,13 @@ end;
 
 function TUnboundMemo.Paragraphs: integer;
 var
-  i : integer = 1;
+  i : integer = 0;
   ps : string;
 begin
   repeat
     i += 1;
-    ps := LineBreak + ' ' + ToStr(i) + ' ';
+    ps := iif(i = 1, '', LineBreak);
+    ps += ' ' + ToStr(i) + ' ';
   until UTF8Pos(ps, Text) = 0;
   Result := i-1;
 end;
