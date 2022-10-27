@@ -18,7 +18,6 @@ object MainForm: TMainForm
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  OnPaint = FormPaint
   OnShow = FormShow
   LCLVersion = '2.2.2.0'
   object StandardToolBar: TToolBar
@@ -44,6 +43,7 @@ object MainForm: TMainForm
     ShowHint = True
     TabOrder = 0
     Wrapable = False
+    OnPaint = StandardToolBarPaint
     object ToolSeparator2: TToolButton
       Left = 266
       Height = 28

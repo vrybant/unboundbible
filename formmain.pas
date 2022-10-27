@@ -221,9 +221,9 @@ type
     procedure MemoBibleParagraphChange(Sender: TObject);
     procedure MemoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ToolEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure StandardToolBarPaint(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormDestroy(Sender: TObject);
@@ -411,11 +411,10 @@ begin
   end;
 end;
 
-procedure TMainForm.FormPaint(Sender: TObject);
+procedure TMainForm.StandardToolBarPaint(Sender: TObject);
 begin
   ToolPanel.Width := StandardToolBar.Width - ToolButtonRight.Width - ToolButtonSearch.Width
                    - {$ifdef linux} ToolButtonRight.Left {$else} ToolButtonBullets.Left {$endif};
-
   ToolEdit.Left := StandardToolBar.Width - ToolButtonSearch.Width - ToolEdit.Width - 4;
   ToolEdit.Visible := ToolPanel.Width > ToolEdit.Width;
 end;
