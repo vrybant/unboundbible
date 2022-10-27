@@ -175,10 +175,24 @@ begin
       begin
         if Key = VK_UP   then if ParagraphStart > 1 then ParagraphStart -= 1;
         if Key = VK_DOWN then if ParagraphStart < Paragraphs then ParagraphStart += 1;
+        ParagraphCount := 1;
 
         SelectParagraph(ParagraphStart);
         DoParagraphChange;
       end;
+
+  {$ifdef linux}
+  if Paragraphic then
+    if ((Key in [VK_HOME, VK_END]) and (Shift = [ssCtrl])) then
+      begin
+        if Key = VK_HOME then ParagraphStart := 1;
+        if Key = VK_END  then ParagraphStart := Paragraphs;
+        ParagraphCount := 1;
+
+        SelectParagraph(ParagraphStart);
+        DoParagraphChange;
+      end;
+  {$endif}
 
   {$ifdef windows}
     if Linkable and not ReadOnly and (Key = VK_CONTROL) then ShowCaret(Handle);
