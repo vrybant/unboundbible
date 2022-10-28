@@ -163,12 +163,14 @@ procedure TUnboundMemo.KeyUp(var Key: Word; Shift: TShiftState);
 begin
   inherited;
 
+  {$ifdef windows}
   if Paragraphic then
     if ((Key in [VK_PRIOR, VK_NEXT]) and (Shift = [])) or (Shift <> []) then
       begin
         GetParagraphRange;
         DoParagraphChange;
       end;
+  {$endif}
 
   if Paragraphic then
     if ((Key in [VK_UP, VK_DOWN]) and (Shift = [])) then
