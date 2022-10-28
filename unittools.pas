@@ -31,7 +31,7 @@ type
     function Get_History: string;
     function Get_Strong(number: string = ''): string;
     function Get_Footnote(marker: string = ''): string;
-    function Get_Verses: string;
+    function Get_Verses(f: boolean = true): string;
     function SetCurrBible(Bible: TBible): boolean; overload;
     function SetCurrBible(value: string): boolean; overload;
     function DeleteModule(const Module: TModule): boolean;
@@ -267,7 +267,7 @@ begin
     Result := Commentaries.GetMybibleFootnote(CurrBible.fileName, CurrVerse, marker)
 end;
 
-function TTools.Get_Verses: string;
+function TTools.Get_Verses(f: boolean = true): string;
 var
   Book : TBook;
   List : TStringArray;
@@ -277,7 +277,7 @@ var
   l : boolean = False;
   linkDelim : string = ' ';
 begin
-  if CurrBible.RightToLeft then Result := '<rtl>' else Result := '';
+  Result := iif(CurrBible.RightToLeft, '<rtl>', '');
 
   Book := CurrBible.BookByNum(CurrVerse.Book);
   if not Assigned(Book) then Exit;
@@ -287,9 +287,9 @@ begin
 
   for line in List do
     begin
-      if CopyOptions.cvBreak and l then quote += '<br>';
+      if f and CopyOptions.cvBreak and l then quote += '<br>';
 
-      if CopyOptions.cvEnumerated and (CurrVerse.Count > 1) then
+      if f and CopyOptions.cvEnumerated and (CurrVerse.Count > 1) then
         if CopyOptions.cvEnd or CopyOptions.cvBreak or l then
           begin
             n := ToStr(number);
@@ -303,14 +303,15 @@ begin
     end;
 
   quote := Trim(quote);
-  link := CurrBible.VerseToStr(CurrVerse, not CopyOptions.cvAbbreviate);
+  link := CurrBible.VerseToStr(CurrVerse, not f or not CopyOptions.cvAbbreviate);
   link := '<l>' + link + '</l>';
 
-  if CopyOptions.cvGuillemets then quote := '«' + quote + '»';
-  if CopyOptions.cvBreak then linkDelim := '<br>' else linkDelim := ' ';
-  if CopyOptions.cvParentheses then link := '(' + link + ')';
-  if CopyOptions.cvEnd then quote := quote + linkDelim + link else quote := link + linkDelim + quote;
-  if CopyOptions.cvBreak then quote += '<br>';
+  if f and CopyOptions.cvGuillemets then quote := '«' + quote + '»';
+  if f and CopyOptions.cvBreak then linkDelim := '<br>' else linkDelim := ' ';
+  if f and CopyOptions.cvParentheses then link := '(' + link + ')';
+  if f and CopyOptions.cvEnd then quote := quote + linkDelim + link
+                             else quote := link + linkDelim + quote;
+  if f and CopyOptions.cvBreak then quote += '<br>';
 
   Result += quote;
 end;
@@ -358,7 +359,7 @@ procedure TTools.AddHistory;
 var
   s : string;
 begin
-  s := CurrBible.fileName + #9 + Get_Verses;
+  s := CurrBible.fileName + #9 + Get_Verses(false);
   if not History.IsEmpty and (s = History[History.Count-1]) then Exit;
   History.Add(s);
   while History.Count > HistoryMax do History.Delete(0);
