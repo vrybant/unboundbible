@@ -16,12 +16,12 @@ const
 var
   ApplicationUpdate : boolean = false;
 
+function DataPath: string;
+function DatabaseList: TStringArray;
 function ConfigFile: string;
 function ModulesFile: string;
 function HistoryFile: string;
 
-function DataPath: string;
-function DatabaseList: TStringArray;
 function HomeURL: string;
 function DownloadsURL: string;
 function IssueURL: string;
@@ -69,6 +69,27 @@ begin
   Result := GetFileList(DataPath, '*.bbl.unbound');
 end;
 
+function ConfigPath: string;
+begin
+  {$ifdef windows} Result := LocalAppDataPath + ApplicationName;  {$endif}
+  {$ifdef unix}    Result := GetUserDir + '.config/unboundbible'; {$endif}
+end;
+
+function ConfigFile: string;
+begin
+  Result := ConfigPath + Slash + 'config.ini';
+end;
+
+function ModulesFile: string;
+begin
+  Result := ConfigPath + Slash + 'modules.ini';
+end;
+
+function HistoryFile: string;
+begin
+  Result := ConfigPath + Slash + 'history.ini';
+end;
+
 function ru: string;
 begin
   Result := '';
@@ -93,27 +114,6 @@ end;
 function DonateURL: string;
 begin
   Result := 'https://unboundbible.net/goto/donate' + ru + '.php'
-end;
-
-function ConfigPath: string;
-begin
-  {$ifdef windows} Result := LocalAppDataPath + ApplicationName;  {$endif}
-  {$ifdef unix}    Result := GetUserDir + '.config/unboundbible'; {$endif}
-end;
-
-function ConfigFile: string;
-begin
-  Result := ConfigPath + Slash + 'config.ini';
-end;
-
-function ModulesFile: string;
-begin
-  Result := ConfigPath + Slash + 'modules.ini';
-end;
-
-function HistoryFile: string;
-begin
-  Result := ConfigPath + Slash + 'history.ini';
 end;
 
 function BibleHubURL(book, chapter, number: integer): string;
