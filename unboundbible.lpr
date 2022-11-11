@@ -14,8 +14,8 @@ begin
 
   {$ifdef windows} Application.Title := 'Unbound Bible'; {$endif}
   {$ifdef linux}   Application.Title := 'unboundbible';  {$endif}
-  Application.Initialize;
 
+  Application.Initialize;
   Application.CreateForm(TMainForm,    MainForm);
   Application.CreateForm(TOptionsForm, OptionsForm);
   Application.CreateForm(TAboutBox,    AboutBox);
