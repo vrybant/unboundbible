@@ -121,7 +121,7 @@ begin
     Connection := TZConnection.Create(nil);
     Query := TZReadOnlyQuery.Create(nil);
     Connection.Database := FilePath;
-    Connection.Protocol := 'sqlite-3';
+    Connection.Protocol := 'sqlite';
     Connection.AutoCommit := False;
     Query.Connection := Connection;
   {$else}
