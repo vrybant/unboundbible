@@ -8,7 +8,6 @@ object OptionsForm: TOptionsForm
   ClientHeight = 236
   ClientWidth = 445
   FormStyle = fsStayOnTop
-  OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
   object ButtonClose: TButton
