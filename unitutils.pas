@@ -1,9 +1,11 @@
 unit UnitUtils;
 
+{$define portable}
+
 interface
 
 uses
-  Classes, SysUtils, Graphics, FileUtil, Zipper, UnitLib;
+  Classes, Forms, SysUtils, Graphics, FileUtil, Zipper, UnitLib;
 
 const
   ApplicationName = 'Unbound Bible';
@@ -49,7 +51,11 @@ const
 
 function DataPath: string;
 begin
-  Result := GetUserDir + ApplicationName;
+  {$ifdef portable}
+    Result := Application.Location + Slash + 'data';
+  {$else}
+    Result := GetUserDir + ApplicationName;
+  {$endif}
 end;
 
 function DatabaseList: TStringArray;
@@ -71,8 +77,12 @@ end;
 
 function ConfigPath: string;
 begin
-  {$ifdef windows} Result := LocalAppDataPath + ApplicationName;  {$endif}
-  {$ifdef unix}    Result := GetUserDir + '.config/unboundbible'; {$endif}
+  {$ifdef portable}
+    Result := Application.Location + Slash + 'config';
+  {$else}
+    {$ifdef windows} Result := LocalAppDataPath + ApplicationName;  {$endif}
+    {$ifdef unix}    Result := GetUserDir + '.config/unboundbible'; {$endif}
+  {$endif}
 end;
 
 function ConfigFile: string;
