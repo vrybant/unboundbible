@@ -10,7 +10,6 @@ object ShelfForm: TShelfForm
   Color = clBtnFace
   KeyPreview = True
   OnCreate = FormCreate
-  OnKeyDown = FormKeyDown
   OnPaint = FormPaint
   OnShow = FormShow
   ParentFont = True
