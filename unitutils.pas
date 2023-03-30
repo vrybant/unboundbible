@@ -1,7 +1,5 @@
 unit UnitUtils;
 
-{$define portable}
-
 interface
 
 uses
@@ -10,13 +8,13 @@ uses
 const
   ApplicationName = 'Unbound Bible';
   ApplicationVersion = '5.4';
-  ModulesDirectory = 'modules';
   LangDirectory = 'localization';
   Untitled = 'Untitled';
   RecentMax = 10;
 
 var
   ApplicationUpdate : boolean = false;
+  IsPortable : boolean = false;
 
 function DataPath: string;
 function DatabaseList: TStringArray;
@@ -49,13 +47,17 @@ const
     'james','1_peter','2_peter','1_john','2_john','3_john','jude','revelation'
     );
 
+function PortableDataPath: string;
+begin
+  Result := Application.Location + Slash + 'data';
+end;
+
 function DataPath: string;
 begin
-  {$ifdef portable}
-    Result := Application.Location + Slash + 'data';
-  {$else}
+  if IsPortable then
+    Result := PortableDataPath
+  else
     Result := GetUserDir + ApplicationName;
-  {$endif}
 end;
 
 function DatabaseList: TStringArray;
@@ -77,12 +79,13 @@ end;
 
 function ConfigPath: string;
 begin
-  {$ifdef portable}
-    Result := Application.Location + Slash + 'config';
-  {$else}
-    {$ifdef windows} Result := LocalAppDataPath + ApplicationName;  {$endif}
-    {$ifdef unix}    Result := GetUserDir + '.config/unboundbible'; {$endif}
-  {$endif}
+  if IsPortable then
+    Result := Application.Location + Slash + 'configs'
+  else
+    begin
+      {$ifdef windows} Result := LocalAppDataPath + ApplicationName;  {$endif}
+      {$ifdef unix}    Result := GetUserDir + '.config/unboundbible'; {$endif}
+    end;
 end;
 
 function ConfigFile: string;
@@ -164,12 +167,13 @@ var
   f, d : string;
   empty : boolean;
 begin
+  if IsPortable then Exit;
   if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
 
   empty := GetUnboundBiblesList.IsEmpty;
   if not ApplicationUpdate and not empty then Exit;
 
-  List := GetFileList(SharePath + ModulesDirectory, '*.zip');
+  List := GetFileList(SharePath + 'modules', '*.zip');
 
   UnZipper := TUnZipper.Create;
   UnZipper.UseUTF8 := True;
@@ -189,6 +193,9 @@ begin
 
   UnZipper.Free;
 end;
+
+initialization
+  if DirectoryExists(PortableDataPath) then IsPortable := true;
 
 end.
 
