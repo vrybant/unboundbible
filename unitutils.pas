@@ -48,7 +48,7 @@ const
 
 function PortableDataPath: string;
 begin
-  Result := Application.Location + Slash + 'data';
+  Result := Application.Location + 'data';
 end;
 
 function DataPath: string;

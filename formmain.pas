@@ -1191,7 +1191,7 @@ end;
 
 procedure TMainForm.miBibleFolderClick(Sender: TObject);
 begin
-  CreateDataDirectory;
+  if not IsPortable then CreateDataDirectory;
   OpenFolder(DataPath);
 end;
 
