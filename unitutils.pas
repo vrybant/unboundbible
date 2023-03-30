@@ -29,7 +29,6 @@ function DonateURL: string;
 function BibleHubURL(book, chapter, number: integer): string;
 
 procedure CreateDataDirectory;
-procedure RemoveOldFiles;
 procedure UnzipDefaultsFiles;
 
 implementation
@@ -141,37 +140,17 @@ begin
   if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
 end;
 
-procedure RemoveOldFiles;
-var
-  f, t : string;
-const
-  OldFiles : array [1..5] of string = (
-    'kjv+.unbound',
-    'kjv.unbound',
-    'rst+.unbound',
-    'rstw.unbound',
-    'ubio.unbound');
-begin
-  if not ApplicationUpdate then Exit;
-  for f in OldFiles do
-    begin
-      t := DataPath + Slash + f;
-      if FileExists(t) then DeleteFile(t);
-    end;
-end;
-
 procedure UnzipDefaultsFiles;
 var
   UnZipper: TUnZipper;
   List : TStringArray;
+  Empty : boolean;
   f, d : string;
-  empty : boolean;
 begin
-  if IsPortable then Exit;
   if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
 
-  empty := GetUnboundBiblesList.IsEmpty;
-  if not ApplicationUpdate and not empty then Exit;
+  Empty := GetUnboundBiblesList.IsEmpty;
+  if not ApplicationUpdate and not Empty then Exit;
 
   List := GetFileList(SharePath + 'modules', '*.zip');
 

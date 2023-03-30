@@ -451,8 +451,7 @@ end;
 
 initialization
   {$ifndef darwin}
-    RemoveOldFiles;
-    UnzipDefaultsFiles;
+    if not IsPortable then UnzipDefaultsFiles;
   {$endif}
   Tools := TTools.Create;
 
