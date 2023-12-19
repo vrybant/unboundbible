@@ -48,7 +48,7 @@ type
     function FirstVerse: TVerse;
     function BookByNum(n: integer): TBook;
     function BookByName(s: string): TBook;
-    function VerseToStr(Verse: TVerse; full: boolean): string;
+    function VerseToStr(Verse: TVerse; abbr: boolean = false): string;
     function SrtToVerse(link: string): TVerse;
     function GetChapter(Verse: TVerse): TStringArray;
     function GetRange(Verse: TVerse; raw: boolean = false): TStringArray;
@@ -252,7 +252,7 @@ begin
     if Book.Title = s then Result := Book;
 end;
 
-function TBible.VerseToStr(verse: TVerse; full: boolean): string;
+function TBible.VerseToStr(verse: TVerse; abbr: boolean = false): string;
 var
   Book : TBook;
   title : string;
@@ -261,7 +261,7 @@ begin
   Book := BookByNum(verse.book);
   if not Assigned(Book) then Exit('');
 
-  if full then title := Book.title else title := Book.abbr;
+  if abbr then title := Book.abbr else title := Book.title;
   if not title.Contains('.') then space := ' ';
 
   Result := title + space + ToStr(verse.chapter) + ':' + ToStr(verse.number);
