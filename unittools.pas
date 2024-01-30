@@ -101,7 +101,7 @@ var
 begin
   Result := '';
   if CurrBible.RightToLeft then Result += '<rtl>';
-  Strings := CurrBible.GetChapter(CurrVerse);
+  Strings := CurrBible.GetChapter(CurrVerse.book, CurrVerse.chapter);
 
   for i:=Low(Strings) to High(Strings) do
     Result += '<l> ' + ToStr(i+1) + '</l> ' + Strings[i] + '<br>';

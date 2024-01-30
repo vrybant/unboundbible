@@ -1313,7 +1313,7 @@ begin
   ChapterBox.Items.BeginUpdate;
   ChapterBox.Items.Clear;
 
-  n := CurrBible.ChaptersCount(CurrVerse);
+  n := CurrBible.ChaptersCount(CurrVerse.book);
   for i := 1 to n do ChapterBox.Items.Add(ToStr(i));
 
   ChapterBox.ItemIndex := 0;

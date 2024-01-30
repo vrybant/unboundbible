@@ -50,14 +50,14 @@ type
     function BookByName(s: string): TBook;
     function VerseToStr(Verse: TVerse; abbr: boolean = false): string;
     function SrtToVerse(link: string): TVerse;
-    function GetChapter(Verse: TVerse): TStringArray;
+    function GetChapter(book: integer; chapter: integer): TStringArray;
     function GetRange(Verse: TVerse; raw: boolean = false): TStringArray;
     function GetAll(raw: boolean = false): TStringArray;
     function GoodLink(Verse: TVerse): boolean;
     function Search(searchString: string; Options: TSearchOptions; Range: TRange): TStringArray;
     procedure ShowTags;
     function GetTitles: TStringArray;
-    function ChaptersCount(Verse: TVerse): integer;
+    function ChaptersCount(book: integer): integer;
     function VersesCount(Verse: TVerse): integer;
     function GetFootnote(Verse: TVerse; marker: string): string;
     destructor Destroy; override;
@@ -319,18 +319,18 @@ begin
     end;
 end;
 
-function TBible.GetChapter(Verse: TVerse): TStringArray;
+function TBible.GetChapter(book: integer; chapter: integer): TStringArray;
 var
   id : integer;
   line : string;
 begin
   Result := [];
-  id := EncodeID(Verse.book);
+  id := EncodeID(book);
 
   try
     try
       Query.SQL.Text := 'SELECT * FROM ' + z.bible + ' WHERE ' + z.book + '=' + ToStr(id) +
-                                 ' AND ' + z.chapter + '=' + ToStr(Verse.chapter);
+                                 ' AND ' + z.chapter + '=' + ToStr(chapter);
       Query.Open;
       while not Query.Eof do
         try
@@ -508,12 +508,12 @@ begin
   for Book in Books do Result.Add(Book.Title);
 end;
 
-function TBible.ChaptersCount(Verse: TVerse): integer;
+function TBible.ChaptersCount(book: integer): integer;
 begin
   Result := 1;
   try
     Query.SQL.Text := 'SELECT MAX(' + z.chapter + ') AS Count FROM ' + z.bible
-                    + ' WHERE ' + z.book + '=' + EncodeID(Verse.book).ToString;
+                    + ' WHERE ' + z.book + '=' + EncodeID(book).ToString;
     Query.Open;
     try Result := Query.FieldByName('Count').AsInteger; except end;
   except
