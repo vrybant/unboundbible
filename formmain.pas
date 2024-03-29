@@ -1191,7 +1191,7 @@ end;
 
 procedure TMainForm.miBibleFolderClick(Sender: TObject);
 begin
-  CreateDataDirectory;
+  if not IsPortable then CreateDataDirectory;
   OpenFolder(DataPath);
 end;
 
@@ -1313,7 +1313,7 @@ begin
   ChapterBox.Items.BeginUpdate;
   ChapterBox.Items.Clear;
 
-  n := CurrBible.ChaptersCount(CurrVerse);
+  n := CurrBible.ChaptersCount(CurrVerse.book);
   for i := 1 to n do ChapterBox.Items.Add(ToStr(i));
 
   ChapterBox.ItemIndex := 0;
@@ -1358,7 +1358,7 @@ end;
 procedure TMainForm.LoadCompare;
 var text : string;
 begin
-  text := CurrBible.VerseToStr(CurrVerse, true) + '<br> ';
+  text := CurrBible.VerseToStr(CurrVerse) + '<br> ';
   text += Tools.Get_Compare;
   MemoCompare.LoadText(text);
   SelectPage(apCompare);
@@ -1369,7 +1369,7 @@ var
   text, data: string;
   info : string = '';
 begin
-  text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
+  text := CurrBible.VerseToStr(CurrVerse) + '<br><br>';
   data := Tools.Get_Reference(info);
   if data.isEmpty then text += T('Сross-references not found.') else text += data;
   MemoReference.LoadText(text);
@@ -1381,7 +1381,7 @@ procedure TMainForm.LoadCommentary;
 var
   text, data : string;
 begin
-  text := CurrBible.VerseToStr(CurrVerse, true) + '<br><br>';
+  text := CurrBible.VerseToStr(CurrVerse) + '<br><br>';
   data := Tools.Get_Commentary;
   text += data;
 

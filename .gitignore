@@ -18,6 +18,7 @@ lib/*
 *.xlsx
 _*.*
 backup/*
+data/*
 titles/text/*
 forms/backup/*
 components/zeosdbo/packages/lazarus/lib/*

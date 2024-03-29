@@ -101,7 +101,7 @@ var
 begin
   Result := '';
   if CurrBible.RightToLeft then Result += '<rtl>';
-  Strings := CurrBible.GetChapter(CurrVerse);
+  Strings := CurrBible.GetChapter(CurrVerse.book, CurrVerse.chapter);
 
   for i:=Low(Strings) to High(Strings) do
     Result += '<l> ' + ToStr(i+1) + '</l> ' + Strings[i] + '<br>';
@@ -161,7 +161,7 @@ begin
     begin
       A := s.Split(#0);
       if A.Count < 4 then Continue;
-      link := CurrBible.VerseToStr(ArrayToVerse(A), true);
+      link := CurrBible.VerseToStr(ArrayToVerse(A));
       text := A[3];
       if CurrBible.accented then Replace(text, AcuteChar,'');
       Highlights(text, st, CurrentSearchOptions);
@@ -194,7 +194,7 @@ begin
   Result := '';
   for Item in References.GetData(CurrVerse, CurrBible.language, info) do
     begin
-      link := CurrBible.VerseToStr(Item, not CopyOptions.cvAbbreviate);
+      link := CurrBible.VerseToStr(Item, CopyOptions.cvAbbreviate);
       if link.isEmpty then Continue;
       Result += '<l>' + link + '</l> ' + ''.Join(' ', CurrBible.GetRange(Item)) + '<br><br>';
     end;
@@ -303,7 +303,7 @@ begin
     end;
 
   quote := Trim(quote);
-  link := CurrBible.VerseToStr(CurrVerse, not f or not CopyOptions.cvAbbreviate);
+  link := CurrBible.VerseToStr(CurrVerse, f and CopyOptions.cvAbbreviate);
   link := '<l>' + link + '</l>';
 
   if f and CopyOptions.cvGuillemets then quote := '«' + quote + '»';
@@ -451,8 +451,7 @@ end;
 
 initialization
   {$ifndef darwin}
-    RemoveOldFiles;
-    UnzipDefaultsFiles;
+    if not IsPortable then UnzipDefaultsFiles;
   {$endif}
   Tools := TTools.Create;
 

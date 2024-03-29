@@ -19,7 +19,7 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.2.2.0'
+  LCLVersion = '2.2.4.0'
   object StandardToolBar: TToolBar
     Left = 0
     Height = 30

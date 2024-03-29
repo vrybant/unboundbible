@@ -130,7 +130,7 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="19">
+    <Units Count="18">
       <Unit0>
         <Filename Value="unboundbible.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -194,56 +194,51 @@
         <UnitName Value="UnitLocal"/>
       </Unit11>
       <Unit12>
-        <Filename Value="unitexport.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitExport"/>
-      </Unit12>
-      <Unit13>
         <Filename Value="forms\formabout.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AboutBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormAbout"/>
-      </Unit13>
-      <Unit14>
+      </Unit12>
+      <Unit13>
         <Filename Value="forms\formcopy.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="CopyForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormCopy"/>
-      </Unit14>
-      <Unit15>
+      </Unit13>
+      <Unit14>
         <Filename Value="forms\formsearch.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <UnitName Value="FormSearch"/>
-      </Unit15>
-      <Unit16>
+      </Unit14>
+      <Unit15>
         <Filename Value="forms\formnotify.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="NotifyForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormNotify"/>
-      </Unit16>
-      <Unit17>
+      </Unit15>
+      <Unit16>
         <Filename Value="forms\formshelf.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ShelfForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormShelf"/>
-      </Unit17>
-      <Unit18>
+      </Unit16>
+      <Unit17>
         <Filename Value="forms\formoptions.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="OptionsForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FormOptions"/>
-      </Unit18>
+      </Unit17>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

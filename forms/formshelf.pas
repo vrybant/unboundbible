@@ -33,7 +33,6 @@ type
     procedure ButtonOpenClick(Sender: TObject);
     procedure ButtonFolderClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure GridCheckboxToggled(sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
@@ -43,7 +42,6 @@ type
     procedure PageControlChange(Sender: TObject);
   private
     CurrModule : TModule;
-    ExpertMode : boolean;
     {$ifdef windows} MemoWidth : integer; {$endif}
     procedure LoadGrids;
     function ActiveGrid: TStringGrid;
@@ -58,7 +56,7 @@ var
 implementation
 
 uses
-  UnitExport, UnitTools, UnitUtils, UnitLocal, UnitBible, UnitCommentary,
+  UnitTools, UnitUtils, UnitLocal, UnitBible, UnitCommentary,
     UnitDictionary, UnitReference;
 
 {$R *.lfm}
@@ -95,7 +93,6 @@ end;
 procedure TShelfForm.FormCreate(Sender: TObject);
 begin
   CurrModule := nil;
-  ExpertMode := false;
   Application.HintPause := 1;
   LabelFilename.Caption := '';
   {$ifdef windows} MemoWidth := Memo.Width; {$endif}
@@ -109,10 +106,9 @@ end;
 procedure TShelfForm.FormPaint(Sender: TObject);
 begin
   Caption := ' ' + T('Modules');
-  if ExpertMode then Caption := Caption + ' - ' + UTF8UpperCase(T('Expert Mode'));
 
   ButtonOpen.Enabled := PageControl.ActivePageIndex = apBible;
-  ButtonDelete.Caption := iif(ExpertMode, T('Convert'), T('Delete'));
+  ButtonDelete.Caption := T('Delete');
 
   LabelFilename.Left := LabelFile.Left + LabelFile.Width;
   {$ifdef windows} Memo.Width := MemoWidth - iif(Memo.ScrollBars = ssNone, 10, 0); {$endif}
@@ -122,16 +118,6 @@ procedure TShelfForm.FormShow(Sender: TObject);
 begin
   LoadGrids;
   GridSelection(BiblesGrid, 1, 1);
-end;
-
-procedure TShelfForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if (Key = VK_F6) and (Shift = []) then
-    begin
-      ExpertMode := not ExpertMode;
-      ShowDetails;
-      Repaint;
-    end;
 end;
 
 //-------------------------------------------------------------------------------------------------
@@ -228,10 +214,7 @@ begin
   Memo.Lines.Add(CurrModule.info);
   Memo.SelStart := 1;
 
-  if not ExpertMode then
-    ButtonDelete.Enabled := (CurrBible <> CurrModule) and not CurrModule.embedded;
-
-  if ExpertMode then ButtonDelete.Enabled := CurrModule.format <> unbound;
+  ButtonDelete.Enabled := (CurrBible <> CurrModule) and not CurrModule.embedded;
 end;
 
 procedure TShelfForm.GridSelection(Sender: TObject; aCol, aRow: Integer);
@@ -264,33 +247,16 @@ end;
 
 procedure TShelfForm.ButtonDeleteClick(Sender: TObject);
 begin
-  if not ExpertMode then
-    begin
-      if QuestionDlg(' ' + T('Confirmation'), T('Do you wish to delete this module?') +
-        LineBreak + LineBreak + CurrModule.name + LineBreak, mtWarning,
-          [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) <> idYes then Exit;
+  if QuestionDlg(' ' + T('Confirmation'), T('Do you wish to delete this module?') +
+    LineBreak + LineBreak + CurrModule.name + LineBreak, mtWarning,
+      [mrYes, T('Delete'), mrCancel, T('Cancel'), 'IsDefault'], 0) <> idYes then Exit;
 
-      if not Tools.DeleteModule(CurrModule) then
-        if QuestionDlg(' ' + T('Error'), T('Cannot delete the module.') + LineBreak,
-          mtError, [mrCancel, T('Close')], 0) = idCancel then Exit;
+  if not Tools.DeleteModule(CurrModule) then
+    if QuestionDlg(' ' + T('Error'), T('Cannot delete the module.') + LineBreak,
+      mtError, [mrCancel, T('Close')], 0) = idCancel then Exit;
 
-      ActiveGrid.DeleteRow(ActiveGrid.Row);
-      GridSelection(Sender, BiblesGrid.Col, BiblesGrid.Row);
-    end;
-
-  if ExpertMode then
-    begin
-      if CurrModule.format = unbound then Exit;
-
-      case PageControl.ActivePageIndex of
-        apBible        : Tools.ExportBible(CurrModule as TBible);
-        apCommentaries : Tools.ExportCommentary(CurrModule as TCommentary);
-        apDictionaries : Tools.ExportDictionary(CurrModule as TDictionary);
-      end;
-
-      QuestionDlg(' ', 'Module ' + CurrModule.fileName + ' has been extracted.',
-        mtInformation, [mrOK, T('OK'), 'IsDefault'], 0);
-    end;
+  ActiveGrid.DeleteRow(ActiveGrid.Row);
+  GridSelection(Sender, BiblesGrid.Col, BiblesGrid.Row);
 end;
 
 procedure TShelfForm.ButtonOpenClick(Sender: TObject);

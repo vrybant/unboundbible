@@ -3,18 +3,18 @@ unit UnitUtils;
 interface
 
 uses
-  Classes, SysUtils, Graphics, FileUtil, Zipper, UnitLib;
+  Classes, Forms, SysUtils, Graphics, FileUtil, Zipper, UnitLib;
 
 const
   ApplicationName = 'Unbound Bible';
   ApplicationVersion = '5.4';
-  ModulesDirectory = 'modules';
   LangDirectory = 'localization';
   Untitled = 'Untitled';
   RecentMax = 10;
 
 var
   ApplicationUpdate : boolean = false;
+  IsPortable : boolean = false;
 
 function DataPath: string;
 function DatabaseList: TStringArray;
@@ -29,7 +29,6 @@ function DonateURL: string;
 function BibleHubURL(book, chapter, number: integer): string;
 
 procedure CreateDataDirectory;
-procedure RemoveOldFiles;
 procedure UnzipDefaultsFiles;
 
 implementation
@@ -47,9 +46,17 @@ const
     'james','1_peter','2_peter','1_john','2_john','3_john','jude','revelation'
     );
 
+function PortableDataPath: string;
+begin
+  Result := Application.Location + 'data';
+end;
+
 function DataPath: string;
 begin
-  Result := GetUserDir + ApplicationName;
+  if IsPortable then
+    Result := PortableDataPath
+  else
+    Result := GetUserDir + ApplicationName;
 end;
 
 function DatabaseList: TStringArray;
@@ -71,8 +78,13 @@ end;
 
 function ConfigPath: string;
 begin
-  {$ifdef windows} Result := LocalAppDataPath + ApplicationName;  {$endif}
-  {$ifdef unix}    Result := GetUserDir + '.config/unboundbible'; {$endif}
+  if IsPortable then
+    Result := Application.Location + Slash + 'configs'
+  else
+    begin
+      {$ifdef windows} Result := LocalAppDataPath + ApplicationName;  {$endif}
+      {$ifdef unix}    Result := GetUserDir + '.config/unboundbible'; {$endif}
+    end;
 end;
 
 function ConfigFile: string;
@@ -128,38 +140,19 @@ begin
   if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
 end;
 
-procedure RemoveOldFiles;
-var
-  f, t : string;
-const
-  OldFiles : array [1..5] of string = (
-    'kjv+.unbound',
-    'kjv.unbound',
-    'rst+.unbound',
-    'rstw.unbound',
-    'ubio.unbound');
-begin
-  if not ApplicationUpdate then Exit;
-  for f in OldFiles do
-    begin
-      t := DataPath + Slash + f;
-      if FileExists(t) then DeleteFile(t);
-    end;
-end;
-
 procedure UnzipDefaultsFiles;
 var
   UnZipper: TUnZipper;
   List : TStringArray;
+  Empty : boolean;
   f, d : string;
-  empty : boolean;
 begin
   if not DirectoryExists(DataPath) then ForceDirectories(DataPath);
 
-  empty := GetUnboundBiblesList.IsEmpty;
-  if not ApplicationUpdate and not empty then Exit;
+  Empty := GetUnboundBiblesList.IsEmpty;
+  if not ApplicationUpdate and not Empty then Exit;
 
-  List := GetFileList(SharePath + ModulesDirectory, '*.zip');
+  List := GetFileList(SharePath + 'modules', '*.zip');
 
   UnZipper := TUnZipper.Create;
   UnZipper.UseUTF8 := True;
@@ -179,6 +172,9 @@ begin
 
   UnZipper.Free;
 end;
+
+initialization
+  if DirectoryExists(PortableDataPath) then IsPortable := true;
 
 end.
 
