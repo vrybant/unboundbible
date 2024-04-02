@@ -1,0 +1,205 @@
+
+****************************************************************************
+*                                                                          *
+*                Unbound Bible - International Support File                *
+*                                                                          *
+****************************************************************************
+*                                                                          *
+*   You can easily translate interface to your native language.            *
+*   Just use this file as template for translation.                        *
+*   After that, please send the new file to software developer             *
+*   to make it available for everyone.                                     *
+*                                                                          *
+****************************************************************************
+
+[Details]
+
+Language = English
+LangID = en
+
+[Localization]
+
+Abbreviation = Abkürzung
+About = Über
+Align Left = Linke Ausrichtung
+Align Right = Rechte Ausrichtung
+All = Alles
+Any Word = Jedes Wort
+Apply = Anwenden
+Become a Patron = Ein Unterstützer werden
+Bible = Bibel
+Bible Folder = Bibelverzeichnis
+Bible Search = Bibelsuche
+Bold = Fett
+Bullets = Aufzählungspunkte
+Cancel = Abbrechen
+Case Sensitive = Groß-/Kleinschreibung beachten
+Center = Zentriert
+Clean History = Verlauf leeren
+Close = Schließen
+Commentaries = Kommentare
+Commentary = Kommentar
+Compare = Vergleicen
+Confirmation = Bestätigung
+Convert = Konvertieren
+Copy = Kopieren
+Copy As… = Kopieren als…
+Copy Verses = Verse kopieren
+Cross-References = Querverweise
+Cut = Ausschneiden
+Delete = Löschen
+Developer = Entwickler
+Dictionaries = Wörterbücher
+Donate = Spenden
+Download = Herunterladen
+Edit = Bearbeiten
+Encoding = Kodierung
+Entire Bible = Gesamte Bibel
+Enumerated = Nummeriert
+Epistles = Epistel
+Error = Fehler
+Every Word = Jedes Wort
+Exit = Beenden
+Expert Mode = Expertenmodus
+File = Datei
+File Name = Dateiname
+Find = Suchen
+Folder = Ordner
+Font = Schriftart
+Font Size = Schriftgröße
+Font… =  Schrift…
+Footnote = Fußnote
+Format = Formatierung
+Gospels = Evangelien
+Guillemets = Französische Ausführungszeichen (Guillemets)
+Help = Hilfe
+History = Verlauf
+Home Page = Startseite
+Hyperlink = Hyperlink
+Information = Information
+Interlinear = Interlinear
+Italic = Kursiv
+Language = Sprache
+Language Editor = Spracheditor
+Line breaks = Zeilenumbrüche
+Link in the end = Versangabe am Ende
+Loading… = Lade…
+Localization = Spracheinstellung
+Look Up % = % nachschlagen
+Manual = Anleitung
+Maximum verses in history = Maximale Versanzahl im Verlauf
+Modules Downloads = Heruntergeladene Module
+Modules = Module
+NT = NT
+New = Neues
+New Testament = Neues Testament
+No = Nr
+Notes = Notizen
+OK = OK
+OK to overwrite %s? = Kann %s überschrieben werden?
+OT = AT
+Old Testament = Altes Testament
+Open Recent = Kürzlich geöffnet
+Opened Book = Geöffnetes Buch
+Open = Öffnen
+Open… = Öffnen…
+Options = Einstellungen
+Parentheses = Klammern
+Paste = Einfügen
+Phrase = Phrase
+Plain text = Reintext
+Print = Drucken
+Range = Bandbreite
+Report an Issue = Ein Problem melden
+Save = Speichern
+Save As… = Speichern unter…
+Save changes? = Sollen die Änderungen gespeichert werden?
+Save… = Speichern…
+Search = Suchen
+Search Options = Suchoptionen
+Search Type = Suchtyp
+Search for % = Suche nach %
+Search… = Suche…
+Select All = Alles auswählen
+Set default = Den Standard auswählen
+Strong's Dictionary = Strong's Wörterbuch
+Text Options = Texteinstellungen
+Title = Titel
+Tools = Werkzeuge
+Translation = Übersetzung
+Underline = Unterstrichen
+Undo = Rückgängig
+Version = Version
+Whole Words = Ganze Wörter
+Yes = Ja
+verses found = Verse gefunden
+
+// messages
+
+Cannot delete the module. = Das Modul kann nicht gelöscht werden.
+Commentaries not found. = Keine Kommentare gefunden.
+Cross-references not found. = Keine Querverweise gefunden.
+Do you wish to delete this module? = Soll dieses Modul gelöscht werden?
+Please enter your query in the search bar. = Bitte geben Sie die Suchwörter in die Suchleiste ein.
+Please narrow your search. = Bitte verfeinern Sie die Suche.
+This search returned too many results. = Die Suche ergab zu viele Ergebnisse.
+You don't have any commentary modules. = Sie haben keine Kommentarmodule installiert.
+You don't have any dictionary modules. = Sie haben keine Wörterbüchermodule installiert.
+You search for % produced no results. = Die Suche nach % ergab keine Ergebnisse.
+
+[macOS]
+
+About Unbound Bible = Über Unbound Bible
+Align Left = Linksbündig
+Align Right = Rechtsbündig
+Alignment = Ausrichtung
+Baseline = Basislinie
+Bigger = Größer
+Bring All to Front = Alles in den Vordergrund bringen
+Clear Menu = Das Menü leeren
+Colors… = Farben…
+Copy Style = Den Stil kopieren
+Default = Standard
+Facebook Page = Facebook-Seite
+Fonts… = Schriftarten…
+Format = Formatierung
+Hide Others = Andere verbergen
+Hide Unbound Bible = Unbound Bible verbergen
+Justify = Blocksatz
+Left to Right = Von Links nach Rechts
+Minimize = Minimierung
+Page Setup… = Seiteneinstellungen…
+Paste and Match Style = Stil einfügen und anwenden
+Paste Style = Stil einfügen
+Preferences = Einstellungen
+Preferences… = Einstellungen…
+Quit Unbound Bible = Unbound Bible beenden
+Redo = Wiederholen
+Right to Left = Von rechts nach links
+Search Options = Sucheinstellungen
+Services = Dienste
+Show All = Alles zeigen
+Smaller = Kleiner
+Strikethrough = Durchgestrichen
+Subscript = Subskript
+Superscript = Superskript
+Unbound Bible Help = Die Hilfe von Unbound Bible
+Window = Fenster
+Writing Direction = Schreibrichtung
+Zoom = Zoom 
+
+// Localizable strings
+
+Change Font = Schriftart ändern
+Do you want to save the changes? = Wollen Sie die Änderungen speichern?
+Document Name = Dokumentenname
+Don't Save = Nicht speichern
+Failed to save document. = Fehler beim Speichern des Dokuments.
+Later = Später
+Permission denied. = Berechtigung verweigert.
+The beta version has expired. = Die Betaversion ist ausgelaufen.
+The document % could not be opened. = Das Dokument % konnte nicht geöffnet werden.
+Update = Aktualisieren
+Update to the stable version. = Auf die nächste stabile Version aktualisieren.
+verses was found = Verse wurden gefunden
+Your changes will be lost if you don't save them. = Ihre Änderungen werden verlorengehen, wenn Sie diese nicht speichern.
