@@ -1,21 +1,18 @@
 
 ****************************************************************************
 *                                                                          *
-*                Unbound Bible - International Support File                *
+*                Unbound Bible - German Translation                *
 *                                                                          *
 ****************************************************************************
 *                                                                          *
-*   You can easily translate interface to your native language.            *
-*   Just use this file as template for translation.                        *
-*   After that, please send the new file to software developer             *
-*   to make it available for everyone.                                     *
+*   This file provides the German translation                              *
 *                                                                          *
 ****************************************************************************
 
 [Details]
 
-Language = English
-LangID = en
+Language = German
+LangID = de
 
 [Localization]
 
